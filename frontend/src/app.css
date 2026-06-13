@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+:root {
+  color-scheme: dark;
+}
+
 /* Scrollbar styles (Global) */
 ::-webkit-scrollbar {
   width: 8px;

@@ -79,36 +79,36 @@
 
 <form onsubmit={handleSubmit} class="flex flex-col gap-3">
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-    <label class="flex flex-col gap-1 text-sm font-medium text-blue-200">
+    <label class="flex flex-col gap-1 text-sm font-medium text-orange-800">
       Kategori (Header)
       <input
         type="text"
         bind:value={category}
         placeholder="Kategori..."
-        class="px-3 py-2 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+        class="px-3 py-2 border border-orange-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
       />
     </label>
 
     <div class="flex flex-col gap-1">
-      <span class="text-sm font-medium text-blue-200">Gambar</span>
+      <span class="text-sm font-medium text-orange-800">Gambar</span>
       <div class="flex gap-2 items-start">
         <input
           type="text"
           bind:value={image}
           placeholder="URL gambar atau upload..."
-          class="flex-1 px-3 py-2 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          class="flex-1 px-3 py-2 border border-orange-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
         />
         {#if image}
           <button
             type="button"
             onclick={() => { image = ""; uploadMsg = ""; }}
-            class="px-3 py-2 text-sm rounded-lg bg-red-900/30 border border-red-800/50 text-red-400 hover:bg-red-800/50 cursor-pointer whitespace-nowrap"
+            class="px-3 py-2 text-sm rounded-lg bg-red-900/30 border border-red-800/50 text-red-600 hover:bg-red-800/50 cursor-pointer whitespace-nowrap"
           >
             Batal
           </button>
         {:else}
           <label
-            class="px-3 py-2 text-sm rounded-lg border border-zinc-600 text-blue-200 hover:bg-zinc-900/50 cursor-pointer whitespace-nowrap {uploading
+            class="px-3 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-white/60 cursor-pointer whitespace-nowrap {uploading
               ? 'opacity-50 pointer-events-none'
               : ''}"
           >
@@ -133,46 +133,46 @@
     </div>
   </div>
 
-  <label class="flex flex-col gap-1 text-sm font-medium text-blue-200">
+  <label class="flex flex-col gap-1 text-sm font-medium text-orange-800">
     Ukuran Kartu
-    <div class="flex border border-zinc-600 rounded-lg overflow-hidden w-fit">
+    <div class="flex border border-orange-300 rounded-lg overflow-hidden w-fit">
       <button
         type="button"
         onclick={() => (size = "6")}
         class="px-4 py-2 text-sm cursor-pointer {size === '6'
-          ? 'bg-indigo-600 text-white'
-          : 'bg-zinc-800 text-blue-200 hover:bg-zinc-900/50'}">Kecil (6/A4)</button
+          ? 'bg-orange-500 text-white'
+          : 'bg-white text-orange-800 hover:bg-white/60'}">Kecil (6/A4)</button
       >
       <button
         type="button"
         onclick={() => (size = "4")}
-        class="px-4 py-2 text-sm cursor-pointer border-x border-zinc-600 {size ===
+        class="px-4 py-2 text-sm cursor-pointer border-x border-orange-300 {size ===
         '4'
-          ? 'bg-indigo-600 text-white'
-          : 'bg-zinc-800 text-blue-200 hover:bg-zinc-900/50'}">Sedang (4/A4)</button
+          ? 'bg-orange-500 text-white'
+          : 'bg-white text-orange-800 hover:bg-white/60'}">Sedang (4/A4)</button
       >
       <button
         type="button"
         onclick={() => (size = "2")}
         class="px-4 py-2 text-sm cursor-pointer {size === '2'
-          ? 'bg-indigo-600 text-white'
-          : 'bg-zinc-800 text-blue-200 hover:bg-zinc-900/50'}">Besar (2/A4)</button
+          ? 'bg-orange-500 text-white'
+          : 'bg-white text-orange-800 hover:bg-white/60'}">Besar (2/A4)</button
       >
     </div>
   </label>
 
-  <label class="flex flex-col gap-1 text-sm font-medium text-blue-200">
+  <label class="flex flex-col gap-1 text-sm font-medium text-orange-800">
     Judul
     <input
       type="text"
       bind:value={title}
       placeholder="Judul materi pelajaran"
       required
-      class="px-3 py-2 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+      class="px-3 py-2 border border-orange-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
     />
   </label>
 
-  <label class="flex flex-col gap-1 text-sm font-medium text-blue-200">
+  <label class="flex flex-col gap-1 text-sm font-medium text-orange-800">
     Konten / Ringkasan
     <RichEditor bind:this={editorRef} value={edit?.content ?? ""} />
   </label>
@@ -181,13 +181,13 @@
     <button
       type="button"
       onclick={oncancel}
-      class="px-4 py-2 text-sm rounded-lg border border-zinc-600 text-blue-200 hover:bg-zinc-900/50 cursor-pointer"
+      class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-white/60 cursor-pointer"
     >
       Batal
     </button>
     <button
       type="submit"
-      class="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium cursor-pointer"
+      class="px-4 py-2 text-sm rounded-lg bg-orange-500 text-white hover:bg-indigo-700 font-medium cursor-pointer"
     >
       {edit ? "Simpan" : "Tambah Kartu"}
     </button>

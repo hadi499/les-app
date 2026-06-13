@@ -5,6 +5,7 @@ import "time"
 type LessonProgress struct {
 	ID           uint `json:"id" gorm:"primaryKey"`
 	UserID       uint `json:"user_id" gorm:"uniqueIndex:idx_user_lesson"`
+	User         User `json:"user" gorm:"foreignKey:UserID"`
 	LessonID     int  `json:"lessonId" gorm:"uniqueIndex:idx_user_lesson"`
 	BestWPM      int  `json:"bestWPM"`
 	BestAccuracy int  `json:"bestAccuracy"`
@@ -16,6 +17,7 @@ type LessonProgress struct {
 type GameHighScore struct {
 	ID     uint   `json:"id" gorm:"primaryKey"`
 	UserID uint   `json:"user_id" gorm:"uniqueIndex:idx_user_mode"`
+	User   User   `json:"user" gorm:"foreignKey:UserID"`
 	Mode   string `json:"mode" gorm:"uniqueIndex:idx_user_mode"` // left, right, both, letters, all
 	Score  int    `json:"score"`
 }
@@ -23,6 +25,7 @@ type GameHighScore struct {
 type GameHistory struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
 	UserID    uint      `json:"user_id" gorm:"index"`
+	User      User      `json:"user" gorm:"foreignKey:UserID"`
 	Mode      string    `json:"mode"`
 	Score     int       `json:"score"`
 	CreatedAt time.Time `json:"created_at"`
@@ -31,6 +34,7 @@ type GameHistory struct {
 type LessonHistory struct {
 	ID        uint      `json:"id" gorm:"primaryKey"`
 	UserID    uint      `json:"user_id" gorm:"index"`
+	User      User      `json:"user" gorm:"foreignKey:UserID"`
 	LessonID  int       `json:"lessonId"`
 	WPM       int       `json:"wpm"`
 	Accuracy  int       `json:"accuracy"`

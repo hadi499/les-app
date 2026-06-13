@@ -85,7 +85,7 @@
 <form onsubmit={handleSubmit} class="flex flex-col gap-4">
   <!-- Upload / Pilih Gambar -->
   {#if image}
-    <div class="relative border border-zinc-700 rounded-lg p-4">
+    <div class="relative border border-orange-300 rounded-lg p-4">
       <img
         src={image}
         alt="Preview"
@@ -94,7 +94,7 @@
       <button
         type="button"
         onclick={() => (image = "")}
-        class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-900/300 text-white text-sm hover:bg-red-600 cursor-pointer"
+        class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-900/300 text-orange-950 text-sm hover:bg-red-600 cursor-pointer"
         >&times;</button
       >
     </div>
@@ -102,8 +102,8 @@
     <!-- Drag & Drop Area -->
     <div
       class="relative flex flex-col items-center justify-center gap-3 border-2 border-dashed rounded-lg p-8 text-center transition-colors cursor-pointer {dragging
-        ? 'border-indigo-500 bg-indigo-900/30'
-        : 'border-zinc-600 hover:border-indigo-400'}"
+        ? 'border-indigo-500 bg-white/60'
+        : 'border-orange-300 hover:border-indigo-400'}"
       ondragover={handleDragOver}
       ondragleave={handleDragLeave}
       ondrop={handleDrop}
@@ -130,7 +130,7 @@
               d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
             ></path>
           </svg>
-          <span class="text-sm text-zinc-400">Mengupload...</span>
+          <span class="text-sm text-orange-800">Mengupload...</span>
         </div>
       {:else}
         <svg
@@ -150,14 +150,14 @@
           <p
             class="text-sm font-medium {dragging
               ? 'text-indigo-600'
-              : 'text-zinc-400'}"
+              : 'text-orange-800'}"
           >
             {dragging ? "Lepaskan di sini..." : "Seret & lepas gambar di sini"}
           </p>
-          <p class="text-xs text-zinc-500 mt-1">atau</p>
+          <p class="text-xs text-orange-700 mt-1">atau</p>
         </div>
         <label
-          class="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg bg-orange-500 text-white hover:bg-indigo-700 cursor-pointer"
         >
           Pilih File
           <input
@@ -180,14 +180,14 @@
   {/if}
 
   <!-- Judul -->
-  <label class="flex flex-col gap-1 text-sm font-medium text-blue-200">
+  <label class="flex flex-col gap-1 text-sm font-medium text-orange-800">
     Judul
     <input
       type="text"
       bind:value={title}
       placeholder="Judul kartu gambar"
       required
-      class="px-3 py-2 border border-zinc-600 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+      class="px-3 py-2 border border-orange-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
     />
   </label>
 
@@ -195,13 +195,13 @@
     <button
       type="button"
       onclick={oncancel}
-      class="px-4 py-2 text-sm rounded-lg border border-zinc-600 text-blue-200 hover:bg-zinc-900/50 cursor-pointer"
+      class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-white/60 cursor-pointer"
     >
       Batal
     </button>
     <button
       type="submit"
-      class="px-4 py-2 text-sm rounded-lg bg-indigo-600 text-white hover:bg-indigo-700 font-medium cursor-pointer"
+      class="px-4 py-2 text-sm rounded-lg bg-orange-500 text-white hover:bg-indigo-700 font-medium cursor-pointer"
     >
       {edit ? "Simpan" : "Tambah Kartu Gambar"}
     </button>

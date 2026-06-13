@@ -154,11 +154,11 @@
 		flex-direction: column;
 		gap: 6px;
 		padding: 16px;
-		background: rgba(24, 24, 27, 0.4);
+		background: rgba(255, 255, 255, 0.6);
 		border-radius: 16px;
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
 		backdrop-filter: blur(8px);
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		border: 1px solid rgba(251, 146, 60, 0.3);
 	}
 
 	.keyboard-row {
@@ -174,8 +174,8 @@
 		border-radius: 10px;
 		border: 2px solid var(--key-color);
 		background: var(--key-color-light);
-		color: #ffffff;
-		text-shadow: 0 1px 2px rgba(0,0,0,0.3);
+		color: #431407;
+		text-shadow: 0 1px 1px rgba(0,0,0,0.1);
 		font-size: 14px;
 		font-weight: 700;
 		display: flex;
@@ -187,15 +187,15 @@
 	}
 
 	.key.special {
-		background: rgba(255, 255, 255, 0.05);
-		border-color: rgba(255, 255, 255, 0.1);
-		color: #94a3b8;
+		background: rgba(255, 255, 255, 0.6);
+		border-color: rgba(251, 146, 60, 0.3);
+		color: #9a3412;
 		font-size: 12px;
 	}
 
 	.key.active {
 		background: var(--key-color);
-		color: #ffffff;
+		color: #431407;
 		transform: scale(1.1);
 		box-shadow: 0 0 20px var(--key-color);
 		animation: pulse 0.6s ease infinite;
@@ -204,7 +204,7 @@
 	.key.pressed {
 		transform: scale(0.95);
 		background: var(--key-color);
-		color: #ffffff;
+		color: #431407;
 		box-shadow: 0 0 12px var(--key-color);
 	}
 

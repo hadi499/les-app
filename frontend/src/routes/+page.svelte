@@ -2,6 +2,7 @@
   import { onMount } from "svelte";
 
   let isAuthenticated = $state(false);
+  let authChecked = $state(false);
 
   onMount(async () => {
     try {
@@ -16,6 +17,8 @@
       }
     } catch (e) {
       // Ignore error if no session
+    } finally {
+      authChecked = true;
     }
   });
 </script>
@@ -29,18 +32,18 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-[#0C134F] text-white font-sans selection:bg-zinc-800 selection:text-white flex flex-col relative overflow-x-hidden"
+  class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
     <div
-      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-zinc-900/40 rounded-full blur-[120px]"
+      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-zinc-800/20 rounded-full blur-[120px]"
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-30"
+      class="absolute inset-0 bg-[linear-gradient(to_right,#fbbf24_1px,transparent_1px),linear-gradient(to_bottom,#fbbf24_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-20"
     ></div>
   </div>
 
@@ -52,12 +55,12 @@
     <div class="flex flex-col items-center gap-8">
       <div class="flex items-center gap-3">
         <div
-          class="w-8 h-8 border border-zinc-700 bg-zinc-900 flex items-center justify-center rotate-45"
+          class="w-8 h-8 border border-orange-200 bg-white flex items-center justify-center rotate-45 shadow-sm"
         >
-          <div class="w-1.5 h-1.5 bg-zinc-500"></div>
+          <div class="w-1.5 h-1.5 bg-orange-400"></div>
         </div>
         <span
-          class="text-xs font-medium tracking-[0.3em] uppercase text-blue-200"
+          class="text-xs font-medium tracking-[0.3em] uppercase text-orange-800"
         >
           Sistem Internal
         </span>
@@ -65,26 +68,26 @@
 
       <div class="flex flex-col gap-4 items-center">
         <h1
-          class="text-4xl sm:text-5xl lg:text-[4rem] font-medium tracking-[0.1em] text-slate-300 uppercase leading-tight text-center drop-shadow-md"
+          class="text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] text-orange-950 uppercase leading-tight text-center drop-shadow-sm"
         >
           Les Balongarut
         </h1>
         <p
-          class="text-[10px] sm:text-xs tracking-[0.2em] text-blue-200 uppercase flex flex-wrap justify-center gap-4 items-center"
+          class="text-[10px] sm:text-xs tracking-[0.2em] text-orange-800 uppercase flex flex-wrap justify-center gap-4 items-center font-medium"
         >
           <span>Komputer</span>
-          <span class="w-1 h-1 bg-zinc-700 rounded-full"></span>
+          <span class="w-1.5 h-1.5 bg-orange-300 rounded-full"></span>
           <span>Matematika</span>
-          <span class="w-1 h-1 bg-zinc-700 rounded-full"></span>
+          <span class="w-1.5 h-1.5 bg-orange-300 rounded-full"></span>
           <span>Bahasa Inggris</span>
         </p>
       </div>
 
       <div class="pt-4 flex justify-center">
-        {#if !isAuthenticated}
+        {#if authChecked && !isAuthenticated}
           <a
             href="/login"
-            class="group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-medium uppercase text-slate-300 border border-zinc-700 hover:text-white hover:border-zinc-400 transition-all duration-700 bg-zinc-900/50 overflow-hidden cursor-pointer backdrop-blur-sm no-underline shadow-lg"
+            class="group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-orange-900 border border-orange-300 hover:text-orange-950 hover:border-orange-500 transition-all duration-700 bg-white/50 overflow-hidden cursor-pointer backdrop-blur-sm no-underline shadow-md hover:shadow-lg"
           >
             <span class="relative z-10 flex items-center gap-3">
               Inisiasi Sesi
@@ -98,13 +101,13 @@
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
-                  stroke-width="1.5"
+                  stroke-width="2"
                   d="M17 8l4 4m0 0l-4 4m4-4H3"
                 ></path>
               </svg>
             </span>
             <div
-              class="absolute inset-0 -translate-x-full bg-zinc-800/20 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
+              class="absolute inset-0 -translate-x-full bg-orange-200/40 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
             ></div>
           </a>
         {/if}

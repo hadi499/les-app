@@ -34,6 +34,16 @@ func SetupRoutes(r *gin.Engine) {
 		typing.POST("/game-scores", controllers.SaveGameScore)
 		typing.GET("/history/game", controllers.GetGameHistory)
 		typing.GET("/history/lesson", controllers.GetLessonHistory)
+
+		// Admin/Teacher routes
+		admin := typing.Group("/admin")
+		admin.Use(middleware.RoleMiddleware("teacher"))
+		{
+			admin.GET("/progress", controllers.GetAllLessonProgress)
+			admin.GET("/game-scores", controllers.GetAllGameScores)
+			admin.GET("/history/game", controllers.GetAllGameHistory)
+			admin.GET("/history/lesson", controllers.GetAllLessonHistory)
+		}
 	}
 
 	// Cards API routes
@@ -69,5 +79,25 @@ func SetupRoutes(r *gin.Engine) {
 	imagesAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
 	{
 		imagesAPI.GET("", controllers.ListImages)
+	}
+
+	// Exams API routes (Teacher only)
+	exams := r.Group("/api/exams")
+	exams.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		exams.GET("", controllers.GetExams)
+		exams.POST("", controllers.CreateExam)
+		exams.PUT("/:id", controllers.UpdateExam)
+	exams.DELETE("/:id", controllers.DeleteExam)
+	}
+
+	// Subjects API routes (Teacher only)
+	subjects := r.Group("/api/subjects")
+	subjects.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		subjects.GET("", controllers.GetSubjects)
+		subjects.POST("", controllers.CreateSubject)
+		subjects.PUT("/:id", controllers.UpdateSubject)
+		subjects.DELETE("/:id", controllers.DeleteSubject)
 	}
 }

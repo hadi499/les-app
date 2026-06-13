@@ -35,13 +35,13 @@
     {@render children()}
   </div>
 {:else}
-  <div class="min-h-screen bg-[#0C134F] flex items-center justify-center">
+  <div class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] flex items-center justify-center">
     <div class="animate-pulse flex flex-col items-center">
       <div
         class="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"
       ></div>
       <p
-        class="mt-4 text-blue-200 font-medium tracking-widest text-sm uppercase"
+        class="mt-4 text-orange-800 font-medium tracking-widest text-sm uppercase"
       >
         Memeriksa sesi...
       </p>

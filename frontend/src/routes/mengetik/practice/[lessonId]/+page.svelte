@@ -207,24 +207,22 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if lesson}
-  <div
-    class="flex flex-col min-h-[calc(100vh-64px)] text-white bg-[#0C134F]"
-  >
+  <div class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8]">
     <header
-      class="flex flex-col sm:flex-row items-center justify-between p-4 sm:px-8 gap-3 sm:gap-0 border-b border-indigo-400/30 bg-zinc-900/50 backdrop-blur-md"
+      class="flex flex-col sm:flex-row items-center justify-between p-4 sm:px-8 gap-3 sm:gap-0"
     >
       <div class="flex items-center gap-3">
         <span class="text-3xl">{lesson.icon}</span>
-        <h1 class="text-xl font-bold m-0 text-white">{lesson.title}</h1>
+        <h1 class="text-xl font-bold m-0 text-orange-950">{lesson.title}</h1>
       </div>
       <div
-        class="flex gap-1 p-1 bg-zinc-900/50 border border-zinc-700 rounded-xl shadow-sm"
+        class="flex gap-1 p-1 bg-white/60 border border-orange-300 rounded-xl shadow-sm"
       >
         <button
           class="px-4 py-2 border-none bg-transparent rounded-lg cursor-pointer font-semibold text-sm transition-all {mode ===
           'words'
-            ? 'bg-amber-900/50 text-amber-400'
-            : 'text-blue-200 hover:bg-zinc-800'}"
+            ? 'bg-amber-100 text-amber-600'
+            : 'text-orange-800 hover:bg-white'}"
           onclick={() => switchMode("words")}
         >
           Kata
@@ -232,8 +230,8 @@
         <button
           class="px-4 py-2 border-none bg-transparent rounded-lg cursor-pointer font-semibold text-sm transition-all {mode ===
           'sentences'
-            ? 'bg-amber-900/50 text-amber-400'
-            : 'text-blue-200 hover:bg-zinc-800'}"
+            ? 'bg-amber-100 text-amber-600'
+            : 'text-orange-800 hover:bg-white'}"
           onclick={() => switchMode("sentences")}
         >
           Kalimat
@@ -251,7 +249,7 @@
 
         {#if lesson.keys.length > 0}
           <div class="text-center">
-            <p class="text-sm text-blue-200 m-0 mb-3 font-light">
+            <p class="text-sm text-orange-800 m-0 mb-3 font-light">
               Jari untuk latihan ini:
             </p>
             <div class="flex justify-center gap-2">
@@ -259,7 +257,7 @@
                 {@const info = KEY_MAP[key]}
                 {#if info}
                   <span
-                    class="w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm bg-zinc-800 border-2 text-white shadow-sm"
+                    class="w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm bg-white border-2 text-orange-950 shadow-sm"
                     style="border-color: {FINGER_COLORS[info.finger]}"
                   >
                     {key.toUpperCase()}
@@ -271,16 +269,18 @@
         {/if}
       </div>
 
-      <div class="flex justify-center gap-6 text-blue-200 text-sm mt-4 font-light">
+      <div
+        class="flex justify-center gap-6 text-orange-800 text-sm mt-4 font-light"
+      >
         <span
           ><kbd
-            class="bg-zinc-800 px-2 py-0.5 rounded border border-zinc-600 text-xs shadow-sm mr-1 text-white"
+            class="bg-white px-2 py-0.5 rounded border border-orange-300 text-xs shadow-sm mr-1 text-orange-950"
             >Esc</kbd
           > Ulangi</span
         >
         <span
           ><kbd
-            class="bg-zinc-800 px-2 py-0.5 rounded border border-zinc-600 text-xs shadow-sm mr-1 text-white"
+            class="bg-white px-2 py-0.5 rounded border border-orange-300 text-xs shadow-sm mr-1 text-orange-950"
             >Backspace</kbd
           > Hapus</span
         >
@@ -299,7 +299,7 @@
   </div>
 {:else}
   <div
-    class="min-h-screen flex flex-col items-center justify-center gap-4 bg-[#0C134F] text-white"
+    class="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] text-orange-950"
   >
     <h1 class="text-2xl font-bold">Lesson tidak ditemukan</h1>
     <a href="/mengetik" class="text-amber-500 hover:underline"

@@ -208,3 +208,41 @@ func GetLessonHistory(c *gin.Context) {
 
 	c.JSON(http.StatusOK, history)
 }
+
+// --- Admin / Teacher Endpoints ---
+
+func GetAllLessonProgress(c *gin.Context) {
+	var progress []models.LessonProgress
+	if err := database.DB.Preload("User").Order("lesson_id asc").Find(&progress).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch progress"})
+		return
+	}
+	c.JSON(http.StatusOK, progress)
+}
+
+func GetAllGameScores(c *gin.Context) {
+	var scores []models.GameHighScore
+	if err := database.DB.Preload("User").Order("score desc").Find(&scores).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch scores"})
+		return
+	}
+	c.JSON(http.StatusOK, scores)
+}
+
+func GetAllGameHistory(c *gin.Context) {
+	var history []models.GameHistory
+	if err := database.DB.Preload("User").Order("created_at desc").Limit(500).Find(&history).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
+		return
+	}
+	c.JSON(http.StatusOK, history)
+}
+
+func GetAllLessonHistory(c *gin.Context) {
+	var history []models.LessonHistory
+	if err := database.DB.Preload("User").Order("created_at desc").Limit(500).Find(&history).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
+		return
+	}
+	c.JSON(http.StatusOK, history)
+}

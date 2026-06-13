@@ -78,18 +78,18 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-[#0C134F] text-white font-sans selection:bg-zinc-800 selection:text-white flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
+  class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed print:hidden">
     <div
-      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-zinc-900/40 rounded-full blur-[120px]"
+      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-zinc-800/20 rounded-full blur-[120px]"
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute inset-0 bg-[linear-gradient(to_right,#18181b_1px,transparent_1px),linear-gradient(to_bottom,#18181b_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-30"
+      class="absolute inset-0 bg-[linear-gradient(to_right,#fbbf24_1px,transparent_1px),linear-gradient(to_bottom,#fbbf24_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-20"
     ></div>
   </div>
 
@@ -99,22 +99,22 @@
     <div class="text-center print:hidden flex flex-col items-center gap-4">
       <div class="flex items-center gap-3">
         <div
-          class="w-6 h-6 border border-zinc-700 bg-zinc-900 flex items-center justify-center rotate-45"
+          class="w-6 h-6 border border-orange-200 bg-white flex items-center justify-center rotate-45 shadow-sm"
         >
-          <div class="w-1 h-1 bg-zinc-500"></div>
+          <div class="w-1.5 h-1.5 bg-orange-400"></div>
         </div>
         <span
-          class="text-xs font-medium tracking-[0.2em] uppercase text-blue-200"
+          class="text-xs font-medium tracking-[0.2em] uppercase text-orange-800"
         >
           Utility System
         </span>
       </div>
       <h1
-        class="text-4xl md:text-5xl font-medium tracking-[0.1em] text-slate-300 uppercase drop-shadow-md"
+        class="text-4xl md:text-5xl font-bold tracking-[0.1em] text-orange-950 uppercase drop-shadow-sm"
       >
         Cetak Kode
       </h1>
-      <p class="text-xs tracking-[0.1em] text-blue-200/80 uppercase">
+      <p class="text-xs tracking-[0.1em] text-orange-800 font-medium uppercase">
         Paste script code Anda di bawah, lalu klik "Cetak" untuk mem-print
         dokumen.
       </p>
@@ -123,32 +123,32 @@
     <!-- Input Section (Hidden when printing) -->
     <div class="flex flex-col space-y-4 print:hidden">
       <div
-        class="flex items-center justify-between border-b border-zinc-700/50 pb-3"
+        class="flex items-center justify-between border-b border-orange-300 pb-3"
       >
         <label
           for="code-input"
-          class="text-sm font-medium tracking-[0.1em] uppercase text-blue-100"
+          class="text-sm font-bold tracking-[0.1em] uppercase text-orange-950"
         >
           Source Code
         </label>
         <div class="flex space-x-3">
           <button
             onclick={() => (codeInput = "")}
-            class="text-xs px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-blue-200 rounded-md border border-zinc-600 transition-colors disabled:bg-zinc-900 disabled:text-zinc-400 disabled:border-zinc-800 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-md"
+            class="text-xs px-4 py-2 bg-white hover:bg-orange-50 text-orange-900 rounded-md border border-orange-300 transition-colors disabled:bg-white/50 disabled:text-orange-300 disabled:border-orange-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
             disabled={!codeInput}
           >
             Clear
           </button>
           <button
             onclick={copyCode}
-            class="text-xs px-4 py-2 bg-zinc-800 hover:bg-zinc-700 text-blue-200 rounded-md border border-zinc-600 transition-colors disabled:bg-zinc-900 disabled:text-zinc-400 disabled:border-zinc-800 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-md"
+            class="text-xs px-4 py-2 bg-white hover:bg-orange-50 text-orange-900 rounded-md border border-orange-300 transition-colors disabled:bg-white/50 disabled:text-orange-300 disabled:border-orange-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
             disabled={!codeInput}
           >
             Copy
           </button>
           <button
             onclick={printCode}
-            class="group relative inline-flex items-center justify-center px-6 py-2 text-xs tracking-[0.1em] font-extrabold uppercase text-blue-200 border border-indigo-500 hover:border-indigo-400 bg-indigo-600 hover:bg-indigo-500 rounded-md transition-all duration-300 disabled:bg-zinc-900 disabled:text-zinc-400 disabled:border-zinc-800 backdrop-blur-sm shadow-lg overflow-hidden"
+            class="group relative inline-flex items-center justify-center px-6 py-2 text-xs tracking-[0.1em] font-extrabold uppercase text-white border border-orange-500 hover:border-orange-400 bg-orange-600 hover:bg-orange-500 rounded-md transition-all duration-300 disabled:bg-orange-300 disabled:text-white disabled:border-orange-300 backdrop-blur-sm shadow-md overflow-hidden"
             disabled={!codeInput}
           >
             <span class="relative z-10 flex items-center gap-2">
@@ -171,14 +171,14 @@
       </div>
       <div class="relative group">
         <div
-          class="absolute -inset-0.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          class="absolute -inset-0.5 bg-gradient-to-r from-orange-400/30 to-amber-500/30 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
         ></div>
         <textarea
           id="code-input"
           bind:value={codeInput}
           onkeydown={handleKeydown}
           placeholder="Paste script code di sini..."
-          class="relative w-full p-6 rounded-xl bg-zinc-900/80 backdrop-blur-md border border-zinc-700/50 text-white font-mono text-base focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 outline-none resize-y min-h-[650px] shadow-2xl whitespace-pre overflow-x-auto placeholder-zinc-400"
+          class="relative w-full p-6 rounded-xl bg-white/60 backdrop-blur-md border border-orange-200 text-orange-950 font-mono text-base focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none resize-y min-h-[650px] shadow-xl whitespace-pre overflow-x-auto placeholder-orange-300/80"
           spellcheck="false"
         ></textarea>
       </div>

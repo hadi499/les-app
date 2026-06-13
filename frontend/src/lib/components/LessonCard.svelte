@@ -37,17 +37,17 @@
 		display: flex;
 		gap: 16px;
 		padding: 20px;
-		background: rgba(255, 255, 255, 0.05);
-		border: 2px solid rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.6);
+		border: 2px solid rgba(251, 146, 60, 0.3);
 		border-radius: 16px;
 		text-decoration: none;
-		color: #f8fafc;
+		color: #431407;
 		transition: all 0.3s ease;
 		cursor: pointer;
 	}
 
 	.lesson-card:not(.locked):hover {
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.8);
 		border-color: #fbbf24;
 		transform: translateY(-2px);
 		box-shadow: 0 8px 24px rgba(251, 191, 36, 0.2);
@@ -70,7 +70,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.6);
 		border-radius: 12px;
 	}
 
@@ -87,7 +87,7 @@
 
 	.card-desc {
 		font-size: 13px;
-		color: #64748b;
+		color: #9a3412;
 		margin: 0 0 8px 0;
 	}
 
@@ -105,7 +105,7 @@
 
 	.card-lock-text {
 		font-size: 12px;
-		color: #64748b;
+		color: #9a3412;
 		margin: 0;
 	}
 </style>

@@ -6,9 +6,9 @@
   <title>Latihan Dasar - Ketik 10 Jari</title>
 </svelte:head>
 
-<div class="min-h-screen bg-[#0C134F] text-white selection:bg-zinc-800 selection:text-white">
+<div class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] text-orange-950 selection:bg-white selection:text-orange-900">
   <main class="max-w-4xl mx-auto p-4 sm:p-8">
     <QuickPractice />
-    <a href="/mengetik" class="inline-block text-blue-200 hover:text-white text-sm mt-4 transition-colors no-underline font-medium tracking-wide">← Kembali ke Pelajaran</a>
+    <a href="/mengetik" class="inline-block text-orange-800 hover:text-orange-950 text-sm mt-4 transition-colors no-underline font-medium tracking-wide">← Kembali ke Pelajaran</a>
   </main>
 </div>

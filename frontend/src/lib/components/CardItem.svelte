@@ -65,7 +65,7 @@
       <button
         onclick={() => onselect?.(card)}
         class="w-6 h-6 flex items-center justify-center rounded border-2 cursor-pointer {selected
-          ? 'bg-indigo-600 border-indigo-600 text-white'
+          ? 'bg-indigo-600 border-indigo-600 text-orange-950'
           : 'bg-white/90 border-gray-300 hover:border-indigo-400'}"
       >
         {#if selected}
@@ -202,7 +202,7 @@
   {#if !isImageCard}
     <div class="text-center shrink-0 py-1.5 px-3">
       <div
-        class="font-semibold uppercase tracking-wider truncate"
+        class="font-semibold uppercase tracking-wider truncate text-black"
         style="font-size: {headerFont}; "
       >
         {card.category || "Umum"}
@@ -211,7 +211,18 @@
   {/if}
 
   {#if isImageCard}
-    <!-- Image Card: 80% image + 20% title -->
+    <!-- Image Card: 20% title + 80% image -->
+    <div
+      class="shrink-0 px-3 py-2 text-center border-b border-gray-200 flex items-center justify-center"
+      style="flex-basis: 20%;"
+    >
+      <h3
+        class="font-bold text-black leading-tight text-center w-full"
+        style="font-size: {titleFont}; display: -webkit-box; -webkit-line-clamp: {titleClamp}; -webkit-box-orient: vertical; overflow: hidden;"
+      >
+        {card.title || "Judul"}
+      </h3>
+    </div>
     <div class="flex-1 overflow-hidden" style="flex-basis: 80%;">
       {#if card.image}
         <img
@@ -240,17 +251,6 @@
         </div>
       {/if}
     </div>
-    <div
-      class="shrink-0 px-3 py-2 text-center border-t border-gray-200 flex items-center justify-center"
-      style="flex-basis: 20%;"
-    >
-      <h3
-        class="font-bold text-slate-900 leading-tight text-center w-full"
-        style="font-size: {titleFont}; display: -webkit-box; -webkit-line-clamp: {titleClamp}; -webkit-box-orient: vertical; overflow: hidden;"
-      >
-        {card.title || "Judul"}
-      </h3>
-    </div>
   {:else}
     <!-- Section 1: Image (only when present, takes 50% height) -->
     {#if card.image}
@@ -268,7 +268,7 @@
     <div class="flex-1 flex flex-col min-h-0">
       <div class="px-3 py-1.5 text-center shrink-0">
         <h3
-          class="font-bold text-indigo-900 leading-tight"
+          class="font-bold text-black leading-tight"
           style="font-size: {titleFont}; display: -webkit-box; -webkit-line-clamp: {titleClamp}; -webkit-box-orient: vertical; overflow: hidden;"
         >
           {card.title || "Judul"}
@@ -276,7 +276,7 @@
       </div>
 
       <div
-        class="flex-1 px-3 py-2 text-gray-700 leading-relaxed overflow-hidden"
+        class="flex-1 px-3 py-2 text-black leading-relaxed overflow-hidden"
         style="font-size: {contentFont};"
       >
         <div

@@ -200,7 +200,7 @@
 		background: linear-gradient(135deg, #ffffff, #f8fafc);
 		border-radius: 24px;
 		padding: 32px;
-		border: 2px solid rgba(255, 255, 255, 0.1);
+		border: 2px solid rgba(251, 146, 60, 0.3);
 		min-height: 500px;
 		position: relative;
 		overflow: hidden;
@@ -227,12 +227,12 @@
 
 	.game-desc {
 		font-size: 18px;
-		color: #64748b;
+		color: #9a3412;
 		margin: 0 0 24px 0;
 	}
 
 	.mode-info {
-		background: rgba(255, 255, 255, 0.05);
+		background: rgba(255, 255, 255, 0.6);
 		padding: 16px 24px;
 		border-radius: 12px;
 		margin-bottom: 32px;
@@ -252,7 +252,7 @@
 		font-size: 20px;
 		font-weight: 700;
 		background: linear-gradient(135deg, #fbbf24, #f59e0b);
-		color: #ffffff;
+		color: #431407;
 		border: none;
 		border-radius: 12px;
 		cursor: pointer;
@@ -282,7 +282,7 @@
 
 	.hud-label {
 		font-size: 14px;
-		color: #64748b;
+		color: #9a3412;
 		text-transform: uppercase;
 		letter-spacing: 1px;
 	}
@@ -300,7 +300,7 @@
 		background: rgba(0, 0, 0, 0.2);
 		border-radius: 16px;
 		overflow: hidden;
-		border: 2px solid rgba(255, 255, 255, 0.1);
+		border: 2px solid rgba(251, 146, 60, 0.3);
 	}
 
 	.falling-letter {
@@ -343,7 +343,7 @@
 
 	.game-over p {
 		font-size: 24px;
-		color: #f8fafc;
+		color: #431407;
 		margin: 0 0 32px 0;
 	}
 
@@ -357,7 +357,7 @@
 		font-size: 18px;
 		font-weight: 700;
 		background: linear-gradient(135deg, #4ade80, #22c55e);
-		color: #f8fafc;
+		color: #431407;
 		border: none;
 		border-radius: 12px;
 		cursor: pointer;
