@@ -53,7 +53,7 @@
         <div
           class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-orange-600 font-extrabold text-xl shadow-md"
         >
-          L
+          LB
         </div>
         <a
           href="/"

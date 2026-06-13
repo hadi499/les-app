@@ -207,7 +207,9 @@
 <svelte:window onkeydown={handleKeyDown} />
 
 {#if lesson}
-  <div class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8]">
+  <div
+    class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-orange-100"
+  >
     <header
       class="flex flex-col sm:flex-row items-center justify-between p-4 sm:px-8 gap-3 sm:gap-0"
     >

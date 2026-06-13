@@ -1,12 +1,14 @@
-<script>
-  import { page } from "$app/stores";
+<script lang="ts">
+  import { page } from "$app/state";
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
 
-  let { children } = $props();
+  import type { Snippet } from "svelte";
+  let { children }: { children: Snippet } = $props();
 
   // Data dinamis dari backend
-  let user = $state({ username: "Loading...", role: "..." });
+  type User = { username: string; role: string; };
+  let user: User = $state({ username: "Loading...", role: "..." });
   let isMobileMenuOpen = $state(false);
   let isLoading = $state(true);
 
@@ -58,7 +60,7 @@
   </div>
 {:else}
   <div
-    class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] flex selection:bg-orange-200 selection:text-orange-900 font-sans text-orange-950"
+    class="min-h-screen bg-orange-100 flex selection:bg-orange-200 selection:text-orange-900 font-sans text-orange-950"
   >
     <!-- Sidebar (Desktop) -->
     <aside
@@ -70,7 +72,7 @@
           <div
             class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-orange-600 font-extrabold text-sm shadow-md"
           >
-            L
+            LB
           </div>
           <span
             class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
@@ -83,13 +85,13 @@
       <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
         <a
           href="/dashboard"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
             .url.pathname === '/dashboard'
             ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
             : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
         >
           <svg
-            class="w-5 h-5 {$page.url.pathname === '/dashboard'
+            class="w-5 h-5 {page.url.pathname === '/dashboard'
               ? 'text-orange-600'
               : 'text-orange-400'}"
             fill="none"
@@ -108,14 +110,14 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/users"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/users',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
               : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname.includes('/users')
+              class="w-5 h-5 {page.url.pathname.includes('/users')
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -133,14 +135,14 @@
 
           <a
             href="/dashboard/typing-monitoring"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/typing-monitoring',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
               : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname.includes('/typing-monitoring')
+              class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -158,14 +160,14 @@
 
           <a
             href="/dashboard/exams"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/exams',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
               : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname.includes('/exams')
+              class="w-5 h-5 {page.url.pathname.includes('/exams')
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -183,14 +185,14 @@
 
           <a
             href="/dashboard/subjects"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/subjects',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
               : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname.includes('/subjects')
+              class="w-5 h-5 {page.url.pathname.includes('/subjects')
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -208,14 +210,14 @@
 
           <a
             href="/dashboard/card-memory"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/card-memory',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
               : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname.includes('/card-memory')
+              class="w-5 h-5 {page.url.pathname.includes('/card-memory')
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -304,7 +306,8 @@
         >
           L
         </div>
-        <span class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
+        <span
+          class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
           >{user?.role === "teacher" ? "Portal Guru" : "Portal Siswa"}</span
         >
       </div>
@@ -373,13 +376,13 @@
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-[#EAE4BD]">
           <a
             href="/dashboard"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
               .url.pathname === '/dashboard'
               ? 'bg-white/80 text-orange-900 border border-orange-300'
               : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
           >
             <svg
-              class="w-5 h-5 {$page.url.pathname === '/dashboard'
+              class="w-5 h-5 {page.url.pathname === '/dashboard'
                 ? 'text-orange-600'
                 : 'text-orange-400'}"
               fill="none"
@@ -398,14 +401,14 @@
           {#if user?.role === "teacher"}
             <a
               href="/dashboard/users"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/users',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {$page.url.pathname.includes('/users')
+                class="w-5 h-5 {page.url.pathname.includes('/users')
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"
@@ -423,14 +426,16 @@
 
             <a
               href="/dashboard/typing-monitoring"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/typing-monitoring',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {$page.url.pathname.includes('/typing-monitoring')
+                class="w-5 h-5 {page.url.pathname.includes(
+                  '/typing-monitoring',
+                )
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"
@@ -448,14 +453,14 @@
 
             <a
               href="/dashboard/exams"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/exams',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {$page.url.pathname.includes('/exams')
+                class="w-5 h-5 {page.url.pathname.includes('/exams')
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"
@@ -473,14 +478,14 @@
 
             <a
               href="/dashboard/subjects"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/subjects',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {$page.url.pathname.includes('/subjects')
+                class="w-5 h-5 {page.url.pathname.includes('/subjects')
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"
@@ -498,14 +503,14 @@
 
             <a
               href="/dashboard/card-memory"
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {$page.url.pathname.includes(
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/card-memory',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {$page.url.pathname.includes('/card-memory')
+                class="w-5 h-5 {page.url.pathname.includes('/card-memory')
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"

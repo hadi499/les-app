@@ -288,7 +288,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen flex flex-col bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] text-slate-200 overflow-hidden font-sans"
+  class="min-h-screen flex flex-col bg-orange-100 text-slate-200 overflow-hidden font-sans"
 >
   <header
     class="flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-6 gap-2 md:gap-4 relative z-10"

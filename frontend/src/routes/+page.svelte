@@ -1,4 +1,4 @@
-<script>
+<script lang="ts">
   import { onMount } from "svelte";
 
   let isAuthenticated = $state(false);
@@ -10,7 +10,7 @@
         credentials: "include",
       });
       if (res.ok) {
-        const data = await res.json();
+        const data = (await res.json()) as { authenticated: boolean };
         if (data.authenticated) {
           isAuthenticated = true;
         }
@@ -32,7 +32,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden"
+  class="min-h-screen bg-orange-100 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">

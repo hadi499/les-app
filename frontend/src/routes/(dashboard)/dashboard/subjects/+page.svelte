@@ -1,14 +1,16 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
 
-  let subjects = $state([]);
+  type Subject = { id: number; name: string };
+
+  let subjects: Subject[] = $state([]);
   let isLoading = $state(true);
   let errorMsg = $state('');
 
   // Modal State
   let showModal = $state(false);
   let isEditing = $state(false);
-  let currentSubjectId = $state(null);
+  let currentSubjectId: number | null = $state(null);
   
   // Form State
   let formName = $state('');
@@ -19,9 +21,9 @@
     try {
       const res = await fetch('http://localhost:8080/api/subjects', { credentials: 'include' });
       if (!res.ok) throw new Error('Gagal mengambil data mata pelajaran');
-      subjects = await res.json() || [];
+      subjects = (await res.json() as Subject[]) || [];
     } catch(e) {
-      errorMsg = e.message;
+      errorMsg = e instanceof Error ? e.message : String(e);
     } finally {
       isLoading = false;
     }
@@ -38,7 +40,7 @@
     showModal = true;
   }
 
-  function openEditModal(subject) {
+  function openEditModal(subject: Subject) {
     isEditing = true;
     currentSubjectId = subject.id;
     formName = subject.name;
@@ -49,7 +51,7 @@
     showModal = false;
   }
 
-  async function saveSubject(e) {
+  async function saveSubject(e: Event) {
     e.preventDefault();
     if (!formName.trim()) {
       alert("Nama mata pelajaran tidak boleh kosong!");
@@ -84,11 +86,11 @@
       closeModal();
       await fetchSubjects();
     } catch (err) {
-      alert(err.message);
+      alert(err instanceof Error ? err.message : String(err));
     }
   }
 
-  async function deleteSubject(id) {
+  async function deleteSubject(id: number) {
     if (!confirm('Apakah Anda yakin ingin menghapus mata pelajaran ini? Jika ada nilai yang menggunakan mata pelajaran ini, penghapusan mungkin akan gagal.')) return;
 
     try {
@@ -103,7 +105,7 @@
       }
       await fetchSubjects();
     } catch (err) {
-      alert(err.message);
+      alert(err instanceof Error ? err.message : String(err));
     }
   }
 </script>

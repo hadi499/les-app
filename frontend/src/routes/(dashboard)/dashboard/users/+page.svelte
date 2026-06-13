@@ -1,7 +1,9 @@
-<script>
+<script lang="ts">
   import { onMount } from 'svelte';
   
-  let users = $state([]);
+  type User = { id: number; username: string; role: string };
+
+  let users: User[] = $state([]);
   let isLoading = $state(true);
   let errorMsg = $state('');
 
@@ -20,10 +22,10 @@
       if (!res.ok) {
         throw new Error('Gagal mengambil data users');
       }
-      const data = await res.json();
+      const data = await res.json() as { users: User[] };
       users = data.users || [];
     } catch(e) {
-      errorMsg = e.message;
+      errorMsg = e instanceof Error ? e.message : String(e);
     } finally {
       isLoading = false;
     }
@@ -33,7 +35,7 @@
     fetchUsers();
   });
 
-  async function handleDelete(userId, username) {
+  async function handleDelete(userId: number, username: string) {
     if (!confirm(`Hapus permanen user "${username}" beserta seluruh riwayat belajarnya? Tindakan ini tidak dapat dibatalkan.`)) {
       return;
     }
@@ -54,7 +56,7 @@
       alert('User berhasil dihapus');
       fetchUsers();
     } catch(e) {
-      alert('Terjadi kesalahan: ' + e.message);
+      alert('Terjadi kesalahan: ' + (e instanceof Error ? e.message : String(e)));
     }
   }
 </script>

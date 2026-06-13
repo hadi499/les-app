@@ -21,17 +21,16 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] p-4 sm:p-8 text-orange-950 font-sans selection:bg-white selection:text-orange-900"
+  class="min-h-screen bg-orange-100 p-4 sm:p-8 text-orange-950 font-sans selection:bg-white selection:text-orange-900"
 >
   <div class="max-w-5xl mx-auto relative z-10">
     <header class="text-center mb-10 sm:mb-16">
       <h1 class="text-3xl sm:text-4xl md:text-5xl font-medium mb-4">
-        🎮 <span
-          class="bg-gradient-to-br from-amber-400 to-amber-500 text-transparent drop-shadow-md bg-clip-text"
+        🎮 <span class="text-orange-800 drop-shadow-md bg-clip-text"
           >Game Typing Seru!</span
         >
       </h1>
-      <p class="text-lg sm:text-xl text-orange-800 font-light tracking-wide">
+      <p class="text-lg sm:text-xl text-orange-800 tracking-wide">
         Pilih mode latihan yang ingin kamu mainkan
       </p>
     </header>
@@ -61,7 +60,7 @@
           A S D F
         </div>
         <div
-          class="inline-block px-4 py-2 bg-amber-900/30 border border-amber-300 text-amber-300 rounded-full text-xs sm:text-sm font-medium"
+          class="inline-block px-4 py-2 bg-amber-300 border border-amber-300 text-amber-800 rounded-full text-xs sm:text-sm font-medium"
         >
           Mudah
         </div>
@@ -96,7 +95,7 @@
           J K L ;
         </div>
         <div
-          class="inline-block px-4 py-2 bg-amber-900/30 border border-amber-300 text-amber-300 rounded-full text-xs sm:text-sm font-medium"
+          class="inline-block px-4 py-2 bg-amber-300 border border-amber-300 text-amber-800 rounded-full text-xs sm:text-sm font-medium"
         >
           Mudah
         </div>
@@ -131,7 +130,7 @@
           A S D F J K L ;
         </div>
         <div
-          class="inline-block px-4 py-2 bg-amber-900/30 border border-amber-300 text-amber-300 rounded-full text-xs sm:text-sm font-medium"
+          class="inline-block px-4 py-2 bg-amber-300 border border-amber-300 text-amber-800 rounded-full text-xs sm:text-sm font-medium"
         >
           Sedang
         </div>
@@ -166,7 +165,7 @@
           A-Z
         </div>
         <div
-          class="inline-block px-4 py-2 bg-amber-900/30 border border-amber-300 text-amber-300 rounded-full text-xs sm:text-sm font-medium"
+          class="inline-block px-4 py-2 bg-amber-300 border border-amber-300 text-amber-800 rounded-full text-xs sm:text-sm font-medium"
         >
           Sedang
         </div>
@@ -201,7 +200,7 @@
           A-Z `-=[]\;',./
         </div>
         <div
-          class="inline-block px-4 py-2 bg-amber-900/30 border border-amber-300 text-amber-300 rounded-full text-xs sm:text-sm font-medium"
+          class="inline-block px-4 py-2 bg-amber-300 border border-amber-300 text-amber-800 rounded-full text-xs sm:text-sm font-medium"
         >
           Sulit
         </div>
