@@ -7,7 +7,7 @@
   let { children }: { children: Snippet } = $props();
 
   // Data dinamis dari backend
-  type User = { username: string; role: string; };
+  type User = { username: string; role: string };
   let user: User = $state({ username: "Loading...", role: "..." });
   let isMobileMenuOpen = $state(false);
   let isLoading = $state(true);
@@ -64,10 +64,10 @@
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="w-64 bg-white/50 backdrop-blur-md border-r border-orange-200 hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-orange-900/5"
+      class="w-64 bg-orange-400/10 backdrop-blur-md border-r border-orange-300 hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-orange-900/5"
     >
       <!-- Logo -->
-      <div class="h-16 flex items-center px-6 border-b border-orange-200">
+      <div class="h-16 flex items-center px-6 border-b border-orange-300">
         <div class="flex items-center gap-3">
           <div
             class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-orange-600 font-extrabold text-sm shadow-md"
@@ -234,6 +234,31 @@
           </a>
         {/if}
 
+        <a
+          href="/dashboard/quizzes"
+          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            '/quizzes',
+          )
+            ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
+            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+        >
+          <svg
+            class="w-5 h-5 {page.url.pathname.includes('/quizzes')
+              ? 'text-orange-600'
+              : 'text-orange-400'}"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+            ></path></svg
+          >
+          Kuis & Nilai
+        </a>
+
         <div class="pt-4 mt-2 border-t border-orange-200">
           <a
             href="/"
@@ -257,7 +282,7 @@
       </nav>
 
       <!-- User & Logout -->
-      <div class="p-4 border-t border-orange-200 bg-white/40">
+      <div class="p-4 border-t border-orange-300">
         <div class="flex items-center gap-3 mb-4 px-2">
           <div
             class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm flex-shrink-0"
@@ -298,13 +323,13 @@
 
     <!-- Mobile Header -->
     <div
-      class="md:hidden fixed top-0 inset-x-0 h-16 bg-white/80 backdrop-blur-md border-b border-orange-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
+      class="md:hidden fixed top-0 inset-x-0 h-16 bg-orange-400/10 backdrop-blur-md border-b border-orange-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
     >
       <div class="flex items-center gap-2">
         <div
           class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-orange-600 font-extrabold text-sm shadow-md"
         >
-          L
+          LB
         </div>
         <span
           class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
@@ -343,13 +368,13 @@
         }}
       ></div>
       <aside
-        class="md:hidden fixed inset-y-0 left-0 w-64 bg-[#EAE4BD] border-r border-orange-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
+        class="md:hidden fixed inset-y-0 left-0 w-64 bg-orange-100 border-r border-orange-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
           ? 'translate-x-0'
           : '-translate-x-full'} print:hidden"
       >
         <!-- Copy of sidebar content for mobile -->
         <div
-          class="h-16 flex items-center justify-between px-6 border-b border-orange-200 bg-[#EAE4BD]"
+          class="h-16 flex items-center justify-between px-6 border-b border-orange-200 bg-orange-100"
         >
           <span
             class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
@@ -373,7 +398,7 @@
             ></button
           >
         </div>
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-[#EAE4BD]">
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-orange-100">
           <a
             href="/dashboard"
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
@@ -433,9 +458,7 @@
                 : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
             >
               <svg
-                class="w-5 h-5 {page.url.pathname.includes(
-                  '/typing-monitoring',
-                )
+                class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
                   ? 'text-orange-600'
                   : 'text-orange-400'}"
                 fill="none"
@@ -527,6 +550,31 @@
             </a>
           {/if}
 
+          <a
+            href="/dashboard/quizzes"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/quizzes',
+            )
+              ? 'bg-white/80 text-orange-900 border border-orange-300'
+              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+          >
+            <svg
+              class="w-5 h-5 {page.url.pathname.includes('/quizzes')
+                ? 'text-orange-600'
+                : 'text-orange-400'}"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path></svg
+            >
+            Kuis & Nilai
+          </a>
+
           <div class="pt-4 mt-2 border-t border-orange-200">
             <a
               href="/"
@@ -548,6 +596,45 @@
             </a>
           </div>
         </nav>
+
+        <!-- User & Logout (Mobile) -->
+        <div class="p-4 border-t border-orange-200 bg-orange-100">
+          <div class="flex items-center gap-3 mb-4 px-2">
+            <div
+              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm flex-shrink-0"
+            >
+              {user.username ? user.username.charAt(0).toUpperCase() : "U"}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-bold text-orange-950 truncate m-0">
+                {user.username}
+              </p>
+              <p
+                class="text-xs font-medium text-orange-800 truncate capitalize m-0 mt-0.5"
+              >
+                {user.role}
+              </p>
+            </div>
+          </div>
+          <button
+            onclick={handleLogout}
+            class="w-full flex items-center justify-center gap-2 px-4 py-2.5 text-sm font-medium text-red-600 bg-white border border-transparent hover:bg-red-50 hover:text-red-700 rounded-xl transition-all shadow-sm cursor-pointer"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+              ></path></svg
+            >
+            Keluar Akun
+          </button>
+        </div>
       </aside>
     {/if}
 

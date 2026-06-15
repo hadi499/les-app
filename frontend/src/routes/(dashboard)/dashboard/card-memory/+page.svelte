@@ -215,7 +215,7 @@
 
 <div class="min-h-screen bg-transparent text-orange-950">
   <header
-    class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/60 backdrop-blur-md border-b border-orange-200 px-6 md:px-10 py-3 z-40 transition-all"
+    class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
   >
     <div
       class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap"
@@ -319,7 +319,7 @@
                   d="M12 4v16m8-8H4"
                 />
               </svg>
-              {showForm ? "Tutup Form" : "Tambah Kartu"}
+              {showForm ? "Tutup Form" : "Kartu"}
             </button>
             <button
               onclick={() => {
@@ -513,7 +513,8 @@
                   <td class="px-4 py-3 font-semibold text-orange-900 text-md"
                     >{card.title}</td
                   >
-                  <td class="px-4 py-3 text-orange-800">{card.category || "-"}</td
+                  <td class="px-4 py-3 text-orange-800"
+                    >{card.category || "-"}</td
                   >
                   <td class="px-4 py-3">
                     <span

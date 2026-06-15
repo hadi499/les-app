@@ -58,24 +58,27 @@
 
 <!-- Page wrapper -->
 <div
-  class="relative min-h-screen bg-[#191f52] flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-zinc-800 selection:text-white"
+  class="relative min-h-screen bg-orange-100 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
 >
-  <!-- Decorative blobs (dark theme adapted) -->
-  <div
-    class="pointer-events-none absolute -top-24 -right-20 w-96 h-96 rounded-full bg-indigo-500 opacity-20 blur-[100px] animate-blob-1"
-    aria-hidden="true"
-  ></div>
-  <div
-    class="pointer-events-none absolute -bottom-16 -left-16 w-72 h-72 rounded-full bg-blue-500 opacity-20 blur-[100px] animate-blob-2"
-    aria-hidden="true"
-  ></div>
+  <!-- Background Ambient -->
+  <div class="absolute inset-0 z-0 pointer-events-none fixed">
+    <div
+      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
+    ></div>
+    <div
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
+    ></div>
+    <div
+      class="absolute inset-0 bg-[linear-gradient(to_right,#fbbf24_1px,transparent_1px),linear-gradient(to_bottom,#fbbf24_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-20"
+    ></div>
+  </div>
 
   <!-- Content wrapper -->
   <main class="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
     <!-- Header -->
     <div class="flex flex-col items-center gap-2 text-center">
       <div
-        class="w-13 h-13 bg-zinc-900 border border-zinc-700 text-white rounded-2xl flex items-center justify-center shadow-lg mb-1"
+        class="w-13 h-13 bg-white border border-orange-200 text-orange-600 rounded-2xl flex items-center justify-center shadow-sm mb-1"
         aria-hidden="true"
       >
         <svg
@@ -94,24 +97,24 @@
         </svg>
       </div>
       <h1
-        class="text-2xl font-semibold tracking-tight text-slate-200 drop-shadow-sm"
+        class="text-2xl font-bold tracking-tight text-orange-950 drop-shadow-sm"
       >
         Selamat datang
       </h1>
-      <p class="text-sm text-blue-200 font-light">
+      <p class="text-sm text-orange-800 font-medium">
         Masuk untuk melanjutkan ke portal belajar
       </p>
     </div>
 
     <!-- Card -->
     <div
-      class="w-full bg-zinc-900/50 backdrop-blur-md rounded-2xl border border-zinc-700 shadow-xl shadow-black/50 p-8"
+      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-xl shadow-orange-900/5 p-8"
     >
       <form onsubmit={handleLogin} novalidate class="flex flex-col gap-4">
         <!-- Error -->
         {#if errorMsg}
           <div
-            class="flex items-start gap-2.5 bg-red-900/50 border border-red-700 text-red-200 rounded-xl px-3.5 py-3 text-sm leading-snug"
+            class="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-800 rounded-xl px-3.5 py-3 text-sm leading-snug"
             role="alert"
           >
             <svg
@@ -139,7 +142,7 @@
         <div class="flex flex-col gap-1.5">
           <label
             for="username"
-            class="text-xs font-medium text-blue-100 tracking-wide uppercase"
+            class="text-xs font-bold text-orange-800 tracking-wide uppercase"
           >
             Username
           </label>
@@ -150,7 +153,7 @@
             required
             bind:value={username}
             placeholder="Masukkan username Anda"
-            class="w-full px-3.5 py-2.5 text-sm text-white bg-zinc-800/80 border border-zinc-600 rounded-xl outline-none placeholder:text-zinc-500 focus:border-indigo-400 focus:bg-zinc-800 focus:ring-2 focus:ring-indigo-500/50 transition-all"
+            class="w-full px-3.5 py-2.5 text-sm text-orange-950 bg-white/80 border border-orange-200 rounded-xl outline-none placeholder:text-orange-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/50 transition-all"
           />
         </div>
 
@@ -158,7 +161,7 @@
         <div class="flex flex-col gap-1.5">
           <label
             for="password"
-            class="text-xs font-medium text-blue-100 tracking-wide uppercase"
+            class="text-xs font-bold text-orange-800 tracking-wide uppercase"
           >
             Password
           </label>
@@ -170,31 +173,15 @@
             bind:value={password}
             placeholder="••••••••"
             autocomplete="current-password"
-            class="w-full px-3.5 py-2.5 text-sm text-white bg-zinc-800/80 border border-zinc-600 rounded-xl outline-none placeholder:text-zinc-500 focus:border-indigo-400 focus:bg-zinc-800 focus:ring-2 focus:ring-indigo-500/50 transition-all"
+            class="w-full px-3.5 py-2.5 text-sm text-orange-950 bg-white/80 border border-orange-200 rounded-xl outline-none placeholder:text-orange-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/50 transition-all"
           />
-        </div>
-
-        <!-- Remember me -->
-        <div class="flex items-center gap-2">
-          <input
-            id="remember-me"
-            name="remember-me"
-            type="checkbox"
-            class="w-3.5 h-3.5 accent-indigo-500 cursor-pointer border-zinc-600 bg-zinc-800"
-          />
-          <label
-            for="remember-me"
-            class="text-xs text-blue-200 cursor-pointer select-none"
-          >
-            Ingat saya
-          </label>
         </div>
 
         <!-- Submit -->
         <button
           type="submit"
           disabled={isLoading}
-          class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 text-white text-sm font-medium rounded-xl border border-indigo-500 hover:bg-indigo-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
+          class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white text-sm font-bold rounded-xl border border-orange-500 hover:bg-orange-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
         >
           {#if isLoading}
             <span
@@ -209,11 +196,11 @@
       </form>
 
       <!-- Register link -->
-      <p class="mt-5 text-center text-xs text-blue-300 font-light">
+      <p class="mt-5 text-center text-xs text-orange-800 font-medium">
         Belum punya akun?
         <a
           href="/register"
-          class="text-indigo-400 font-medium hover:text-indigo-300 hover:underline transition-colors"
+          class="text-orange-600 font-bold hover:text-orange-500 hover:underline transition-colors"
         >
           Daftar sekarang
         </a>
@@ -223,7 +210,7 @@
     <!-- Back link -->
     <a
       href="/"
-      class="group flex items-center gap-1.5 text-sm text-zinc-400 hover:text-white transition-colors"
+      class="group flex items-center gap-1.5 text-sm text-orange-700 hover:text-orange-900 font-medium transition-colors"
     >
       <svg
         class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
@@ -241,38 +228,29 @@
       Kembali ke Beranda
     </a>
   </main>
+
+  <!-- Noise Overlay for texture -->
+  <div
+    class="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-screen"
+    style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
+  ></div>
 </div>
 
 <style>
-  @keyframes blob-drift-1 {
-    from {
-      transform: translate(0, 0) scale(1);
-    }
-    to {
-      transform: translate(24px, 18px) scale(1.06);
-    }
-  }
-  @keyframes blob-drift-2 {
-    from {
-      transform: translate(0, 0) scale(1);
-    }
-    to {
-      transform: translate(-20px, -14px) scale(1.04);
-    }
-  }
-
-  .animate-blob-1 {
-    animation: blob-drift-1 12s ease-in-out infinite alternate;
-  }
-  .animate-blob-2 {
-    animation: blob-drift-2 16s ease-in-out infinite alternate;
-  }
-
-  /* Custom w-13 h-13 (52px) not in default Tailwind scale */
   .w-13 {
     width: 3.25rem;
   }
   .h-13 {
     height: 3.25rem;
+  }
+
+  /* Override browser autofill styles */
+  input:-webkit-autofill,
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
+  input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 30px white inset !important;
+    -webkit-text-fill-color: #431407 !important; /* text-orange-950 */
+    border-radius: 0.75rem; /* rounded-xl */
   }
 </style>

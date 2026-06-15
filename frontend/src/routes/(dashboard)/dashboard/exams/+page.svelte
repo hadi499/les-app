@@ -2,7 +2,16 @@
   import { onMount } from "svelte";
   import Chart from "chart.js/auto";
 
-  type Exam = { id: number; user_id: number; exam_date: string; exam_name: string; subject_id: number; score: number; user?: { username: string }; subject?: { name: string } };
+  type Exam = {
+    id: number;
+    user_id: number;
+    exam_date: string;
+    exam_name: string;
+    subject_id: number;
+    score: number;
+    user?: { username: string };
+    subject?: { name: string };
+  };
   type User = { id: number; username: string; role?: string };
   type Subject = { id: number; name: string };
 
@@ -105,7 +114,7 @@
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data murid");
-      const data = await res.json() as { users: User[] };
+      const data = (await res.json()) as { users: User[] };
       users = data.users.filter((u) => u.role === "student") || [];
     } catch (e) {
       console.error(e);
@@ -234,7 +243,9 @@
     const dayNum = date.getUTCDay() || 7;
     date.setUTCDate(date.getUTCDate() + 4 - dayNum);
     const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-    return Math.ceil(((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7);
+    return Math.ceil(
+      ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+    );
   }
 
   function getTimeframeLabel(dateStr: string, timeframe: string) {
@@ -262,10 +273,13 @@
     );
 
     // Sort by date ascending (base sort)
-    userExams.sort((a, b) => new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime());
+    userExams.sort(
+      (a, b) =>
+        new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime(),
+    );
 
     // Group by subject.name
-    const subjectsMap: Record<string, {x: string, y: number}[]> = {};
+    const subjectsMap: Record<string, { x: string; y: number }[]> = {};
     const datesSet = new Set<string>();
     const labelSortValue: Record<string, number> = {};
 
@@ -327,14 +341,14 @@
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { 
-            labels: { 
-              color: "#431407", 
+          legend: {
+            labels: {
+              color: "#431407",
               font: { weight: "bold" },
               usePointStyle: true,
-              pointStyle: 'circle',
-              padding: 20
-            } 
+              pointStyle: "circle",
+              padding: 20,
+            },
           },
         },
         scales: {
@@ -388,7 +402,7 @@
     </div>
     <button
       onclick={openAddModal}
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-400 hover:bg-indigo-300 text-orange-950 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-orange-950 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
         ><path
@@ -398,7 +412,7 @@
           d="M12 4v16m8-8H4"
         ></path></svg
       >
-      Tambah Nilai
+      Nilai Ujian
     </button>
   </div>
 

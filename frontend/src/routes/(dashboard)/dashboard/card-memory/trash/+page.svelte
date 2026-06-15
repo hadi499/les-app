@@ -72,7 +72,9 @@
 </svelte:head>
 
 <div class="min-h-screen bg-transparent text-orange-950">
-  <header class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md border-b border-orange-200 px-6 md:px-10 py-3 z-40 transition-all">
+  <header
+    class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
+  >
     <div
       class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap"
     >
@@ -97,14 +99,14 @@
       </div>
 
       <div class="flex items-center gap-2 flex-wrap">
-      {#if trashCards.length > 0}
-        <button
-          onclick={() => (showEmptyConfirm = true)}
-          class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
-        >
-          Kosongkan Sampah
-        </button>
-      {/if}
+        {#if trashCards.length > 0}
+          <button
+            onclick={() => (showEmptyConfirm = true)}
+            class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
+          >
+            Kosongkan Sampah
+          </button>
+        {/if}
       </div>
     </div>
   </header>
@@ -113,7 +115,9 @@
     {#if loading}
       <div class="text-center py-12 text-orange-700">Memuat...</div>
     {:else if error}
-      <div class="text-center py-12 bg-white/80 rounded-xl border border-red-300">
+      <div
+        class="text-center py-12 bg-white/80 rounded-xl border border-red-300"
+      >
         <p class="text-red-600 mb-3">{error}</p>
         <button
           onclick={loadTrash}
@@ -122,7 +126,9 @@
         >
       </div>
     {:else if trashCards.length === 0}
-      <div class="text-center py-12 bg-white/80 rounded-xl border border-orange-200">
+      <div
+        class="text-center py-12 bg-white/80 rounded-xl border border-orange-200"
+      >
         <p class="text-orange-700">Tempat sampah kosong</p>
       </div>
     {:else}
@@ -200,7 +206,9 @@
             "{forceCard.title}"
           </p>
         {/if}
-        <p class="text-sm text-orange-800 mt-1">Kartu tidak bisa dikembalikan.</p>
+        <p class="text-sm text-orange-800 mt-1">
+          Kartu tidak bisa dikembalikan.
+        </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
         <button
@@ -258,4 +266,3 @@
     </div>
   </Modal>
 </div>
-

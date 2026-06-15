@@ -10,10 +10,12 @@
   const showNavbar = $derived(() => {
     const path = page.url?.pathname || "/";
     // Hide navbar in dashboard, login, register, and select-user
-    if (path.startsWith('/dashboard') || 
-        path.startsWith('/login') || 
-        path.startsWith('/register') || 
-        path.includes('select-user')) {
+    if (
+      path.startsWith("/dashboard") ||
+      path.startsWith("/login") ||
+      path.startsWith("/register") ||
+      path.includes("select-user")
+    ) {
       return false;
     }
     return true;

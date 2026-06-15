@@ -100,4 +100,29 @@ func SetupRoutes(r *gin.Engine) {
 		subjects.PUT("/:id", controllers.UpdateSubject)
 		subjects.DELETE("/:id", controllers.DeleteSubject)
 	}
+
+	// Quizzes API routes
+	quizzes := r.Group("/api/quizzes")
+	quizzes.Use(middleware.AuthMiddleware())
+	{
+		quizzes.GET("", controllers.GetQuizzes)
+		quizzes.GET("/:id", controllers.GetQuizByID)
+
+		teacherQuizzes := quizzes.Group("")
+		teacherQuizzes.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherQuizzes.POST("", controllers.CreateQuiz)
+			teacherQuizzes.PUT("/:id", controllers.UpdateQuiz)
+			teacherQuizzes.DELETE("/:id", controllers.DeleteQuiz)
+			teacherQuizzes.GET("/scores", controllers.GetQuizScores)
+		}
+	}
+
+	// Scores API routes (User submission)
+	scores := r.Group("/api/scores")
+	scores.Use(middleware.AuthMiddleware())
+	{
+		scores.POST("/quizzes", controllers.SubmitQuizScore)
+		scores.GET("/quizzes", controllers.GetMyQuizScores)
+	}
 }

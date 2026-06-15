@@ -78,7 +78,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
+  class="min-h-screen bg-orange-100 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed print:hidden">
@@ -110,9 +110,9 @@
         </span>
       </div>
       <h1
-        class="text-4xl md:text-5xl font-bold tracking-[0.1em] text-orange-950 uppercase drop-shadow-sm"
+        class="text-3xl font-bold tracking-[0.1em] text-orange-950 uppercase drop-shadow-sm"
       >
-        Cetak Kode
+        Cetak Kode Programming
       </h1>
       <p class="text-xs tracking-[0.1em] text-orange-800 font-medium uppercase">
         Paste script code Anda di bawah, lalu klik "Cetak" untuk mem-print
