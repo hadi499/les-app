@@ -288,7 +288,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen flex flex-col bg-orange-100 text-slate-200 overflow-hidden font-sans"
+  class="min-h-screen flex flex-col bg-orange-50 text-slate-200 overflow-hidden font-sans"
 >
   <header
     class="flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-6 gap-2 md:gap-4 relative z-10"
@@ -336,7 +336,7 @@
     class="flex-1 relative w-full max-w-[900px] mx-auto px-4 md:px-8 my-4 md:my-8 z-10"
   >
     <div
-      class="relative w-full h-[55vh] md:h-[calc(60vh+50px)] bg-[#EAE4BD]/80 border border-orange-300 rounded-2xl overflow-hidden shadow-2xl shadow-black/50 backdrop-blur-sm"
+      class="relative w-full h-[55vh] md:h-[calc(60vh+50px)] bg-orange-950/40 border border-orange-300 rounded-2xl overflow-hidden shadow-2xl shadow-black/50 backdrop-blur-sm"
     >
       {#if gameState === "ready"}
         <div
@@ -344,11 +344,11 @@
         >
           <div class="text-center max-w-[400px] px-4">
             <h2
-              class="text-xl md:text-3xl font-bold mb-2 text-orange-700 drop-shadow-md"
+              class="text-xl md:text-3xl font-bold mb-2 text-orange-500 drop-shadow-md"
             >
               Siap Bermain?
             </h2>
-            <p class="text-orange-600 text-xs md:text-sm mb-6">
+            <p class="text-orange-400 text-xs md:text-sm mb-6">
               Ketik huruf yang melayang sebelum menyentuh garis atas!
             </p>
             <div
@@ -437,7 +437,7 @@
       ></div>
       {#each letters as letter (letter.id)}
         <div
-          class="absolute text-2xl md:text-4xl font-black text-amber-600 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)] -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0"
+          class="absolute text-2xl md:text-4xl font-black text-blue-600 drop-shadow-[0_0_15px_rgba(251,191,36,0.6)] -translate-x-1/2 -translate-y-1/2 select-none pointer-events-none z-0"
           style="left: {letter.x}%; top: {letter.y}%"
         >
           {letter.char.toUpperCase()}

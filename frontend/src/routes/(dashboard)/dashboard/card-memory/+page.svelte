@@ -9,7 +9,6 @@
   import CardItem from "$lib/components/CardItem.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { trashCount } from "$lib/stores/trash-count.svelte";
-  import { renderMathContent } from "$lib/extensions/math";
 
   let showForm = $state(false);
   let isTeacher = $state(false);
@@ -262,7 +261,7 @@
             type="text"
             bind:value={searchQuery}
             placeholder="Cari kartu..."
-            class="px-4 py-1.5 pr-8 text-sm bg-transparent text-orange-950 border border-orange-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-56 transition-all"
+            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-orange-950 border border-orange-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-56 transition-all"
             onkeydown={(e) => {
               if (e.key === "Enter") applySearch();
             }}
@@ -326,7 +325,7 @@
                 editingCard = null;
                 showImageForm = !showImageForm;
               }}
-              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-orange-200 text-orange-900 hover:bg-transparent text-orange-950 font-medium transition-all shadow-sm cursor-pointer"
+              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all shadow-sm cursor-pointer"
             >
               <svg
                 class="w-4 h-4"
@@ -708,7 +707,7 @@
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (deleteCardId = null)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-orange-300 hover:bg-transparent text-orange-950 cursor-pointer"
           >Batal</button
         >
         <button
@@ -753,7 +752,7 @@
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (showBulkDeleteConfirm = false)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-orange-300 hover:bg-transparent text-orange-950 cursor-pointer"
           >Batal</button
         >
         <button

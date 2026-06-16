@@ -208,7 +208,7 @@
 
 {#if lesson}
   <div
-    class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-orange-100"
+    class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-orange-50"
   >
     <header
       class="flex flex-col sm:flex-row items-center justify-between p-4 sm:px-8 gap-3 sm:gap-0"

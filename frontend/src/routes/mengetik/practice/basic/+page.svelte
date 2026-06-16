@@ -7,7 +7,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-100 text-orange-950 selection:bg-white selection:text-orange-900"
+  class="min-h-screen bg-orange-50 text-orange-950 selection:bg-white selection:text-orange-900"
 >
   <main class="max-w-4xl mx-auto p-4 sm:p-8">
     <QuickPractice />

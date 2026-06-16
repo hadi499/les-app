@@ -60,7 +60,7 @@
   </div>
 {:else}
   <div
-    class="min-h-screen bg-orange-100 flex selection:bg-orange-200 selection:text-orange-900 font-sans text-orange-950"
+    class="min-h-screen bg-orange-50 flex selection:bg-orange-200 selection:text-orange-900 font-sans text-orange-950"
   >
     <!-- Sidebar (Desktop) -->
     <aside

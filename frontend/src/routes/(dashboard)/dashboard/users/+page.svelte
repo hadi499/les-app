@@ -7,6 +7,10 @@
   let isLoading = $state(true);
   let errorMsg = $state('');
 
+  let showDeleteModal = $state(false);
+  let userToDelete: { id: number; username: string } | null = $state(null);
+  let isDeleting = $state(false);
+
   async function fetchUsers() {
     isLoading = true;
     errorMsg = '';
@@ -35,13 +39,17 @@
     fetchUsers();
   });
 
-  async function handleDelete(userId: number, username: string) {
-    if (!confirm(`Hapus permanen user "${username}" beserta seluruh riwayat belajarnya? Tindakan ini tidak dapat dibatalkan.`)) {
-      return;
-    }
+  function promptDelete(userId: number, username: string) {
+    userToDelete = { id: userId, username };
+    showDeleteModal = true;
+  }
 
+  async function confirmDelete() {
+    if (!userToDelete) return;
+
+    isDeleting = true;
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${userId}`, {
+      const res = await fetch(`http://localhost:8080/api/users/${userToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include'
       });
@@ -53,11 +61,19 @@
         return;
       }
       
-      alert('User berhasil dihapus');
+      showDeleteModal = false;
+      userToDelete = null;
       fetchUsers();
     } catch(e) {
       alert('Terjadi kesalahan: ' + (e instanceof Error ? e.message : String(e)));
+    } finally {
+      isDeleting = false;
     }
+  }
+
+  function cancelDelete() {
+    showDeleteModal = false;
+    userToDelete = null;
   }
 </script>
 
@@ -104,7 +120,7 @@
                 </td>
                 <td class="py-4 px-6 text-right">
                   <button 
-                    onclick={() => handleDelete(u.id, u.username)}
+                    onclick={() => promptDelete(u.id, u.username)}
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
                   >
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
@@ -120,6 +136,39 @@
             {/if}
           </tbody>
         </table>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Delete Confirmation Modal -->
+  {#if showDeleteModal && userToDelete}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <!-- animate-in and fade-in handled here or by external css, but keeping simple inline classes -->
+      <div class="bg-white/90 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-orange-200 transform transition-all">
+        <h3 class="text-xl font-bold text-orange-950 mb-2">Konfirmasi Hapus</h3>
+        <p class="text-orange-800 mb-6 text-sm">
+          Hapus permanen user <span class="font-bold text-orange-950">"{userToDelete.username}"</span> beserta seluruh riwayat belajarnya?<br/>
+          <span class="text-red-500 font-medium block mt-1">Tindakan ini tidak dapat dibatalkan.</span>
+        </p>
+        <div class="flex justify-end gap-3">
+          <button 
+            onclick={cancelDelete}
+            disabled={isDeleting}
+            class="px-4 py-2 text-sm font-medium text-orange-900 bg-orange-100 hover:bg-orange-200 rounded-xl transition-colors disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button 
+            onclick={confirmDelete}
+            disabled={isDeleting}
+            class="px-4 py-2 text-sm font-medium text-white bg-red-500 hover:bg-red-600 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {#if isDeleting}
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            {/if}
+            Ya, Hapus
+          </button>
+        </div>
       </div>
     </div>
   {/if}

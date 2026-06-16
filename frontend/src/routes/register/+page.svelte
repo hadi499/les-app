@@ -73,7 +73,7 @@
 
 <!-- Page wrapper -->
 <div
-  class="relative min-h-screen bg-orange-100 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
+  class="relative min-h-screen bg-orange-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
   style="color-scheme: light;"
 >
   <!-- Background Ambient -->
@@ -124,7 +124,7 @@
 
     <!-- Card -->
     <div
-      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-xl shadow-orange-900/5 p-8"
+      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-lg p-8"
     >
       <form onsubmit={handleRegister} novalidate class="flex flex-col gap-4">
         <!-- Error -->
@@ -307,8 +307,8 @@
 
   /* Override browser autofill styles */
   input:-webkit-autofill,
-  input:-webkit-autofill:hover, 
-  input:-webkit-autofill:focus, 
+  input:-webkit-autofill:hover,
+  input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
     -webkit-text-fill-color: #431407 !important; /* text-orange-950 */

@@ -31,16 +31,18 @@
 
   async function handleLogout() {
     try {
+      isDropdownOpen = false;
+      authChecked = false; // Sembunyikan UI auth untuk mencegah efek berkedip
       await fetch("http://localhost:8080/api/auth/logout", {
         method: "POST",
         credentials: "include",
       });
       isAuthenticated = false;
       user = null;
-      isDropdownOpen = false;
       window.location.href = "/"; // redirect to home after logout
     } catch (e) {
       console.error(e);
+      authChecked = true;
     }
   }
 

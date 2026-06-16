@@ -58,7 +58,7 @@
 
 <!-- Page wrapper -->
 <div
-  class="relative min-h-screen bg-orange-100 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
+  class="relative min-h-screen bg-orange-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
@@ -108,7 +108,7 @@
 
     <!-- Card -->
     <div
-      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-xl shadow-orange-900/5 p-8"
+      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-lg p-8"
     >
       <form onsubmit={handleLogin} novalidate class="flex flex-col gap-4">
         <!-- Error -->

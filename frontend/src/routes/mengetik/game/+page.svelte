@@ -21,7 +21,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-100 p-4 sm:p-8 text-orange-950 font-sans selection:bg-white selection:text-orange-900"
+  class="min-h-screen bg-orange-50 p-4 sm:p-8 text-orange-950 font-sans selection:bg-white selection:text-orange-900"
 >
   <div class="max-w-5xl mx-auto relative z-10">
     <header class="text-center mb-10 sm:mb-16">
@@ -42,7 +42,7 @@
         onclick={() => selectMode("left")}
       >
         <div
-          class="text-5xl sm:text-6xl mb-4 group-hover:scale-110 transition-transform drop-shadow-sm"
+          class="text-5xl sm:text-6xl mb-4 group-hover:scale-110 transition-transform drop-shadow-md"
         >
           👈
         </div>
