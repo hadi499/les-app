@@ -632,7 +632,7 @@
                     onclick={() => goToPage(i + 1)}
                     class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors {currentPage ===
                     i + 1
-                      ? 'bg-indigo-600 text-orange-950'
+                      ? 'bg-indigo-600 text-orange-100'
                       : 'text-orange-800 hover:bg-white hover:text-orange-950'}"
                   >
                     {i + 1}
