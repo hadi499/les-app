@@ -17,7 +17,7 @@ func Connect() {
 	dbPassword := os.Getenv("DB_PASSWORD")
 
 	// 3. Susun string DSN, gunakan %s untuk tempat masuknya dbPassword
-	dsn := fmt.Sprintf("host=localhost user=postgres password=%s dbname=lesblg_db port=5432 sslmode=disable TimeZone=Asia/Jakarta", dbPassword)
+	dsn := fmt.Sprintf("host=localhost user=hadi password=%s dbname=les_db port=5432 sslmode=disable TimeZone=Asia/Jakarta", dbPassword)
 
 	// 4. Lakukan koneksi ke database
 	var err error
