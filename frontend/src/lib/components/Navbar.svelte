@@ -108,6 +108,15 @@
             : 'border-transparent text-orange-950 hover:text-white/90'}"
           >Kuis</a
         >
+        <a
+          href="/berhitung"
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath.startsWith(
+            '/berhitung',
+          )
+            ? 'border-white text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-white/90'}"
+          >Berhitung</a
+        >
 
         {#if !authChecked}
           <div class="ml-4 w-10 h-10"></div>
@@ -256,6 +265,11 @@
           onclick={closeMobileMenu}
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/quiz') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
         >Kuis</a>
+        <a
+          href="/berhitung"
+          onclick={closeMobileMenu}
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/berhitung') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+        >Berhitung</a>
       </div>
       {#if isAuthenticated}
         <div class="pt-4 pb-3 border-t border-orange-200">
