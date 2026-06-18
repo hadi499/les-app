@@ -98,7 +98,7 @@
 
   async function fetchExams() {
     try {
-      const res = await fetch("http://localhost:8080/api/exams", {
+      const res = await fetch(`/api/exams`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data ujian");
@@ -110,7 +110,7 @@
 
   async function fetchUsers() {
     try {
-      const res = await fetch("http://localhost:8080/api/users", {
+      const res = await fetch(`/api/users`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data murid");
@@ -123,7 +123,7 @@
 
   async function fetchSubjects() {
     try {
-      const res = await fetch("http://localhost:8080/api/subjects", {
+      const res = await fetch(`/api/subjects`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data mapel");
@@ -186,11 +186,11 @@
     };
 
     try {
-      let url = "http://localhost:8080/api/exams";
+      let url = `/api/exams`;
       let method = "POST";
 
       if (isEditing) {
-        url = `http://localhost:8080/api/exams/${currentExamId}`;
+        url = `/api/exams/${currentExamId}`;
         method = "PUT";
       }
 
@@ -217,7 +217,7 @@
     if (!confirm("Apakah Anda yakin ingin menghapus nilai ini?")) return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/exams/${id}`, {
+      const res = await fetch(`/api/exams/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -388,7 +388,7 @@
 
 <div class="animate-in fade-in duration-500 max-w-7xl mx-auto space-y-6">
   <div
-    class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8"
+    class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8"
   >
     <div>
       <h1
@@ -442,7 +442,7 @@
     </div>
   {:else}
     <!-- Tabs Header -->
-    <div class="flex gap-6 border-b border-orange-200 pb-0">
+    <div class="flex gap-4 sm:gap-6 border-b border-orange-200 pb-0 overflow-x-auto whitespace-nowrap px-1">
       <button
         onclick={() => (activeTab = "table")}
         class="pb-3 px-1 font-medium transition-colors {activeTab === 'table'
@@ -462,8 +462,8 @@
       <div
         class="bg-white/60 backdrop-blur-md rounded-3xl border border-orange-200 shadow-lg shadow-orange-900/10 overflow-hidden"
       >
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]">
             <thead>
               <tr class="bg-white/40 border-b border-orange-200">
                 <th class="py-4 px-6 align-bottom">
@@ -595,9 +595,9 @@
         <!-- Pagination Controls -->
         {#if totalPages > 1}
           <div
-            class="px-6 py-4 border-t border-orange-200 flex items-center justify-between"
+            class="px-4 sm:px-6 py-4 border-t border-orange-200 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
-            <div class="text-sm text-orange-800">
+            <div class="text-sm text-orange-800 text-center sm:text-left">
               Menampilkan <span class="font-medium text-orange-950"
                 >{filteredExams.length > 0
                   ? (currentPage - 1) * itemsPerPage + 1
@@ -626,7 +626,7 @@
               >
                 Sebelumnya
               </button>
-              <div class="flex items-center gap-1 px-2">
+              <div class="flex items-center gap-1 px-2 flex-wrap justify-center">
                 {#each Array(totalPages) as _, i}
                   <button
                     onclick={() => goToPage(i + 1)}
@@ -719,10 +719,10 @@
       onclick={closeModal}
     ></div>
     <div
-      class="relative bg-[#EAE4BD] border border-orange-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+      class="relative bg-[#EAE4BD] border border-orange-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
     >
       <div
-        class="p-6 border-b border-orange-200 flex justify-between items-center"
+        class="p-4 sm:p-6 border-b border-orange-200 flex justify-between items-center"
       >
         <h3 class="text-xl font-bold text-orange-950">
           {isEditing ? "Edit Nilai Ujian" : "Tambah Nilai Ujian"}
@@ -746,7 +746,7 @@
         </button>
       </div>
 
-      <form onsubmit={saveExam} class="p-6 space-y-4">
+      <form onsubmit={saveExam} class="p-4 sm:p-6 space-y-4 overflow-y-auto">
         <div>
           <label
             class="block text-sm font-medium text-orange-800 mb-1.5"

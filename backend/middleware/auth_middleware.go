@@ -52,10 +52,17 @@ func AuthMiddleware() gin.HandlerFunc {
 			return
 		}
 
+		// Fetch user to ensure role is up to date (and handle old tokens)
+		role := claims.Role
+		var user models.User
+		if err := database.DB.Where("id = ?", claims.UserID).First(&user).Error; err == nil {
+			role = user.Role
+		}
+
 		// simpan ke context
 		c.Set("user_id", claims.UserID)
 		c.Set("username", claims.Username)
-		c.Set("role", claims.Role)
+		c.Set("role", role)
 
 		c.Next()
 	}

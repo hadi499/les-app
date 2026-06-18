@@ -94,7 +94,7 @@
 
   onMount(async () => {
     try {
-      const res = await fetch("http://localhost:8080/me", {
+      const res = await fetch(`/me`, {
         credentials: "include",
       });
       const data = await res.json();

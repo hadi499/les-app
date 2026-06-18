@@ -19,4 +19,17 @@ export default defineConfig({
     }),
     tailwindcss(),
   ],
+  server: {
+    host: true,
+    proxy: {
+      "/api": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+      "/me": {
+        target: "http://localhost:8080",
+        changeOrigin: true,
+      },
+    },
+  },
 });

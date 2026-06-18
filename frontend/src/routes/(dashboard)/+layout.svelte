@@ -14,7 +14,7 @@
 
   onMount(async () => {
     try {
-      const res = await fetch("http://localhost:8080/me", {
+      const res = await fetch(`/me`, {
         credentials: "include",
       });
       if (!res.ok) {
@@ -36,7 +36,7 @@
 
   async function handleLogout() {
     try {
-      await fetch("http://localhost:8080/api/auth/logout", {
+      await fetch(`/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });
@@ -50,7 +50,7 @@
 
 {#if isLoading}
   <!-- Layar Loading Sederhana -->
-  <div class="min-h-screen bg-[#EAE4BD] flex items-center justify-center">
+  <div class="min-h-screen bg-orange-100 flex items-center justify-center">
     <div class="flex flex-col items-center gap-4">
       <div
         class="w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"
@@ -401,6 +401,7 @@
         <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-orange-100">
           <a
             href="/dashboard"
+            onclick={() => (isMobileMenuOpen = false)}
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
               .url.pathname === '/dashboard'
               ? 'bg-white/80 text-orange-900 border border-orange-300'
@@ -426,6 +427,7 @@
           {#if user?.role === "teacher"}
             <a
               href="/dashboard/users"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/users',
               )
@@ -451,6 +453,7 @@
 
             <a
               href="/dashboard/typing-monitoring"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/typing-monitoring',
               )
@@ -476,6 +479,7 @@
 
             <a
               href="/dashboard/exams"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/exams',
               )
@@ -501,6 +505,7 @@
 
             <a
               href="/dashboard/subjects"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/subjects',
               )
@@ -526,6 +531,7 @@
 
             <a
               href="/dashboard/card-memory"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/card-memory',
               )
@@ -552,6 +558,7 @@
 
           <a
             href="/dashboard/quizzes"
+            onclick={() => (isMobileMenuOpen = false)}
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/quizzes',
             )
@@ -578,6 +585,7 @@
           <div class="pt-4 mt-2 border-t border-orange-200">
             <a
               href="/"
+              onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-orange-800 hover:bg-white/50 hover:text-orange-950 no-underline"
             >
               <svg

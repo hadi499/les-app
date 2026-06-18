@@ -16,14 +16,14 @@
   onMount(async () => {
     try {
       // Cek apakah user sudah login
-      const authRes = await fetch("http://localhost:8080/me", { credentials: "include" });
+      const authRes = await fetch(`/me`, { credentials: "include" });
       const authData = await authRes.json();
       if (!authData.authenticated) {
         goto("/login");
         return;
       }
 
-      const res = await fetch("http://localhost:8080/api/quizzes", {
+      const res = await fetch(`/api/quizzes`, {
         credentials: "include"
       });
       if (res.ok) {

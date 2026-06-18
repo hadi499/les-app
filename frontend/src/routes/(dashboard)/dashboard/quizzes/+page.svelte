@@ -27,7 +27,7 @@
 
   async function checkRole() {
     try {
-      const res = await fetch("http://localhost:8080/me", {
+      const res = await fetch(`/me`, {
         credentials: "include",
       });
       const data = await res.json();
@@ -47,7 +47,7 @@
 
   async function fetchQuizzes() {
     try {
-      const res = await fetch("http://localhost:8080/api/quizzes", {
+      const res = await fetch(`/api/quizzes`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -63,8 +63,8 @@
     isLoadingScores = true;
     try {
       const url = isTeacher 
-        ? "http://localhost:8080/api/quizzes/scores" 
-        : "http://localhost:8080/api/scores/quizzes";
+        ? `/api/quizzes/scores`
+        : `/api/scores/quizzes`;
       
       const res = await fetch(url, { credentials: "include" });
       if (res.ok) {
@@ -81,7 +81,7 @@
   async function deleteQuiz(id: number) {
     if (!confirm("Yakin ingin menghapus kuis ini?")) return;
     try {
-      const res = await fetch(`http://localhost:8080/api/quizzes/${id}`, {
+      const res = await fetch(`/api/quizzes/${id}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -108,7 +108,7 @@
   <title>{isTeacher ? 'Manajemen Kuis' : 'Nilai Kuis'} | Les Balongarut</title>
 </svelte:head>
 
-<div class="mb-8 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+<div class="mb-8 flex flex-col md:flex-row items-start md:justify-between md:items-end gap-4">
   <div>
     <h1 class="text-3xl font-bold text-orange-950 mb-2">Kuis</h1>
     <p class="text-orange-800">
@@ -129,7 +129,7 @@
 </div>
 
 <!-- Tabs Navigation -->
-<div class="flex gap-2 mb-6 border-b border-orange-200">
+<div class="flex gap-2 mb-6 border-b border-orange-200 overflow-x-auto whitespace-nowrap">
   <button
     class="px-6 py-3 font-semibold text-sm border-b-2 transition-colors cursor-pointer {activeTab === 'quizzes' ? 'border-orange-600 text-orange-900' : 'border-transparent text-orange-700 hover:text-orange-900'}"
     onclick={() => activeTab = 'quizzes'}
@@ -152,8 +152,8 @@
 
   {#if activeTab === "quizzes"}
     <div class="bg-white rounded-2xl shadow-sm border border-orange-200 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+      <div class="overflow-x-auto w-full">
+        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
           <thead>
             <tr class="bg-orange-50/50 border-b border-orange-200">
               <th class="px-6 py-4 text-xs font-bold text-orange-900 uppercase tracking-wider">ID</th>
@@ -224,8 +224,8 @@
       </div>
     {:else}
       <div class="bg-white rounded-2xl shadow-sm border border-orange-200 overflow-hidden">
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse">
+        <div class="overflow-x-auto w-full">
+          <table class="w-full text-left border-collapse whitespace-nowrap min-w-[500px]">
             <thead>
               <tr class="bg-orange-50/50 border-b border-orange-200">
                 <th class="px-6 py-4 text-xs font-bold text-orange-900 uppercase tracking-wider">Kuis</th>

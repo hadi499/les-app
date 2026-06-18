@@ -24,7 +24,7 @@ export const lessonHistoryStore = writable<LessonHistory[]>([]);
 
 export async function fetchAllProgress() {
     try {
-        const res = await fetch('http://localhost:8080/api/typing/progress', { credentials: 'include' });
+        const res = await fetch(`/api/typing/progress`, { credentials: 'include' });
         if (res.ok) {
             const data: LessonProgress[] = await res.json();
             const map = new Map<number, LessonProgress>();
@@ -38,7 +38,7 @@ export async function fetchAllProgress() {
 
 export async function fetchAllGameScores() {
     try {
-        const res = await fetch('http://localhost:8080/api/typing/game-scores', { credentials: 'include' });
+        const res = await fetch(`/api/typing/game-scores`, { credentials: 'include' });
         if (res.ok) {
             const data = await res.json();
             gameScores.set(data);
@@ -48,12 +48,12 @@ export async function fetchAllGameScores() {
 
 export async function fetchHistory() {
     try {
-        const resGame = await fetch('http://localhost:8080/api/typing/history/game', { credentials: 'include' });
+        const resGame = await fetch(`/api/typing/history/game`, { credentials: 'include' });
         if (resGame.ok) {
             gameHistoryStore.set(await resGame.json());
         }
         
-        const resLesson = await fetch('http://localhost:8080/api/typing/history/lesson', { credentials: 'include' });
+        const resLesson = await fetch(`/api/typing/history/lesson`, { credentials: 'include' });
         if (resLesson.ok) {
             lessonHistoryStore.set(await resLesson.json());
         }
@@ -74,7 +74,7 @@ export function getAllProgress(): LessonProgress[] {
 
 export async function saveLessonProgress(progress: LessonProgress) {
     try {
-        const res = await fetch('http://localhost:8080/api/typing/progress', {
+        const res = await fetch(`/api/typing/progress`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(progress),

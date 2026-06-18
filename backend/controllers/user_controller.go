@@ -13,8 +13,9 @@ import (
 // GetUsers returns all users. Only accessible by teachers.
 func GetUsers(c *gin.Context) {
 	// Dapatkan role dari context yang di-set oleh AuthMiddleware
-	role, exists := c.Get("role")
-	if !exists || role != "teacher" {
+	roleInter, exists := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can access this."})
 		return
 	}
@@ -31,8 +32,9 @@ func GetUsers(c *gin.Context) {
 // DeleteUser deletes a user and all their associated data (cascade manually).
 func DeleteUser(c *gin.Context) {
 	// Dapatkan role dari context
-	role, exists := c.Get("role")
-	if !exists || role != "teacher" {
+	roleInter, exists := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can perform this action."})
 		return
 	}

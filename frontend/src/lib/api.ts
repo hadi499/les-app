@@ -1,6 +1,6 @@
 import type { Card, PaginatedCards, CardQuery } from '$lib/types';
 
-const API_BASE = 'http://localhost:8080/api';
+const API_BASE = `/api`;
 
 const defaultFetchOpts = {
   credentials: 'include' as RequestCredentials

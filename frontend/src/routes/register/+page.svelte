@@ -11,7 +11,7 @@
 
   onMount(async () => {
     try {
-      const res = await fetch("http://localhost:8080/me", {
+      const res = await fetch(`/me`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -38,7 +38,7 @@
     }
 
     try {
-      const res = await fetch("http://localhost:8080/api/auth/register", {
+      const res = await fetch(`/api/auth/register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),

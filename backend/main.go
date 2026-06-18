@@ -41,11 +41,11 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://192.168.18.2:5173"}, // Alamat Svelte Anda
+		AllowOrigins:     []string{"http://localhost:5173", "http://192.168.18.2:5173", "http://127.0.0.1:5173", "http://172.27.210.181:5173"}, // Alamat Svelte Anda
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin", "Content-Type"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: true, // Wajib agar browser mengirim cookie
+		AllowCredentials: true,
 		MaxAge:           12 * time.Hour,
 	}))
 

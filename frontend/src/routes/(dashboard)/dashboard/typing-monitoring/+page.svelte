@@ -22,16 +22,16 @@
     try {
       const [resProgress, resGameScores, resLessonHistory, resGameHistory] =
         await Promise.all([
-          fetch("http://localhost:8080/api/typing/admin/progress", {
+          fetch(`/api/typing/admin/progress`, {
             credentials: "include",
           }),
-          fetch("http://localhost:8080/api/typing/admin/game-scores", {
+          fetch(`/api/typing/admin/game-scores`, {
             credentials: "include",
           }),
-          fetch("http://localhost:8080/api/typing/admin/history/lesson", {
+          fetch(`/api/typing/admin/history/lesson`, {
             credentials: "include",
           }),
-          fetch("http://localhost:8080/api/typing/admin/history/game", {
+          fetch(`/api/typing/admin/history/game`, {
             credentials: "include",
           }),
         ]);

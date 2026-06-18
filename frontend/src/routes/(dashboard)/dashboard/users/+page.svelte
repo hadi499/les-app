@@ -15,7 +15,7 @@
     isLoading = true;
     errorMsg = '';
     try {
-      const res = await fetch('http://localhost:8080/api/users', {
+      const res = await fetch(`/api/users`, {
         credentials: 'include'
       });
       if (res.status === 403) {
@@ -49,7 +49,7 @@
 
     isDeleting = true;
     try {
-      const res = await fetch(`http://localhost:8080/api/users/${userToDelete.id}`, {
+      const res = await fetch(`/api/users/${userToDelete.id}`, {
         method: 'DELETE',
         credentials: 'include'
       });

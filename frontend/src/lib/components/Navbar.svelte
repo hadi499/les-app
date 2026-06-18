@@ -12,7 +12,7 @@
 
   onMount(async () => {
     try {
-      const res = await fetch("http://localhost:8080/me", {
+      const res = await fetch(`/me`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -33,7 +33,7 @@
     try {
       isDropdownOpen = false;
       authChecked = false; // Sembunyikan UI auth untuk mencegah efek berkedip
-      await fetch("http://localhost:8080/api/auth/logout", {
+      await fetch(`/api/auth/logout`, {
         method: "POST",
         credentials: "include",
       });

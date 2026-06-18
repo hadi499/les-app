@@ -22,7 +22,7 @@
     isSubmitting = true;
 
     try {
-      const res = await fetch("http://localhost:8080/api/quizzes", {
+      const res = await fetch(`/api/quizzes`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

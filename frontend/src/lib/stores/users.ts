@@ -15,7 +15,7 @@ export function getGameHighScores(userId?: string) {
 
 export async function saveGameHighScore(userId: string, mode: 'left' | 'right' | 'both' | 'letters' | 'all', score: number) {
 	try {
-        const res = await fetch('http://localhost:8080/api/typing/game-scores', {
+        const res = await fetch(`/api/typing/game-scores`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ mode, score }),

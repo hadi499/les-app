@@ -19,7 +19,7 @@
     isLoading = true;
     errorMsg = "";
     try {
-      const res = await fetch("http://localhost:8080/api/subjects", {
+      const res = await fetch(`/api/subjects`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data mata pelajaran");
@@ -65,11 +65,11 @@
     };
 
     try {
-      let url = "http://localhost:8080/api/subjects";
+      let url = `/api/subjects`;
       let method = "POST";
 
       if (isEditing) {
-        url = `http://localhost:8080/api/subjects/${currentSubjectId}`;
+        url = `/api/subjects/${currentSubjectId}`;
         method = "PUT";
       }
 
@@ -101,7 +101,7 @@
       return;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/subjects/${id}`, {
+      const res = await fetch(`/api/subjects/${id}`, {
         method: "DELETE",
         credentials: "include",
       });

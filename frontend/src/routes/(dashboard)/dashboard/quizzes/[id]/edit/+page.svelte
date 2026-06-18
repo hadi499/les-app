@@ -16,7 +16,7 @@
 
   async function fetchQuiz() {
     try {
-      const res = await fetch(`http://localhost:8080/api/quizzes/${quizId}`, {
+      const res = await fetch(`/api/quizzes/${quizId}`, {
         credentials: "include",
       });
       if (res.ok) {
@@ -61,7 +61,7 @@
     isSubmitting = true;
 
     try {
-      const res = await fetch(`http://localhost:8080/api/quizzes/${quizId}`, {
+      const res = await fetch(`/api/quizzes/${quizId}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
