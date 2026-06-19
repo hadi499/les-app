@@ -41,7 +41,7 @@ func main() {
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "http://192.168.18.2:5173", "http://127.0.0.1:5173", "http://172.27.210.181:5173"}, // Alamat Svelte Anda
+		AllowOrigins:     []string{"http://localhost:5173", "http://192.168.18.2:5173", "http://127.0.0.1:5173", "http://172.27.210.181:5173", "http://IP_ATAU_DOMAIN_VPS_ANDA", "https://DOMAIN_ANDA.com"}, // Tambahkan IP/Domain VPS Anda di sini
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
 		ExposeHeaders:    []string{"Content-Length"},
