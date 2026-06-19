@@ -186,9 +186,7 @@
     <div
       class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
     ></div>
-    <div
-      class="absolute inset-0 bg-[linear-gradient(to_right,#fbbf24_1px,transparent_1px),linear-gradient(to_bottom,#fbbf24_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-20"
-    ></div>
+
   </div>
 
   <div class="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-6">

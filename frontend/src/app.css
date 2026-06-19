@@ -21,34 +21,3 @@
 ::-webkit-scrollbar-thumb:hover {
   background: rgba(255, 255, 255, 0.3);
 }
-
-/* Typing app base styles */
-@layer components {
-  .typing-app-wrapper {
-    @apply min-h-screen antialiased bg-orange-100;
-  }
-
-  .typing-app-wrapper h1 {
-    @apply text-4xl font-bold mb-4 text-white;
-  }
-
-  .typing-app-wrapper h2 {
-    @apply text-2xl font-semibold mb-3 text-white;
-  }
-
-  .typing-app-wrapper h3 {
-    @apply text-xl font-semibold mb-2 text-white;
-  }
-
-  .typing-app-wrapper p {
-    @apply mb-4 text-blue-200;
-  }
-
-  .typing-app-wrapper ul {
-    @apply list-disc pl-6 mb-4 text-blue-200;
-  }
-
-  .typing-app-wrapper li {
-    @apply mb-1;
-  }
-}
