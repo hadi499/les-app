@@ -78,7 +78,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-100 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
+  class="min-h-screen bg-orange-50 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed print:hidden">

@@ -49,14 +49,14 @@
   function toggleMobileMenu() {
     isMobileMenuOpen = !isMobileMenuOpen;
   }
-  
+
   function closeMobileMenu() {
     isMobileMenuOpen = false;
   }
 </script>
 
 <nav
-  class="bg-orange-400/40 shadow-md fixed top-0 w-full z-50 backdrop-blur-md subpixel-antialiased"
+  class="bg-transparent backdrop-blur-md shadow-md fixed top-0 w-full z-50 subpixel-antialiased"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
@@ -68,53 +68,53 @@
         </div>
         <a
           href="/"
-          class="font-extrabold text-xl text-orange-950 tracking-tight drop-shadow-sm no-underline hover:text-orange-100 transition-colors"
+          class="font-extrabold text-xl text-orange-950 tracking-tight no-underline hover:text-orange-100 transition-colors"
           >Les Balongarut</a
         >
       </div>
       <div class="hidden sm:ml-6 sm:flex sm:space-x-8 items-center">
         <a
           href="/"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath ===
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath ===
           '/'
-            ? 'border-white text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-white/90'}"
+            ? 'border-orange-500 text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-orange-500'}"
           >Beranda</a
         >
         <a
           href="/mengetik"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath.startsWith(
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/mengetik',
           )
-            ? 'border-white text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-white/90'}"
+            ? 'border-orange-500 text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-orange-500'}"
           >Mengetik 10 Jari</a
         >
         <a
           href="/cetak-kode"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath.startsWith(
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/cetak-kode',
           )
-            ? 'border-white text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-white/90'}"
+            ? 'border-orange-500 text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-orange-500'}"
           >Cetak Kode</a
         >
         <a
           href="/quiz"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath.startsWith(
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/quiz',
           )
-            ? 'border-white text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-white/90'}"
+            ? 'border-orange-500 text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-orange-500'}"
           >Kuis</a
         >
         <a
           href="/berhitung"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold drop-shadow-sm transition-colors no-underline {currentPath.startsWith(
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/berhitung',
           )
-            ? 'border-white text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-white/90'}"
+            ? 'border-orange-500 text-orange-950'
+            : 'border-transparent text-orange-950 hover:text-orange-500'}"
           >Berhitung</a
         >
 
@@ -228,12 +228,32 @@
         >
           <span class="sr-only">Buka menu utama</span>
           {#if !isMobileMenuOpen}
-            <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+            <svg
+              class="block h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5"
+              />
             </svg>
           {:else}
-            <svg class="block h-6 w-6" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            <svg
+              class="block h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M6 18L18 6M6 6l12 12"
+              />
             </svg>
           {/if}
         </button>
@@ -243,56 +263,92 @@
 
   <!-- Mobile menu dropdown -->
   {#if isMobileMenuOpen}
-    <div class="sm:hidden bg-white/95 backdrop-blur-md shadow-lg border-t border-orange-100 animate-in slide-in-from-top-2 duration-200">
+    <div
+      class="sm:hidden bg-white/95 shadow-lg border-t border-orange-100 animate-in slide-in-from-top-2 duration-200"
+    >
       <div class="px-2 pt-2 pb-3 space-y-1">
         <a
           href="/"
           onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath === '/' ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-        >Beranda</a>
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath ===
+          '/'
+            ? 'bg-orange-100 text-orange-900'
+            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+          >Beranda</a
+        >
         <a
           href="/mengetik"
           onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/mengetik') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-        >Mengetik 10 Jari</a>
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
+            '/mengetik',
+          )
+            ? 'bg-orange-100 text-orange-900'
+            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+          >Mengetik 10 Jari</a
+        >
         <a
           href="/cetak-kode"
           onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/cetak-kode') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-        >Cetak Kode</a>
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
+            '/cetak-kode',
+          )
+            ? 'bg-orange-100 text-orange-900'
+            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+          >Cetak Kode</a
+        >
         <a
           href="/quiz"
           onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/quiz') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-        >Kuis</a>
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
+            '/quiz',
+          )
+            ? 'bg-orange-100 text-orange-900'
+            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+          >Kuis</a
+        >
         <a
           href="/berhitung"
           onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith('/berhitung') ? 'bg-orange-100 text-orange-900' : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-        >Berhitung</a>
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
+            '/berhitung',
+          )
+            ? 'bg-orange-100 text-orange-900'
+            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+          >Berhitung</a
+        >
       </div>
       {#if isAuthenticated}
         <div class="pt-4 pb-3 border-t border-orange-200">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
-              <div class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold border border-orange-200 shadow-sm">
+              <div
+                class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold border border-orange-200 shadow-sm"
+              >
                 {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
               </div>
             </div>
             <div class="ml-3">
-              <div class="text-base font-medium leading-none text-orange-950">{user?.username}</div>
-              <div class="text-sm font-medium leading-none text-orange-800 mt-1">Masuk sebagai {user?.username}</div>
+              <div class="text-base font-medium leading-none text-orange-950">
+                {user?.username}
+              </div>
+              <div
+                class="text-sm font-medium leading-none text-orange-800 mt-1"
+              >
+                Masuk sebagai {user?.username}
+              </div>
             </div>
           </div>
           <div class="mt-3 px-2 space-y-1">
             <a
               href="/dashboard"
               class="block px-3 py-2 rounded-md text-base font-medium text-orange-800 hover:text-orange-900 hover:bg-orange-50 no-underline"
-            >Dashboard</a>
+              >Dashboard</a
+            >
             <button
               onclick={handleLogout}
               class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border-none bg-transparent cursor-pointer"
-            >Keluar Akun</button>
+              >Keluar Akun</button
+            >
           </div>
         </div>
       {/if}

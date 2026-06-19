@@ -88,7 +88,7 @@
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
             .url.pathname === '/dashboard'
             ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
         >
           <svg
             class="w-5 h-5 {page.url.pathname === '/dashboard'
@@ -114,7 +114,7 @@
               '/users',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/users')
@@ -139,7 +139,7 @@
               '/typing-monitoring',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
@@ -164,7 +164,7 @@
               '/exams',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/exams')
@@ -189,7 +189,7 @@
               '/subjects',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/subjects')
@@ -214,7 +214,7 @@
               '/card-memory',
             )
               ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/card-memory')
@@ -240,7 +240,7 @@
             '/quizzes',
           )
             ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950'}"
+            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
         >
           <svg
             class="w-5 h-5 {page.url.pathname.includes('/quizzes')
@@ -405,7 +405,7 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
               .url.pathname === '/dashboard'
               ? 'bg-white/80 text-orange-900 border border-orange-300'
-              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname === '/dashboard'
@@ -432,7 +432,7 @@
                 '/users',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/users')
@@ -458,7 +458,7 @@
                 '/typing-monitoring',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
@@ -484,7 +484,7 @@
                 '/exams',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/exams')
@@ -510,7 +510,7 @@
                 '/subjects',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/subjects')
@@ -536,7 +536,7 @@
                 '/card-memory',
               )
                 ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/card-memory')
@@ -563,7 +563,7 @@
               '/quizzes',
             )
               ? 'bg-white/80 text-orange-900 border border-orange-300'
-              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50'}"
+              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/quizzes')

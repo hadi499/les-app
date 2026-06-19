@@ -176,7 +176,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-100 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col items-center py-12 px-4 relative overflow-x-hidden pt-24"
+  class="min-h-screen bg-orange-50 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col items-center py-12 px-4 relative overflow-x-hidden pt-24"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
@@ -268,7 +268,9 @@
                 onclick={() => handleAnswer(option, optIndex)}
                 class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-orange-100 hover:border-orange-400 bg-white hover:bg-orange-50 text-orange-900 font-semibold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0"
               >
-                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 text-orange-700 font-bold flex-shrink-0">
+                <span
+                  class="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 text-orange-700 font-bold flex-shrink-0"
+                >
                   {String.fromCharCode(65 + optIndex)}
                 </span>
                 <span>{option}</span>
