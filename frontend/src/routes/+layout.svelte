@@ -1,5 +1,6 @@
 <script lang="ts">
-  import favicon from "$lib/assets/favicon.svg";
+  // import favicon from "$lib/assets/favicon.svg";
+  import favicon from "$lib/assets/lb2.png";
   import "../app.css";
   import { page } from "$app/state";
   import Navbar from "$lib/components/Navbar.svelte";

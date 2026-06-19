@@ -62,7 +62,7 @@
     <div class="flex justify-between h-16 items-center">
       <div class="flex-shrink-0 flex items-center gap-3">
         <div
-          class="w-10 h-10 bg-white rounded-xl flex items-center justify-center text-orange-600 font-extrabold text-xl"
+          class="w-10 h-10 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center justify-center text-orange-600 font-extrabold text-xl"
         >
           LB
         </div>
