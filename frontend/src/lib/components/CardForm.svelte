@@ -101,8 +101,11 @@
         {#if image}
           <button
             type="button"
-            onclick={() => { image = ""; uploadMsg = ""; }}
-            class="px-3 py-2 text-sm rounded-lg bg-red-900/30 border border-red-800/50 text-red-600 hover:bg-red-800/50 cursor-pointer whitespace-nowrap"
+            onclick={() => {
+              image = "";
+              uploadMsg = "";
+            }}
+            class="px-3 py-2 text-sm rounded-lg bg-red-50 border border-red-500 text-red-600 hover:bg-red-100 cursor-pointer whitespace-nowrap"
           >
             Batal
           </button>

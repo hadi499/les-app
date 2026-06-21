@@ -263,9 +263,7 @@
     <!-- Section 1: Image (only when present, takes 50% height) -->
     {#if card.image}
       <div
-        class="shrink-0 overflow-hidden print:hidden {contentOnly
-          ? 'hidden'
-          : ''}"
+        class="shrink-0 overflow-hidden"
         style="flex-basis: {imageBasis};"
       >
         <img

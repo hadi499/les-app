@@ -19,7 +19,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
   >
     <div
-      class="bg-orange-100 border border-orange-200 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      class="bg-orange-50 border border-orange-200 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
     >
       {#if title}
         <div
