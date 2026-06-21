@@ -23,6 +23,7 @@
 	},
 	"dependencies": {
 		"@tabler/icons-webfont": "^3.44.0",
+		"@tailwindcss/typography": "^0.5.20",
 		"@tailwindcss/vite": "^4.3.0",
 		"@tiptap/core": "^3.26.0",
 		"@tiptap/extension-hard-break": "^3.26.0",

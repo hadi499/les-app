@@ -231,7 +231,7 @@ func UploadImage(c *gin.Context) {
 		return
 	}
 
-	url := fmt.Sprintf("http://localhost:8080/uploads/%s", filename)
+	url := fmt.Sprintf("/uploads/%s", filename)
 	c.JSON(http.StatusOK, gin.H{"url": url})
 }
 
@@ -256,7 +256,7 @@ func ListImages(c *gin.Context) {
 		if ext == ".jpg" || ext == ".jpeg" || ext == ".png" || ext == ".gif" || ext == ".webp" {
 			images = append(images, ImageEntry{
 				Name: entry.Name(),
-				URL:  fmt.Sprintf("http://localhost:8080/uploads/%s", entry.Name()),
+				URL:  fmt.Sprintf("/uploads/%s", entry.Name()),
 			})
 		}
 	}

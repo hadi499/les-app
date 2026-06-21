@@ -116,7 +116,7 @@
   <main class="max-w-5xl mx-auto p-4 print:p-0 pt-24 md:pt-20 print:pt-0">
     <!-- Settings toolbar -->
     <div
-      class="mb-4 p-3 bg-white/80 rounded-xl border border-orange-200 flex items-center gap-4 flex-wrap print:hidden"
+      class="mb-4 p-3 w-fit bg-white/80 rounded-xl border border-orange-200 flex items-center gap-4 flex-wrap print:hidden"
     >
       <div class="flex items-center gap-1.5">
         <span class="text-xs text-orange-800 w-16">Gambar</span>
@@ -132,42 +132,6 @@
           onclick={() => printSettings.zoomIn()}
           class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
           >+</button
-        >
-      </div>
-      <div class="w-px h-6 bg-gray-200"></div>
-
-      <div class="flex items-center gap-1.5">
-        <span class="text-xs text-orange-800 w-16">Kategori</span>
-        <button
-          onclick={() => printSettings.headerDown()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
-          >A</button
-        >
-        <span class="text-xs font-medium text-orange-900 w-10 text-center"
-          >{headerPct}%</span
-        >
-        <button
-          onclick={() => printSettings.headerUp()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-base font-bold cursor-pointer"
-          >A</button
-        >
-      </div>
-      <div class="w-px h-6 bg-gray-200"></div>
-
-      <div class="flex items-center gap-1.5">
-        <span class="text-xs text-orange-800 w-16">Judul</span>
-        <button
-          onclick={() => printSettings.titleDown()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
-          >A</button
-        >
-        <span class="text-xs font-medium text-orange-900 w-10 text-center"
-          >{titlePct}%</span
-        >
-        <button
-          onclick={() => printSettings.titleUp()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-base font-bold cursor-pointer"
-          >A</button
         >
       </div>
       <div class="w-px h-6 bg-gray-200"></div>
@@ -232,6 +196,7 @@
                 perPage={group.size}
                 oncopy={handleCopy}
                 onremove={(c) => printQueue.removeOne(c.id)}
+                contentOnly={true}
               />
             </div>
           </div>

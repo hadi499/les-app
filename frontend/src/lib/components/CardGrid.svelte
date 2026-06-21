@@ -3,7 +3,7 @@
   import { printSettings } from '$lib/stores/print-settings.svelte';
   import CardItem from './CardItem.svelte';
 
-  let { cards, oncopy, onremove, onedit, ondelete, ontoggleprint, showqueue, perPage: perPageProp, nopaper, selectable, selectedIds, onselect }: {
+  let { cards, oncopy, onremove, onedit, ondelete, ontoggleprint, showqueue, perPage: perPageProp, nopaper, selectable, selectedIds, onselect, contentOnly }: {
     cards: Card[];
     oncopy?: (card: Card) => void;
     onremove?: (card: Card) => void;
@@ -16,6 +16,7 @@
     selectable?: boolean;
     selectedIds?: Set<string>;
     onselect?: (card: Card) => void;
+    contentOnly?: boolean;
   } = $props();
 
   let perPage = $derived(perPageProp ?? printSettings.cardsPerPage);
@@ -36,7 +37,7 @@
     <div class="card-page" class:no-paper={nopaper}>
       <div class="card-page-grid" style="grid-template-columns: repeat({cols}, 1fr); grid-template-rows: repeat({rows}, 1fr);">
         {#each page as card, idx}
-          <CardItem {card} index={pageIdx * perPage + idx} {oncopy} {onremove} {onedit} {ondelete} {ontoggleprint} showqueue={showqueue?.(card.id)} {selectable} selected={selectedIds?.has(card.id)} {onselect} />
+          <CardItem {card} index={pageIdx * perPage + idx} {oncopy} {onremove} {onedit} {ondelete} {ontoggleprint} showqueue={showqueue?.(card.id)} {selectable} selected={selectedIds?.has(card.id)} {onselect} {contentOnly} />
         {/each}
         {#each Array(perPage - page.length) as _}
           <div class="border border-dashed border-gray-200"></div>

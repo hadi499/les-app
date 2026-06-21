@@ -12,6 +12,9 @@
   let isEditing = $state(false);
   let currentSubjectId: number | null = $state(null);
 
+  let showDeleteModal = $state(false);
+  let subjectToDelete: number | null = $state(null);
+
   // Form State
   let formName = $state("");
 
@@ -92,16 +95,21 @@
     }
   }
 
-  async function deleteSubject(id: number) {
-    if (
-      !confirm(
-        "Apakah Anda yakin ingin menghapus mata pelajaran ini? Jika ada nilai yang menggunakan mata pelajaran ini, penghapusan mungkin akan gagal.",
-      )
-    )
-      return;
+  function openDeleteModal(id: number) {
+    subjectToDelete = id;
+    showDeleteModal = true;
+  }
+
+  function closeDeleteModal() {
+    showDeleteModal = false;
+    subjectToDelete = null;
+  }
+
+  async function executeDelete() {
+    if (subjectToDelete === null) return;
 
     try {
-      const res = await fetch(`/api/subjects/${id}`, {
+      const res = await fetch(`/api/subjects/${subjectToDelete}`, {
         method: "DELETE",
         credentials: "include",
       });
@@ -111,8 +119,10 @@
         throw new Error(errData.error || "Gagal menghapus data");
       }
       await fetchSubjects();
+      closeDeleteModal();
     } catch (err) {
       alert(err instanceof Error ? err.message : String(err));
+      closeDeleteModal();
     }
   }
 </script>
@@ -202,7 +212,7 @@
               Edit
             </button>
             <button
-              onclick={() => deleteSubject(subject.id)}
+              onclick={() => openDeleteModal(subject.id)}
               class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
             >
               Hapus
@@ -282,12 +292,64 @@
           </button>
           <button
             type="submit"
-            class="px-4 py-2.5 text-sm font-medium text-orange-950 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all shadow-md shadow-indigo-900/20"
+            class="px-4 py-2.5 text-sm font-medium text-orange-950 bg-indigo-100 hover:bg-indigo-200 rounded-xl transition-all shadow-md shadow-indigo-900/20"
           >
             {isEditing ? "Simpan" : "Tambahkan"}
           </button>
         </div>
       </form>
+    </div>
+  </div>
+{/if}
+
+<!-- Delete Confirmation Modal -->
+{#if showDeleteModal}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div
+      class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+      onclick={closeDeleteModal}
+    ></div>
+    <div
+      class="relative bg-[#EAE4BD] border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
+    >
+      <div
+        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-orange-950 mb-2">
+        Hapus Mata Pelajaran?
+      </h3>
+      <p class="text-sm text-orange-800 mb-6">
+        Apakah Anda yakin ingin menghapus mata pelajaran ini? Jika ada nilai
+        yang menggunakan mata pelajaran ini, penghapusan mungkin akan gagal.
+      </p>
+      <div class="flex justify-center gap-3">
+        <button
+          onclick={closeDeleteModal}
+          class="px-4 py-2.5 text-sm font-medium text-orange-900 bg-white border border-orange-300 rounded-xl hover:bg-orange-50 transition-colors"
+        >
+          Batal
+        </button>
+        <button
+          onclick={executeDelete}
+          class="px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-md shadow-red-900/20"
+        >
+          Ya, Hapus
+        </button>
+      </div>
     </div>
   </div>
 {/if}

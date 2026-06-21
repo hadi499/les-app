@@ -69,7 +69,7 @@ export async function fetchTrashCards(): Promise<{ data: Card[]; total: number }
 }
 
 export async function restoreCard(id: string): Promise<void> {
-  const res = await fetch(`${API_BASE}/cards/${id}/restore`, { ...defaultFetchOpts, method: 'POST' });
+  const res = await fetch(`${API_BASE}/cards/trash/${id}/restore`, { ...defaultFetchOpts, method: 'POST' });
   if (!res.ok) throw new Error('Failed to restore card');
 }
 

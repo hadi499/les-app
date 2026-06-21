@@ -15,6 +15,7 @@
     selectable,
     selected,
     onselect,
+    contentOnly,
   }: {
     card: Card;
     index: number;
@@ -27,6 +28,7 @@
     selectable?: boolean;
     selected?: boolean;
     onselect?: (card: Card) => void;
+    contentOnly?: boolean;
   } = $props();
 
   let zoom = $derived(printSettings.imageZoom);
@@ -200,7 +202,11 @@
 
   <!-- Header: Kelas & Kategori (hidden for image card) -->
   {#if !isImageCard}
-    <div class="text-center shrink-0 py-1.5 px-3">
+    <div
+      class="text-center shrink-0 py-1.5 px-3 print:hidden {contentOnly
+        ? 'hidden'
+        : ''}"
+    >
       <div
         class="font-semibold uppercase tracking-wider truncate text-black"
         style="font-size: {headerFont}; "
@@ -213,7 +219,9 @@
   {#if isImageCard}
     <!-- Image Card: 20% title + 80% image -->
     <div
-      class="shrink-0 px-3 py-2 text-center border-b border-gray-200 flex items-center justify-center"
+      class="shrink-0 px-3 py-2 text-center border-b border-gray-200 flex items-center justify-center print:hidden {contentOnly
+        ? 'hidden'
+        : ''}"
       style="flex-basis: 20%;"
     >
       <h3
@@ -254,7 +262,12 @@
   {:else}
     <!-- Section 1: Image (only when present, takes 50% height) -->
     {#if card.image}
-      <div class="shrink-0 overflow-hidden" style="flex-basis: {imageBasis};">
+      <div
+        class="shrink-0 overflow-hidden print:hidden {contentOnly
+          ? 'hidden'
+          : ''}"
+        style="flex-basis: {imageBasis};"
+      >
         <img
           src={card.image}
           alt={card.title}
@@ -266,7 +279,11 @@
 
     <!-- Section 2 + 3: Title + Content (fills remaining height) -->
     <div class="flex-1 flex flex-col min-h-0">
-      <div class="px-3 py-1.5 text-center shrink-0">
+      <div
+        class="px-3 py-1.5 text-center shrink-0 print:hidden {contentOnly
+          ? 'hidden'
+          : ''}"
+      >
         <h3
           class="font-bold text-black leading-tight"
           style="font-size: {titleFont}; display: -webkit-box; -webkit-line-clamp: {titleClamp}; -webkit-box-orient: vertical; overflow: hidden;"
@@ -275,13 +292,10 @@
         </h3>
       </div>
 
-      <div
-        class="flex-1 px-3 py-2 text-black leading-relaxed overflow-hidden"
-        style="font-size: {contentFont};"
-      >
+      <div class="flex-1 px-6 py-2 text-black leading-relaxed overflow-hidden">
         <div
-          class="rich-content"
-          style="display: -webkit-box; -webkit-line-clamp: {contentClamp}; -webkit-box-orient: vertical; overflow: hidden;"
+          class="rich-content prose prose-sm max-w-none"
+          style="display: -webkit-box; -webkit-line-clamp: {contentClamp}; -webkit-box-orient: vertical; overflow: hidden; font-size: {contentFont};"
         >
           {@html renderedContent || "Konten ringkasan..."}
         </div>

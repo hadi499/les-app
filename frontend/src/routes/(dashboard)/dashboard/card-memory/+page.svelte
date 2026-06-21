@@ -881,7 +881,7 @@
               detailCard = null;
               cardWrapperWidth = 0;
             }}
-            class="w-12 h-12 flex items-center justify-center rounded-full bg-gray-800 border border-gray-800 text-orange-950 hover:bg-indigo-600 hover:border-gray-900 transition-all cursor-pointer shadow-md hover:shadow-lg"
+            class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 transition-all cursor-pointer shadow-sm"
             title="Tutup"
           >
             <svg

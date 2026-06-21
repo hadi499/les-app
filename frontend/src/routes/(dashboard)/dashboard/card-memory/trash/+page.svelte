@@ -162,7 +162,7 @@
             <div class="flex gap-1">
               <button
                 onclick={() => handleRestore(card.id)}
-                class="flex-1 text-center text-sm py-1 rounded bg-green-900/30 text-green-300 hover:bg-green-900/50 cursor-pointer"
+                class="flex-1 text-center text-sm py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer"
               >
                 Pulihkan
               </button>

@@ -3,24 +3,22 @@ package main
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
-	"github.com/joho/godotenv"
 )
 
 type ScoreQuiz struct {
-	ID        uint
-	Username  string
-	QuizID    uint
-	Score     int
+	ID       uint
+	Username string
+	QuizID   uint
+	Score    int
 }
 
 func main() {
 	dbPassword := "admin123" // or what is the password? The default might be postgres or root
 	dsn := fmt.Sprintf("host=localhost user=postgres password=%s dbname=lesblg_db port=5432 sslmode=disable TimeZone=Asia/Jakarta", dbPassword)
-	
+
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatal("Failed to connect to db:", err)
