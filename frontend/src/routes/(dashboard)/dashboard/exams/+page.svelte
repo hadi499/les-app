@@ -740,7 +740,7 @@
       onclick={closeModal}
     ></div>
     <div
-      class="relative bg-[#EAE4BD] border border-orange-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
+      class="relative bg-orange-50 border border-orange-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
     >
       <div
         class="p-4 sm:p-6 border-b border-orange-200 flex justify-between items-center"
@@ -861,7 +861,7 @@
           <button
             type="button"
             onclick={closeModal}
-            class="px-4 py-2.5 text-sm font-medium text-orange-900 hover:text-orange-950 bg-white hover:bg-orange-50 rounded-xl transition-colors"
+            class="px-4 py-2.5 text-sm font-medium text-orange-900 bg-white hover:bg-orange-100 shadow-md rounded-xl transition-colors"
           >
             Batal
           </button>
@@ -885,7 +885,7 @@
       onclick={closeDeleteModal}
     ></div>
     <div
-      class="relative bg-[#EAE4BD] border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
+      class="relative bg-orange-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
     >
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4"

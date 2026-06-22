@@ -195,7 +195,7 @@
         >
           <div class="flex items-center gap-3 mb-4">
             <div
-              class="w-10 h-10 rounded-full bg-indigo-800/20 text-indigo-600 flex items-center justify-center font-bold text-lg border border-indigo-800/50"
+              class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-lg border border-indigo-800/50"
             >
               {subject.name.charAt(0).toUpperCase()}
             </div>
@@ -207,7 +207,7 @@
           <div class="flex justify-end gap-2 pt-3 border-t border-orange-200">
             <button
               onclick={() => openEditModal(subject)}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 bg-blue-100 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-300"
             >
               Edit
             </button>
@@ -239,7 +239,7 @@
       onclick={closeModal}
     ></div>
     <div
-      class="relative bg-[#EAE4BD] border border-orange-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+      class="relative bg-orange-50 border border-orange-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
     >
       <div
         class="p-6 border-b border-orange-200 flex justify-between items-center"
@@ -286,7 +286,7 @@
           <button
             type="button"
             onclick={closeModal}
-            class="px-4 py-2.5 text-sm font-medium text-orange-900 hover:text-orange-950 bg-white hover:bg-orange-50 rounded-xl transition-colors"
+            class="px-4 py-2.5 text-sm font-medium text-orange-900 hover:text-orange-950 bg-white hover:bg-orange-100 rounded-xl transition-colors shadow-md"
           >
             Batal
           </button>
@@ -310,7 +310,7 @@
       onclick={closeDeleteModal}
     ></div>
     <div
-      class="relative bg-[#EAE4BD] border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
+      class="relative bg-slate-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
     >
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4"
