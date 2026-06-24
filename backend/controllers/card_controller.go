@@ -215,6 +215,11 @@ func UploadImage(c *gin.Context) {
 	}
 	defer file.Close()
 
+	if header.Size > 1*1024*1024 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Ukuran file maksimal 1MB"})
+		return
+	}
+
 	ext := filepath.Ext(header.Filename)
 	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
 	savePath := filepath.Join("uploads", filename)

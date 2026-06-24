@@ -62,6 +62,18 @@
     const target = e.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
+    
+    if (!file.type.startsWith("image/")) {
+      uploadMsg = "File harus berupa gambar";
+      target.value = "";
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      uploadMsg = "Ukuran file maksimal 1MB";
+      target.value = "";
+      return;
+    }
+
     uploading = true;
     uploadMsg = "";
     try {
@@ -128,9 +140,9 @@
       </div>
       {#if uploadMsg}
         <span
-          class="text-xs {uploadMsg.includes('gagal')
-            ? 'text-red-500'
-            : 'text-green-600'}">{uploadMsg}</span
+          class="text-xs {uploadMsg === 'Upload berhasil'
+            ? 'text-green-600'
+            : 'text-red-500'}">{uploadMsg}</span
         >
       {/if}
     </div>

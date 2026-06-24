@@ -13,6 +13,8 @@
   } = $props();
 
   let image = $state("");
+  let selectedFile = $state<File | null>(null);
+  let previewUrl = $state("");
   let title = $state("");
   let uploading = $state(false);
   let uploadMsg = $state("");
@@ -23,20 +25,41 @@
     title = edit?.title ?? "";
   });
 
-  function handleSubmit(e: Event) {
+  async function handleSubmit(e: Event) {
     e.preventDefault();
-    if (!title.trim() || !image.trim()) return;
+    if (!title.trim() || (!image.trim() && !selectedFile)) return;
+    
+    let finalImageUrl = image;
+
+    if (selectedFile) {
+      uploading = true;
+      try {
+        finalImageUrl = await cardsStore.uploadImage(selectedFile);
+      } catch (err: any) {
+        uploadMsg = "Upload gagal: " + (err.message || "unknown");
+        uploading = false;
+        return;
+      }
+      uploading = false;
+    }
+
     onsave({
       category: "",
-      image: image.trim(),
+      image: finalImageUrl.trim(),
       title: title.trim(),
       content: "",
       size: "6",
       cardType: "image",
     });
+
     if (!edit) {
       image = "";
       title = "";
+      selectedFile = null;
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+        previewUrl = "";
+      }
     }
   }
 
@@ -53,47 +76,51 @@
     e.preventDefault();
     dragging = false;
     const file = e.dataTransfer?.files?.[0];
-    if (file) uploadFile(file);
+    if (file) processFile(file);
   }
 
-  async function handleFileSelect(e: Event) {
+  function handleFileSelect(e: Event) {
     const target = e.target as HTMLInputElement;
     const file = target.files?.[0];
-    if (file) await uploadFile(file);
+    if (file) processFile(file);
     target.value = "";
   }
 
-  async function uploadFile(file: File) {
+  function processFile(file: File) {
     if (!file.type.startsWith("image/")) {
       uploadMsg = "File harus berupa gambar";
       return;
     }
-    uploading = true;
-    uploadMsg = "";
-    try {
-      const url = await cardsStore.uploadImage(file);
-      image = url;
-      uploadMsg = "Upload berhasil";
-    } catch (err: any) {
-      uploadMsg = "Upload gagal: " + (err.message || "unknown");
-    } finally {
-      uploading = false;
+    if (file.size > 1024 * 1024) {
+      uploadMsg = "Ukuran file maksimal 1MB";
+      return;
     }
+    
+    selectedFile = file;
+    if (previewUrl) URL.revokeObjectURL(previewUrl);
+    previewUrl = URL.createObjectURL(file);
+    uploadMsg = "";
+    image = "";
   }
 </script>
 
 <form onsubmit={handleSubmit} class="flex flex-col gap-4">
   <!-- Upload / Pilih Gambar -->
-  {#if image}
+  {#if image || previewUrl}
     <div class="relative border border-slate-300 rounded-lg p-4">
       <img
-        src={image}
+        src={previewUrl || image}
         alt="Preview"
         class="max-h-56 mx-auto rounded object-contain"
       />
       <button
         type="button"
-        onclick={() => (image = "")}
+        onclick={() => {
+          image = "";
+          selectedFile = null;
+          if (previewUrl) URL.revokeObjectURL(previewUrl);
+          previewUrl = "";
+        }}
         class="absolute top-2 right-2 w-7 h-7 flex items-center justify-center rounded-full bg-red-900/300 text-slate-900 text-sm hover:bg-red-600 cursor-pointer"
         >&times;</button
       >
@@ -173,9 +200,9 @@
 
   {#if uploadMsg}
     <span
-      class="text-xs {uploadMsg.includes('gagal')
-        ? 'text-red-500'
-        : 'text-green-600'}">{uploadMsg}</span
+      class="text-xs {uploadMsg === 'Upload berhasil'
+        ? 'text-green-600'
+        : 'text-red-500'}">{uploadMsg}</span
     >
   {/if}
 
@@ -194,16 +221,25 @@
   <div class="flex gap-2 justify-end pt-2">
     <button
       type="button"
-      onclick={oncancel}
+      onclick={() => {
+        image = "";
+        selectedFile = null;
+        if (previewUrl) URL.revokeObjectURL(previewUrl);
+        previewUrl = "";
+        title = "";
+        uploadMsg = "";
+        if (oncancel) oncancel();
+      }}
       class="px-4 py-2 text-sm rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 cursor-pointer"
     >
       Batal
     </button>
     <button
       type="submit"
-      class="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium cursor-pointer"
+      disabled={uploading}
+      class="px-4 py-2 text-sm rounded-lg bg-blue-600 text-white hover:bg-blue-700 font-medium cursor-pointer disabled:opacity-50"
     >
-      {edit ? "Simpan" : "Tambah Kartu Gambar"}
+      {uploading ? "Menyimpan..." : (edit ? "Simpan" : "Tambah Kartu Gambar")}
     </button>
   </div>
 </form>
