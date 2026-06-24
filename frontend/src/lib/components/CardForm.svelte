@@ -175,10 +175,12 @@
     />
   </label>
 
-  <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-    Konten / Ringkasan
-    <RichEditor bind:this={editorRef} value={edit?.content ?? ""} />
-  </label>
+  <div class="flex flex-col gap-1">
+    <label class="text-sm font-medium text-slate-700">Konten / Ringkasan</label>
+    <div class="font-normal">
+      <RichEditor bind:this={editorRef} value={edit?.content ?? ""} />
+    </div>
+  </div>
 
   <div class="flex gap-2 justify-end">
     <button
