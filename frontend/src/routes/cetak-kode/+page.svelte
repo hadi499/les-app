@@ -78,7 +78,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-50 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
+  class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col relative overflow-x-hidden print:bg-white print:text-black print:p-0"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed print:hidden">
@@ -86,7 +86,7 @@
       class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
     ></div>
 
   </div>
@@ -97,22 +97,22 @@
     <div class="text-center print:hidden flex flex-col items-center gap-4">
       <div class="flex items-center gap-3">
         <div
-          class="w-6 h-6 border border-orange-200 bg-white flex items-center justify-center rotate-45 shadow-sm"
+          class="w-6 h-6 border border-slate-200 bg-white flex items-center justify-center rotate-45 shadow-sm"
         >
-          <div class="w-1.5 h-1.5 bg-orange-400"></div>
+          <div class="w-1.5 h-1.5 bg-blue-500"></div>
         </div>
         <span
-          class="text-xs font-medium tracking-[0.2em] uppercase text-orange-800"
+          class="text-xs font-medium tracking-[0.2em] uppercase text-slate-500"
         >
           Utility System
         </span>
       </div>
       <h1
-        class="text-3xl font-bold tracking-[0.1em] text-orange-950 uppercase drop-shadow-sm"
+        class="text-3xl font-bold tracking-[0.1em] text-slate-900 uppercase drop-shadow-sm"
       >
         Cetak Kode Programming
       </h1>
-      <p class="text-xs tracking-[0.1em] text-orange-800 font-medium uppercase">
+      <p class="text-xs tracking-[0.1em] text-slate-600 font-medium uppercase">
         Paste script code Anda di bawah, lalu klik "Cetak" untuk mem-print
         dokumen.
       </p>
@@ -121,32 +121,32 @@
     <!-- Input Section (Hidden when printing) -->
     <div class="flex flex-col space-y-4 print:hidden">
       <div
-        class="flex items-center justify-between border-b border-orange-300 pb-3"
+        class="flex items-center justify-between border-b border-slate-300 pb-3"
       >
         <label
           for="code-input"
-          class="text-sm font-bold tracking-[0.1em] uppercase text-orange-950"
+          class="text-sm font-bold tracking-[0.1em] uppercase text-slate-800"
         >
           Source Code
         </label>
         <div class="flex space-x-3">
           <button
             onclick={() => (codeInput = "")}
-            class="text-xs px-4 py-2 bg-white hover:bg-orange-50 text-orange-900 rounded-md border border-orange-300 transition-colors disabled:bg-white/50 disabled:text-orange-300 disabled:border-orange-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
+            class="text-xs px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md border border-slate-300 transition-colors disabled:bg-white/50 disabled:text-slate-400 disabled:border-slate-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
             disabled={!codeInput}
           >
             Clear
           </button>
           <button
             onclick={copyCode}
-            class="text-xs px-4 py-2 bg-white hover:bg-orange-50 text-orange-900 rounded-md border border-orange-300 transition-colors disabled:bg-white/50 disabled:text-orange-300 disabled:border-orange-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
+            class="text-xs px-4 py-2 bg-white hover:bg-slate-50 text-slate-700 rounded-md border border-slate-300 transition-colors disabled:bg-white/50 disabled:text-slate-400 disabled:border-slate-200 tracking-wider uppercase font-extrabold backdrop-blur-sm shadow-sm hover:shadow-md"
             disabled={!codeInput}
           >
             Copy
           </button>
           <button
             onclick={printCode}
-            class="group relative inline-flex items-center justify-center px-6 py-2 text-xs tracking-[0.1em] font-extrabold uppercase text-white border border-orange-500 hover:border-orange-400 bg-orange-600 hover:bg-orange-500 rounded-md transition-all duration-300 disabled:bg-orange-300 disabled:text-white disabled:border-orange-300 backdrop-blur-sm shadow-md overflow-hidden"
+            class="group relative inline-flex items-center justify-center px-6 py-2 text-xs tracking-[0.1em] font-extrabold uppercase text-white border border-blue-600 hover:border-blue-500 bg-blue-600 hover:bg-blue-500 rounded-md transition-all duration-300 disabled:bg-blue-300 disabled:text-white disabled:border-blue-300 backdrop-blur-sm shadow-md overflow-hidden"
             disabled={!codeInput}
           >
             <span class="relative z-10 flex items-center gap-2">
@@ -169,14 +169,14 @@
       </div>
       <div class="relative group">
         <div
-          class="absolute -inset-0.5 bg-gradient-to-r from-orange-400/30 to-amber-500/30 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
+          class="absolute -inset-0.5 bg-gradient-to-r from-blue-400/30 to-indigo-500/30 rounded-xl blur opacity-0 group-hover:opacity-100 transition duration-500"
         ></div>
         <textarea
           id="code-input"
           bind:value={codeInput}
           onkeydown={handleKeydown}
           placeholder="Paste script code di sini..."
-          class="relative w-full p-6 rounded-xl bg-white/60 backdrop-blur-md border border-orange-200 text-orange-950 font-mono text-base focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none resize-y min-h-[650px] shadow-xl whitespace-pre overflow-x-auto placeholder-orange-300/80"
+          class="relative w-full p-6 rounded-xl bg-white/60 backdrop-blur-md border border-slate-200 text-slate-900 font-mono text-base focus:ring-2 focus:ring-blue-400 focus:border-blue-400 outline-none resize-y min-h-[650px] shadow-xl whitespace-pre overflow-x-auto placeholder-slate-400/80"
           spellcheck="false"
         ></textarea>
       </div>

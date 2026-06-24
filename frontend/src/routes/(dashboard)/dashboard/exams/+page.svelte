@@ -151,7 +151,7 @@
     isEditing = false;
     currentExamId = null;
     formUserId = "";
-    formExamDate = new Date().toISOString().split("T")[0];
+    formExamDate = new Date().toLocaleDateString("en-CA"); // "en-CA" formats as YYYY-MM-DD
     formExamName = "";
     formSubjectId = "";
     formScore = 0;
@@ -407,17 +407,17 @@
   >
     <div>
       <h1
-        class="text-2xl font-bold text-orange-950 sm:text-3xl tracking-tight drop-shadow-sm"
+        class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
       >
         Nilai Harian
       </h1>
-      <p class="mt-2 text-orange-800 text-sm sm:text-base tracking-wide">
+      <p class="mt-2 text-slate-600 text-sm sm:text-base tracking-wide">
         Kelola nilai ujian harian siswa.
       </p>
     </div>
     <button
       onclick={openAddModal}
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-orange-950 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
         ><path
@@ -434,7 +434,7 @@
   {#if isLoading}
     <div class="flex justify-center p-12">
       <div
-        class="w-10 h-10 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"
+        class="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
       ></div>
     </div>
   {:else if errorMsg}
@@ -458,47 +458,47 @@
   {:else}
     <!-- Tabs Header -->
     <div
-      class="flex gap-4 sm:gap-6 border-b border-orange-200 pb-0 overflow-x-auto whitespace-nowrap px-1"
+      class="flex gap-4 sm:gap-6 border-b border-slate-200 pb-0 overflow-x-auto whitespace-nowrap px-1"
     >
       <button
         onclick={() => (activeTab = "table")}
         class="pb-3 px-1 font-medium transition-colors {activeTab === 'table'
           ? 'text-indigo-400 border-b-2 border-indigo-400'
-          : 'text-orange-700 hover:text-orange-900'}">Tabel Nilai</button
+          : 'text-slate-500 hover:text-slate-800'}">Tabel Nilai</button
       >
       <button
         onclick={() => (activeTab = "chart")}
         class="pb-3 px-1 font-medium transition-colors {activeTab === 'chart'
           ? 'text-indigo-400 border-b-2 border-indigo-400'
-          : 'text-orange-700 hover:text-orange-900'}"
+          : 'text-slate-500 hover:text-slate-800'}"
         >Grafik Perkembangan</button
       >
     </div>
 
     {#if activeTab === "table"}
       <div
-        class="bg-white/60 backdrop-blur-md rounded-3xl border border-orange-200 shadow-lg shadow-orange-900/10 overflow-hidden"
+        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
       >
         <div class="overflow-x-auto w-full">
           <table
             class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]"
           >
             <thead>
-              <tr class="bg-white/40 border-b border-orange-200">
+              <tr class="bg-white/40 border-b border-slate-200">
                 <th class="py-4 px-6 align-bottom">
-                  <div class="font-bold text-orange-950 text-sm mb-2">
+                  <div class="font-bold text-slate-900 text-sm mb-2">
                     Tanggal
                   </div>
                   <div class="relative w-full">
                     <input
                       type="date"
                       bind:value={filterDate}
-                      class="w-full bg-white/80 border border-orange-300 rounded-lg pl-2 pr-8 py-1 text-xs text-orange-950 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                      class="w-full bg-white/80 border border-slate-300 rounded-lg pl-2 pr-8 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                     />
                     {#if filterDate}
                       <button
                         onclick={() => (filterDate = "")}
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-orange-800 hover:text-red-600 transition-colors"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 hover:text-red-600 transition-colors"
                         title="Hapus Filter Tanggal"
                       >
                         <svg
@@ -518,12 +518,12 @@
                   </div>
                 </th>
                 <th class="py-4 px-6 align-bottom">
-                  <div class="font-bold text-orange-950 text-sm mb-2">
+                  <div class="font-bold text-slate-900 text-sm mb-2">
                     Murid
                   </div>
                   <select
                     bind:value={filterUser}
-                    class="w-full bg-white/80 border border-orange-300 rounded-lg px-2 py-1 text-xs text-orange-950 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                   >
                     <option value="">-- Semua Murid --</option>
                     {#each users as u}
@@ -532,16 +532,16 @@
                   </select>
                 </th>
                 <th
-                  class="py-4 px-6 align-bottom font-bold text-orange-950 text-sm pb-5"
+                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm pb-5"
                   >Nama Ujian</th
                 >
                 <th class="py-4 px-6 align-bottom">
-                  <div class="font-bold text-orange-950 text-sm mb-2">
+                  <div class="font-bold text-slate-900 text-sm mb-2">
                     Mata Pelajaran
                   </div>
                   <select
                     bind:value={filterSubject}
-                    class="w-full bg-white/80 border border-orange-300 rounded-lg px-2 py-1 text-xs text-orange-950 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
                   >
                     <option value="">-- Semua Pelajaran --</option>
                     {#each subjects as s}
@@ -550,29 +550,29 @@
                   </select>
                 </th>
                 <th
-                  class="py-4 px-6 align-bottom font-bold text-orange-950 text-sm text-center pb-5"
+                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5"
                   >Nilai</th
                 >
                 <th
-                  class="py-4 px-6 align-bottom font-bold text-orange-950 text-sm text-right pb-5"
+                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-right pb-5"
                   >Aksi</th
                 >
               </tr>
             </thead>
-            <tbody class="divide-y divide-orange-200">
+            <tbody class="divide-y divide-slate-200">
               {#each paginatedExams as exam}
                 <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-4 px-6 text-sm text-orange-800"
+                  <td class="py-4 px-6 text-sm text-slate-600"
                     >{formatDate(exam.exam_date)}</td
                   >
                   <td
-                    class="py-4 px-6 text-sm font-medium text-orange-950 drop-shadow-sm"
+                    class="py-4 px-6 text-sm font-medium text-slate-900 drop-shadow-sm"
                     >{exam.user?.username || "Unknown"}</td
                   >
-                  <td class="py-4 px-6 text-sm text-orange-900"
+                  <td class="py-4 px-6 text-sm text-slate-800"
                     >{exam.exam_name}</td
                   >
-                  <td class="py-4 px-6 text-sm text-orange-900"
+                  <td class="py-4 px-6 text-sm text-slate-800"
                     >{exam.subject?.name || "Unknown"}</td
                   >
                   <td class="py-4 px-6 text-sm text-center">
@@ -585,7 +585,7 @@
                   <td class="py-4 px-6 text-right space-x-2">
                     <button
                       onclick={() => openEditModal(exam)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
                     >
                       Edit
                     </button>
@@ -602,7 +602,7 @@
                 <tr>
                   <td
                     colspan="6"
-                    class="py-12 text-center text-orange-700 font-light"
+                    class="py-12 text-center text-slate-500 font-light"
                     >Belum ada data nilai ujian.</td
                   >
                 </tr>
@@ -614,23 +614,23 @@
         <!-- Pagination Controls -->
         {#if totalPages > 1}
           <div
-            class="px-4 sm:px-6 py-4 border-t border-orange-200 flex flex-col sm:flex-row items-center justify-between gap-4"
+            class="px-4 sm:px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4"
           >
-            <div class="text-sm text-orange-800 text-center sm:text-left">
-              Menampilkan <span class="font-medium text-orange-950"
+            <div class="text-sm text-slate-600 text-center sm:text-left">
+              Menampilkan <span class="font-medium text-slate-900"
                 >{filteredExams.length > 0
                   ? (currentPage - 1) * itemsPerPage + 1
                   : 0}</span
               >
               sampai
-              <span class="font-medium text-orange-950"
+              <span class="font-medium text-slate-900"
                 >{Math.min(
                   currentPage * itemsPerPage,
                   filteredExams.length,
                 )}</span
               >
               dari
-              <span class="font-medium text-orange-950"
+              <span class="font-medium text-slate-900"
                 >{filteredExams.length}</span
               > data
             </div>
@@ -641,7 +641,7 @@
                 class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors {currentPage ===
                 1
                   ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
-                  : 'bg-white text-orange-900 hover:bg-orange-50 hover:text-orange-950'}"
+                  : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
               >
                 Sebelumnya
               </button>
@@ -653,8 +653,8 @@
                     onclick={() => goToPage(i + 1)}
                     class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors {currentPage ===
                     i + 1
-                      ? 'bg-indigo-600 text-orange-100'
-                      : 'text-orange-800 hover:bg-white hover:text-orange-950'}"
+                      ? 'bg-indigo-600 text-slate-100'
+                      : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
                   >
                     {i + 1}
                   </button>
@@ -666,7 +666,7 @@
                 class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors {currentPage ===
                 totalPages
                   ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
-                  : 'bg-white text-orange-900 hover:bg-orange-50 hover:text-orange-950'}"
+                  : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
               >
                 Selanjutnya
               </button>
@@ -676,18 +676,18 @@
       </div>
     {:else if activeTab === "chart"}
       <div
-        class="bg-white/60 backdrop-blur-md rounded-3xl border border-orange-200 shadow-lg shadow-orange-900/10 p-6 space-y-6"
+        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 space-y-6"
       >
         <div class="flex flex-col sm:flex-row gap-4">
           <div class="w-full sm:max-w-xs">
             <label
-              class="block text-sm font-medium text-orange-800 mb-2"
+              class="block text-sm font-medium text-slate-600 mb-2"
               for="chartUser">Pilih Murid</label
             >
             <select
               id="chartUser"
               bind:value={chartSelectedUserId}
-              class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             >
               <option value="" disabled>-- Pilih Murid --</option>
               {#each users as u}
@@ -699,13 +699,13 @@
           {#if chartSelectedUserId}
             <div class="w-full sm:max-w-[12rem]">
               <label
-                class="block text-sm font-medium text-orange-800 mb-2"
+                class="block text-sm font-medium text-slate-600 mb-2"
                 for="chartTimeframe">Rentang Waktu</label
               >
               <select
                 id="chartTimeframe"
                 bind:value={chartTimeframe}
-                class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
               >
                 <option value="harian">Harian</option>
                 <option value="mingguan">Mingguan</option>
@@ -721,7 +721,7 @@
           </div>
         {:else}
           <div
-            class="py-16 text-center text-orange-700 font-light border-2 border-dashed border-orange-200 rounded-2xl"
+            class="py-16 text-center text-slate-500 font-light border-2 border-dashed border-slate-200 rounded-2xl"
           >
             Silakan pilih nama murid terlebih dahulu untuk melihat grafik
             perkembangan.
@@ -740,17 +740,17 @@
       onclick={closeModal}
     ></div>
     <div
-      class="relative bg-orange-50 border border-orange-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
+      class="relative bg-slate-50 border border-slate-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
     >
       <div
-        class="p-4 sm:p-6 border-b border-orange-200 flex justify-between items-center"
+        class="p-4 sm:p-6 border-b border-slate-200 flex justify-between items-center"
       >
-        <h3 class="text-xl font-bold text-orange-950">
+        <h3 class="text-xl font-bold text-slate-900">
           {isEditing ? "Edit Nilai Ujian" : "Tambah Nilai Ujian"}
         </h3>
         <button
           onclick={closeModal}
-          class="text-orange-700 hover:text-orange-950 transition-colors"
+          class="text-slate-500 hover:text-slate-900 transition-colors"
         >
           <svg
             class="w-6 h-6"
@@ -770,13 +770,13 @@
       <form onsubmit={saveExam} class="p-4 sm:p-6 space-y-4 overflow-y-auto">
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="user">Pilih Murid</label
           >
           <select
             id="user"
             bind:value={formUserId}
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           >
             <option value="" disabled>-- Pilih Murid --</option>
@@ -788,21 +788,21 @@
 
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="date">Tanggal Ujian</label
           >
           <input
             type="date"
             id="date"
             bind:value={formExamDate}
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           />
         </div>
 
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="examName">Nama Ujian</label
           >
           <input
@@ -810,20 +810,20 @@
             id="examName"
             bind:value={formExamName}
             placeholder="Misal: Ujian Tengah Semester"
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           />
         </div>
 
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="subject">Mata Pelajaran</label
           >
           <select
             id="subject"
             bind:value={formSubjectId}
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           >
             <option value="" disabled>-- Pilih Mata Pelajaran --</option>
@@ -835,7 +835,7 @@
 
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="score">Nilai (0 - 100)</label
           >
           <input
@@ -852,7 +852,7 @@
             }}
             min="0"
             max="100"
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           />
         </div>
@@ -861,13 +861,13 @@
           <button
             type="button"
             onclick={closeModal}
-            class="px-4 py-2.5 text-sm font-medium text-orange-900 bg-white hover:bg-orange-100 shadow-md rounded-xl transition-colors"
+            class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-200 hover:bg-slate-100 shadow-md rounded-xl transition-colors"
           >
             Batal
           </button>
           <button
             type="submit"
-            class="px-4 py-2.5 text-sm font-medium text-orange-950 bg-indigo-100 hover:bg-indigo-200 rounded-xl transition-all shadow-md shadow-indigo-900/20"
+            class="px-4 py-2.5 text-sm font-medium text-slate-900 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-xl transition-all shadow-md shadow-indigo-900/20"
           >
             {isEditing ? "Simpan Perubahan" : "Tambahkan"}
           </button>
@@ -885,7 +885,7 @@
       onclick={closeDeleteModal}
     ></div>
     <div
-      class="relative bg-orange-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
+      class="relative bg-slate-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
     >
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4"
@@ -904,15 +904,15 @@
           />
         </svg>
       </div>
-      <h3 class="text-xl font-bold text-orange-950 mb-2">Hapus Nilai Ujian?</h3>
-      <p class="text-sm text-orange-800 mb-6">
+      <h3 class="text-xl font-bold text-slate-900 mb-2">Hapus Nilai Ujian?</h3>
+      <p class="text-sm text-slate-600 mb-6">
         Apakah Anda yakin ingin menghapus nilai ini? Data yang dihapus tidak
         dapat dikembalikan.
       </p>
       <div class="flex justify-center gap-3">
         <button
           onclick={closeDeleteModal}
-          class="px-4 py-2.5 text-sm font-medium text-orange-900 bg-white border border-orange-300 rounded-xl hover:bg-orange-50 transition-colors"
+          class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
         >
           Batal
         </button>
@@ -936,6 +936,6 @@
 
   option {
     background-color: #ffffff;
-    color: #431407; /* text-orange-950 */
+    color: #431407; /* text-slate-900 */
   }
 </style>

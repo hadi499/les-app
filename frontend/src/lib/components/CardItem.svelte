@@ -67,7 +67,7 @@
       <button
         onclick={() => onselect?.(card)}
         class="w-6 h-6 flex items-center justify-center rounded border-2 cursor-pointer {selected
-          ? 'bg-indigo-600 border-indigo-600 text-orange-950'
+          ? 'bg-indigo-600 border-indigo-600 text-white'
           : 'bg-white/90 border-gray-300 hover:border-indigo-400'}"
       >
         {#if selected}

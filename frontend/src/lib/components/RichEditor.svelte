@@ -160,7 +160,20 @@
         : 'text-gray-600 hover:bg-gray-100'}"
       title="Align Left"
     >
-      <i class="ti ti-align-left text-sm"></i>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+          d="M4 6l16 0"
+        /><path d="M4 12l10 0" /><path d="M4 18l14 0" /></svg
+      >
     </button>
     <button
       type="button"
@@ -170,7 +183,20 @@
         : 'text-gray-600 hover:bg-gray-100'}"
       title="Align Center"
     >
-      <i class="ti ti-align-center text-sm"></i>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+          d="M4 6l16 0"
+        /><path d="M8 12l8 0" /><path d="M6 18l12 0" /></svg
+      >
     </button>
     <button
       type="button"
@@ -180,7 +206,20 @@
         : 'text-gray-600 hover:bg-gray-100'}"
       title="Align Right"
     >
-      <i class="ti ti-align-right text-sm"></i>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+          d="M4 6l16 0"
+        /><path d="M10 12l10 0" /><path d="M6 18l14 0" /></svg
+      >
     </button>
     <span class="w-px bg-gray-300 mx-0.5"></span>
     <button

@@ -212,7 +212,7 @@
   <title>Arsip</title>
 </svelte:head>
 
-<div class="min-h-screen bg-transparent text-orange-950">
+<div class="min-h-screen bg-transparent text-slate-900">
   <header
     class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
   >
@@ -222,18 +222,18 @@
       <div class="flex items-center gap-4">
         <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl">
           <span
-            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-orange-950 shadow-sm font-base transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-slate-900 shadow-sm font-base transition-all"
           >
             Arsip
           </span>
           <a
             href="/dashboard/card-memory/print"
-            class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
           >
             Print
             {#if queueCount > 0}
               <span
-                class="bg-orange-500 text-white text-[10px] rounded-full px-1.5 py-0.5 leading-none"
+                class="bg-blue-500 text-white text-[10px] rounded-full px-1.5 py-0.5 leading-none"
                 >{queueCount}</span
               >
             {/if}
@@ -241,7 +241,7 @@
           {#if isTeacher}
             <a
               href="/dashboard/card-memory/trash"
-              class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
+              class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
             >
               Sampah
               {#if trashCountVal > 0}
@@ -261,7 +261,7 @@
             type="text"
             bind:value={searchQuery}
             placeholder="Cari kartu..."
-            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-orange-950 border border-orange-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-56 transition-all"
+            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-slate-900 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-56 transition-all"
             onkeydown={(e) => {
               if (e.key === "Enter") applySearch();
             }}
@@ -272,13 +272,13 @@
                 searchQuery = "";
                 applySearch();
               }}
-              class="absolute right-8 top-1/2 -translate-y-1/2 text-orange-700 hover:text-orange-800 cursor-pointer text-base"
+              class="absolute right-8 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 cursor-pointer text-base"
               >&times;</button
             >
           {/if}
           <button
             onclick={applySearch}
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-orange-700 hover:text-orange-950 cursor-pointer"
+            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 cursor-pointer"
             title="Cari"
           >
             <svg
@@ -303,7 +303,7 @@
                 editingCard = null;
                 showForm = !showForm;
               }}
-              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-orange-500 text-white hover:bg-orange-600 font-medium transition-all shadow-sm cursor-pointer"
+              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer"
             >
               <svg
                 class="w-4 h-4"
@@ -354,16 +354,16 @@
       <div class="flex items-center gap-3 mb-3">
         <button
           onclick={selectAll}
-          class="flex items-center gap-1.5 text-xs text-orange-800 hover:text-orange-900 cursor-pointer"
+          class="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-800 cursor-pointer"
         >
           <span
             class="w-5 h-5 flex items-center justify-center rounded border-2 {allSelected
-              ? 'bg-orange-500 border-orange-500'
-              : 'border-orange-300'}"
+              ? 'bg-blue-500 border-blue-500'
+              : 'border-slate-300'}"
           >
             {#if allSelected}
               <svg
-                class="w-3.5 h-3.5 text-orange-950"
+                class="w-3.5 h-3.5 text-slate-900"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="3"
@@ -379,8 +379,8 @@
           {allSelected ? "Batal Pilih Semua" : "Pilih Semua"} ({cards.length})
         </button>
         {#if selectedCount > 0}
-          <span class="text-xs text-orange-700">|</span>
-          <span class="text-xs text-orange-800">{selectedCount} dipilih</span>
+          <span class="text-xs text-slate-500">|</span>
+          <span class="text-xs text-slate-600">{selectedCount} dipilih</span>
           <button
             onclick={() => (showBulkDeleteConfirm = true)}
             class="px-3 py-1 text-xs rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
@@ -428,18 +428,18 @@
     </Modal>
 
     <div>
-      <h2 class="text-md font-semibold text-orange-900 mb-3">
+      <h2 class="text-md font-semibold text-slate-800 mb-3">
         Arsip ({total} kartu)
         {#if totalPages > 1}
-          <span class="text-orange-700"> · hlm {currentPage}/{totalPages}</span>
+          <span class="text-slate-500"> · hlm {currentPage}/{totalPages}</span>
         {/if}
       </h2>
 
       {#if loading}
         <div
-          class="text-center py-8 bg-white/80 rounded-xl border border-orange-200"
+          class="text-center py-8 bg-white/80 rounded-xl border border-slate-200"
         >
-          <p class="text-orange-700">Memuat data dari server...</p>
+          <p class="text-slate-500">Memuat data dari server...</p>
         </div>
       {:else if error}
         <div
@@ -448,26 +448,26 @@
           <p class="text-red-600 mb-3">{error}</p>
           <button
             onclick={() => loadCards()}
-            class="px-4 py-2 text-sm rounded-lg bg-white text-orange-800 hover:bg-orange-50 cursor-pointer"
+            class="px-4 py-2 text-sm rounded-lg bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
             >Coba Lagi</button
           >
         </div>
       {:else if cards.length === 0}
         <div
-          class="text-center py-8 bg-white/80 rounded-xl border border-orange-200"
+          class="text-center py-8 bg-white/80 rounded-xl border border-slate-200"
         >
-          <p class="text-orange-700 mb-3">
+          <p class="text-slate-500 mb-3">
             Belum ada kartu. Tambah kartu baru via form di atas.
           </p>
         </div>
       {:else}
         <div
-          class="bg-white/80 rounded-xl border border-orange-200 overflow-hidden"
+          class="bg-white/80 rounded-xl border border-slate-200 overflow-hidden"
         >
           <table class="w-full text-sm">
             <thead>
               <tr
-                class="bg-transparent border-b border-orange-200 text-left text-xs text-orange-900 uppercase tracking-wider"
+                class="bg-transparent border-b border-slate-200 text-left text-xs text-slate-800 uppercase tracking-wider"
               >
                 {#if isTeacher}<th class="px-4 py-3 w-8"></th>{/if}
                 <th class="px-4 py-3">Title</th>
@@ -479,7 +479,7 @@
             <tbody>
               {#each cards as card (card.id)}
                 <tr
-                  class="border-b border-orange-200 hover:bg-transparent text-orange-950 transition-colors"
+                  class="border-b border-slate-200 hover:bg-transparent text-slate-900 transition-colors"
                 >
                   {#if isTeacher}
                     <td class="px-4 py-3">
@@ -488,12 +488,12 @@
                         class="w-5 h-5 flex items-center justify-center rounded border-2 cursor-pointer {selectedIds.has(
                           card.id,
                         )
-                          ? 'bg-orange-500 border-orange-500'
-                          : 'border-orange-300'}"
+                          ? 'bg-blue-500 border-blue-500'
+                          : 'border-slate-300'}"
                       >
                         {#if selectedIds.has(card.id)}
                           <svg
-                            class="w-3.5 h-3.5 text-orange-950"
+                            class="w-3.5 h-3.5 text-slate-900"
                             fill="none"
                             stroke="currentColor"
                             stroke-width="3"
@@ -509,10 +509,10 @@
                       </button>
                     </td>
                   {/if}
-                  <td class="px-4 py-3 font-semibold text-orange-900 text-md"
+                  <td class="px-4 py-3 font-semibold text-slate-800 text-md"
                     >{card.title}</td
                   >
-                  <td class="px-4 py-3 text-orange-800"
+                  <td class="px-4 py-3 text-slate-600"
                     >{card.category || "-"}</td
                   >
                   <td class="px-4 py-3">
@@ -520,7 +520,7 @@
                       class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {card.cardType ===
                       'image'
                         ? 'bg-purple-100 text-purple-800'
-                        : 'bg-orange-100 text-orange-800'}"
+                        : 'bg-slate-100 text-slate-600'}"
                     >
                       {layoutLabel(card)}
                     </span>
@@ -556,7 +556,7 @@
                         class="p-1.5 rounded-lg cursor-pointer {printQueue.has(
                           card.id,
                         )
-                          ? 'bg-orange-200 text-orange-800'
+                          ? 'bg-slate-200 text-slate-600'
                           : 'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50'}"
                         title={printQueue.has(card.id)
                           ? "Hapus dari antrian print"
@@ -629,13 +629,13 @@
             <button
               onclick={() => changePage(1)}
               disabled={currentPage === 1}
-              class="px-2 py-1 text-xs rounded border border-orange-300 text-orange-800 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
               >&laquo;</button
             >
             <button
               onclick={() => changePage(currentPage - 1)}
               disabled={currentPage === 1}
-              class="px-2 py-1 text-xs rounded border border-orange-300 text-orange-800 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
               >&lsaquo;</button
             >
 
@@ -646,25 +646,25 @@
                   onclick={() => changePage(p)}
                   class="px-2 py-1 text-xs rounded border cursor-pointer {p ===
                   currentPage
-                    ? 'bg-orange-500 text-white border-indigo-600'
-                    : 'border-orange-300 text-orange-800 hover:bg-white'}"
+                    ? 'bg-blue-500 text-white border-indigo-600'
+                    : 'border-slate-300 text-slate-600 hover:bg-white'}"
                   >{p}</button
                 >
               {:else if p === currentPage - 3 || p === currentPage + 3}
-                <span class="px-1 text-xs text-orange-700">...</span>
+                <span class="px-1 text-xs text-slate-500">...</span>
               {/if}
             {/each}
 
             <button
               onclick={() => changePage(currentPage + 1)}
               disabled={currentPage === totalPages}
-              class="px-2 py-1 text-xs rounded border border-orange-300 text-orange-800 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
               >&rsaquo;</button
             >
             <button
               onclick={() => changePage(totalPages)}
               disabled={currentPage === totalPages}
-              class="px-2 py-1 text-xs rounded border border-orange-300 text-orange-800 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
+              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
               >&raquo;</button
             >
           </div>
@@ -693,13 +693,13 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-orange-950">Hapus Kartu</h3>
+        <h3 class="text-lg font-semibold text-slate-900">Hapus Kartu</h3>
         {#if deleteTarget}
-          <p class="text-sm font-medium text-orange-900 mt-1">
+          <p class="text-sm font-medium text-slate-800 mt-1">
             "{deleteTarget.title}"
           </p>
         {/if}
-        <p class="text-sm text-orange-800 mt-1">
+        <p class="text-sm text-slate-600 mt-1">
           Kartu akan dipindahkan ke tempat sampah. Kamu bisa memulihkannya
           nanti.
         </p>
@@ -707,7 +707,7 @@
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (deleteCardId = null)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
           >Batal</button
         >
         <button
@@ -742,17 +742,17 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-orange-950">
+        <h3 class="text-lg font-semibold text-slate-900">
           Hapus {selectedCount} Kartu
         </h3>
-        <p class="text-sm text-orange-800 mt-1">
+        <p class="text-sm text-slate-600 mt-1">
           {selectedCount} kartu akan dipindahkan ke tempat sampah.
         </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (showBulkDeleteConfirm = false)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
           >Batal</button
         >
         <button
@@ -778,7 +778,7 @@
         )} mx-auto pb-2 transition-all duration-300"
       >
         <div
-          class="w-full mx-auto shadow-lg rounded-xl overflow-hidden border border-orange-200 transition-all duration-300 bg-white/80"
+          class="w-full mx-auto shadow-lg rounded-xl overflow-hidden border border-slate-200 transition-all duration-300 bg-white/80"
           style="aspect-ratio: {getCardAspect(detailCard.size)};"
           bind:clientWidth={cardWrapperWidth}
         >
@@ -803,8 +803,8 @@
             class="w-12 h-12 flex items-center justify-center rounded-full transition-all cursor-pointer shadow-sm border {printQueue.has(
               detailCard.id,
             )
-              ? 'bg-indigo-900/30 border-indigo-800/50 text-orange-700 hover:bg-indigo-900/50 shadow-indigo-100'
-              : 'bg-white/80 border-orange-200 text-orange-800 hover:text-orange-700 hover:border-indigo-800/50 hover:bg-indigo-900/30'}"
+              ? 'bg-indigo-900/30 border-indigo-800/50 text-slate-500 hover:bg-indigo-900/50 shadow-indigo-100'
+              : 'bg-white/80 border-slate-200 text-slate-600 hover:text-slate-500 hover:border-indigo-800/50 hover:bg-indigo-900/30'}"
             title={printQueue.has(detailCard.id)
               ? "Hapus dari Print"
               : "Tambah ke Print"}
@@ -832,7 +832,7 @@
                 cardWrapperWidth = 0;
                 handleEdit(card!);
               }}
-              class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-orange-200 text-orange-800 hover:text-amber-600 hover:border-amber-300 hover:bg-amber-50 transition-all cursor-pointer shadow-sm"
+              class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-slate-200 text-slate-600 hover:text-sky-600 hover:border-sky-300 hover:bg-amber-50 transition-all cursor-pointer shadow-sm"
               title="Edit Kartu"
             >
               <svg
@@ -857,7 +857,7 @@
                 cardWrapperWidth = 0;
                 handleDeleteClick(card!);
               }}
-              class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 transition-all cursor-pointer shadow-sm"
+              class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 transition-all cursor-pointer shadow-sm"
               title="Hapus Kartu"
             >
               <svg
@@ -881,7 +881,7 @@
               detailCard = null;
               cardWrapperWidth = 0;
             }}
-            class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 transition-all cursor-pointer shadow-sm"
+            class="w-12 h-12 flex items-center justify-center rounded-full bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 transition-all cursor-pointer shadow-sm"
             title="Tutup"
           >
             <svg

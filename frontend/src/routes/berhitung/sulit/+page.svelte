@@ -121,7 +121,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-50 flex flex-col items-center pt-24 pb-10 px-4 font-sans relative overflow-hidden"
+  class="min-h-screen bg-slate-50 flex flex-col items-center pt-24 pb-10 px-4 font-sans relative overflow-hidden"
 >
   <div
     class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"

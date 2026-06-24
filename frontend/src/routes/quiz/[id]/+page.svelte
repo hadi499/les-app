@@ -2,7 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import { slide, fade } from "svelte/transition";
   import { page } from "$app/state";
-  import { goto } from "$app/navigation";
+  import { goto, beforeNavigate } from "$app/navigation";
 
   let quizId = $derived(page.params.id);
 
@@ -44,7 +44,38 @@
   );
   const score = $derived(userAnswers.filter((a) => a.isCorrect).length * 10); // 10 points per correct answer
 
+  beforeNavigate((navigation) => {
+    if (quiz && currentQuestion && !isFinished) {
+      const confirmLeave = confirm(
+        "Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda akan dihitung 0. Apakah Anda yakin ingin keluar?",
+      );
+      if (!confirmLeave) {
+        navigation.cancel();
+      } else {
+        // Submit score 0 saat user memilih keluar
+        fetch(`/api/scores/quizzes`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          keepalive: true,
+          body: JSON.stringify({
+            quiz_id: Number(quizId),
+            score: 0,
+          }),
+        }).catch(console.error);
+      }
+    }
+  });
+
+  function handleBeforeUnload(e: BeforeUnloadEvent) {
+    if (quiz && currentQuestion && !isFinished) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  }
+
   onMount(async () => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
     try {
       // Cek apakah user sudah login
       const authRes = await fetch(`/me`, { credentials: "include" });
@@ -82,6 +113,9 @@
 
   onDestroy(() => {
     clearInterval(timerInterval);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    }
   });
 
   function startTimer() {
@@ -176,7 +210,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-50 font-sans selection:bg-orange-200 selection:text-orange-900 flex flex-col items-center py-12 px-4 relative overflow-x-hidden pt-24"
+  class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col items-center py-12 px-4 relative overflow-x-hidden pt-24"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
@@ -184,7 +218,7 @@
       class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
     ></div>
 
   </div>
@@ -193,7 +227,7 @@
     {#if isLoading}
       <div class="flex justify-center p-12">
         <div
-          class="w-10 h-10 border-4 border-orange-200 border-t-orange-600 rounded-full animate-spin"
+          class="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"
         ></div>
       </div>
     {:else if quiz && currentQuestion}
@@ -201,7 +235,7 @@
         <div class="flex justify-between items-center mb-2">
           <a
             href="/quiz"
-            class="text-sm font-bold tracking-[0.1em] text-orange-800 hover:text-orange-950 uppercase no-underline flex items-center gap-1"
+            class="text-sm font-bold tracking-[0.1em] text-slate-600 hover:text-slate-900 uppercase no-underline flex items-center gap-1"
           >
             <svg
               class="w-4 h-4"
@@ -222,24 +256,29 @@
 
         <!-- Header Info: Soal ke & Timer -->
         <div
-          class="flex justify-between items-center bg-white/60 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-orange-200"
+          class="flex justify-between items-center bg-white/60 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-slate-200"
         >
           <div
-            class="text-sm font-bold tracking-[0.1em] text-orange-900 uppercase flex flex-col"
+            class="text-sm font-bold tracking-[0.1em] text-slate-800 uppercase flex flex-col"
           >
             <span>{quiz.title}</span>
-            <span class="text-[10px] text-orange-600"
-              >Soal {currentQuestionIndex + 1} / {quiz.questions.length}</span
-            >
+            <div class="flex items-center gap-1.5 mt-1.5">
+              {#each quiz.questions as _, idx}
+                <div
+                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx === currentQuestionIndex ? 'bg-blue-600 scale-125' : idx < currentQuestionIndex ? 'bg-blue-300' : 'bg-slate-200'}"
+                  aria-hidden="true"
+                ></div>
+              {/each}
+            </div>
           </div>
           <div class="flex items-center gap-2">
             <div
-              class="text-xs font-semibold uppercase tracking-wider text-orange-800"
+              class="text-xs font-semibold uppercase tracking-wider text-slate-600"
             >
               Waktu:
             </div>
             <div
-              class="w-10 h-10 rounded-full bg-orange-100 border border-orange-300 flex items-center justify-center font-bold text-orange-900 shadow-sm {timeLeft <=
+              class="w-10 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm {timeLeft <=
               5
                 ? 'text-red-600 bg-red-50 border-red-200 animate-pulse'
                 : ''}"
@@ -252,10 +291,10 @@
         <!-- Question Card -->
         <div
           in:fade={{ duration: 300 }}
-          class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-orange-200 flex flex-col gap-8"
+          class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-slate-200 flex flex-col gap-8"
         >
           <h2
-            class="text-xl sm:text-2xl font-bold text-orange-950 leading-tight"
+            class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
           >
             {currentQuestion.question}
           </h2>
@@ -264,10 +303,10 @@
             {#each currentQuestion.options as option, optIndex}
               <button
                 onclick={() => handleAnswer(option, optIndex)}
-                class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-orange-100 hover:border-orange-400 bg-white hover:bg-orange-50 text-orange-900 font-semibold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md transform hover:-translate-y-0.5 active:translate-y-0"
+                class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold transition-colors duration-200 cursor-pointer shadow-sm"
               >
                 <span
-                  class="flex items-center justify-center w-8 h-8 rounded-lg bg-orange-100 text-orange-700 font-bold flex-shrink-0"
+                  class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 text-slate-700 font-bold flex-shrink-0"
                 >
                   {String.fromCharCode(65 + optIndex)}
                 </span>
@@ -280,28 +319,28 @@
         <!-- Result Modal / Card -->
         <div
           in:slide
-          class="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-orange-300 flex flex-col gap-8 relative overflow-hidden"
+          class="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-slate-300 flex flex-col gap-8 relative overflow-hidden"
         >
           <!-- Score Section -->
           <div
-            class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-orange-100 pb-8"
+            class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8"
           >
             <div
-              class="text-sm font-bold tracking-[0.2em] uppercase text-orange-800 mb-2"
+              class="text-sm font-bold tracking-[0.2em] uppercase text-slate-600 mb-2"
             >
               Skor Akhir
             </div>
             <div
-              class="text-[5rem] leading-none font-black text-orange-600 drop-shadow-sm"
+              class="text-[5rem] leading-none font-black text-blue-600 drop-shadow-sm"
             >
               {score}
             </div>
-            <p class="text-orange-900/70 font-medium text-sm">
+            <p class="text-slate-600 font-medium text-sm">
               Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quiz
                 .questions.length} Soal
             </p>
             {#if isSubmitting}
-              <p class="text-xs text-orange-500 font-medium animate-pulse">
+              <p class="text-xs text-blue-500 font-medium animate-pulse">
                 Menyimpan skor...
               </p>
             {/if}
@@ -310,7 +349,7 @@
           <!-- Review Section -->
           <div class="flex flex-col gap-6 relative z-10">
             <h3
-              class="text-lg font-bold tracking-[0.1em] text-orange-950 uppercase border-l-4 border-orange-400 pl-3"
+              class="text-lg font-bold tracking-[0.1em] text-slate-800 uppercase border-l-4 border-blue-400 pl-3"
             >
               Ulasan Jawaban
             </h3>
@@ -320,10 +359,10 @@
             >
               {#each userAnswers as ans, index}
                 <div
-                  class="p-4 rounded-xl border border-orange-100 bg-white/50 space-y-2"
+                  class="p-4 rounded-xl border border-slate-200 bg-white/50 space-y-2"
                 >
                   <div class="flex justify-between items-start gap-4">
-                    <p class="font-semibold text-orange-950 text-sm m-0">
+                    <p class="font-semibold text-slate-800 text-sm m-0">
                       {index + 1}. {ans.question}
                     </p>
                     {#if ans.isCorrect}
@@ -341,7 +380,7 @@
 
                   <div class="text-sm flex flex-col gap-1 mt-2">
                     <div class="flex gap-2 items-center">
-                      <span class="text-orange-800/60 font-medium"
+                      <span class="text-slate-500 font-medium"
                         >Jawaban Anda:</span
                       >
                       <span
@@ -354,7 +393,7 @@
                     </div>
                     {#if !ans.isCorrect}
                       <div class="flex gap-2 items-center">
-                        <span class="text-orange-800/60 font-medium"
+                        <span class="text-slate-500 font-medium"
                           >Jawaban Benar:</span
                         >
                         <span class="text-green-700 font-semibold"
@@ -371,13 +410,13 @@
           <div class="flex justify-center pt-4 relative z-10 gap-4">
             <a
               href="/quiz"
-              class="inline-flex items-center justify-center px-6 py-3 text-xs tracking-[0.1em] font-bold uppercase text-orange-900 bg-white border border-orange-300 hover:border-orange-500 hover:text-orange-950 transition-all duration-300 rounded-lg shadow-sm cursor-pointer no-underline"
+              class="inline-flex items-center justify-center px-6 py-3 text-xs tracking-[0.1em] font-bold uppercase text-slate-700 bg-white border border-slate-300 hover:border-slate-500 hover:text-slate-900 transition-all duration-300 rounded-lg shadow-sm cursor-pointer no-underline"
             >
               Kembali
             </a>
             <button
               onclick={restartQuiz}
-              class="inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white bg-orange-500 border border-transparent hover:bg-orange-600 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-lg"
+              class="inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white bg-blue-600 border border-transparent hover:bg-blue-700 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-lg"
             >
               Ulangi Kuis
             </button>
@@ -393,14 +432,14 @@
     width: 6px;
   }
   .custom-scrollbar::-webkit-scrollbar-track {
-    background: rgba(255, 237, 213, 0.5);
+    background: rgba(241, 245, 249, 0.5); /* slate-100 */
     border-radius: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb {
-    background: rgba(251, 146, 60, 0.5);
+    background: rgba(148, 163, 184, 0.5); /* slate-400 */
     border-radius: 4px;
   }
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-    background: rgba(234, 88, 12, 0.8);
+    background: rgba(71, 85, 105, 0.8); /* slate-600 */
   }
 </style>

@@ -32,7 +32,7 @@
   <!-- Header -->
   <div class="mb-8">
     <h1
-      class="text-2xl font-extrabold text-orange-950 sm:text-3xl tracking-tight drop-shadow-sm"
+      class="text-2xl font-extrabold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
     >
       Selamat datang kembali! 👋
     </h1>
@@ -42,31 +42,31 @@
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Typing Progress Section -->
     <div
-      class="bg-white/60 backdrop-blur-md rounded-3xl border border-orange-200 shadow-xl shadow-orange-900/10 overflow-hidden"
+      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
     >
       <div
-        class="px-6 py-5 border-b border-orange-200 flex justify-between items-center bg-white/40"
+        class="px-6 py-5 border-b border-slate-200 flex justify-between items-center bg-white/40"
       >
-        <h3 class="text-lg font-bold text-orange-950 drop-shadow-sm m-0">
+        <h3 class="text-lg font-bold text-slate-900 drop-shadow-sm m-0">
           Progress Mengetik 10 Jari
         </h3>
         <a
           href="/mengetik"
-          class="text-sm font-medium text-orange-800 hover:text-orange-950 bg-white/50 border border-orange-300 hover:bg-white/80 px-3 py-1.5 rounded-lg transition-colors no-underline"
+          class="text-sm font-medium text-slate-600 hover:text-slate-900 bg-white/50 border border-slate-300 hover:bg-white/80 px-3 py-1.5 rounded-lg transition-colors no-underline"
           >Lanjutkan Latihan</a
         >
       </div>
 
       <div class="p-6">
-        <h4 class="text-sm font-medium text-orange-800 uppercase tracking-wider mb-4 m-0">Statistik Pelajaran</h4>
+        <h4 class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 m-0">Statistik Pelajaran</h4>
         <div class="grid grid-cols-2 gap-4 mb-8">
           <div
-            class="bg-amber-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-amber-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-amber-900/10 transition-all"
+            class="bg-sky-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-900/10 transition-all"
           >
             <span class="text-3xl mb-2 drop-shadow-sm">⭐</span>
-            <span class="text-2xl font-bold text-amber-600 drop-shadow-sm">{totalStars}</span>
+            <span class="text-2xl font-bold text-sky-600 drop-shadow-sm">{totalStars}</span>
             <span
-              class="text-xs font-medium text-amber-800 uppercase tracking-wide mt-1"
+              class="text-xs font-medium text-sky-800 uppercase tracking-wide mt-1"
               >Total Bintang</span
             >
           </div>
@@ -84,17 +84,17 @@
           </div>
         </div>
 
-        <div class="mt-4 pt-4 border-t border-orange-200 flex justify-end">
+        <div class="mt-4 pt-4 border-t border-slate-200 flex justify-end">
           <a
             href="/dashboard/card-memory"
-            class="text-sm font-medium text-orange-900 hover:text-orange-950 bg-white border border-orange-300 hover:bg-orange-50 px-4 py-2 rounded-lg transition-colors no-underline flex items-center gap-2 shadow-sm"
+            class="text-sm font-medium text-slate-800 hover:text-slate-900 bg-white border border-slate-300 hover:bg-slate-50 px-4 py-2 rounded-lg transition-colors no-underline flex items-center gap-2 shadow-sm"
           >
             <span>Buka Card Memory</span>
             <span class="text-lg drop-shadow-sm">🎴</span>
           </a>
         </div>
 
-        <h4 class="text-sm font-medium text-orange-800 uppercase tracking-wider mb-4 mt-8 m-0">High Score Game Mengetik</h4>
+        <h4 class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 mt-8 m-0">High Score Game Mengetik</h4>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div
             class="bg-rose-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-rose-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-rose-900/10 transition-all"
@@ -133,14 +133,14 @@
             >
           </div>
           <div
-            class="bg-orange-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-orange-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-orange-900/10 transition-all"
+            class="bg-slate-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-slate-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-slate-800/10 transition-all"
           >
             <span class="text-3xl mb-2 drop-shadow-sm">🔤</span>
-            <span class="text-2xl font-bold text-orange-600 drop-shadow-sm"
+            <span class="text-2xl font-bold text-blue-600 drop-shadow-sm"
               >{$gameScores.letters || 0}</span
             >
             <span
-              class="text-[0.65rem] font-medium text-orange-800 uppercase tracking-wide text-center mt-1"
+              class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-wide text-center mt-1"
               >Semua Huruf</span
             >
           </div>
@@ -162,17 +162,17 @@
 
     <!-- History Section -->
     <div
-      class="bg-white/60 backdrop-blur-md rounded-3xl border border-orange-200 shadow-xl shadow-orange-900/10 overflow-hidden"
+      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
     >
-      <div class="px-6 py-5 border-b border-orange-200 bg-white/40">
-        <h3 class="text-lg font-bold text-orange-950 drop-shadow-sm m-0">
+      <div class="px-6 py-5 border-b border-slate-200 bg-white/40">
+        <h3 class="text-lg font-bold text-slate-900 drop-shadow-sm m-0">
           Riwayat Aktivitas Mengetik
         </h3>
       </div>
 
-      <div class="divide-y divide-orange-200 max-h-[400px] overflow-y-auto">
+      <div class="divide-y divide-slate-200 max-h-[400px] overflow-y-auto">
         {#if $gameHistoryStore.length === 0 && $lessonHistoryStore.length === 0}
-          <div class="p-8 text-center text-orange-700 font-medium">
+          <div class="p-8 text-center text-slate-500 font-medium">
             Belum ada riwayat aktivitas. Ayo mulai mengetik!
           </div>
         {:else}
@@ -191,20 +191,20 @@
               class="p-4 sm:p-5 flex items-center gap-4 hover:bg-white/50 transition-colors"
             >
               <div
-                class="w-10 h-10 rounded-full flex items-center justify-center border border-orange-300 shadow-sm {item.type ===
+                class="w-10 h-10 rounded-full flex items-center justify-center border border-slate-300 shadow-sm {item.type ===
                 'game'
-                  ? 'bg-amber-100 text-amber-600'
+                  ? 'bg-sky-100 text-sky-600'
                   : 'bg-emerald-100 text-emerald-700'} flex-shrink-0 drop-shadow-sm"
               >
                 {item.type === "game" ? "🎮" : "📚"}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-sm font-bold text-orange-950 m-0">
+                <p class="text-sm font-bold text-slate-900 m-0">
                   {item.type === "game"
                     ? `Game Mengetik: ${item.mode.toUpperCase()}`
                     : `Pelajaran ${item.lessonId}`}
                 </p>
-                <p class="text-xs text-orange-800 mt-0.5 font-medium m-0">
+                <p class="text-xs text-slate-600 mt-0.5 font-medium m-0">
                   {new Date(item.created_at).toLocaleDateString("id-ID", {
                     day: "numeric",
                     month: "short",
@@ -215,7 +215,7 @@
               </div>
               <div class="text-right">
                 {#if item.type === "game"}
-                  <span class="text-sm font-bold text-amber-600 drop-shadow-sm"
+                  <span class="text-sm font-bold text-sky-600 drop-shadow-sm"
                     >Skor: {item.score}</span
                   >
                 {:else}
@@ -224,7 +224,7 @@
                       class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 border border-emerald-300"
                       >{item.wpm} WPM</span
                     >
-                    <span class="text-[0.65rem] font-medium text-orange-800 uppercase tracking-wider"
+                    <span class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-wider"
                       >Akurasi {item.accuracy}%</span
                     >
                   </div>

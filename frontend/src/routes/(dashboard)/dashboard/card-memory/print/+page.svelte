@@ -46,7 +46,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-transparent text-orange-950 print:bg-white print:text-black print:min-h-0"
+  class="min-h-screen bg-transparent text-slate-900 print:bg-white print:text-black print:min-h-0"
 >
   <header
     class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all print:hidden"
@@ -58,17 +58,17 @@
         <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl">
           <a
             href="/dashboard/card-memory"
-            class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-medium transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium transition-all"
             >Arsip</a
           >
           <span
-            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-orange-950 shadow-sm font-medium transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-slate-900 shadow-sm font-medium transition-all"
           >
             Print ({queueCards.length})
           </span>
           <a
             href="/dashboard/card-memory/trash"
-            class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-medium flex items-center gap-1.5 transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium flex items-center gap-1.5 transition-all"
           >
             Sampah
             {#if trashCount.value > 0}
@@ -85,7 +85,7 @@
         {#if queueCards.length > 0}
           <button
             onclick={handlePrint}
-            class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-orange-500 text-white hover:bg-orange-600 font-medium transition-all shadow-sm cursor-pointer"
+            class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer"
           >
             <svg
               class="w-4 h-4"
@@ -105,7 +105,7 @@
         {/if}
         <button
           onclick={() => (showClearConfirm = true)}
-          class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
+          class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
         >
           Kosongkan
         </button>
@@ -116,39 +116,39 @@
   <main class="max-w-5xl mx-auto p-4 print:p-0 pt-24 md:pt-20 print:pt-0">
     <!-- Settings toolbar -->
     <div
-      class="mb-4 p-3 w-fit bg-white/80 rounded-xl border border-orange-200 flex items-center gap-4 flex-wrap print:hidden"
+      class="mb-4 p-3 w-fit bg-white/80 rounded-xl border border-slate-200 flex items-center gap-4 flex-wrap print:hidden"
     >
       <div class="flex items-center gap-1.5">
-        <span class="text-xs text-orange-800 w-16">Gambar</span>
+        <span class="text-xs text-slate-600 w-16">Gambar</span>
         <button
           onclick={() => printSettings.zoomOut()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
           >-</button
         >
-        <span class="text-xs font-medium text-orange-900 w-10 text-center"
+        <span class="text-xs font-medium text-slate-800 w-10 text-center"
           >{zoomPct}%</span
         >
         <button
           onclick={() => printSettings.zoomIn()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
           >+</button
         >
       </div>
       <div class="w-px h-6 bg-gray-200"></div>
 
       <div class="flex items-center gap-1.5">
-        <span class="text-xs text-orange-800 w-16">Konten</span>
+        <span class="text-xs text-slate-600 w-16">Konten</span>
         <button
           onclick={() => printSettings.contentDown()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-sm cursor-pointer"
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
           >A</button
         >
-        <span class="text-xs font-medium text-orange-900 w-10 text-center"
+        <span class="text-xs font-medium text-slate-800 w-10 text-center"
           >{contentPct}%</span
         >
         <button
           onclick={() => printSettings.contentUp()}
-          class="w-7 h-7 flex items-center justify-center rounded border border-orange-300 text-orange-800 hover:bg-white text-base font-bold cursor-pointer"
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-base font-bold cursor-pointer"
           >A</button
         >
       </div>
@@ -156,23 +156,23 @@
 
       <button
         onclick={() => printSettings.reset()}
-        class="px-2 py-1 text-xs rounded border border-orange-200 text-orange-700 hover:text-orange-800 cursor-pointer"
+        class="px-2 py-1 text-xs rounded border border-slate-200 text-slate-500 hover:text-slate-600 cursor-pointer"
       >
         Reset
       </button>
     </div>
 
     <div class="mb-4 print:hidden">
-      <p class="text-sm text-orange-800">
+      <p class="text-sm text-slate-600">
         {queueCards.length} kartu dalam antrian
       </p>
     </div>
 
     {#if queueCards.length === 0}
       <div
-        class="text-center py-12 bg-white/80 rounded-xl border border-orange-200"
+        class="text-center py-12 bg-white/80 rounded-xl border border-slate-200"
       >
-        <p class="text-orange-700 mb-2">Belum ada kartu di antrian print.</p>
+        <p class="text-slate-500 mb-2">Belum ada kartu di antrian print.</p>
         <a
           href="/dashboard/card-memory"
           class="text-indigo-400 hover:underline text-sm"
@@ -185,7 +185,7 @@
           group.size === 6 ? "Kecil" : group.size === 4 ? "Sedang" : "Besar"}
         <div class="mb-6 print:mb-0">
           {#if groups().length > 1}
-            <p class="text-xs text-orange-800 mb-2 print:hidden">
+            <p class="text-xs text-slate-600 mb-2 print:hidden">
               {label} · {group.size}/A4 · {group.cards.length} kartu
             </p>
           {/if}
@@ -205,7 +205,7 @@
     {/if}
   </main>
 
-  <footer class="text-center text-xs text-orange-700 py-6 print:hidden">
+  <footer class="text-center text-xs text-slate-500 py-6 print:hidden">
     Kartu Rangkuman Pelajaran SD & SMP — Cetak di kertas A4 Portrait (210mm ×
     297mm)
   </footer>
@@ -230,17 +230,17 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-orange-950">
+        <h3 class="text-lg font-semibold text-slate-900">
           Kosongkan Antrian Print
         </h3>
-        <p class="text-sm text-orange-800 mt-1">
+        <p class="text-sm text-slate-600 mt-1">
           Semua {queueCards.length} kartu akan dihapus dari antrian.
         </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (showClearConfirm = false)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 text-slate-600 hover:bg-transparent text-slate-900 cursor-pointer"
           >Batal</button
         >
         <button

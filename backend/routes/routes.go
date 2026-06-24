@@ -118,6 +118,37 @@ func SetupRoutes(r *gin.Engine) {
 		}
 	}
 
+	// Folders API routes (Teacher only)
+	folders := r.Group("/api/folders")
+	folders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		folders.GET("", controllers.GetFolders)
+		folders.POST("", controllers.CreateFolder)
+		folders.PUT("/:id", controllers.UpdateFolder)
+		folders.DELETE("/:id", controllers.DeleteFolder)
+	}
+
+	// Notes API routes (Teacher only)
+	notes := r.Group("/api/notes")
+	notes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		notes.GET("", controllers.GetNotes)
+		notes.POST("", controllers.CreateNote)
+		notes.PUT("/:id", controllers.UpdateNote)
+		notes.DELETE("/:id", controllers.DeleteNote)
+	}
+
+	// Absences API routes (Teacher only)
+	absences := r.Group("/api/absences")
+	absences.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		absences.POST("", controllers.CreateAbsence)
+		absences.GET("/recap", controllers.GetAbsenceRecap)
+		absences.GET("/user/:id", controllers.GetAbsenceHistory)
+		absences.PUT("/:id", controllers.UpdateAbsence)
+		absences.DELETE("/:id", controllers.DeleteAbsence)
+	}
+
 	// Scores API routes (User submission)
 	scores := r.Group("/api/scores")
 	scores.Use(middleware.AuthMiddleware())

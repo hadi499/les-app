@@ -21,16 +21,16 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-50 p-4 sm:p-8 text-orange-950 font-sans selection:bg-white selection:text-orange-900"
+  class="min-h-screen bg-slate-50 p-4 sm:p-8 text-slate-900 font-sans selection:bg-blue-200 selection:text-blue-900"
 >
   <div class="max-w-5xl mx-auto relative z-10">
     <header class="text-center mb-10 sm:mb-16">
       <h1 class="text-3xl sm:text-4xl md:text-5xl font-medium mb-4">
-        🎮 <span class="text-orange-800 drop-shadow-md bg-clip-text"
+        🎮 <span class="text-slate-700 drop-shadow-md bg-clip-text"
           >Game Typing Seru!</span
         >
       </h1>
-      <p class="text-lg sm:text-xl text-orange-800 tracking-wide">
+      <p class="text-lg sm:text-xl text-slate-600 tracking-wide">
         Pilih mode latihan yang ingin kamu mainkan
       </p>
     </header>
@@ -38,7 +38,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8 mb-12">
       <!-- Left -->
       <button
-        class="bg-white/60 backdrop-blur-sm border-2 border-orange-300 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-500/20 hover:border-blue-500 hover:bg-blue-900/30 group"
+        class="bg-white/60 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-blue-500/20 hover:border-blue-500 hover:bg-blue-900/10 group"
         onclick={() => selectMode("left")}
       >
         <div
@@ -47,11 +47,11 @@
           👈
         </div>
         <h2
-          class="text-xl sm:text-2xl font-medium mb-2 text-orange-950 drop-shadow-sm"
+          class="text-xl sm:text-2xl font-medium mb-2 text-slate-900 drop-shadow-sm"
         >
           Home Row Kiri
         </h2>
-        <p class="text-sm sm:text-base text-orange-800 mb-6 font-light">
+        <p class="text-sm sm:text-base text-slate-600 mb-6 font-light">
           Latih jari tangan kiri
         </p>
         <div
@@ -73,7 +73,7 @@
 
       <!-- Right -->
       <button
-        class="bg-white/60 backdrop-blur-sm border-2 border-orange-300 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-pink-500/20 hover:border-pink-500 hover:bg-pink-900/30 group"
+        class="bg-white/60 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-pink-500/20 hover:border-pink-500 hover:bg-pink-900/10 group"
         onclick={() => selectMode("right")}
       >
         <div
@@ -82,11 +82,11 @@
           👉
         </div>
         <h2
-          class="text-xl sm:text-2xl font-medium mb-2 text-orange-950 drop-shadow-sm"
+          class="text-xl sm:text-2xl font-medium mb-2 text-slate-900 drop-shadow-sm"
         >
           Home Row Kanan
         </h2>
-        <p class="text-sm sm:text-base text-orange-800 mb-6 font-light">
+        <p class="text-sm sm:text-base text-slate-600 mb-6 font-light">
           Latih jari tangan kanan
         </p>
         <div
@@ -108,7 +108,7 @@
 
       <!-- Both -->
       <button
-        class="bg-white/60 backdrop-blur-sm border-2 border-orange-300 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-900/10 hover:border-emerald-500 hover:bg-green-900/30 group"
+        class="bg-white/60 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-emerald-900/10 hover:border-emerald-500 hover:bg-green-900/10 group"
         onclick={() => selectMode("both")}
       >
         <div
@@ -117,11 +117,11 @@
           🎯
         </div>
         <h2
-          class="text-xl sm:text-2xl font-medium mb-2 text-orange-950 drop-shadow-sm"
+          class="text-xl sm:text-2xl font-medium mb-2 text-slate-900 drop-shadow-sm"
         >
           Home Row Lengkap
         </h2>
-        <p class="text-sm sm:text-base text-orange-800 mb-6 font-light">
+        <p class="text-sm sm:text-base text-slate-600 mb-6 font-light">
           Latih kedua tangan sekaligus
         </p>
         <div
@@ -143,7 +143,7 @@
 
       <!-- Letters -->
       <button
-        class="bg-white/60 backdrop-blur-sm border-2 border-orange-300 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-900/10 hover:border-amber-500 hover:bg-amber-900/30 group"
+        class="bg-white/60 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-amber-900/10 hover:border-amber-500 hover:bg-amber-900/10 group"
         onclick={() => selectMode("letters")}
       >
         <div
@@ -152,11 +152,11 @@
           🔤
         </div>
         <h2
-          class="text-xl sm:text-2xl font-medium mb-2 text-orange-950 drop-shadow-sm"
+          class="text-xl sm:text-2xl font-medium mb-2 text-slate-900 drop-shadow-sm"
         >
           Semua Huruf
         </h2>
-        <p class="text-sm sm:text-base text-orange-800 mb-6 font-light">
+        <p class="text-sm sm:text-base text-slate-600 mb-6 font-light">
           Latih semua huruf A-Z
         </p>
         <div
@@ -178,7 +178,7 @@
 
       <!-- All -->
       <button
-        class="md:col-span-2 bg-white/60 backdrop-blur-sm border-2 border-orange-300 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 hover:border-purple-500 hover:bg-purple-900/30 group"
+        class="md:col-span-2 bg-white/60 backdrop-blur-sm border-2 border-slate-200 rounded-3xl p-6 sm:p-8 text-center cursor-pointer transition-all hover:-translate-y-2 hover:shadow-xl hover:shadow-purple-500/20 hover:border-purple-500 hover:bg-purple-900/10 group"
         onclick={() => selectMode("all")}
       >
         <div
@@ -187,11 +187,11 @@
           🚀
         </div>
         <h2
-          class="text-xl sm:text-2xl font-medium mb-2 text-orange-950 drop-shadow-sm"
+          class="text-xl sm:text-2xl font-medium mb-2 text-slate-900 drop-shadow-sm"
         >
           Semua Huruf & Karakter
         </h2>
-        <p class="text-sm sm:text-base text-orange-800 mb-6 font-light">
+        <p class="text-sm sm:text-base text-slate-600 mb-6 font-light">
           Tantang dirimu dengan semua tombol
         </p>
         <div
@@ -213,12 +213,12 @@
     </div>
 
     <div
-      class="bg-white/60 backdrop-blur-sm border border-orange-200 rounded-2xl p-6 sm:p-8"
+      class="bg-white/60 backdrop-blur-sm border border-slate-200 rounded-2xl p-6 sm:p-8"
     >
       <h3 class="text-xl font-medium text-amber-600 mb-4 drop-shadow-sm">
         Cara Bermain:
       </h3>
-      <ul class="list-disc pl-6 space-y-2 text-orange-800 font-light m-0">
+      <ul class="list-disc pl-6 space-y-2 text-slate-600 font-light m-0">
         <li>Huruf akan melayang dari bawah ke atas</li>
         <li>Ketik huruf sebelum menyentuh garis atas</li>
         <li>Setiap 100 poin, kecepatan meningkat</li>

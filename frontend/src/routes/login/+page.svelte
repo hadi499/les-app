@@ -1,14 +1,24 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { onMount } from "svelte";
+  import { page } from "$app/state";
 
   let username = $state("");
   let password = $state("");
   let errorMsg = $state("");
+  let successMsg = $state("");
   let isLoading = $state(false);
   let showPassword = $state(false);
 
   onMount(async () => {
+    if (page.url.searchParams.get("registered") === "true") {
+      successMsg = "Pendaftaran berhasil! Silakan masuk.";
+      // Hapus query param dari URL tanpa mereload halaman
+      const url = new URL(window.location.href);
+      url.searchParams.delete("registered");
+      window.history.replaceState({}, "", url);
+    }
+
     try {
       const res = await fetch(`/me`, {
         credentials: "include",
@@ -59,7 +69,7 @@
 
 <!-- Page wrapper -->
 <div
-  class="relative min-h-screen bg-orange-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-orange-200 selection:text-orange-900"
+  class="relative min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-blue-200 selection:text-blue-900"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
@@ -67,10 +77,7 @@
       class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-amber-100/50 rounded-full blur-[120px]"
-    ></div>
-    <div
-      class="absolute inset-0 bg-[linear-gradient(to_right,#fbbf24_1px,transparent_1px),linear-gradient(to_bottom,#fbbf24_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_80%_80%_at_50%_50%,#000_20%,transparent_100%)] opacity-20"
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
     ></div>
   </div>
 
@@ -79,7 +86,7 @@
     <!-- Header -->
     <div class="flex flex-col items-center gap-2 text-center">
       <div
-        class="w-13 h-13 bg-white border border-orange-200 text-orange-600 rounded-2xl flex items-center justify-center shadow-sm mb-1"
+        class="w-13 h-13 bg-white border border-slate-200 text-blue-600 rounded-2xl flex items-center justify-center shadow-sm mb-1"
         aria-hidden="true"
       >
         <svg
@@ -98,18 +105,18 @@
         </svg>
       </div>
       <h1
-        class="text-2xl font-bold tracking-tight text-orange-950 drop-shadow-sm"
+        class="text-2xl font-bold tracking-tight text-slate-900 drop-shadow-sm"
       >
         Selamat datang
       </h1>
-      <p class="text-sm text-orange-800 font-medium">
+      <p class="text-sm text-slate-600 font-medium">
         Masuk untuk melanjutkan ke portal belajar
       </p>
     </div>
 
     <!-- Card -->
     <div
-      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 shadow-lg p-8"
+      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-lg p-8"
     >
       <form onsubmit={handleLogin} novalidate class="flex flex-col gap-4">
         <!-- Error -->
@@ -139,11 +146,35 @@
           </div>
         {/if}
 
+        <!-- Success -->
+        {#if successMsg}
+          <div
+            class="flex items-start gap-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-3.5 py-3 text-sm leading-snug"
+            role="status"
+          >
+            <svg
+              class="w-4 h-4 shrink-0 mt-0.5"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+            >
+              <circle cx="12" cy="12" r="10" /><polyline
+                points="9 12 11 14 15 10"
+              />
+            </svg>
+            <span>{successMsg}</span>
+          </div>
+        {/if}
+
         <!-- Username -->
         <div class="flex flex-col gap-1.5">
           <label
             for="username"
-            class="text-xs font-bold text-orange-800 tracking-wide uppercase"
+            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
           >
             Username
           </label>
@@ -154,7 +185,7 @@
             required
             bind:value={username}
             placeholder="Masukkan username Anda"
-            class="w-full px-3.5 py-2.5 text-sm text-orange-950 bg-white/80 border border-orange-200 rounded-xl outline-none placeholder:text-orange-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/50 transition-all"
+            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white/80 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
           />
         </div>
 
@@ -162,7 +193,7 @@
         <div class="flex flex-col gap-1.5">
           <label
             for="password"
-            class="text-xs font-bold text-orange-800 tracking-wide uppercase"
+            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
           >
             Password
           </label>
@@ -175,11 +206,11 @@
               bind:value={password}
               placeholder="••••••••"
               autocomplete="current-password"
-              class="w-full px-3.5 py-2.5 pr-10 text-sm text-orange-950 bg-white/80 border border-orange-200 rounded-xl outline-none placeholder:text-orange-400 focus:border-orange-400 focus:bg-white focus:ring-2 focus:ring-orange-400/50 transition-all"
+              class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-white/80 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
             />
             <button
               type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-orange-400 hover:text-orange-600 transition-colors"
+              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
               onclick={() => (showPassword = !showPassword)}
               aria-label={showPassword ? "Sembunyikan password" : "Tampilkan password"}
             >
@@ -196,7 +227,7 @@
         <button
           type="submit"
           disabled={isLoading}
-          class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-orange-600 text-white text-sm font-bold rounded-xl border border-orange-500 hover:bg-orange-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
+          class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl border border-blue-500 hover:bg-blue-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
         >
           {#if isLoading}
             <span
@@ -211,11 +242,11 @@
       </form>
 
       <!-- Register link -->
-      <p class="mt-5 text-center text-xs text-orange-800 font-medium">
+      <p class="mt-5 text-center text-xs text-slate-600 font-medium">
         Belum punya akun?
         <a
           href="/register"
-          class="text-orange-600 font-bold hover:text-orange-500 hover:underline transition-colors"
+          class="text-blue-600 font-bold hover:text-blue-500 hover:underline transition-colors"
         >
           Daftar sekarang
         </a>
@@ -225,7 +256,7 @@
     <!-- Back link -->
     <a
       href="/"
-      class="group flex items-center gap-1.5 text-sm text-orange-700 hover:text-orange-900 font-medium transition-colors"
+      class="group flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-800 font-medium transition-colors"
     >
       <svg
         class="w-3.5 h-3.5 group-hover:-translate-x-0.5 transition-transform"
@@ -265,7 +296,7 @@
   input:-webkit-autofill:focus,
   input:-webkit-autofill:active {
     -webkit-box-shadow: 0 0 0 30px white inset !important;
-    -webkit-text-fill-color: #431407 !important; /* text-orange-950 */
+    -webkit-text-fill-color: #0f172a !important; /* text-slate-900 */
     border-radius: 0.75rem; /* rounded-xl */
   }
 </style>

@@ -7,6 +7,7 @@
   let isDropdownOpen = $state(false);
   let isMobileMenuOpen = $state(false);
   let authChecked = $state(false);
+  let dropdownRef: HTMLDivElement | undefined = $state();
 
   const currentPath = $derived(page.url?.pathname || "/");
 
@@ -55,20 +56,32 @@
   }
 </script>
 
+<svelte:window
+  onclick={(e) => {
+    if (
+      isDropdownOpen &&
+      dropdownRef &&
+      !dropdownRef.contains(e.target as Node)
+    ) {
+      isDropdownOpen = false;
+    }
+  }}
+/>
+
 <nav
-  class="bg-transparent backdrop-blur-md shadow-md fixed top-0 w-full z-50 subpixel-antialiased"
+  class="bg-white/80 backdrop-blur-md shadow-md border-b border-slate-100 fixed top-0 w-full z-50 subpixel-antialiased"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
       <div class="flex-shrink-0 flex items-center gap-3">
         <div
-          class="w-10 h-10 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center justify-center text-orange-600 font-extrabold text-xl"
+          class="w-10 h-10 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-extrabold text-xl"
         >
           LB
         </div>
         <a
           href="/"
-          class="font-extrabold text-xl text-orange-950 tracking-tight no-underline hover:text-orange-100 transition-colors"
+          class="font-extrabold text-xl text-slate-900 tracking-tight no-underline hover:text-blue-600 transition-colors"
           >Les Balongarut</a
         >
       </div>
@@ -77,8 +90,8 @@
           href="/"
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath ===
           '/'
-            ? 'border-orange-500 text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-orange-500'}"
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}"
           >Beranda</a
         >
         <a
@@ -86,8 +99,8 @@
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/mengetik',
           )
-            ? 'border-orange-500 text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-orange-500'}"
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}"
           >Mengetik 10 Jari</a
         >
         <a
@@ -95,8 +108,8 @@
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/cetak-kode',
           )
-            ? 'border-orange-500 text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-orange-500'}"
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}"
           >Cetak Kode</a
         >
         <a
@@ -104,17 +117,16 @@
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/quiz',
           )
-            ? 'border-orange-500 text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-orange-500'}"
-          >Kuis</a
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}">Kuis</a
         >
         <a
           href="/berhitung"
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/berhitung',
           )
-            ? 'border-orange-500 text-orange-950'
-            : 'border-transparent text-orange-950 hover:text-orange-500'}"
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}"
           >Berhitung</a
         >
 
@@ -122,45 +134,38 @@
           <div class="ml-4 w-10 h-10"></div>
         {:else if isAuthenticated}
           <!-- Avatar Dropdown -->
-          <div class="relative ml-4">
+          <div class="relative ml-4" bind:this={dropdownRef}>
             <button
               onclick={() => (isDropdownOpen = !isDropdownOpen)}
               class="flex items-center gap-3 focus:outline-none cursor-pointer border-none bg-transparent p-0 group"
             >
               <div
-                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm group-hover:ring-2 group-hover:ring-white transition-all"
+                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm group-hover:ring-2 group-hover:ring-blue-100 transition-all"
               >
                 {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
               </div>
             </button>
 
             {#if isDropdownOpen}
-              <!-- Backdrop for closing dropdown -->
-              <button
-                class="fixed inset-0 z-40 w-full h-full cursor-default focus:outline-none border-none bg-transparent"
-                onclick={() => (isDropdownOpen = false)}
-                aria-label="Tutup dropdown"
-              ></button>
-
               <!-- Dropdown Menu -->
               <div
                 class="absolute right-0 mt-2 w-48 bg-white rounded-xl shadow-xl ring-1 ring-black/5 z-50 overflow-hidden animate-in fade-in slide-in-from-top-2 duration-200"
               >
                 <div
-                  class="px-4 py-3 border-b border-orange-100 bg-orange-50 text-left"
+                  class="px-4 py-3 border-b border-slate-100 bg-slate-50 text-left"
                 >
-                  <p class="text-xs text-orange-800 m-0">Masuk sebagai</p>
-                  <p class="text-sm font-bold text-orange-950 truncate m-0">
+                  <p class="text-xs text-slate-600 m-0">Masuk sebagai</p>
+                  <p class="text-sm font-bold text-slate-900 truncate m-0">
                     {user?.username}
                   </p>
                 </div>
                 <div class="py-1">
                   <a
                     href="/dashboard"
-                    class="flex items-center px-4 py-2 text-sm text-orange-900 hover:bg-orange-100 font-medium no-underline"
+                    class="flex items-center px-4 py-2 text-sm text-slate-700 hover:bg-slate-50 font-medium no-underline"
                   >
                     <svg
-                      class="mr-3 w-4 h-4 text-orange-500"
+                      class="mr-3 w-4 h-4 text-slate-500"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -174,7 +179,7 @@
                     Dashboard
                   </a>
                 </div>
-                <div class="border-t border-orange-100 py-1 text-left">
+                <div class="border-t border-slate-100 py-1 text-left">
                   <button
                     onclick={handleLogout}
                     class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 font-medium border-none bg-transparent cursor-pointer"
@@ -200,7 +205,7 @@
         {:else}
           <a
             href="/login"
-            class="ml-4 px-4 py-2 rounded-lg bg-white text-orange-900 hover:bg-orange-50 font-semibold text-sm transition-colors border border-transparent shadow-sm no-underline"
+            class="ml-4 px-4 py-2 rounded-lg bg-white text-slate-800 hover:bg-slate-50 hover:text-blue-600 font-semibold text-sm transition-colors border border-slate-200 shadow-sm no-underline"
             >Masuk Portal</a
           >
         {/if}
@@ -210,20 +215,20 @@
       <div class="flex items-center sm:hidden gap-4">
         {#if authChecked && isAuthenticated}
           <div
-            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm"
+            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm"
           >
             {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
           </div>
         {:else if authChecked && !isAuthenticated}
           <a
             href="/login"
-            class="px-3 py-1.5 rounded-lg bg-white text-orange-900 hover:bg-orange-50 font-semibold text-xs transition-colors border border-transparent shadow-sm no-underline"
+            class="px-3 py-1.5 rounded-lg bg-white text-slate-800 hover:bg-slate-50 hover:text-blue-600 font-semibold text-xs transition-colors border border-slate-200 shadow-sm no-underline"
             >Masuk</a
           >
         {/if}
         <button
           onclick={toggleMobileMenu}
-          class="inline-flex items-center justify-center p-2 rounded-md text-orange-950 hover:text-white hover:bg-orange-500/50 focus:outline-none border-none bg-transparent cursor-pointer transition-colors"
+          class="inline-flex items-center justify-center p-2 rounded-md text-slate-800 hover:text-blue-600 hover:bg-blue-50 focus:outline-none border-none bg-transparent cursor-pointer transition-colors"
           aria-expanded="false"
         >
           <span class="sr-only">Buka menu utama</span>
@@ -264,7 +269,7 @@
   <!-- Mobile menu dropdown -->
   {#if isMobileMenuOpen}
     <div
-      class="sm:hidden bg-white/95 shadow-lg border-t border-orange-100 animate-in slide-in-from-top-2 duration-200"
+      class="sm:hidden bg-white/95 shadow-lg border-t border-slate-100 animate-in slide-in-from-top-2 duration-200"
     >
       <div class="px-2 pt-2 pb-3 space-y-1">
         <a
@@ -272,8 +277,8 @@
           onclick={closeMobileMenu}
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath ===
           '/'
-            ? 'bg-orange-100 text-orange-900'
-            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Beranda</a
         >
         <a
@@ -282,8 +287,8 @@
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
             '/mengetik',
           )
-            ? 'bg-orange-100 text-orange-900'
-            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Mengetik 10 Jari</a
         >
         <a
@@ -292,8 +297,8 @@
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
             '/cetak-kode',
           )
-            ? 'bg-orange-100 text-orange-900'
-            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Cetak Kode</a
         >
         <a
@@ -302,9 +307,8 @@
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
             '/quiz',
           )
-            ? 'bg-orange-100 text-orange-900'
-            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
-          >Kuis</a
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">Kuis</a
         >
         <a
           href="/berhitung"
@@ -312,28 +316,26 @@
           class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
             '/berhitung',
           )
-            ? 'bg-orange-100 text-orange-900'
-            : 'text-orange-800 hover:bg-orange-50 hover:text-orange-900'}"
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Berhitung</a
         >
       </div>
       {#if isAuthenticated}
-        <div class="pt-4 pb-3 border-t border-orange-200">
+        <div class="pt-4 pb-3 border-t border-slate-200">
           <div class="flex items-center px-5">
             <div class="flex-shrink-0">
               <div
-                class="h-10 w-10 rounded-full bg-orange-100 flex items-center justify-center text-orange-600 font-bold border border-orange-200 shadow-sm"
+                class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm"
               >
                 {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
               </div>
             </div>
             <div class="ml-3">
-              <div class="text-base font-medium leading-none text-orange-950">
+              <div class="text-base font-medium leading-none text-slate-900">
                 {user?.username}
               </div>
-              <div
-                class="text-sm font-medium leading-none text-orange-800 mt-1"
-              >
+              <div class="text-sm font-medium leading-none text-slate-600 mt-1">
                 Masuk sebagai {user?.username}
               </div>
             </div>
@@ -341,7 +343,7 @@
           <div class="mt-3 px-2 space-y-1">
             <a
               href="/dashboard"
-              class="block px-3 py-2 rounded-md text-base font-medium text-orange-800 hover:text-orange-900 hover:bg-orange-50 no-underline"
+              class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 no-underline"
               >Dashboard</a
             >
             <button

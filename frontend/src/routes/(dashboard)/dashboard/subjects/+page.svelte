@@ -137,19 +137,19 @@
   >
     <div>
       <h1
-        class="text-2xl font-bold text-orange-950 sm:text-3xl tracking-tight drop-shadow-sm"
+        class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
       >
         Mata Pelajaran
       </h1>
       <p
-        class="mt-2 text-orange-800 text-sm sm:text-base font-light tracking-wide"
+        class="mt-2 text-slate-600 text-sm sm:text-base font-light tracking-wide"
       >
         Kelola daftar mata pelajaran untuk nilai ujian harian.
       </p>
     </div>
     <button
       onclick={openAddModal}
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-orange-950 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
+      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
         ><path
@@ -166,7 +166,7 @@
   {#if isLoading}
     <div class="flex justify-center p-12">
       <div
-        class="w-10 h-10 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"
+        class="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
       ></div>
     </div>
   {:else if errorMsg}
@@ -191,7 +191,7 @@
     <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
       {#each subjects as subject}
         <div
-          class="bg-white/60 backdrop-blur-md rounded-2xl border border-orange-200 p-5 shadow-lg shadow-orange-900/5 flex flex-col justify-between hover:border-orange-300 transition-colors"
+          class="bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 p-5 shadow-lg shadow-slate-800/5 flex flex-col justify-between hover:border-slate-300 transition-colors"
         >
           <div class="flex items-center gap-3 mb-4">
             <div
@@ -199,15 +199,15 @@
             >
               {subject.name.charAt(0).toUpperCase()}
             </div>
-            <h3 class="text-lg font-bold text-orange-950 truncate">
+            <h3 class="text-lg font-bold text-slate-900 truncate">
               {subject.name}
             </h3>
           </div>
 
-          <div class="flex justify-end gap-2 pt-3 border-t border-orange-200">
+          <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
             <button
               onclick={() => openEditModal(subject)}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-orange-600 bg-blue-100 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-300"
+              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-300"
             >
               Edit
             </button>
@@ -222,7 +222,7 @@
       {/each}
       {#if subjects.length === 0}
         <div
-          class="col-span-full py-12 text-center text-orange-700 font-light bg-[#EAE4BD]/30 rounded-3xl border border-orange-200"
+          class="col-span-full py-12 text-center text-slate-500 font-light bg-[#EAE4BD]/30 rounded-3xl border border-slate-200"
         >
           Belum ada mata pelajaran.
         </div>
@@ -239,17 +239,17 @@
       onclick={closeModal}
     ></div>
     <div
-      class="relative bg-orange-50 border border-orange-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+      class="relative bg-slate-50 border border-slate-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
     >
       <div
-        class="p-6 border-b border-orange-200 flex justify-between items-center"
+        class="p-6 border-b border-slate-200 flex justify-between items-center"
       >
-        <h3 class="text-xl font-bold text-orange-950">
+        <h3 class="text-xl font-bold text-slate-900">
           {isEditing ? "Edit Mata Pelajaran" : "Tambah Mata Pelajaran"}
         </h3>
         <button
           onclick={closeModal}
-          class="text-orange-700 hover:text-orange-950 transition-colors"
+          class="text-slate-500 hover:text-slate-900 transition-colors"
         >
           <svg
             class="w-6 h-6"
@@ -269,7 +269,7 @@
       <form onsubmit={saveSubject} class="p-6 space-y-4">
         <div>
           <label
-            class="block text-sm font-medium text-orange-800 mb-1.5"
+            class="block text-sm font-medium text-slate-600 mb-1.5"
             for="name">Nama Mata Pelajaran</label
           >
           <input
@@ -277,7 +277,7 @@
             id="name"
             bind:value={formName}
             placeholder="Misal: Matematika, Bahasa Inggris"
-            class="w-full bg-white border border-orange-300 rounded-xl px-4 py-2.5 text-orange-950 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
             required
           />
         </div>
@@ -286,13 +286,13 @@
           <button
             type="button"
             onclick={closeModal}
-            class="px-4 py-2.5 text-sm font-medium text-orange-900 hover:text-orange-950 bg-white hover:bg-orange-100 rounded-xl transition-colors shadow-md"
+            class="px-4 py-2.5 text-sm font-medium text-slate-800 hover:text-slate-900 bg-white hover:bg-slate-100 rounded-xl transition-colors shadow-md"
           >
             Batal
           </button>
           <button
             type="submit"
-            class="px-4 py-2.5 text-sm font-medium text-orange-950 bg-indigo-100 hover:bg-indigo-200 rounded-xl transition-all shadow-md shadow-indigo-900/20"
+            class="px-4 py-2.5 text-sm font-medium text-slate-900 bg-indigo-100 hover:bg-indigo-200 rounded-xl transition-all shadow-md shadow-indigo-900/20"
           >
             {isEditing ? "Simpan" : "Tambahkan"}
           </button>
@@ -329,17 +329,17 @@
           />
         </svg>
       </div>
-      <h3 class="text-xl font-bold text-orange-950 mb-2">
+      <h3 class="text-xl font-bold text-slate-900 mb-2">
         Hapus Mata Pelajaran?
       </h3>
-      <p class="text-sm text-orange-800 mb-6">
+      <p class="text-sm text-slate-600 mb-6">
         Apakah Anda yakin ingin menghapus mata pelajaran ini? Jika ada nilai
         yang menggunakan mata pelajaran ini, penghapusan mungkin akan gagal.
       </p>
       <div class="flex justify-center gap-3">
         <button
           onclick={closeDeleteModal}
-          class="px-4 py-2.5 text-sm font-medium text-orange-900 bg-white border border-orange-300 rounded-xl hover:bg-orange-50 transition-colors"
+          class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
         >
           Batal
         </button>

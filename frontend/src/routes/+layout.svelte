@@ -1,9 +1,10 @@
 <script lang="ts">
   // import favicon from "$lib/assets/favicon.svg";
-  import favicon from "$lib/assets/lb3.png";
+  import favicon from "$lib/assets/lb8.png";
   import "../app.css";
   import { page } from "$app/state";
   import Navbar from "$lib/components/Navbar.svelte";
+  import Toast from "$lib/components/Toast.svelte";
   import type { Snippet } from "svelte";
 
   let { children }: { children: Snippet } = $props();
@@ -33,4 +34,5 @@
   </div>
 {/if}
 
+<Toast />
 {@render children()}

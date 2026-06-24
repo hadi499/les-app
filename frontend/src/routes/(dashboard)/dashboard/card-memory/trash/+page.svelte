@@ -71,7 +71,7 @@
   <title>Trash</title>
 </svelte:head>
 
-<div class="min-h-screen bg-transparent text-orange-950">
+<div class="min-h-screen bg-transparent text-slate-900">
   <header
     class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
   >
@@ -82,16 +82,16 @@
         <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl">
           <a
             href="/dashboard/card-memory"
-            class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-medium transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium transition-all"
             >Arsip</a
           >
           <a
             href="/dashboard/card-memory/print"
-            class="px-4 py-1.5 text-sm rounded-lg text-orange-800 hover:text-orange-950 hover:bg-white/80/60 font-medium flex items-center gap-1.5 transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium flex items-center gap-1.5 transition-all"
             >Print</a
           >
           <span
-            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-orange-950 shadow-sm font-medium transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-slate-900 shadow-sm font-medium transition-all"
           >
             Sampah ({trashCards.length})
           </span>
@@ -102,7 +102,7 @@
         {#if trashCards.length > 0}
           <button
             onclick={() => (showEmptyConfirm = true)}
-            class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-orange-200 text-orange-800 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
+            class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
           >
             Kosongkan Sampah
           </button>
@@ -113,7 +113,7 @@
 
   <main class="max-w-5xl mx-auto p-4 pt-24 md:pt-20">
     {#if loading}
-      <div class="text-center py-12 text-orange-700">Memuat...</div>
+      <div class="text-center py-12 text-slate-500">Memuat...</div>
     {:else if error}
       <div
         class="text-center py-12 bg-white/80 rounded-xl border border-red-300"
@@ -121,15 +121,15 @@
         <p class="text-red-600 mb-3">{error}</p>
         <button
           onclick={loadTrash}
-          class="px-4 py-2 text-sm rounded-lg bg-white text-orange-800 hover:bg-orange-50 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg bg-white text-slate-600 hover:bg-slate-50 cursor-pointer"
           >Coba Lagi</button
         >
       </div>
     {:else if trashCards.length === 0}
       <div
-        class="text-center py-12 bg-white/80 rounded-xl border border-orange-200"
+        class="text-center py-12 bg-white/80 rounded-xl border border-slate-200"
       >
-        <p class="text-orange-700">Tempat sampah kosong</p>
+        <p class="text-slate-500">Tempat sampah kosong</p>
       </div>
     {:else}
       <div
@@ -153,10 +153,10 @@
                 >
               </div>
             </div>
-            <p class="font-bold text-orange-900 text-base truncate mb-1">
+            <p class="font-bold text-slate-800 text-base truncate mb-1">
               {card.title}
             </p>
-            <div class="text-sm text-orange-800 line-clamp-2 mb-3 rich-content">
+            <div class="text-sm text-slate-600 line-clamp-2 mb-3 rich-content">
               {@html renderMathContent(card.content)}
             </div>
             <div class="flex gap-1">
@@ -200,20 +200,20 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-orange-950">Hapus Permanen</h3>
+        <h3 class="text-lg font-semibold text-slate-900">Hapus Permanen</h3>
         {#if forceCard}
-          <p class="text-sm font-medium text-orange-900 mt-1">
+          <p class="text-sm font-medium text-slate-800 mt-1">
             "{forceCard.title}"
           </p>
         {/if}
-        <p class="text-sm text-orange-800 mt-1">
+        <p class="text-sm text-slate-600 mt-1">
           Kartu tidak bisa dikembalikan.
         </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (forceTarget = null)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 text-slate-600 hover:bg-transparent text-slate-900 cursor-pointer"
           >Batal</button
         >
         <button
@@ -246,15 +246,15 @@
         </svg>
       </div>
       <div>
-        <h3 class="text-lg font-semibold text-orange-950">Kosongkan Sampah</h3>
-        <p class="text-sm text-orange-800 mt-1">
+        <h3 class="text-lg font-semibold text-slate-900">Kosongkan Sampah</h3>
+        <p class="text-sm text-slate-600 mt-1">
           Semua kartu di sampah akan dihapus permanen.
         </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
         <button
           onclick={() => (showEmptyConfirm = false)}
-          class="px-4 py-2 text-sm rounded-lg border border-orange-300 text-orange-800 hover:bg-transparent text-orange-950 cursor-pointer"
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 text-slate-600 hover:bg-transparent text-slate-900 cursor-pointer"
           >Batal</button
         >
         <button

@@ -19,13 +19,13 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
   >
     <div
-      class="bg-orange-50 border border-orange-200 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      class="bg-slate-50 border border-slate-200 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
     >
       {#if title}
         <div
-          class="flex items-center justify-between p-4 border-b border-orange-200"
+          class="flex items-center justify-between p-4 border-b border-slate-200"
         >
-          <h2 class="text-lg font-semibold text-orange-950 drop-shadow-sm">
+          <h2 class="text-lg font-semibold text-slate-900 drop-shadow-sm">
             {title}
           </h2>
           <button
@@ -35,7 +35,7 @@
           >
         </div>
       {/if}
-      <div class="p-4 text-orange-900">
+      <div class="p-4 text-slate-800">
         {@render children()}
       </div>
     </div>

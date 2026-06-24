@@ -288,20 +288,20 @@
 </svelte:head>
 
 <div
-  class="min-h-screen flex flex-col bg-orange-50 text-slate-200 overflow-hidden font-sans"
+  class="min-h-screen flex flex-col bg-slate-50 text-slate-900 overflow-hidden font-sans"
 >
   <header
     class="flex flex-col md:flex-row items-center justify-between px-4 md:px-8 py-4 md:py-6 gap-2 md:gap-4 relative z-10"
   >
     <h1
-      class="text-base md:text-xl font-bold m-0 flex-1 text-center drop-shadow-sm text-orange-800"
+      class="text-base md:text-xl font-bold m-0 flex-1 text-center drop-shadow-sm text-slate-700"
     >
       {getModeTitle(mode)}
     </h1>
     <div class="flex gap-4 md:gap-8">
       <div class="flex flex-col items-center">
         <span
-          class="text-[0.625rem] md:text-xs text-orange-800 uppercase tracking-wider font-light"
+          class="text-[0.625rem] md:text-xs text-slate-600 uppercase tracking-wider font-light"
           >Skor</span
         >
         <span
@@ -311,7 +311,7 @@
       </div>
       <div class="flex flex-col items-center">
         <span
-          class="text-[0.625rem] md:text-xs text-orange-800 uppercase tracking-wider font-light"
+          class="text-[0.625rem] md:text-xs text-slate-600 uppercase tracking-wider font-light"
           >Level</span
         >
         <span
@@ -321,7 +321,7 @@
       </div>
       <div class="flex flex-col items-center">
         <span
-          class="text-[0.625rem] md:text-xs text-orange-800 uppercase tracking-wider font-light"
+          class="text-[0.625rem] md:text-xs text-slate-600 uppercase tracking-wider font-light"
           >Nyawa</span
         >
         <span
@@ -336,25 +336,25 @@
     class="flex-1 relative w-full max-w-[900px] mx-auto px-4 md:px-8 my-4 md:my-8 z-10"
   >
     <div
-      class="relative w-full h-[55vh] md:h-[calc(60vh+50px)] bg-orange-950/40 border border-orange-300 rounded-2xl overflow-hidden shadow-2xl shadow-black/50 backdrop-blur-sm"
+      class="relative w-full h-[55vh] md:h-[calc(60vh+50px)] bg-slate-100/50 border border-slate-300 rounded-2xl overflow-hidden shadow-2xl shadow-slate-300/50 backdrop-blur-sm"
     >
       {#if gameState === "ready"}
         <div
-          class="absolute inset-0 bg-black/20 text-orange-950 flex items-center justify-center z-10 rounded-2xl backdrop-blur-sm"
+          class="absolute inset-0 bg-slate-900/10 text-slate-900 flex items-center justify-center z-10 rounded-2xl backdrop-blur-sm"
         >
           <div class="text-center max-w-[400px] px-4">
             <h2
-              class="text-xl md:text-3xl font-bold mb-2 text-orange-500 drop-shadow-md"
+              class="text-xl md:text-3xl font-bold mb-2 text-slate-800 drop-shadow-md"
             >
               Siap Bermain?
             </h2>
-            <p class="text-orange-400 text-xs md:text-sm mb-6">
+            <p class="text-slate-600 text-xs md:text-sm mb-6">
               Ketik huruf yang melayang sebelum menyentuh garis atas!
             </p>
             <div
-              class="bg-white/80 border border-orange-300 rounded-xl p-4 mb-6 shadow-inner"
+              class="bg-white/80 border border-slate-200 rounded-xl p-4 mb-6 shadow-inner"
             >
-              <p class="text-[0.625rem] md:text-xs mb-2 text-orange-800">
+              <p class="text-[0.625rem] md:text-xs mb-2 text-slate-600">
                 Huruf yang akan muncul:
               </p>
               {#if mode === "all"}
@@ -372,14 +372,14 @@
               {/if}
             </div>
             <button
-              class="bg-indigo-300 hover:bg-indigo-200 text-orange-950 border border-indigo-500 rounded-xl px-8 py-3 text-sm font-medium cursor-pointer transition-all hover:scale-105 hover:shadow-lg shadow-orange-900/5"
+              class="bg-blue-500 hover:bg-blue-400 text-white border border-blue-600 rounded-xl px-8 py-3 text-sm font-medium cursor-pointer transition-all hover:scale-105 hover:shadow-lg shadow-blue-900/5"
               onclick={startGame}>Mulai Game</button
             >
           </div>
         </div>
       {:else if gameState === "gameover"}
         <div
-          class="absolute inset-0 bg-black/20 text-orange-950 flex items-center justify-center z-10 rounded-2xl backdrop-blur-md"
+          class="absolute inset-0 bg-slate-900/10 text-slate-900 flex items-center justify-center z-10 rounded-2xl backdrop-blur-md"
         >
           <div class="text-center max-w-[400px] px-4">
             <h2
@@ -388,10 +388,10 @@
               Game Over!
             </h2>
             <div
-              class="bg-white/80 border border-orange-300 rounded-xl p-5 mb-6 shadow-lg shadow-orange-900/10"
+              class="bg-white/80 border border-slate-200 rounded-xl p-5 mb-6 shadow-lg shadow-slate-900/10"
             >
               <div
-                class="text-xs text-orange-800 uppercase tracking-widest mb-2 font-light"
+                class="text-xs text-slate-600 uppercase tracking-widest mb-2 font-light"
               >
                 Skor Akhir
               </div>
@@ -400,15 +400,15 @@
               >
                 {score}
               </div>
-              <div class="text-sm text-orange-800 mb-4 font-light">
+              <div class="text-sm text-slate-600 mb-4 font-light">
                 Level {level}
               </div>
               {#if getCurrentUserId()}
                 {@const highScores = getGameHighScores(getCurrentUserId()!)}
                 <div
-                  class="pt-3 border-t border-orange-300 flex justify-center items-center gap-2"
+                  class="pt-3 border-t border-slate-200 flex justify-center items-center gap-2"
                 >
-                  <span class="text-xs text-orange-800 font-light"
+                  <span class="text-xs text-slate-600 font-light"
                     >High Score:</span
                   >
                   <span class="text-lg font-bold text-emerald-700"
@@ -419,12 +419,12 @@
             </div>
             <div class="flex flex-col md:flex-row gap-3 justify-center">
               <button
-                class="bg-indigo-300 hover:bg-indigo-200 text-orange-950 border border-indigo-500 rounded-xl px-6 py-2.5 text-sm font-medium cursor-pointer transition-all hover:scale-105 hover:shadow-lg shadow-orange-900/5"
+                class="bg-blue-500 hover:bg-blue-400 text-white border border-blue-600 rounded-xl px-6 py-2.5 text-sm font-medium cursor-pointer transition-all hover:scale-105 hover:shadow-lg shadow-blue-900/5"
                 onclick={startGame}>Main Lagi</button
               >
               <a
                 href="/mengetik/game"
-                class="bg-white hover:bg-orange-50 text-orange-950 border border-orange-300 rounded-xl px-6 py-2.5 text-sm font-medium no-underline transition-all hover:shadow-lg shadow-orange-900/5 inline-flex items-center justify-center"
+                class="bg-white hover:bg-slate-50 text-slate-800 border border-slate-200 rounded-xl px-6 py-2.5 text-sm font-medium no-underline transition-all hover:shadow-lg shadow-slate-900/5 inline-flex items-center justify-center"
                 >Pilih Mode Lain</a
               >
             </div>

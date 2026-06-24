@@ -208,23 +208,23 @@
 
 {#if lesson}
   <div
-    class="flex flex-col min-h-[calc(100vh-64px)] text-orange-950 bg-orange-50"
+    class="flex flex-col min-h-[calc(100vh-64px)] text-slate-900 bg-slate-50"
   >
     <header
       class="flex flex-col sm:flex-row items-center justify-between p-4 sm:px-8 gap-3 sm:gap-0"
     >
       <div class="flex items-center gap-3">
         <span class="text-3xl">{lesson.icon}</span>
-        <h1 class="text-xl font-bold m-0 text-orange-950">{lesson.title}</h1>
+        <h1 class="text-xl font-bold m-0 text-slate-900">{lesson.title}</h1>
       </div>
       <div
-        class="flex gap-1 p-1 bg-white/60 border border-orange-300 rounded-xl shadow-sm"
+        class="flex gap-1 p-1 bg-white/60 border border-slate-200 rounded-xl shadow-sm"
       >
         <button
           class="px-4 py-2 border-none bg-transparent rounded-lg cursor-pointer font-semibold text-sm transition-all {mode ===
           'words'
             ? 'bg-amber-100 text-amber-600'
-            : 'text-orange-800 hover:bg-white'}"
+            : 'text-slate-600 hover:bg-white'}"
           onclick={() => switchMode("words")}
         >
           Kata
@@ -233,7 +233,7 @@
           class="px-4 py-2 border-none bg-transparent rounded-lg cursor-pointer font-semibold text-sm transition-all {mode ===
           'sentences'
             ? 'bg-amber-100 text-amber-600'
-            : 'text-orange-800 hover:bg-white'}"
+            : 'text-slate-600 hover:bg-white'}"
           onclick={() => switchMode("sentences")}
         >
           Kalimat
@@ -251,7 +251,7 @@
 
         {#if lesson.keys.length > 0}
           <div class="text-center">
-            <p class="text-sm text-orange-800 m-0 mb-3 font-light">
+            <p class="text-sm text-slate-600 m-0 mb-3 font-light">
               Jari untuk latihan ini:
             </p>
             <div class="flex justify-center gap-2">
@@ -259,7 +259,7 @@
                 {@const info = KEY_MAP[key]}
                 {#if info}
                   <span
-                    class="w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm bg-white border-2 text-orange-950 shadow-sm"
+                    class="w-9 h-9 flex items-center justify-center rounded-lg font-bold text-sm bg-white border-2 text-slate-900 shadow-sm"
                     style="border-color: {FINGER_COLORS[info.finger]}"
                   >
                     {key.toUpperCase()}
@@ -272,17 +272,17 @@
       </div>
 
       <div
-        class="flex justify-center gap-6 text-orange-800 text-sm mt-4 font-light"
+        class="flex justify-center gap-6 text-slate-600 text-sm mt-4 font-light"
       >
         <span
           ><kbd
-            class="bg-white px-2 py-0.5 rounded border border-orange-300 text-xs shadow-sm mr-1 text-orange-950"
+            class="bg-white px-2 py-0.5 rounded border border-slate-300 text-xs shadow-sm mr-1 text-slate-900"
             >Esc</kbd
           > Ulangi</span
         >
         <span
           ><kbd
-            class="bg-white px-2 py-0.5 rounded border border-orange-300 text-xs shadow-sm mr-1 text-orange-950"
+            class="bg-white px-2 py-0.5 rounded border border-slate-300 text-xs shadow-sm mr-1 text-slate-900"
             >Backspace</kbd
           > Hapus</span
         >
@@ -301,7 +301,7 @@
   </div>
 {:else}
   <div
-    class="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-[#EAE4BD] to-[#EAD5B8] text-orange-950"
+    class="min-h-screen flex flex-col items-center justify-center gap-4 bg-gradient-to-br from-slate-200 to-slate-100 text-slate-900"
   >
     <h1 class="text-2xl font-bold">Lesson tidak ditemukan</h1>
     <a href="/mengetik" class="text-amber-500 hover:underline"

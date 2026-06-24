@@ -60,57 +60,57 @@
 <div class="mb-8 flex items-center gap-4">
   <a
     href="/dashboard/quizzes"
-    class="p-2 text-orange-800 bg-white/50 hover:bg-white rounded-xl border border-orange-200 shadow-sm transition-all"
+    class="p-2 text-slate-600 bg-white/50 hover:bg-white rounded-xl border border-slate-200 shadow-sm transition-all"
   >
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
     </svg>
   </a>
   <div>
-    <h1 class="text-3xl font-bold text-orange-950 mb-1">Tambah Kuis Baru</h1>
-    <p class="text-orange-800 m-0">Buat set kuis dan daftar pertanyaannya.</p>
+    <h1 class="text-3xl font-bold text-slate-900 mb-1">Tambah Kuis Baru</h1>
+    <p class="text-slate-600 m-0">Buat set kuis dan daftar pertanyaannya.</p>
   </div>
 </div>
 
 <form onsubmit={handleSubmit} class="space-y-8 pb-12">
   <!-- Detail Kuis -->
-  <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 flex flex-col gap-5">
-    <h2 class="text-xl font-bold text-orange-900 border-b border-orange-100 pb-3">Informasi Utama</h2>
+  <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col gap-5">
+    <h2 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-3">Informasi Utama</h2>
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
       <div class="flex flex-col gap-2">
-        <label for="title" class="text-sm font-semibold text-orange-900">Judul Kuis</label>
+        <label for="title" class="text-sm font-semibold text-slate-800">Judul Kuis</label>
         <input
           type="text"
           id="title"
           bind:value={title}
           required
-          class="px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 focus:bg-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none transition-all"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none transition-all"
           placeholder="Misal: Kuis Matematika Dasar"
         />
       </div>
       
       <div class="flex flex-col gap-2">
-        <label for="category" class="text-sm font-semibold text-orange-900">Kategori</label>
+        <label for="category" class="text-sm font-semibold text-slate-800">Kategori</label>
         <input
           type="text"
           id="category"
           bind:value={category}
           required
-          class="px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 focus:bg-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none transition-all"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none transition-all"
           placeholder="Misal: Matematika Dasar"
         />
       </div>
 
       <div class="flex flex-col gap-2 md:col-span-2">
-        <label for="timeLimit" class="text-sm font-semibold text-orange-900">Batas Waktu per Soal (Detik)</label>
+        <label for="timeLimit" class="text-sm font-semibold text-slate-800">Batas Waktu per Soal (Detik)</label>
         <input
           type="number"
           id="timeLimit"
           bind:value={timeLimit}
           min="5"
           required
-          class="px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 focus:bg-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none transition-all w-full md:w-1/3"
+          class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none transition-all w-full md:w-1/3"
         />
       </div>
     </div>
@@ -119,11 +119,11 @@
   <!-- Daftar Soal -->
   <div class="space-y-4">
     <div class="flex justify-between items-center">
-      <h2 class="text-xl font-bold text-orange-900">Daftar Pertanyaan</h2>
+      <h2 class="text-xl font-bold text-slate-800">Daftar Pertanyaan</h2>
       <button
         type="button"
         onclick={addQuestion}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white text-orange-600 border border-orange-300 rounded-lg font-medium hover:bg-orange-50 transition-colors shadow-sm cursor-pointer"
+        class="inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-slate-300 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
       >
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -133,7 +133,7 @@
     </div>
 
     {#each questions as q, index}
-      <div class="bg-white p-6 rounded-2xl shadow-sm border border-orange-200 relative group transition-all hover:border-orange-400">
+      <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 relative group transition-all hover:border-slate-400">
           <button
             type="button"
             onclick={() => removeQuestion(index)}
@@ -146,10 +146,10 @@
           </button>
 
         <div class="flex items-center gap-3 mb-4">
-          <div class="w-8 h-8 rounded-full bg-orange-100 text-orange-800 font-bold flex items-center justify-center text-sm">
+          <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm">
             {index + 1}
           </div>
-          <h3 class="font-semibold text-orange-950 m-0">Pertanyaan</h3>
+          <h3 class="font-semibold text-slate-900 m-0">Pertanyaan</h3>
         </div>
 
         <div class="flex flex-col gap-4 pl-11">
@@ -158,7 +158,7 @@
             bind:value={q.question}
             required
             placeholder="Tulis pertanyaan di sini..."
-            class="px-4 py-2.5 rounded-xl border border-orange-200 bg-orange-50 focus:bg-white focus:ring-2 focus:ring-orange-400 focus:border-orange-400 outline-none w-full"
+            class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none w-full"
           />
 
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
@@ -169,7 +169,7 @@
                   name={`answer-${index}`}
                   value={optIndex}
                   bind:group={q.answer}
-                  class="w-5 h-5 accent-orange-600 bg-transparent cursor-pointer"
+                  class="w-5 h-5 accent-blue-600 bg-transparent cursor-pointer"
                   required
                 />
                 <input
@@ -177,22 +177,22 @@
                   bind:value={q.options[optIndex]}
                   required
                   placeholder={`Pilihan ${String.fromCharCode(65 + optIndex)}`}
-                  class="flex-1 px-4 py-2 rounded-lg border border-orange-200 bg-white focus:ring-2 focus:ring-orange-400 outline-none text-sm"
+                  class="flex-1 px-4 py-2 rounded-lg border border-slate-200 bg-white focus:ring-2 focus:ring-slate-400 outline-none text-sm"
                 />
               </div>
             {/each}
           </div>
-          <p class="text-xs text-orange-600/70 italic m-0">* Pilih radio button pada jawaban yang benar</p>
+          <p class="text-xs text-blue-600/70 italic m-0">* Pilih radio button pada jawaban yang benar</p>
         </div>
       </div>
     {/each}
   </div>
 
-  <div class="flex justify-end pt-6 border-t border-orange-200">
+  <div class="flex justify-end pt-6 border-t border-slate-200">
     <button
       type="submit"
       disabled={isSubmitting}
-      class="px-8 py-3 bg-orange-600 text-white font-bold rounded-xl shadow-md hover:bg-orange-700 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer"
+      class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-slate-500 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer"
     >
       {isSubmitting ? 'Menyimpan...' : 'Simpan Kuis'}
     </button>

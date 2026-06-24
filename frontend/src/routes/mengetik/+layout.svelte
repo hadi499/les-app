@@ -31,17 +31,17 @@
 </script>
 
 {#if isAuthenticated}
-  <div class="min-h-screen antialiased bg-orange-50 pt-16">
+  <div class="min-h-screen antialiased bg-slate-50 pt-16">
     {@render children()}
   </div>
 {:else}
-  <div class="min-h-screen flex items-center justify-center bg-orange-50">
+  <div class="min-h-screen flex items-center justify-center bg-slate-50">
     <div class="animate-pulse flex flex-col items-center">
       <div
-        class="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin"
+        class="w-12 h-12 border-4 border-blue-500/30 border-t-blue-500 rounded-full animate-spin"
       ></div>
       <p
-        class="mt-4 text-orange-800 font-medium tracking-widest text-sm uppercase"
+        class="mt-4 text-slate-600 font-medium tracking-widest text-sm uppercase"
       >
         Memeriksa sesi...
       </p>

@@ -50,32 +50,32 @@
 
 {#if isLoading}
   <!-- Layar Loading Sederhana -->
-  <div class="min-h-screen bg-orange-100 flex items-center justify-center">
+  <div class="min-h-screen bg-slate-100 flex items-center justify-center">
     <div class="flex flex-col items-center gap-4">
       <div
-        class="w-12 h-12 border-4 border-orange-200 border-t-orange-500 rounded-full animate-spin"
+        class="w-12 h-12 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
       ></div>
-      <p class="text-orange-800 font-semibold">Memuat portal...</p>
+      <p class="text-slate-600 font-semibold">Memuat portal...</p>
     </div>
   </div>
 {:else}
   <div
-    class="min-h-screen bg-orange-50 flex selection:bg-orange-200 selection:text-orange-900 font-sans text-orange-950"
+    class="min-h-screen bg-slate-50 flex selection:bg-slate-200 selection:text-slate-800 font-sans text-slate-900"
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="w-64 bg-orange-400/10 backdrop-blur-md border-r border-orange-300 hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-orange-900/5"
+      class="w-64 bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5"
     >
       <!-- Logo -->
-      <div class="h-16 flex items-center px-6 border-b border-orange-300">
+      <div class="h-16 flex items-center px-6 border-b border-slate-300">
         <div class="flex items-center gap-3">
           <div
-            class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-orange-600 font-extrabold text-sm shadow-md"
+            class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-blue-600 font-extrabold text-sm shadow-md"
           >
             LB
           </div>
           <span
-            class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
+            class="font-extrabold text-lg text-slate-900 tracking-tight drop-shadow-sm"
             >{user?.role === "teacher" ? "Portal Guru" : "Portal Siswa"}</span
           >
         </div>
@@ -87,13 +87,13 @@
           href="/dashboard"
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
             .url.pathname === '/dashboard'
-            ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+            ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
           <svg
             class="w-5 h-5 {page.url.pathname === '/dashboard'
-              ? 'text-orange-600'
-              : 'text-orange-400'}"
+              ? 'text-blue-600'
+              : 'text-slate-400'}"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -109,17 +109,42 @@
 
         {#if user?.role === "teacher"}
           <a
+            href="/dashboard/notes"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/notes',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <svg
+              class="w-5 h-5 {page.url.pathname.includes('/notes')
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+              ></path></svg
+            >
+            Catatan
+          </a>
+
+          <a
             href="/dashboard/users"
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/users',
             )
-              ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/users')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -134,17 +159,42 @@
           </a>
 
           <a
+            href="/dashboard/absen"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/absen',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <svg
+              class="w-5 h-5 {page.url.pathname.includes('/absen')
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path></svg
+            >
+            Absensi
+          </a>
+
+          <a
             href="/dashboard/typing-monitoring"
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/typing-monitoring',
             )
-              ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -163,13 +213,13 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/exams',
             )
-              ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/exams')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -188,13 +238,13 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/subjects',
             )
-              ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/subjects')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -213,13 +263,13 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/card-memory',
             )
-              ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-              : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/card-memory')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -239,13 +289,13 @@
           class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
             '/quizzes',
           )
-            ? 'bg-white/80 text-orange-900 shadow-sm shadow-orange-900/5 border border-orange-300'
-            : 'text-orange-800 hover:bg-white/50 hover:text-orange-950 border border-transparent'}"
+            ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
           <svg
             class="w-5 h-5 {page.url.pathname.includes('/quizzes')
-              ? 'text-orange-600'
-              : 'text-orange-400'}"
+              ? 'text-blue-600'
+              : 'text-slate-400'}"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -259,13 +309,13 @@
           Kuis & Nilai
         </a>
 
-        <div class="pt-4 mt-2 border-t border-orange-200">
+        <div class="pt-4 mt-2 border-t border-slate-200">
           <a
             href="/"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-orange-800 hover:bg-white/50 hover:text-orange-950 no-underline"
+            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
           >
             <svg
-              class="w-5 h-5 text-orange-400"
+              class="w-5 h-5 text-slate-400"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -282,19 +332,19 @@
       </nav>
 
       <!-- User & Logout -->
-      <div class="p-4 border-t border-orange-300">
+      <div class="p-4 border-t border-slate-300">
         <div class="flex items-center gap-3 mb-4 px-2">
           <div
-            class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm flex-shrink-0"
+            class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-transparent shadow-sm flex-shrink-0"
           >
             {user.username ? user.username.charAt(0).toUpperCase() : "U"}
           </div>
           <div class="flex-1 min-w-0">
-            <p class="text-sm font-bold text-orange-950 truncate m-0">
+            <p class="text-sm font-bold text-slate-900 truncate m-0">
               {user.username}
             </p>
             <p
-              class="text-xs font-medium text-orange-800 truncate capitalize m-0 mt-0.5"
+              class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5"
             >
               {user.role}
             </p>
@@ -323,22 +373,22 @@
 
     <!-- Mobile Header -->
     <div
-      class="md:hidden fixed top-0 inset-x-0 h-16 bg-orange-400/10 backdrop-blur-md border-b border-orange-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
+      class="md:hidden fixed top-0 inset-x-0 h-16 bg-slate-400/10 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
     >
       <div class="flex items-center gap-2">
         <div
-          class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-orange-600 font-extrabold text-sm shadow-md"
+          class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-blue-600 font-extrabold text-sm shadow-md"
         >
           LB
         </div>
         <span
-          class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
+          class="font-extrabold text-lg text-slate-900 tracking-tight drop-shadow-sm"
           >{user?.role === "teacher" ? "Portal Guru" : "Portal Siswa"}</span
         >
       </div>
       <button
         aria-label="Buka menu navigasi"
-        class="text-orange-800 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors"
+        class="text-slate-600 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors"
         onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
       >
         <svg
@@ -368,22 +418,22 @@
         }}
       ></div>
       <aside
-        class="md:hidden fixed inset-y-0 left-0 w-64 bg-orange-100 border-r border-orange-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
+        class="md:hidden fixed inset-y-0 left-0 w-64 bg-slate-100 border-r border-slate-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
           ? 'translate-x-0'
           : '-translate-x-full'} print:hidden"
       >
         <!-- Copy of sidebar content for mobile -->
         <div
-          class="h-16 flex items-center justify-between px-6 border-b border-orange-200 bg-orange-100"
+          class="h-16 flex items-center justify-between px-6 border-b border-slate-200 bg-slate-100"
         >
           <span
-            class="font-extrabold text-lg text-orange-950 tracking-tight drop-shadow-sm"
+            class="font-extrabold text-lg text-slate-900 tracking-tight drop-shadow-sm"
             >Menu Utama</span
           >
           <button
             aria-label="Tutup menu"
             onclick={() => (isMobileMenuOpen = false)}
-            class="text-orange-400 hover:text-white border-none bg-transparent cursor-pointer"
+            class="text-slate-400 hover:text-white border-none bg-transparent cursor-pointer"
             ><svg
               class="w-6 h-6"
               fill="none"
@@ -398,19 +448,19 @@
             ></button
           >
         </div>
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-orange-100">
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-slate-100">
           <a
             href="/dashboard"
             onclick={() => (isMobileMenuOpen = false)}
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
               .url.pathname === '/dashboard'
-              ? 'bg-white/80 text-orange-900 border border-orange-300'
-              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 border border-slate-300'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname === '/dashboard'
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -426,18 +476,44 @@
 
           {#if user?.role === "teacher"}
             <a
+              href="/dashboard/notes"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/notes',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <svg
+                class="w-5 h-5 {page.url.pathname.includes('/notes')
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path></svg
+              >
+              Catatan
+            </a>
+
+            <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/users',
               )
-                ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/users')
-                  ? 'text-orange-600'
-                  : 'text-orange-400'}"
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -452,18 +528,44 @@
             </a>
 
             <a
+              href="/dashboard/absen"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/absen',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <svg
+                class="w-5 h-5 {page.url.pathname.includes('/absen')
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                ></path></svg
+              >
+              Absensi
+            </a>
+
+            <a
               href="/dashboard/typing-monitoring"
               onclick={() => (isMobileMenuOpen = false)}
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/typing-monitoring',
               )
-                ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
-                  ? 'text-orange-600'
-                  : 'text-orange-400'}"
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -483,13 +585,13 @@
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/exams',
               )
-                ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/exams')
-                  ? 'text-orange-600'
-                  : 'text-orange-400'}"
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -509,13 +611,13 @@
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/subjects',
               )
-                ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/subjects')
-                  ? 'text-orange-600'
-                  : 'text-orange-400'}"
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -535,13 +637,13 @@
               class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/card-memory',
               )
-                ? 'bg-white/80 text-orange-900 border border-orange-300'
-                : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <svg
                 class="w-5 h-5 {page.url.pathname.includes('/card-memory')
-                  ? 'text-orange-600'
-                  : 'text-orange-400'}"
+                  ? 'text-blue-600'
+                  : 'text-slate-400'}"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -562,13 +664,13 @@
             class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/quizzes',
             )
-              ? 'bg-white/80 text-orange-900 border border-orange-300'
-              : 'text-orange-800 hover:text-orange-950 hover:bg-white/50 border border-transparent'}"
+              ? 'bg-white/80 text-slate-800 border border-slate-300'
+              : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
             <svg
               class="w-5 h-5 {page.url.pathname.includes('/quizzes')
-                ? 'text-orange-600'
-                : 'text-orange-400'}"
+                ? 'text-blue-600'
+                : 'text-slate-400'}"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -582,14 +684,14 @@
             Kuis & Nilai
           </a>
 
-          <div class="pt-4 mt-2 border-t border-orange-200">
+          <div class="pt-4 mt-2 border-t border-slate-200">
             <a
               href="/"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-orange-800 hover:bg-white/50 hover:text-orange-950 no-underline"
+              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
             >
               <svg
-                class="w-5 h-5 text-orange-400"
+                class="w-5 h-5 text-slate-400"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -606,19 +708,19 @@
         </nav>
 
         <!-- User & Logout (Mobile) -->
-        <div class="p-4 border-t border-orange-200 bg-orange-100">
+        <div class="p-4 border-t border-slate-200 bg-slate-100">
           <div class="flex items-center gap-3 mb-4 px-2">
             <div
-              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-orange-600 font-bold border border-transparent shadow-sm flex-shrink-0"
+              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-transparent shadow-sm flex-shrink-0"
             >
               {user.username ? user.username.charAt(0).toUpperCase() : "U"}
             </div>
             <div class="flex-1 min-w-0">
-              <p class="text-sm font-bold text-orange-950 truncate m-0">
+              <p class="text-sm font-bold text-slate-900 truncate m-0">
                 {user.username}
               </p>
               <p
-                class="text-xs font-medium text-orange-800 truncate capitalize m-0 mt-0.5"
+                class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5"
               >
                 {user.role}
               </p>

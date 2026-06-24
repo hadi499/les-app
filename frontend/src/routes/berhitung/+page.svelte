@@ -3,7 +3,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-orange-50 flex flex-col items-center pt-16 pb-10 px-4 font-sans relative overflow-hidden"
+  class="min-h-screen bg-slate-50 flex flex-col items-center pt-16 pb-10 px-4 font-sans relative overflow-hidden"
 >
   <!-- Background Decorations -->
   <div
