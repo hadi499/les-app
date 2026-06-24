@@ -145,6 +145,7 @@ func SetupRoutes(r *gin.Engine) {
 		absences.POST("", controllers.CreateAbsence)
 		absences.GET("/recap", controllers.GetAbsenceRecap)
 		absences.GET("/user/:id", controllers.GetAbsenceHistory)
+		absences.POST("/reset", controllers.ResetAbsences)
 		absences.PUT("/:id", controllers.UpdateAbsence)
 		absences.DELETE("/:id", controllers.DeleteAbsence)
 	}

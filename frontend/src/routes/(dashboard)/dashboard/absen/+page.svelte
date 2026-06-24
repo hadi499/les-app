@@ -27,6 +27,7 @@
     sakit: number;
     izin: number;
     alpa: number;
+    total_all: number;
   };
   let recapData: RecapData[] = $state([]);
   let isLoading = $state(true);
@@ -102,6 +103,32 @@
       isSubmitting = false;
     }
   }
+
+  let isResetting = $state(false);
+  let showResetModal = $state(false);
+  async function handleReset() {
+    isResetting = true;
+    try {
+      const res = await fetch(`/api/absences/reset`, {
+        method: "POST",
+        credentials: "include",
+      });
+
+      if (!res.ok) {
+        throw new Error("Gagal mereset absensi");
+      }
+
+      toast.success("Seluruh data absensi berhasil direset!");
+      showResetModal = false;
+      await fetchRecap();
+    } catch (e) {
+      toast.error(
+        "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)),
+      );
+    } finally {
+      isResetting = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -109,17 +136,35 @@
 </svelte:head>
 
 <div class="animate-in fade-in duration-500 pb-12">
-  <div class="mb-8">
-    <h1
-      class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
+  <div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+    <div>
+      <h1
+        class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
+      >
+        Laporan Ketidakhadiran
+      </h1>
+      <p
+        class="mt-2 text-slate-600 text-sm sm:text-base font-light tracking-wide"
+      >
+        Catat dan pantau riwayat ketidakhadiran siswa.
+      </p>
+    </div>
+    
+    <button
+      onclick={() => showResetModal = true}
+      disabled={isResetting}
+      class="px-4 py-2 text-sm font-bold text-white bg-red-600 shadow-md shadow-red-600/30 hover:bg-red-700 rounded-xl transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed w-fit"
     >
-      Laporan Ketidakhadiran
-    </h1>
-    <p
-      class="mt-2 text-slate-600 text-sm sm:text-base font-light tracking-wide"
-    >
-      Catat dan pantau riwayat ketidakhadiran siswa.
-    </p>
+      {#if isResetting}
+        <div
+          class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+        ></div>
+        Mereset...
+      {:else}
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
+        Reset Data Absensi (Tahun Ajaran Baru)
+      {/if}
+    </button>
   </div>
 
   {#if isLoading}
@@ -276,7 +321,10 @@
                 >Nama Siswa</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Total Absen</th
+                >Total Absen (Bulan Ini)</th
+              >
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
+                >Total Absen (Selama Les)</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Rincian</th
@@ -298,6 +346,21 @@
                       class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200"
                     >
                       {data.total} Hari
+                    </span>
+                  {:else}
+                    <span
+                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200"
+                    >
+                      0 Hari
+                    </span>
+                  {/if}
+                </td>
+                <td class="py-4 px-6 text-center">
+                  {#if data.total_all > 0}
+                    <span
+                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200"
+                    >
+                      {data.total_all} Hari
                     </span>
                   {:else}
                     <span
@@ -353,7 +416,7 @@
             {#if recapData.length === 0}
               <tr>
                 <td
-                  colspan="4"
+                  colspan="5"
                   class="py-8 text-center text-slate-500 font-light"
                   >Belum ada data siswa.</td
                 >
@@ -365,3 +428,40 @@
     </div>
   {/if}
 </div>
+
+{#if showResetModal}
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200">
+      <div class="p-6">
+        <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 text-red-600">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-alert-triangle"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Reset Seluruh Data Absensi?</h3>
+        <p class="text-slate-600 text-sm">
+          PERINGATAN: Tindakan ini akan menghapus <strong>seluruh data riwayat absensi murid</strong> secara permanen. Data yang telah dihapus tidak dapat dikembalikan lagi. Apakah Anda yakin ingin melanjutkan?
+        </p>
+      </div>
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+        <button
+          onclick={() => showResetModal = false}
+          disabled={isResetting}
+          class="px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 rounded-xl transition-colors disabled:opacity-70"
+        >
+          Batal
+        </button>
+        <button
+          onclick={handleReset}
+          disabled={isResetting}
+          class="px-4 py-2 text-sm font-semibold text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-70 flex items-center gap-2"
+        >
+          {#if isResetting}
+            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            Mereset...
+          {:else}
+            Ya, Reset Data
+          {/if}
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}

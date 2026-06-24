@@ -49,12 +49,13 @@ func CreateAbsence(c *gin.Context) {
 }
 
 type RecapData struct {
-	UserID uint   `json:"user_id"`
-	Name   string `json:"name"`
-	Total  int    `json:"total"`
-	Sakit  int    `json:"sakit"`
-	Izin   int    `json:"izin"`
-	Alpa   int    `json:"alpa"`
+	UserID   uint   `json:"user_id"`
+	Name     string `json:"name"`
+	Total    int    `json:"total"`
+	Sakit    int    `json:"sakit"`
+	Izin     int    `json:"izin"`
+	Alpa     int    `json:"alpa"`
+	TotalAll int    `json:"total_all"`
 }
 
 func GetAbsenceRecap(c *gin.Context) {
@@ -64,7 +65,8 @@ func GetAbsenceRecap(c *gin.Context) {
 	nextMonth := time.Date(now.Year(), now.Month()+1, 1, 0, 0, 0, 0, time.Local)
 
 	var absences []models.Absence
-	if err := database.DB.Preload("User").Where("date >= ? AND date < ?", startOfMonth, nextMonth).Find(&absences).Error; err != nil {
+	// Fetch all absences for total_all calculation
+	if err := database.DB.Preload("User").Find(&absences).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch absence recap"})
 		return
 	}
@@ -81,24 +83,30 @@ func GetAbsenceRecap(c *gin.Context) {
 
 	for _, student := range students {
 		recapMap[student.ID] = &RecapData{
-			UserID: student.ID,
-			Name:   student.Username,
-			Total:  0,
-			Sakit:  0,
-			Izin:   0,
-			Alpa:   0,
+			UserID:   student.ID,
+			Name:     student.Username,
+			Total:    0,
+			Sakit:    0,
+			Izin:     0,
+			Alpa:     0,
+			TotalAll: 0,
 		}
 	}
 
 	for _, absence := range absences {
 		if recap, exists := recapMap[absence.UserID]; exists {
-			recap.Total++
-			if absence.ReasonType == "Sakit" {
-				recap.Sakit++
-			} else if absence.ReasonType == "Izin" {
-				recap.Izin++
-			} else if absence.ReasonType == "Alpa" {
-				recap.Alpa++
+			recap.TotalAll++
+
+			// Only increment month specific counts if it falls within current month
+			if (absence.Date.Equal(startOfMonth) || absence.Date.After(startOfMonth)) && absence.Date.Before(nextMonth) {
+				recap.Total++
+				if absence.ReasonType == "Sakit" {
+					recap.Sakit++
+				} else if absence.ReasonType == "Izin" {
+					recap.Izin++
+				} else if absence.ReasonType == "Alpa" {
+					recap.Alpa++
+				}
 			}
 		}
 	}
@@ -109,6 +117,13 @@ func GetAbsenceRecap(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"recap": results})
+}
+func ResetAbsences(c *gin.Context) {
+	if err := database.DB.Exec("DELETE FROM absences").Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset absences"})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{"message": "Absences reset successfully"})
 }
 
 func GetAbsenceHistory(c *gin.Context) {
