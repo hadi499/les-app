@@ -37,6 +37,7 @@
   let filterUser = $state("");
   let filterSubject = $state("");
   let filterDate = $state("");
+  let dateFilterType = $state("text");
 
   let filteredExams = $derived(
     exams.filter((exam) => {
@@ -520,15 +521,25 @@
                     Tanggal
                   </div>
                   <div class="relative w-full">
+                    <div class="absolute inset-0 bg-white rounded-lg pointer-events-none z-0"></div>
                     <input
-                      type="date"
-                      bind:value={filterDate}
-                      class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light"
+                      type={filterDate ? "date" : dateFilterType}
+                      onfocus={() => (dateFilterType = "date")}
+                      onblur={() => (dateFilterType = "text")}
+                      value={filterDate}
+                      oninput={(e) => (filterDate = e.currentTarget.value)}
+                      onchange={(e) => (filterDate = e.currentTarget.value)}
+                      placeholder="dd/mm/yyyy"
+                      class="w-full border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light relative z-10 bg-transparent [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:right-0 [&::-webkit-calendar-picker-indicator]:w-8 [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                     />
-                    {#if filterDate}
+                    {#if !filterDate}
+                      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      </div>
+                    {:else}
                       <button
                         onclick={() => (filterDate = "")}
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 hover:text-red-600 transition-colors"
+                        class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-600 hover:text-red-600 transition-colors z-20"
                         title="Hapus Filter Tanggal"
                       >
                         <svg
