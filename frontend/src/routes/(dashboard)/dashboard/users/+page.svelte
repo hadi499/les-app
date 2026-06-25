@@ -126,7 +126,7 @@
       class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
     >
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
           <thead>
             <tr class="bg-white/40 border-b border-slate-200">
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">ID</th>
@@ -134,7 +134,7 @@
                 >Username</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-right"
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Aksi</th
               >
             </tr>
@@ -154,7 +154,7 @@
                     {u.role}
                   </span>
                 </td>
-                <td class="py-4 px-6 text-right">
+                <td class="py-4 px-6 text-center">
                   <button
                     onclick={() => promptDelete(u.id, u.username)}
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"

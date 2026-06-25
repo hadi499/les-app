@@ -160,7 +160,7 @@
               <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Judul Kuis</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Kategori</th>
               <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Batas Waktu</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider text-right">Aksi</th>
+              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider text-center">Aksi</th>
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-100">
@@ -174,7 +174,7 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 text-sm text-slate-600">{quiz.timeLimit} Menit</td>
-                <td class="px-6 py-4 text-right space-x-2">
+                <td class="px-6 py-4 text-center space-x-2">
                   {#if isTeacher}
                     <a
                       href="/dashboard/quizzes/{quiz.id}/edit"

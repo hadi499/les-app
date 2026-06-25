@@ -335,7 +335,7 @@
         </h2>
       </div>
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
+        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
           <thead>
             <tr class="bg-white/40 border-b border-slate-200">
               <th class="py-4 px-6 font-bold text-slate-900 text-sm"
@@ -350,7 +350,7 @@
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Rincian</th
               >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-right"
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Aksi</th
               >
             </tr>
@@ -424,7 +424,7 @@
                     </div>
                   </div>
                 </td>
-                <td class="py-4 px-6 text-right">
+                <td class="py-4 px-6 text-center">
                   <a
                     href={`/dashboard/absen/${data.user_id}`}
                     class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer no-underline"
