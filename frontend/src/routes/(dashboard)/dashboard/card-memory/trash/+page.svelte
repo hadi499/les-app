@@ -132,45 +132,43 @@
         <p class="text-slate-500">Tempat sampah kosong</p>
       </div>
     {:else}
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"
-      >
+      <div class="flex flex-col gap-2">
         {#each trashCards as card}
           <div
-            class="bg-white/80 border border-red-300 rounded-lg p-4 text-base group"
+            class="flex items-center justify-between bg-white border border-slate-200 rounded-lg p-3 hover:border-slate-300 transition-colors gap-4"
           >
-            <div class="flex items-center justify-between mb-2">
-              <div class="flex items-center gap-2 min-w-0">
+            <div class="flex items-center gap-3 overflow-hidden">
+              <div class="flex items-center gap-2 shrink-0">
                 {#if card.cardType === "image"}
                   <span
-                    class="text-xs font-medium bg-purple-100 text-purple-500 px-2 py-0.5 rounded shrink-0"
-                    >Gambar</span
+                    class="text-[10px] font-bold uppercase tracking-wider bg-purple-100 text-purple-600 px-2 py-0.5 rounded"
+                    >Img</span
                   >
                 {/if}
-
-                <span class="font-semibold text-red-600 text-sm truncate"
-                  >{card.category || "Umum"}</span
-                >
+                {#if card.category}
+                  <span class="text-xs font-medium text-red-500 bg-red-50 px-2 py-0.5 rounded"
+                    >{card.category}</span
+                  >
+                {/if}
               </div>
+              <p class="font-medium text-slate-700 text-sm truncate">
+                {card.title}
+              </p>
             </div>
-            <p class="font-bold text-slate-800 text-base truncate mb-1">
-              {card.title}
-            </p>
-            <div class="text-sm text-slate-600 line-clamp-2 mb-3 rich-content">
-              {@html renderMathContent(card.content)}
-            </div>
-            <div class="flex gap-1">
+            <div class="flex gap-2 shrink-0">
               <button
                 onclick={() => handleRestore(card.id)}
-                class="flex-1 text-center text-sm py-1 rounded bg-green-100 text-green-700 hover:bg-green-200 cursor-pointer"
+                class="p-2 text-green-600 bg-green-50 hover:bg-green-100 rounded-md transition-colors border border-green-200 cursor-pointer"
+                title="Pulihkan"
               >
-                Pulihkan
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
               </button>
               <button
                 onclick={() => handleForceDeleteClick(card.id)}
-                class="flex-1 text-center text-sm py-1 rounded bg-red-100 text-red-700 hover:bg-red-100 cursor-pointer"
+                class="p-2 text-red-600 bg-red-50 hover:bg-red-100 rounded-md transition-colors border border-red-200 cursor-pointer"
+                title="Hapus Permanen"
               >
-                Hapus
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-trash-2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg>
               </button>
             </div>
           </div>
