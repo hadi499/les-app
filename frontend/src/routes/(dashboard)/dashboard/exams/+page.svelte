@@ -523,7 +523,7 @@
                     <input
                       type="date"
                       bind:value={filterDate}
-                      class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all [color-scheme:light]"
+                      class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light"
                     />
                     {#if filterDate}
                       <button
@@ -554,7 +554,7 @@
                     </div>
                     <select
                       bind:value={filterUser}
-                      class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem_1rem] bg-[position:right_0.5rem_center] bg-no-repeat [color-scheme:light]"
+                      class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
                     >
                       <option value="" class="bg-white text-slate-900">-- Semua Murid --</option>
                       {#each users as u}
@@ -573,7 +573,7 @@
                   </div>
                   <select
                     bind:value={filterSubject}
-                    class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem_1rem] bg-[position:right_0.5rem_center] bg-no-repeat [color-scheme:light]"
+                    class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
                   >
                     <option value="" class="bg-white text-slate-900">-- Semua Pelajaran --</option>
                     {#each subjects as s}
@@ -587,7 +587,7 @@
                 >
                 {#if isTeacher}
                   <th
-                    class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-right pb-5"
+                    class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5"
                     >Aksi</th
                   >
                 {/if}
@@ -619,7 +619,7 @@
                     </span>
                   </td>
                   {#if isTeacher}
-                    <td class="py-4 px-6 text-right space-x-2">
+                    <td class="py-4 px-6 text-center space-x-2">
                       <button
                         onclick={() => openEditModal(exam)}
                         class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
