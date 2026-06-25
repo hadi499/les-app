@@ -515,7 +515,7 @@
           >
             <thead>
               <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 align-bottom">
+                <th class="py-4 px-6 align-bottom min-w-[200px]">
                   <div class="font-bold text-slate-900 text-sm mb-2">
                     Tanggal
                   </div>
@@ -548,7 +548,7 @@
                   </div>
                 </th>
                 {#if isTeacher}
-                  <th class="py-4 px-6 align-bottom">
+                  <th class="py-4 px-6 align-bottom min-w-[200px]">
                     <div class="font-bold text-slate-900 text-sm mb-2">
                       Murid
                     </div>
@@ -567,7 +567,7 @@
                   class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm pb-5"
                   >Nama Ujian</th
                 >
-                <th class="py-4 px-6 align-bottom">
+                <th class="py-4 px-6 align-bottom min-w-[200px]">
                   <div class="font-bold text-slate-900 text-sm mb-2">
                     Mata Pelajaran
                   </div>
