@@ -214,13 +214,13 @@
 
 <div class="min-h-screen bg-transparent text-slate-900">
   <header
-    class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
+    class="fixed top-16 md:top-0 left-0 md:left-[var(--sidebar-width)] right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
   >
     <div
-      class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap"
+      class="max-w-5xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4"
     >
-      <div class="flex items-center gap-4">
-        <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl">
+      <div class="flex items-center overflow-x-auto hide-scrollbar -mx-2 px-2 md:mx-0 md:px-0">
+        <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl w-max">
           <span
             class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-slate-900 shadow-sm font-base transition-all"
           >
@@ -255,13 +255,13 @@
         </nav>
       </div>
 
-      <div class="flex items-center gap-3 flex-wrap">
-        <div class="relative">
+      <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+        <div class="relative w-full sm:w-auto">
           <input
             type="text"
             bind:value={searchQuery}
             placeholder="Cari kartu..."
-            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-slate-900 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-56 transition-all"
+            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-slate-900 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-full md:w-56 transition-all"
             onkeydown={(e) => {
               if (e.key === "Enter") applySearch();
             }}
@@ -297,16 +297,16 @@
           </button>
         </div>
         {#if isTeacher}
-          <div class="flex items-center gap-2">
+          <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
             <button
               onclick={() => {
                 editingCard = null;
                 showForm = !showForm;
               }}
-              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer"
+              class="flex items-center justify-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer w-full sm:w-auto"
             >
               <svg
-                class="w-4 h-4"
+                class="w-4 h-4 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
@@ -325,10 +325,10 @@
                 editingCard = null;
                 showImageForm = !showImageForm;
               }}
-              class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all shadow-sm cursor-pointer"
+              class="flex items-center justify-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all shadow-sm cursor-pointer w-full sm:w-auto"
             >
               <svg
-                class="w-4 h-4"
+                class="w-4 h-4 shrink-0"
                 fill="none"
                 stroke="currentColor"
                 stroke-width="2"
@@ -348,7 +348,7 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto p-4 pt-24 md:pt-20">
+  <main class="max-w-5xl mx-auto p-4 pt-44 md:pt-20">
     <!-- Bulk selection bar -->
     {#if cards.length > 0 && isTeacher}
       <div class="flex items-center gap-3 mb-3">
@@ -464,7 +464,8 @@
         <div
           class="bg-white/80 rounded-xl border border-slate-200 overflow-hidden"
         >
-          <table class="w-full text-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-sm min-w-[600px]">
             <thead>
               <tr
                 class="bg-transparent border-b border-slate-200 text-left text-xs text-slate-800 uppercase tracking-wider"
@@ -622,6 +623,7 @@
               {/each}
             </tbody>
           </table>
+          </div>
         </div>
 
         {#if totalPages > 1}

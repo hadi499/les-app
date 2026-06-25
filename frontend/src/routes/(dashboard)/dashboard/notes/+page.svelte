@@ -681,7 +681,7 @@
                 {notes.filter((n) => n.folder_id === folder.id).length} catatan
               </p>
             </div>
-            <div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+            <div class="absolute top-2 right-2 flex items-center gap-1 transition-all">
               <button
                 onclick={(e) => {
                   e.stopPropagation();
@@ -794,11 +794,21 @@
                   >
                     {note.title}
                   </h3>
-                  {#if searchQuery}
-                    <p class="text-xs text-slate-500 mt-0.5 truncate">
-                      {note.folder ? note.folder.name : "Tanpa Folder"}
+                  <div class="flex items-center gap-2 mt-0.5">
+                    {#if searchQuery}
+                      <p class="text-xs text-slate-500 truncate">
+                        {note.folder ? note.folder.name : "Tanpa Folder"}
+                      </p>
+                      <span class="text-xs text-slate-300 sm:hidden">•</span>
+                    {/if}
+                    <p class="text-xs text-slate-400 truncate sm:hidden">
+                      {new Date(note.created_at).toLocaleDateString("id-ID", {
+                        year: "numeric",
+                        month: "short",
+                        day: "numeric",
+                      })}
                     </p>
-                  {/if}
+                  </div>
                 </div>
               </div>
 
@@ -810,7 +820,7 @@
                     day: "numeric",
                   })}</span
                 >
-                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                <div class="flex items-center gap-1 transition-all">
                   <button onclick={(e) => { e.stopPropagation(); copyNote(note); }} class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer" title="Duplikat">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
                   </button>

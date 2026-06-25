@@ -126,18 +126,20 @@
     </div>
   {:else}
     <!-- Tabs -->
-    <div class="flex flex-wrap gap-2 border-b border-slate-200 pb-2">
-      {#each tabs as tab}
-        <button
-          class="px-4 py-2 rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
-          tab.id
-            ? 'border-indigo-500 text-indigo-600 bg-indigo-800/10'
-            : 'border-transparent text-slate-600  hover:bg-white/50'}"
-          onclick={() => (activeTab = tab.id)}
-        >
-          {tab.label}
-        </button>
-      {/each}
+    <div class="border-b border-slate-200">
+      <div class="flex flex-nowrap overflow-x-auto gap-2 -mb-px">
+        {#each tabs as tab}
+          <button
+            class="px-4 py-2.5 whitespace-nowrap rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
+            tab.id
+              ? 'border-indigo-500 text-indigo-600 bg-indigo-800/10'
+              : 'border-transparent text-slate-600 hover:bg-white/50'}"
+            onclick={() => (activeTab = tab.id)}
+          >
+            {tab.label}
+          </button>
+        {/each}
+      </div>
     </div>
 
     <!-- Content -->

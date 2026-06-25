@@ -49,7 +49,7 @@
   class="min-h-screen bg-transparent text-slate-900 print:bg-white print:text-black print:min-h-0"
 >
   <header
-    class="fixed top-16 md:top-0 left-0 md:left-64 right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all print:hidden"
+    class="fixed top-16 md:top-0 left-0 md:left-[var(--sidebar-width)] right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all print:hidden"
   >
     <div
       class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap"

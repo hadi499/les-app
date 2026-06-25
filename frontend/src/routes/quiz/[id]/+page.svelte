@@ -3,6 +3,7 @@
   import { slide, fade } from "svelte/transition";
   import { page } from "$app/state";
   import { goto, beforeNavigate } from "$app/navigation";
+  import Modal from "$lib/components/Modal.svelte";
 
   let quizId = $derived(page.params.id);
 
@@ -38,6 +39,9 @@
   let timeLeft = $state(15);
   let timerInterval: ReturnType<typeof setInterval>;
   let isSubmitting = $state(false);
+  let showLeaveModal = $state(false);
+  let targetUrl = $state<string | null>(null);
+  let hasConfirmedLeave = $state(false);
 
   const currentQuestion = $derived(
     quiz && quiz.questions ? quiz.questions[currentQuestionIndex] : null,
@@ -45,30 +49,44 @@
   const score = $derived(userAnswers.filter((a) => a.isCorrect).length * 10); // 10 points per correct answer
 
   beforeNavigate((navigation) => {
-    if (quiz && currentQuestion && !isFinished) {
-      const confirmLeave = confirm(
-        "Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda akan dihitung 0. Apakah Anda yakin ingin keluar?",
-      );
-      if (!confirmLeave) {
-        navigation.cancel();
-      } else {
-        // Submit score 0 saat user memilih keluar
-        fetch(`/api/scores/quizzes`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
-          keepalive: true,
-          body: JSON.stringify({
-            quiz_id: Number(quizId),
-            score: 0,
-          }),
-        }).catch(console.error);
-      }
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
+      navigation.cancel();
+      targetUrl = navigation.to?.url.pathname || "/quiz";
+      showLeaveModal = true;
     }
   });
 
+  async function confirmLeave() {
+    showLeaveModal = false;
+    hasConfirmedLeave = true;
+    
+    // Submit score 0 saat user memilih keluar
+    try {
+      await fetch(`/api/scores/quizzes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: Number(quizId),
+          score: 0,
+        }),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+    
+    if (targetUrl) {
+      goto(targetUrl);
+    }
+  }
+
+  function cancelLeave() {
+    showLeaveModal = false;
+    targetUrl = null;
+  }
+
   function handleBeforeUnload(e: BeforeUnloadEvent) {
-    if (quiz && currentQuestion && !isFinished) {
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
       e.preventDefault();
       e.returnValue = "";
     }
@@ -425,6 +443,48 @@
       {/if}
     {/if}
   </div>
+  <!-- Leave Confirmation Modal -->
+  <Modal show={showLeaveModal} onclose={cancelLeave}>
+    <div class="space-y-4 text-center">
+      <div
+        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Konfirmasi Keluar</h3>
+        <p class="text-sm text-slate-600 mt-1">
+          Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda akan dihitung 0. Apakah Anda yakin ingin keluar?
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-2">
+        <button
+          onclick={cancelLeave}
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-900 cursor-pointer font-medium"
+        >
+          Batal
+        </button>
+        <button
+          onclick={confirmLeave}
+          class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 cursor-pointer font-medium shadow-sm"
+        >
+          Ya, Keluar
+        </button>
+      </div>
+    </div>
+  </Modal>
 </div>
 
 <style>

@@ -10,6 +10,7 @@
   type User = { username: string; role: string };
   let user: User = $state({ username: "Loading...", role: "..." });
   let isMobileMenuOpen = $state(false);
+  let isDesktopSidebarOpen = $state(true);
   let isLoading = $state(true);
 
   onMount(async () => {
@@ -61,10 +62,11 @@
 {:else}
   <div
     class="min-h-screen bg-slate-50 flex selection:bg-slate-200 selection:text-slate-800 font-sans text-slate-900"
+    style="--sidebar-width: {isDesktopSidebarOpen ? '16rem' : '0px'};"
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="w-64 bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col flex-shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5"
+      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 {isDesktopSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-transparent'}"
     >
       <!-- Logo -->
       <div class="h-16 flex items-center px-6 border-b border-slate-300">
@@ -371,6 +373,21 @@
       </div>
     </aside>
 
+    <!-- Desktop Sidebar Toggle Button -->
+    <button
+      onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
+      class="hidden md:flex fixed top-4 z-[60] p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen ? 'left-[15rem]' : 'left-4'}"
+      title={isDesktopSidebarOpen ? 'Sembunyikan Sidebar' : 'Tampilkan Sidebar'}
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        {#if isDesktopSidebarOpen}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+        {:else}
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+        {/if}
+      </svg>
+    </button>
+
     <!-- Mobile Header -->
     <div
       class="md:hidden fixed top-0 inset-x-0 h-16 bg-slate-400/10 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
@@ -388,7 +405,7 @@
       </div>
       <button
         aria-label="Buka menu navigasi"
-        class="text-slate-600 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors"
+        class="text-slate-600 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors {isMobileMenuOpen ? 'hidden' : 'block'}"
         onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
       >
         <svg
@@ -753,7 +770,7 @@
       class="flex-1 flex flex-col min-w-0 md:pt-0 pt-16 h-screen overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent z-0 relative"
     >
       <div
-        class="flex-1 p-6 md:p-8 max-w-6xl mx-auto w-full relative z-10 print:p-0 print:m-0"
+        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen ? '' : 'md:pl-16'} max-w-6xl mx-auto w-full relative z-10 print:p-0 print:m-0 transition-all duration-300"
       >
         {@render children()}
       </div>
