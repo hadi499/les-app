@@ -124,6 +124,10 @@
   let showDeleteModal = $state(false);
   let noteToDelete = $state<Note | null>(null);
   let editingNote = $state<Note | null>(null);
+  let editingFolder = $state<Folder | null>(null);
+  let showMoveModal = $state(false);
+  let noteToMove = $state<Note | null>(null);
+  let moveTargetFolderId = $state<number | "">("");
 
   // Forms state
   let formTitle = $state("");
@@ -134,7 +138,14 @@
   let editorRef = $state<RichEditorRef>();
 
   function openNewFolder() {
+    editingFolder = null;
     newFolderName = "";
+    showFolderForm = true;
+  }
+
+  function openEditFolder(folder: Folder) {
+    editingFolder = folder;
+    newFolderName = folder.name;
     showFolderForm = true;
   }
 
@@ -144,16 +155,30 @@
     if (!name) return;
 
     try {
-      const res = await fetch("/api/folders", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ name }),
-      });
-      if (res.ok) {
-        const newFolder = await res.json();
-        folders = [...folders, newFolder];
-        currentFolder = newFolder; // Auto-enter the newly created folder
+      if (editingFolder) {
+        const res = await fetch(`/api/folders/${editingFolder.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ name }),
+        });
+        if (res.ok) {
+          const updatedFolder = await res.json();
+          folders = folders.map((f) => (f.id === updatedFolder.id ? updatedFolder : f));
+          if (currentFolder?.id === updatedFolder.id) currentFolder = updatedFolder;
+        }
+      } else {
+        const res = await fetch("/api/folders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ name }),
+        });
+        if (res.ok) {
+          const newFolder = await res.json();
+          folders = [...folders, newFolder];
+          currentFolder = newFolder; // Auto-enter the newly created folder
+        }
       }
     } catch (e) {
       console.error(e);
@@ -241,6 +266,64 @@
     showNoteForm = false;
   }
 
+  function openMoveModal(note: Note) {
+    noteToMove = note;
+    moveTargetFolderId = note.folder_id === null ? "" : note.folder_id;
+    showMoveModal = true;
+  }
+
+  async function moveNoteToFolder() {
+    if (!noteToMove) return;
+    const payload = {
+      title: noteToMove.title,
+      folder_id: moveTargetFolderId === "" ? null : Number(moveTargetFolderId),
+      content: noteToMove.content,
+    };
+    try {
+      const res = await fetch(`/api/notes/${noteToMove.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const updatedNote = await res.json();
+        notes = notes.map((n) => (n.id === updatedNote.id ? updatedNote : n));
+        if (viewingNote?.id === updatedNote.id) viewingNote = updatedNote;
+        toast.success("Catatan dipindahkan");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Gagal memindahkan catatan");
+    }
+    showMoveModal = false;
+    noteToMove = null;
+  }
+
+  async function copyNote(note: Note) {
+    const payload = {
+      title: `${note.title} (Copy)`,
+      folder_id: note.folder_id,
+      content: note.content,
+    };
+    try {
+      const res = await fetch("/api/notes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify(payload),
+      });
+      if (res.ok) {
+        const newNote = await res.json();
+        notes = [newNote, ...notes];
+        toast.success("Catatan berhasil diduplikat");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Gagal menduplikat catatan");
+    }
+  }
+
   function deleteNote(note: Note) {
     noteToDelete = note;
     showDeleteModal = true;
@@ -320,6 +403,18 @@
         Kembali
       </button>
       <div class="flex items-center gap-2 w-full sm:w-auto">
+        <button
+          onclick={() => openMoveModal(viewingNote!)}
+          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-indigo-600 hover:bg-indigo-50 rounded-xl transition-colors cursor-pointer"
+        >
+          Pindah
+        </button>
+        <button
+          onclick={() => copyNote(viewingNote!)}
+          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-emerald-600 hover:bg-emerald-50 rounded-xl transition-colors cursor-pointer"
+        >
+          Duplikat
+        </button>
         <button
           onclick={() => deleteNote(viewingNote!)}
           class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-red-600 hover:bg-red-50 rounded-xl transition-colors cursor-pointer"
@@ -595,27 +690,50 @@
                 {notes.filter((n) => n.folder_id === folder.id).length} catatan
               </p>
             </div>
-            <button
-              onclick={(e) => {
-                e.stopPropagation();
-                deleteFolder(folder);
-              }}
-              class="absolute top-2 right-2 p-1.5 text-slate-300 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-all cursor-pointer rounded-lg hover:bg-red-50"
-              title="Hapus folder"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                ></path></svg
+            <div class="absolute top-2 right-2 flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  openEditFolder(folder);
+                }}
+                class="p-1.5 text-slate-500 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
+                title="Edit folder"
               >
-            </button>
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path></svg
+                >
+              </button>
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  deleteFolder(folder);
+                }}
+                class="p-1.5 text-slate-500 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
+                title="Hapus folder"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  ></path></svg
+                >
+              </button>
+            </div>
           </div>
         {/each}
       </div>
@@ -701,27 +819,24 @@
                     day: "numeric",
                   })}</span
                 >
-                <button
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    deleteNote(note);
-                  }}
-                  class="text-slate-300 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-all opacity-0 group-hover:opacity-100 cursor-pointer"
-                  title="Hapus"
-                >
-                  <svg
-                    class="w-4 h-4"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    ><path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    ></path></svg
+                <div class="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-all">
+                  <button onclick={(e) => { e.stopPropagation(); copyNote(note); }} class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer" title="Duplikat">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
+                  </button>
+                  <button onclick={(e) => { e.stopPropagation(); openMoveModal(note); }} class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer" title="Pindah Folder">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                  </button>
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      deleteNote(note);
+                    }}
+                    class="p-1.5 text-slate-500 hover:text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
+                    title="Hapus"
                   >
-                </button>
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                  </button>
+                </div>
               </div>
             </div>
           {/each}
@@ -907,7 +1022,7 @@
 <Modal
   show={showFolderForm}
   onclose={() => (showFolderForm = false)}
-  title="Folder Baru"
+  title={editingFolder ? "Edit Folder" : "Folder Baru"}
 >
   <form onsubmit={saveFolder} class="space-y-5">
     <div>
@@ -938,7 +1053,7 @@
         type="submit"
         class="px-5 py-2.5 text-sm font-medium rounded-xl bg-blue-600 text-white hover:bg-blue-700 hover:shadow-lg transition-all cursor-pointer"
       >
-        Buat Folder
+        {editingFolder ? "Simpan Perubahan" : "Buat Folder"}
       </button>
     </div>
   </form>
@@ -974,3 +1089,45 @@
   </div>
 </Modal>
 
+<!-- MODAL: MOVE NOTE -->
+<Modal
+  show={showMoveModal}
+  onclose={() => (showMoveModal = false)}
+  title="Pindah Folder"
+>
+  <div class="space-y-5">
+    <div>
+      <label class="block text-sm font-medium text-slate-700 mb-1.5">Pilih Folder Tujuan</label>
+      <div class="relative">
+        <select
+          bind:value={moveTargetFolderId}
+          class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all appearance-none cursor-pointer"
+        >
+          <option value="">Tanpa Folder</option>
+          {#each folders as folder}
+            <option value={folder.id}>{folder.name}</option>
+          {/each}
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+      </div>
+    </div>
+    <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
+      <button
+        type="button"
+        onclick={() => (showMoveModal = false)}
+        class="px-5 py-2.5 text-sm font-medium rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer"
+      >
+        Batal
+      </button>
+      <button
+        type="button"
+        onclick={moveNoteToFolder}
+        class="px-5 py-2.5 text-sm font-medium rounded-xl bg-indigo-600 text-white hover:bg-indigo-700 hover:shadow-lg transition-all cursor-pointer"
+      >
+        Pindahkan
+      </button>
+    </div>
+  </div>
+</Modal>
