@@ -767,10 +767,10 @@
 
     <!-- Main Content Area -->
     <main
-      class="flex-1 flex flex-col min-w-0 md:pt-0 pt-16 h-screen overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent z-0 relative"
+      class="flex-1 flex flex-col min-w-0 md:pt-0 pt-16 h-screen overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent"
     >
       <div
-        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen ? '' : 'md:pl-16'} max-w-6xl mx-auto w-full relative z-10 print:p-0 print:m-0 transition-all duration-300"
+        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen ? '' : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0 transition-all duration-300"
       >
         {@render children()}
       </div>
