@@ -69,21 +69,32 @@
     editor?.commands.setContent(html || "");
   }
 
-  function insertMathInline() {
-    const latex = prompt("LaTeX (inline):", "x^2 + y^2 = r^2");
-    if (latex && editor) {
-      editor.chain().focus().insertContent(`$${latex}$`).run();
+  let showMathModal = $state(false);
+  let mathType = $state<"inline" | "display">("inline");
+  let mathInput = $state("");
+
+  function openMathModal(type: "inline" | "display") {
+    mathType = type;
+    mathInput = type === "inline" ? "x^2 + y^2 = r^2" : "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}";
+    showMathModal = true;
+  }
+
+  function submitMath() {
+    if (!mathInput || !editor) return;
+    if (mathType === "inline") {
+      editor.chain().focus().insertContent(`$${mathInput}$`).run();
+    } else {
+      editor.chain().focus().insertContent(`<p>$$${mathInput}$$</p>`).run();
     }
+    showMathModal = false;
+  }
+
+  function insertMathInline() {
+    openMathModal("inline");
   }
 
   function insertMathDisplay() {
-    const latex = prompt(
-      "LaTeX (display):",
-      "\\frac{-b \\pm \\sqrt{b^2-4ac}}{2a}",
-    );
-    if (latex && editor) {
-      editor.chain().focus().insertContent(`<p>$$${latex}$$</p>`).run();
-    }
+    openMathModal("display");
   }
 
   export { getHTML, setHTML };
@@ -261,3 +272,34 @@
     height: 100%;
   }
 </style>
+
+{#if showMathModal}
+  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in duration-200">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-lg overflow-hidden animate-in zoom-in-95 duration-200">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">
+          Masukkan Rumus {mathType === "inline" ? "Baris (Inline)" : "Blok (Display)"}
+        </h3>
+        <textarea
+          bind:value={mathInput}
+          class="w-full px-4 py-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:outline-none min-h-[100px] font-mono text-sm resize-y"
+          placeholder="Tuliskan LaTeX di sini..."
+        ></textarea>
+      </div>
+      <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+        <button
+          onclick={() => showMathModal = false}
+          class="px-4 py-2 text-sm font-semibold text-slate-700 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+        >
+          Batal
+        </button>
+        <button
+          onclick={submitMath}
+          class="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 rounded-xl transition-colors cursor-pointer"
+        >
+          Sisipkan
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
