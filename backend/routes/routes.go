@@ -81,24 +81,34 @@ func SetupRoutes(r *gin.Engine) {
 		imagesAPI.GET("", controllers.ListImages)
 	}
 
-	// Exams API routes (Teacher only)
+	// Exams API routes
 	exams := r.Group("/api/exams")
-	exams.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	exams.Use(middleware.AuthMiddleware())
 	{
 		exams.GET("", controllers.GetExams)
-		exams.POST("", controllers.CreateExam)
-		exams.PUT("/:id", controllers.UpdateExam)
-	exams.DELETE("/:id", controllers.DeleteExam)
+		
+		teacherExams := exams.Group("")
+		teacherExams.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherExams.POST("", controllers.CreateExam)
+			teacherExams.PUT("/:id", controllers.UpdateExam)
+			teacherExams.DELETE("/:id", controllers.DeleteExam)
+		}
 	}
 
-	// Subjects API routes (Teacher only)
+	// Subjects API routes
 	subjects := r.Group("/api/subjects")
-	subjects.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	subjects.Use(middleware.AuthMiddleware())
 	{
 		subjects.GET("", controllers.GetSubjects)
-		subjects.POST("", controllers.CreateSubject)
-		subjects.PUT("/:id", controllers.UpdateSubject)
-		subjects.DELETE("/:id", controllers.DeleteSubject)
+		
+		teacherSubjects := subjects.Group("")
+		teacherSubjects.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherSubjects.POST("", controllers.CreateSubject)
+			teacherSubjects.PUT("/:id", controllers.UpdateSubject)
+			teacherSubjects.DELETE("/:id", controllers.DeleteSubject)
+		}
 	}
 
 	// Quizzes API routes

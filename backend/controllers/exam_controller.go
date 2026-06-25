@@ -10,10 +10,18 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// GetExams fetches all exam scores
 func GetExams(c *gin.Context) {
 	var exams []models.Exam
-	if err := database.DB.Preload("User").Preload("Subject").Order("exam_date desc").Find(&exams).Error; err != nil {
+	
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+
+	query := database.DB.Preload("User").Preload("Subject").Order("exam_date desc")
+	if role != "teacher" && role != "admin" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	if err := query.Find(&exams).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch exams"})
 		return
 	}

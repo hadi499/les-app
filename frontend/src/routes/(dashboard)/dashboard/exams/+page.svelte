@@ -20,6 +20,8 @@
   let subjects: Subject[] = $state([]);
   let isLoading = $state(true);
   let errorMsg = $state("");
+  let isTeacher = $state(false);
+  let currentUserId = $state<number | null>(null);
 
   // Tabs & Chart State
   let activeTab = $state("table");
@@ -136,10 +138,33 @@
     }
   }
 
+  async function checkRole() {
+    try {
+      const res = await fetch(`/me`, { credentials: "include" });
+      const data = await res.json();
+      if (data.authenticated && data.user) {
+        if (data.user.role === "teacher") {
+          isTeacher = true;
+        }
+        currentUserId = data.user.id;
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
   async function loadData() {
     isLoading = true;
     errorMsg = "";
-    await Promise.all([fetchExams(), fetchUsers(), fetchSubjects()]);
+    await checkRole();
+    const promises: Promise<any>[] = [fetchExams(), fetchSubjects()];
+    if (isTeacher) {
+      promises.push(fetchUsers());
+    }
+    await Promise.all(promises);
+    if (!isTeacher && currentUserId) {
+      chartSelectedUserId = currentUserId.toString();
+    }
     isLoading = false;
   }
 
@@ -415,20 +440,26 @@
         Kelola nilai ujian harian siswa.
       </p>
     </div>
-    <button
-      onclick={openAddModal}
-      class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4v16m8-8H4"
-        ></path></svg
+    {#if isTeacher}
+      <button
+        onclick={openAddModal}
+        class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
       >
-      Nilai Ujian
-    </button>
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          ></path></svg
+        >
+        Nilai Ujian
+      </button>
+    {/if}
   </div>
 
   {#if isLoading}
@@ -470,8 +501,7 @@
         onclick={() => (activeTab = "chart")}
         class="pb-3 px-1 font-medium transition-colors {activeTab === 'chart'
           ? 'text-indigo-400 border-b-2 border-indigo-400'
-          : 'text-slate-500 hover:text-slate-800'}"
-        >Grafik Perkembangan</button
+          : 'text-slate-500 hover:text-slate-800'}">Grafik Perkembangan</button
       >
     </div>
 
@@ -517,20 +547,22 @@
                     {/if}
                   </div>
                 </th>
-                <th class="py-4 px-6 align-bottom">
-                  <div class="font-bold text-slate-900 text-sm mb-2">
-                    Murid
-                  </div>
-                  <select
-                    bind:value={filterUser}
-                    class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
-                  >
-                    <option value="">-- Semua Murid --</option>
-                    {#each users as u}
-                      <option value={u.username}>{u.username}</option>
-                    {/each}
-                  </select>
-                </th>
+                {#if isTeacher}
+                  <th class="py-4 px-6 align-bottom">
+                    <div class="font-bold text-slate-900 text-sm mb-2">
+                      Murid
+                    </div>
+                    <select
+                      bind:value={filterUser}
+                      class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    >
+                      <option value="">-- Semua Murid --</option>
+                      {#each users as u}
+                        <option value={u.username}>{u.username}</option>
+                      {/each}
+                    </select>
+                  </th>
+                {/if}
                 <th
                   class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm pb-5"
                   >Nama Ujian</th
@@ -553,10 +585,12 @@
                   class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5"
                   >Nilai</th
                 >
-                <th
-                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-right pb-5"
-                  >Aksi</th
-                >
+                {#if isTeacher}
+                  <th
+                    class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-right pb-5"
+                    >Aksi</th
+                  >
+                {/if}
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-200">
@@ -565,10 +599,12 @@
                   <td class="py-4 px-6 text-sm text-slate-600"
                     >{formatDate(exam.exam_date)}</td
                   >
-                  <td
-                    class="py-4 px-6 text-sm font-medium text-slate-900 drop-shadow-sm"
-                    >{exam.user?.username || "Unknown"}</td
-                  >
+                  {#if isTeacher}
+                    <td
+                      class="py-4 px-6 text-sm font-medium text-slate-900 drop-shadow-sm"
+                      >{exam.user?.username || "Unknown"}</td
+                    >
+                  {/if}
                   <td class="py-4 px-6 text-sm text-slate-800"
                     >{exam.exam_name}</td
                   >
@@ -582,26 +618,28 @@
                       {exam.score}
                     </span>
                   </td>
-                  <td class="py-4 px-6 text-right space-x-2">
-                    <button
-                      onclick={() => openEditModal(exam)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
-                    >
-                      Edit
-                    </button>
-                    <button
-                      onclick={() => openDeleteModal(exam.id)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
-                    >
-                      Hapus
-                    </button>
-                  </td>
+                  {#if isTeacher}
+                    <td class="py-4 px-6 text-right space-x-2">
+                      <button
+                        onclick={() => openEditModal(exam)}
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-800/50 rounded-lg transition-colors border border-blue-300"
+                      >
+                        Edit
+                      </button>
+                      <button
+                        onclick={() => openDeleteModal(exam.id)}
+                        class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
+                      >
+                        Hapus
+                      </button>
+                    </td>
+                  {/if}
                 </tr>
               {/each}
               {#if filteredExams.length === 0}
                 <tr>
                   <td
-                    colspan="6"
+                    colspan={isTeacher ? 6 : 4}
                     class="py-12 text-center text-slate-500 font-light"
                     >Belum ada data nilai ujian.</td
                   >
@@ -679,22 +717,26 @@
         class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 space-y-6"
       >
         <div class="flex flex-col sm:flex-row gap-4">
-          <div class="w-full sm:max-w-xs">
-            <label
-              class="block text-sm font-medium text-slate-600 mb-2"
-              for="chartUser">Pilih Murid</label
-            >
-            <select
-              id="chartUser"
-              bind:value={chartSelectedUserId}
-              class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
-            >
-              <option value="" disabled>-- Pilih Murid --</option>
-              {#each users as u}
-                <option value={u.id}>{u.username}</option>
-              {/each}
-            </select>
-          </div>
+          {#if isTeacher}
+            <div class="w-full sm:max-w-xs">
+              <label
+                class="block text-sm font-medium text-slate-600 mb-2"
+                for="chartUser">Pilih Murid</label
+              >
+              <select
+                id="chartUser"
+                bind:value={chartSelectedUserId}
+                class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
+              >
+                <option value="" disabled hidden>-- Pilih Murid --</option>
+                {#each users as u}
+                  <option value={u.id} class="bg-slate-700 text-white"
+                    >{u.username}</option
+                  >
+                {/each}
+              </select>
+            </div>
+          {/if}
 
           {#if chartSelectedUserId}
             <div class="w-full sm:max-w-[12rem]">
@@ -705,11 +747,17 @@
               <select
                 id="chartTimeframe"
                 bind:value={chartTimeframe}
-                class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+                class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
               >
-                <option value="harian">Harian</option>
-                <option value="mingguan">Mingguan</option>
-                <option value="bulanan">Bulanan</option>
+                <option value="harian" class="bg-slate-700 text-white"
+                  >Harian</option
+                >
+                <option value="mingguan" class="bg-slate-700 text-white"
+                  >Mingguan</option
+                >
+                <option value="bulanan" class="bg-slate-700 text-white"
+                  >Bulanan</option
+                >
               </select>
             </div>
           {/if}
@@ -776,12 +824,14 @@
           <select
             id="user"
             bind:value={formUserId}
-            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
             required
           >
-            <option value="" disabled>-- Pilih Murid --</option>
+            <option value="" disabled hidden>-- Pilih Murid --</option>
             {#each users as u}
-              <option value={u.id}>{u.username}</option>
+              <option value={u.id} class="bg-slate-700 text-white"
+                >{u.username}</option
+              >
             {/each}
           </select>
         </div>
@@ -795,7 +845,7 @@
             type="date"
             id="date"
             bind:value={formExamDate}
-            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm"
             required
           />
         </div>
@@ -810,7 +860,7 @@
             id="examName"
             bind:value={formExamName}
             placeholder="Misal: Ujian Tengah Semester"
-            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm"
             required
           />
         </div>
@@ -823,12 +873,14 @@
           <select
             id="subject"
             bind:value={formSubjectId}
-            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
             required
           >
-            <option value="" disabled>-- Pilih Mata Pelajaran --</option>
+            <option value="" disabled hidden>-- Pilih Mata Pelajaran --</option>
             {#each subjects as s}
-              <option value={s.id}>{s.name}</option>
+              <option value={s.id} class="bg-slate-700 text-white"
+                >{s.name}</option
+              >
             {/each}
           </select>
         </div>
@@ -852,7 +904,7 @@
             }}
             min="0"
             max="100"
-            class="w-full bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm"
             required
           />
         </div>
