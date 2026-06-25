@@ -37,7 +37,6 @@
   let filterUser = $state("");
   let filterSubject = $state("");
   let filterDate = $state("");
-  let filterDate = $state("");
 
   let filteredExams = $derived(
     exams.filter((exam) => {
@@ -524,9 +523,9 @@
                     <div class="absolute inset-0 bg-white border border-slate-300 rounded-lg pointer-events-none z-0"></div>
                     {#if !filterDate}
                       <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none z-0">
-                        <span class="text-slate-400 text-sm">dd/mm/yyyy</span>
+                        <span class="text-slate-900 text-sm">dd/mm/yyyy</span>
                       </div>
-                      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-400">
+                      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-500">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                       </div>
                     {/if}
