@@ -274,6 +274,8 @@
   function printNote() {
     window.print();
   }
+
+  let printFontSize = $state(16);
 </script>
 
 <svelte:head>
@@ -294,7 +296,7 @@
 <!-- VIEW: DETAIL CATATAN -->
 {#if viewingNote}
   <div
-    class="max-w-4xl mx-auto bg-white p-6 md:p-12 rounded-3xl shadow-sm border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 animate-in fade-in zoom-in-95 duration-200"
+    class="max-w-[210mm] mx-auto bg-white p-6 md:p-12 rounded-3xl shadow-sm border border-slate-200 print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[297mm]"
   >
     <div
       class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden mb-8 border-b border-slate-100 pb-5"
@@ -330,9 +332,24 @@
         >
           Edit Catatan
         </button>
+        <div class="flex items-center bg-slate-100 rounded-xl overflow-hidden print:hidden border border-slate-200">
+          <button
+            onclick={() => printFontSize = Math.max(10, printFontSize - 1)}
+            class="px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
+            title="Perkecil Font"
+          >A-</button>
+          <div class="px-2 py-2 text-xs font-medium text-slate-600 bg-white border-x border-slate-200 text-center min-w-[3rem]">
+            {printFontSize}px
+          </div>
+          <button
+            onclick={() => printFontSize = Math.min(36, printFontSize + 1)}
+            class="px-3 py-2 text-base font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
+            title="Perbesar Font"
+          >A+</button>
+        </div>
         <button
           onclick={printNote}
-          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2"
+          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center gap-2 border border-slate-200"
         >
           <svg
             class="w-4 h-4"
@@ -354,12 +371,12 @@
     <!-- Print Area -->
     <div class="print:block">
       <h1
-        class="text-3xl sm:text-4xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight"
+        class="text-3xl sm:text-4xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight print:hidden"
       >
         {viewingNote.title}
       </h1>
       <div
-        class="flex items-center gap-3 text-sm text-slate-500 mb-8 pb-8 border-b border-slate-100"
+        class="flex items-center gap-3 text-sm text-slate-500 mb-8 pb-8 border-b border-slate-100 print:hidden"
       >
         <span
           class="px-3 py-1 rounded-lg bg-slate-100 text-slate-700 font-medium flex items-center gap-1.5"
@@ -399,7 +416,8 @@
         </span>
       </div>
       <div
-        class="prose prose-slate max-w-none text-slate-800 leading-loose text-[15px] sm:text-[16px] whitespace-pre-wrap"
+        class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap"
+        style="font-size: {printFontSize}px;"
       >
         {@html renderMathContent(viewingNote.content)}
       </div>
@@ -737,7 +755,7 @@
       />
     </div>
 
-    <div class="relative">
+    <div class={`relative ${isFolderDropdownOpen ? 'z-50' : 'z-10'}`}>
       <label
         for="folder"
         class="block text-sm font-medium text-slate-700 mb-1.5"
@@ -763,7 +781,7 @@
           if (!editingNote && currentFolder !== null) return;
           isFolderDropdownOpen = !isFolderDropdownOpen;
         }}
-        class={`w-full text-left bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 outline-none transition-all flex items-center justify-between shadow-sm cursor-pointer relative z-50 ${!editingNote && currentFolder !== null ? "bg-slate-50 cursor-not-allowed text-slate-500" : "hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"}`}
+        class={`w-full text-left bg-white border border-slate-300 rounded-xl px-4 py-2.5 text-slate-900 outline-none transition-all flex items-center justify-between shadow-sm cursor-pointer relative ${!editingNote && currentFolder !== null ? "bg-slate-50 cursor-not-allowed text-slate-500" : "hover:border-blue-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"}`}
       >
         <span class="flex items-center gap-2 truncate">
           {#if formFolderId === ""}
@@ -855,7 +873,7 @@
       {/if}
     </div>
 
-    <div class="relative z-0">
+    <div class="relative z-20">
       <label
         for="content"
         class="block text-sm font-medium text-slate-700 mb-1.5"
