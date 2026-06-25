@@ -523,7 +523,7 @@
                     <input
                       type="date"
                       bind:value={filterDate}
-                      class="w-full bg-white/80 border border-slate-300 rounded-lg pl-2 pr-8 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                      class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all [color-scheme:light]"
                     />
                     {#if filterDate}
                       <button
@@ -554,11 +554,11 @@
                     </div>
                     <select
                       bind:value={filterUser}
-                      class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                      class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem_1rem] bg-[position:right_0.5rem_center] bg-no-repeat [color-scheme:light]"
                     >
-                      <option value="">-- Semua Murid --</option>
+                      <option value="" class="bg-white text-slate-900">-- Semua Murid --</option>
                       {#each users as u}
-                        <option value={u.username}>{u.username}</option>
+                        <option value={u.username} class="bg-white text-slate-900">{u.username}</option>
                       {/each}
                     </select>
                   </th>
@@ -573,11 +573,11 @@
                   </div>
                   <select
                     bind:value={filterSubject}
-                    class="w-full bg-white/80 border border-slate-300 rounded-lg px-2 py-1 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all"
+                    class="w-full bg-white border border-slate-300 rounded-lg pl-2 pr-8 py-1.5 text-xs text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1rem_1rem] bg-[position:right_0.5rem_center] bg-no-repeat [color-scheme:light]"
                   >
-                    <option value="">-- Semua Pelajaran --</option>
+                    <option value="" class="bg-white text-slate-900">-- Semua Pelajaran --</option>
                     {#each subjects as s}
-                      <option value={s.name}>{s.name}</option>
+                      <option value={s.name} class="bg-white text-slate-900">{s.name}</option>
                     {/each}
                   </select>
                 </th>
@@ -824,7 +824,7 @@
           <select
             id="user"
             bind:value={formUserId}
-            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat [color-scheme:light]"
             required
           >
             <option value="" disabled hidden>-- Pilih Murid --</option>
@@ -845,7 +845,7 @@
             type="date"
             id="date"
             bind:value={formExamDate}
-            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm [color-scheme:light]"
             required
           />
         </div>
@@ -873,7 +873,7 @@
           <select
             id="subject"
             bind:value={formSubjectId}
-            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat [color-scheme:light]"
             required
           >
             <option value="" disabled hidden>-- Pilih Mata Pelajaran --</option>
@@ -979,15 +979,3 @@
   </div>
 {/if}
 
-<style>
-  /* Override global dark color-scheme agar sesuai dengan tema terang di halaman ini */
-  select,
-  input[type="date"] {
-    color-scheme: light;
-  }
-
-  option {
-    background-color: #ffffff;
-    color: #431407; /* text-slate-900 */
-  }
-</style>
