@@ -536,12 +536,16 @@
                     />
                     {#if filterDate}
                       <button
-                        onclick={() => (filterDate = "")}
-                        class="absolute right-2 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-600 transition-colors z-20 bg-white rounded-md p-0.5"
+                        onclick={(e) => {
+                          e.preventDefault();
+                          e.stopPropagation();
+                          filterDate = "";
+                        }}
+                        class="absolute right-1 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-600 transition-colors z-20 bg-white rounded-lg w-8 h-8 flex items-center justify-center"
                         title="Hapus Filter Tanggal"
                       >
                         <svg
-                          class="w-3.5 h-3.5"
+                          class="w-4 h-4"
                           fill="none"
                           stroke="currentColor"
                           viewBox="0 0 24 24"
