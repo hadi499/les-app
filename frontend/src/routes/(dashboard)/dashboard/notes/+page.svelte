@@ -402,7 +402,7 @@
         >
         Kembali
       </button>
-      <div class="flex items-center gap-2 w-full sm:w-auto">
+      <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
 
         <button
           onclick={() => deleteNote(viewingNote!)}
