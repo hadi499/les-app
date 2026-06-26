@@ -15,6 +15,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"golang.org/x/crypto/bcrypt"
+	"sync"
 )
 
 type Claims struct {
@@ -22,6 +23,94 @@ type Claims struct {
 	Username string `json:"username"`
 	Role     string `json:"role"`
 	jwt.RegisteredClaims
+}
+
+var (
+	loginAttempts = make(map[string]*AttemptInfo)
+	attemptsMu    sync.Mutex
+)
+
+type AttemptInfo struct {
+	Count        int
+	FirstAttempt time.Time
+	BlockedUntil time.Time
+}
+
+func checkRateLimit(ip string) (bool, time.Duration) {
+	attemptsMu.Lock()
+	defer attemptsMu.Unlock()
+
+	now := time.Now()
+	info, exists := loginAttempts[ip]
+
+	if !exists {
+		return true, 0
+	}
+
+	if now.Before(info.BlockedUntil) {
+		return false, info.BlockedUntil.Sub(now)
+	}
+
+	if now.Sub(info.FirstAttempt) > time.Minute {
+		info.Count = 0
+		info.FirstAttempt = now
+		info.BlockedUntil = time.Time{}
+	}
+
+	return true, 0
+}
+
+func recordFailedAttempt(ip string) {
+	attemptsMu.Lock()
+	defer attemptsMu.Unlock()
+
+	now := time.Now()
+	info, exists := loginAttempts[ip]
+
+	if !exists || now.Sub(info.FirstAttempt) > time.Minute {
+		loginAttempts[ip] = &AttemptInfo{
+			Count:        1,
+			FirstAttempt: now,
+		}
+		return
+	}
+
+	info.Count++
+	if info.Count >= 5 {
+		info.BlockedUntil = now.Add(10 * time.Minute)
+	}
+}
+
+func resetAttempts(ip string) {
+	attemptsMu.Lock()
+	defer attemptsMu.Unlock()
+	delete(loginAttempts, ip)
+}
+
+func init() {
+	// Menjalankan proses pembersihan (garbage collection) di background setiap 10 menit
+	go func() {
+		for {
+			time.Sleep(10 * time.Minute)
+			cleanupRateLimiter()
+		}
+	}()
+}
+
+// cleanupRateLimiter menghapus data IP yang sudah tidak relevan untuk mencegah memory leak
+func cleanupRateLimiter() {
+	attemptsMu.Lock()
+	defer attemptsMu.Unlock()
+
+	now := time.Now()
+	for ip, info := range loginAttempts {
+		// Hapus dari memori jika:
+		// 1. Masa blokir sudah habis (atau tidak pernah diblokir) DAN
+		// 2. Sudah lewat 1 menit sejak percobaan pertama (window expired)
+		if (info.BlockedUntil.IsZero() || now.After(info.BlockedUntil)) && now.Sub(info.FirstAttempt) > time.Minute {
+			delete(loginAttempts, ip)
+		}
+	}
 }
 
 // Register — mendaftarkan user baru
@@ -86,16 +175,31 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	clientIP := c.ClientIP()
+	allowed, waitTime := checkRateLimit(clientIP)
+	if !allowed {
+		minutes := int(waitTime.Minutes())
+		if minutes == 0 {
+			minutes = 1
+		}
+		c.JSON(http.StatusTooManyRequests, gin.H{"error": "Terlalu banyak percobaan gagal. Silakan coba lagi setelah " + waitTime.Round(time.Second).String()})
+		return
+	}
+
 	var user models.User
 	if err := database.DB.Where("username = ? ", input.Username).First(&user).Error; err != nil {
+		recordFailedAttempt(clientIP)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username atau password salah"})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
+		recordFailedAttempt(clientIP)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username/email atau password salah"})
 		return
 	}
+
+	resetAttempts(clientIP)
 
 	claims := &Claims{
 		UserID:   user.ID,
