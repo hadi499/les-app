@@ -3,7 +3,7 @@
   import { printSettings } from '$lib/stores/print-settings.svelte';
   import CardItem from './CardItem.svelte';
 
-  let { cards, oncopy, onremove, onedit, ondelete, ontoggleprint, showqueue, perPage: perPageProp, nopaper, selectable, selectedIds, onselect, contentOnly }: {
+  let { cards, oncopy, onremove, onedit, ondelete, ontoggleprint, showqueue, perPage: perPageProp, nopaper, selectable, selectedIds, onselect, contentOnly, nogap }: {
     cards: Card[];
     oncopy?: (card: Card) => void;
     onremove?: (card: Card) => void;
@@ -17,6 +17,7 @@
     selectedIds?: Set<string>;
     onselect?: (card: Card) => void;
     contentOnly?: boolean;
+    nogap?: boolean;
   } = $props();
 
   let perPage = $derived(perPageProp ?? printSettings.cardsPerPage);
@@ -35,7 +36,7 @@
 <div class="print-card-grid" class:no-paper={nopaper}>
   {#each chunks() as page, pageIdx}
     <div class="card-page" class:no-paper={nopaper}>
-      <div class="card-page-grid" style="grid-template-columns: repeat({cols}, 1fr); grid-template-rows: repeat({rows}, 1fr);">
+      <div class="card-page-grid" class:no-gap={nogap} style="grid-template-columns: repeat({cols}, 1fr); grid-template-rows: repeat({rows}, 1fr);">
         {#each page as card, idx}
           <CardItem {card} index={pageIdx * perPage + idx} {oncopy} {onremove} {onedit} {ondelete} {ontoggleprint} showqueue={showqueue?.(card.id)} {selectable} selected={selectedIds?.has(card.id)} {onselect} {contentOnly} />
         {/each}
@@ -96,6 +97,10 @@
     display: grid;
     gap: 3mm;
     height: 100%;
+  }
+
+  .card-page-grid.no-gap {
+    gap: 0;
   }
 
   /* Print styles */
