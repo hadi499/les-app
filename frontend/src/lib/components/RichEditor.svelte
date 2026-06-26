@@ -1,9 +1,21 @@
 <script lang="ts">
   import "katex/dist/katex.min.css";
   import { onMount } from "svelte";
-  import { Editor } from "@tiptap/core";
+  import { Editor, Extension } from "@tiptap/core";
   import StarterKit from "@tiptap/starter-kit";
   import TextAlign from "@tiptap/extension-text-align";
+
+  const TabHandler = Extension.create({
+    name: "tabHandler",
+    addKeyboardShortcuts() {
+      return {
+        Tab: ({ editor }) => {
+          editor.commands.insertContent("\u00a0\u00a0\u00a0\u00a0");
+          return true;
+        },
+      };
+    },
+  });
 
   let { value = "" }: { value?: string } = $props();
 
@@ -46,6 +58,7 @@
       extensions: [
         StarterKit.configure({ heading: { levels: [2] } }),
         TextAlign.configure({ types: ["heading", "paragraph"] }),
+        TabHandler,
       ],
       content: value || "",
       editorProps: {
@@ -100,9 +113,9 @@
   export { getHTML, setHTML };
 </script>
 
-<div class="flex flex-col gap-1">
+<div class="flex flex-col gap-1 relative">
   <div
-    class="flex flex-wrap gap-0.5 p-1 border border-gray-300 rounded-t-lg bg-gray-50"
+    class="flex flex-wrap gap-0.5 p-1 border border-gray-300 rounded-t-lg bg-gray-50 sticky top-0 z-10"
   >
     <button
       type="button"
