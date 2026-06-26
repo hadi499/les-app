@@ -197,6 +197,7 @@
                 oncopy={handleCopy}
                 onremove={(c) => printQueue.removeOne(c.id)}
                 contentOnly={true}
+                nogap={true}
               />
             </div>
           </div>
