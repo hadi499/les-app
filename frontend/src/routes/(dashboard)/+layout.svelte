@@ -66,7 +66,9 @@
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 {isDesktopSidebarOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 overflow-hidden border-transparent'}"
+      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 {isDesktopSidebarOpen
+        ? 'w-64 opacity-100'
+        : 'w-0 opacity-0 overflow-hidden border-transparent'}"
     >
       <!-- Logo -->
       <div class="h-16 flex items-center px-6 border-b border-slate-300">
@@ -92,18 +94,25 @@
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
-          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname === '/dashboard' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg class="w-5 h-5" fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-            ></path></svg
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page
+              .url.pathname === '/dashboard'
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            </div>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+              ></path></svg
+            >
+          </div>
           Dashboard
         </a>
 
@@ -116,117 +125,28 @@
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/notes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg class="w-5 h-5" fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/notes',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                ></path></svg
+              >
             </div>
             Catatan
           </a>
-
-          <a
-            href="/dashboard/users"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-              '/users',
-            )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-          >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/users') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg class="w-5 h-5" fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-              ></path></svg
-            >
-            </div>
-            Manajemen Users
-          </a>
-
-          <a
-            href="/dashboard/absen"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-              '/absen',
-            )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-          >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/absen') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg class="w-5 h-5" fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-              ></path></svg
-            >
-            </div>
-            Absensi
-          </a>
-
-          <a
-            href="/dashboard/typing-monitoring"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-              '/typing-monitoring',
-            )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-          >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/typing-monitoring') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-              ></path></svg
-            >
-            </div>
-            Pantau Mengetik
-          </a>
-
-          <a
-            href="/dashboard/subjects"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-              '/subjects',
-            )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-          >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/subjects') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-              ></path></svg
-            >
-            </div>
-            Mata Pelajaran
-          </a>
-
           <a
             href="/dashboard/card-memory"
             class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
@@ -235,19 +155,25 @@
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/card-memory') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/card-memory',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                ></path></svg
+              >
             </div>
             Card Memory
           </a>
@@ -261,22 +187,61 @@
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
-          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/exams') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-            ></path></svg
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/exams',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            </div>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+              ></path></svg
+            >
+          </div>
           Nilai Harian
         </a>
+
+        {#if user?.role === "teacher"}
+          <a
+            href="/dashboard/subjects"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/subjects',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/subjects',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                ></path></svg
+              >
+            </div>
+            Mata Pelajaran
+          </a>
+        {/if}
 
         <a
           href="/dashboard/quizzes"
@@ -286,39 +251,142 @@
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
-          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/quizzes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-            ></path></svg
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/quizzes',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            </div>
-          Kuis & Nilai
-        </a>
-
-        <div class="pt-4 mt-2 border-t border-slate-200">
-          <a
-            href="/"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
-          >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700">
-            <svg class="w-5 h-5" fill="none"
+            <svg
+              class="w-5 h-5"
+              fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               ><path
                 stroke-linecap="round"
                 stroke-linejoin="round"
                 stroke-width="2"
-                d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path></svg
             >
+          </div>
+          Kuis & Nilai
+        </a>
+
+        {#if user?.role === "teacher"}
+          <a
+            href="/dashboard/absen"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/absen',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/absen',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                ></path></svg
+              >
+            </div>
+            Absensi
+          </a>
+          <a
+            href="/dashboard/typing-monitoring"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/typing-monitoring',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/typing-monitoring',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                ></path></svg
+              >
+            </div>
+            Pantau Mengetik
+          </a>
+          <a
+            href="/dashboard/users"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              '/users',
+            )
+              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/users',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path></svg
+              >
+            </div>
+            Manajemen Users
+          </a>
+        {/if}
+
+        <div class="pt-4 mt-2 border-t border-slate-200">
+          <a
+            href="/"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
+                ></path></svg
+              >
             </div>
             Halaman Utama
           </a>
@@ -368,14 +436,31 @@
     <!-- Desktop Sidebar Toggle Button -->
     <button
       onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
-      class="hidden md:flex fixed top-4 z-60 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen ? 'left-60' : 'left-4'}"
-      title={isDesktopSidebarOpen ? 'Sembunyikan Sidebar' : 'Tampilkan Sidebar'}
+      class="hidden md:flex fixed top-4 z-60 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen
+        ? 'left-60'
+        : 'left-4'}"
+      title={isDesktopSidebarOpen ? "Sembunyikan Sidebar" : "Tampilkan Sidebar"}
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        class="w-5 h-5"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         {#if isDesktopSidebarOpen}
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 19l-7-7 7-7m8 14l-7-7 7-7" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M11 19l-7-7 7-7m8 14l-7-7 7-7"
+          />
         {:else}
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7" />
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M13 5l7 7-7 7M5 5l7 7-7 7"
+          />
         {/if}
       </svg>
     </button>
@@ -397,7 +482,9 @@
       </div>
       <button
         aria-label="Buka menu navigasi"
-        class="text-slate-600 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors {isMobileMenuOpen ? 'hidden' : 'block'}"
+        class="text-slate-600 focus:outline-none p-2 bg-white/50 rounded-lg border border-transparent hover:bg-white/80 transition-colors {isMobileMenuOpen
+          ? 'hidden'
+          : 'block'}"
         onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
       >
         <svg
@@ -466,19 +553,24 @@
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname === '/dashboard' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page
+                .url.pathname === '/dashboard'
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                ></path></svg
+              >
             </div>
             Dashboard
           </a>
@@ -493,127 +585,28 @@
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/notes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                ></path></svg
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/notes',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
               >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  ></path></svg
+                >
               </div>
               Catatan
             </a>
-
-            <a
-              href="/dashboard/users"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-                '/users',
-              )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/users') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                ></path></svg
-              >
-              </div>
-              Manajemen Users
-            </a>
-
-            <a
-              href="/dashboard/absen"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-                '/absen',
-              )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/absen') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                ></path></svg
-              >
-              </div>
-              Absensi
-            </a>
-
-            <a
-              href="/dashboard/typing-monitoring"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-                '/typing-monitoring',
-              )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/typing-monitoring') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
-                ></path></svg
-              >
-              </div>
-              Pantau Mengetik
-            </a>
-
-            <a
-              href="/dashboard/subjects"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
-                '/subjects',
-              )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-            >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/subjects') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
-                ></path></svg
-              >
-            </div>
-              Mata Pelajaran
-            </a>
-
             <a
               href="/dashboard/card-memory"
               onclick={() => (isMobileMenuOpen = false)}
@@ -623,20 +616,26 @@
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
-              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/card-memory') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
-                ></path></svg
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/card-memory',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
               >
-            </div>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  ></path></svg
+                >
+              </div>
               Card Memory
             </a>
           {/if}
@@ -650,22 +649,62 @@
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/exams') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/exams',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                ></path></svg
+              >
             </div>
             Nilai Harian
           </a>
+
+          {#if user?.role === "teacher"}
+            <a
+              href="/dashboard/subjects"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/subjects',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/subjects',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                  ></path></svg
+                >
+              </div>
+              Mata Pelajaran
+            </a>
+          {/if}
 
           <a
             href="/dashboard/quizzes"
@@ -676,22 +715,124 @@
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
-            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/quizzes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/quizzes',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path></svg
+              >
             </div>
             Kuis & Nilai
           </a>
+
+          {#if user?.role === "teacher"}
+            <a
+              href="/dashboard/absen"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/absen',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/absen',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                  ></path></svg
+                >
+              </div>
+              Absensi
+            </a>
+            <a
+              href="/dashboard/typing-monitoring"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/typing-monitoring',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/typing-monitoring',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+                  ></path></svg
+                >
+              </div>
+              Pantau Mengetik
+            </a>
+            <a
+              href="/dashboard/users"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+                '/users',
+              )
+                ? 'bg-white/80 text-slate-800 border border-slate-300'
+                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/users',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  ></path></svg
+                >
+              </div>
+              Manajemen Users
+            </a>
+          {/if}
 
           <div class="pt-4 mt-2 border-t border-slate-200">
             <a
@@ -762,7 +903,9 @@
       class="flex-1 flex flex-col min-w-0 md:pt-0 pt-16 h-screen overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent"
     >
       <div
-        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen ? '' : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0 transition-all duration-300"
+        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen
+          ? ''
+          : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0 transition-all duration-300"
       >
         {@render children()}
       </div>
