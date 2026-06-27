@@ -34,7 +34,7 @@
     try {
       const q: Record<string, any> = {
         page: params.page || 1,
-        limit: 1000,
+        limit: 10000,
         all: true,
         ...params,
       };
@@ -98,7 +98,17 @@
   }
 
   let selectedCount = $derived(selectedIds.size);
-  let activeCategoryCards = $derived(activeCategory !== null ? (groupedCards[activeCategory] || []) : (searchQuery.trim() ? cards : []));
+  let activeCategoryCards = $derived.by(() => {
+    let list = activeCategory !== null ? (groupedCards[activeCategory] || []) : cards;
+    const q = searchQuery.trim().toLowerCase();
+    if (q) {
+      list = list.filter(c => 
+        (c.title && c.title.toLowerCase().includes(q)) || 
+        (c.category && c.category.toLowerCase().includes(q))
+      );
+    }
+    return list;
+  });
   let allSelected = $derived(
     activeCategoryCards.length > 0 && selectedCount === activeCategoryCards.length,
   );
@@ -140,7 +150,6 @@
   }
 
   function applySearch() {
-    selectCategory(null);
     loadCards({
       ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     });
@@ -300,44 +309,28 @@
 
       <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
         <div class="relative w-full sm:w-auto">
+          <div class="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none">
+            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
           <input
             type="text"
             bind:value={searchQuery}
             placeholder="Cari kartu..."
-            class="px-4 py-1.5 pr-8 text-sm bg-white/80 text-slate-900 border border-slate-200 rounded-xl focus:ring-2 focus:ring-gray-200 focus:bg-white/80 focus:border-transparent outline-none w-full md:w-56 transition-all"
-            onkeydown={(e) => {
-              if (e.key === "Enter") applySearch();
-            }}
+            class="block w-full pl-10 pr-10 py-1.5 border border-slate-200 rounded-full bg-white/60 focus:bg-white text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all md:w-56"
           />
           {#if searchQuery}
             <button
-              onclick={() => {
-                searchQuery = "";
-                applySearch();
-              }}
-              class="absolute right-8 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-600 cursor-pointer text-base"
-              >&times;</button
+              onclick={() => (searchQuery = "")}
+              aria-label="Bersihkan pencarian"
+              class="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer"
             >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+              </svg>
+            </button>
           {/if}
-          <button
-            onclick={applySearch}
-            class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-900 cursor-pointer"
-            title="Cari"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-          </button>
         </div>
         {#if isTeacher}
           <div class="flex flex-row items-center gap-2 w-full md:w-auto mt-1 md:mt-0">
@@ -479,15 +472,15 @@
           />
         {:else}
           {#if activeCategory !== null}
-            <div class="mb-4 flex items-center gap-3">
+            <div class="mb-4 flex items-center justify-between">
               <button
                 onclick={() => selectCategory(null)}
-                class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+                class="p-1.5 text-slate-500 bg-white/50 hover:text-slate-900 hover:bg-white rounded-lg border border-slate-200 shadow-sm transition-all cursor-pointer"
+                title="Kembali"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
                 </svg>
-                Kembali
               </button>
               <h3 class="font-semibold text-slate-800 text-lg flex items-center gap-2">
                 <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
