@@ -86,13 +86,13 @@
       </div>
 
       <!-- Nav Links -->
-      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
+      <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
         <a
           href="/dashboard"
-          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page
             .url.pathname === '/dashboard'
-            ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-            : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
           <div
             class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page
@@ -116,14 +116,45 @@
           Dashboard
         </a>
 
+        <a
+          href="/dashboard/todos"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            '/todos',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/todos',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              ></path></svg
+            >
+          </div>
+          Target Hafalan
+        </a>
+
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/notes"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/notes',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -149,11 +180,11 @@
           </a>
           <a
             href="/dashboard/card-memory"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/card-memory',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -181,11 +212,11 @@
 
         <a
           href="/dashboard/exams"
-          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
             '/exams',
           )
-            ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-            : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
           <div
             class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -213,11 +244,11 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/subjects"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/subjects',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -245,11 +276,11 @@
 
         <a
           href="/dashboard/quizzes"
-          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
             '/quizzes',
           )
-            ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-            : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
           <div
             class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -277,11 +308,11 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/absen"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/absen',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -307,11 +338,11 @@
           </a>
           <a
             href="/dashboard/typing-monitoring"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/typing-monitoring',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -337,11 +368,11 @@
           </a>
           <a
             href="/dashboard/users"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/users',
             )
-              ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -370,7 +401,7 @@
         <div class="pt-4 mt-2 border-t border-slate-200">
           <a
             href="/"
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700"
@@ -544,14 +575,14 @@
             ></button
           >
         </div>
-        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5 bg-slate-100">
+        <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1 bg-slate-100">
           <a
             href="/dashboard"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page
               .url.pathname === '/dashboard'
-              ? 'bg-white/80 text-slate-800 border border-slate-300'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page
@@ -575,15 +606,47 @@
             Dashboard
           </a>
 
+          <a
+            href="/dashboard/todos"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+              '/todos',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/todos',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                ></path></svg
+              >
+            </div>
+            Target Hafalan
+          </a>
+
           {#if user?.role === "teacher"}
             <a
               href="/dashboard/notes"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/notes',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -610,11 +673,11 @@
             <a
               href="/dashboard/card-memory"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/card-memory',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -643,11 +706,11 @@
           <a
             href="/dashboard/exams"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/exams',
             )
-              ? 'bg-white/80 text-slate-800 border border-slate-300'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -676,11 +739,11 @@
             <a
               href="/dashboard/subjects"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/subjects',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -709,11 +772,11 @@
           <a
             href="/dashboard/quizzes"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
               '/quizzes',
             )
-              ? 'bg-white/80 text-slate-800 border border-slate-300'
-              : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -742,11 +805,11 @@
             <a
               href="/dashboard/absen"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/absen',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -773,11 +836,11 @@
             <a
               href="/dashboard/typing-monitoring"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/typing-monitoring',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -804,11 +867,11 @@
             <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/users',
               )
-                ? 'bg-white/80 text-slate-800 border border-slate-300'
-                : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
               <div
                 class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
@@ -838,7 +901,7 @@
             <a
               href="/"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
             >
               <svg
                 class="w-5 h-5 text-slate-400"

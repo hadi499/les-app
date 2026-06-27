@@ -170,6 +170,16 @@ func SetupRoutes(r *gin.Engine) {
 		absences.DELETE("/:id", controllers.DeleteAbsence)
 	}
 
+	// Target Hafalan API routes (Teacher only)
+	targets := r.Group("/api/targets")
+	targets.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		targets.GET("", controllers.GetTargets)
+		targets.POST("", controllers.CreateTarget)
+		targets.PUT("/:id", controllers.UpdateTarget)
+		targets.DELETE("/:id", controllers.DeleteTarget)
+	}
+
 	// Scores API routes (User submission)
 	scores := r.Group("/api/scores")
 	scores.Use(middleware.AuthMiddleware())
