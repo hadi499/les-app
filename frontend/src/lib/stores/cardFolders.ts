@@ -1,7 +1,6 @@
 import { writable } from 'svelte/store';
-import { env } from '$env/dynamic/public';
 
-const API_URL = env.PUBLIC_API_URL || 'http://localhost:8080';
+const API_BASE = '/api';
 
 export interface CardFolder {
     id: number;
@@ -12,7 +11,7 @@ export const cardFolders = writable<CardFolder[]>([]);
 
 export async function fetchCardFolders() {
     try {
-        const res = await fetch(`${API_URL}/api/card-folders`, {
+        const res = await fetch(`${API_BASE}/card-folders`, {
             credentials: 'include'
         });
         if (res.ok) {
@@ -26,7 +25,7 @@ export async function fetchCardFolders() {
 
 export async function createCardFolder(name: string) {
     try {
-        const res = await fetch(`${API_URL}/api/card-folders`, {
+        const res = await fetch(`${API_BASE}/card-folders`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name }),
@@ -44,7 +43,7 @@ export async function createCardFolder(name: string) {
 
 export async function updateCardFolder(id: number, name: string) {
     try {
-        const res = await fetch(`${API_URL}/api/card-folders/${id}`, {
+        const res = await fetch(`${API_BASE}/card-folders/${id}`, {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ name }),
@@ -62,7 +61,7 @@ export async function updateCardFolder(id: number, name: string) {
 
 export async function deleteCardFolder(id: number) {
     try {
-        const res = await fetch(`${API_URL}/api/card-folders/${id}`, {
+        const res = await fetch(`${API_BASE}/card-folders/${id}`, {
             method: 'DELETE',
             credentials: 'include'
         });
