@@ -31,6 +31,7 @@
   let searchQuery = $state("");
   let currentFolder = $state<Folder | null>(null);
   let viewingNote = $state<Note | null>(null);
+  let folderToDelete = $state<Folder | null>(null);
 
   onMount(async () => {
     try {
@@ -186,21 +187,28 @@
     showFolderForm = false;
   }
 
-  async function deleteFolder(folder: Folder) {
-    if (confirm(`Hapus folder "${folder.name}" dan semua isinya?`)) {
-      try {
-        const res = await fetch(`/api/folders/${folder.id}`, {
-          method: "DELETE",
-          credentials: "include",
-        });
-        if (res.ok) {
-          folders = folders.filter((f) => f.id !== folder.id);
-          notes = notes.filter((n) => n.folder_id !== folder.id);
-          if (currentFolder?.id === folder.id) currentFolder = null;
-        }
-      } catch (e) {
-        console.error(e);
+  function deleteFolder(folder: Folder) {
+    folderToDelete = folder;
+  }
+
+  async function confirmDeleteFolder() {
+    if (!folderToDelete) return;
+    try {
+      const res = await fetch(`/api/folders/${folderToDelete.id}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        folders = folders.filter((f) => f.id !== folderToDelete?.id);
+        notes = notes.filter((n) => n.folder_id !== folderToDelete?.id);
+        if (currentFolder?.id === folderToDelete.id) currentFolder = null;
+        toast.success(`Folder "${folderToDelete.name}" berhasil dihapus`);
       }
+    } catch (e) {
+      console.error(e);
+      toast.error("Gagal menghapus folder");
+    } finally {
+      folderToDelete = null;
     }
   }
 
@@ -375,6 +383,53 @@
     }
   </style>
 </svelte:head>
+
+
+
+  <!-- Delete Folder Modal -->
+  <Modal
+    show={!!folderToDelete}
+    onclose={() => (folderToDelete = null)}
+    maxWidth="max-w-sm"
+  >
+    <div class="space-y-4 text-center">
+      <div
+        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Hapus Folder</h3>
+        <p class="text-sm text-slate-600 mt-1">
+          Folder "{folderToDelete?.name}" dan seluruh catatan di dalamnya akan dihapus.
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-2">
+        <button
+          onclick={() => (folderToDelete = null)}
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
+          >Batal</button
+        >
+        <button
+          onclick={confirmDeleteFolder}
+          class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
+          >Hapus</button
+        >
+      </div>
+    </div>
+  </Modal>
 
 <!-- VIEW: DETAIL CATATAN -->
 {#if viewingNote}
@@ -1024,6 +1079,7 @@
   show={showFolderForm}
   onclose={() => (showFolderForm = false)}
   title={editingFolder ? "Edit Folder" : "Folder Baru"}
+  maxWidth="max-w-sm"
 >
   <form onsubmit={saveFolder} class="space-y-5">
     <div>
@@ -1064,6 +1120,7 @@
 <Modal
   show={showDeleteModal}
   onclose={() => (showDeleteModal = false)}
+  maxWidth="max-w-sm"
   title="Hapus Catatan"
 >
   <div class="space-y-5">
@@ -1095,6 +1152,7 @@
   show={showMoveModal}
   onclose={() => (showMoveModal = false)}
   title="Pindah Folder"
+  maxWidth="max-w-sm"
 >
   <div class="space-y-5">
     <div>

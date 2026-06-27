@@ -5,11 +5,13 @@
     show = false,
     onclose,
     title = "",
+    maxWidth = "max-w-2xl",
     children,
   }: {
     show: boolean;
     onclose: () => void;
     title?: string;
+    maxWidth?: string;
     children: Snippet;
   } = $props();
 </script>
@@ -19,7 +21,7 @@
     class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
   >
     <div
-      class="bg-slate-50 border border-slate-200 rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto"
+      class="bg-slate-50 border border-slate-200 rounded-xl shadow-2xl {maxWidth} w-full max-h-[90vh] overflow-y-auto"
     >
       {#if title}
         <div

@@ -178,7 +178,7 @@
   </main>
 
   <!-- Force Delete Confirmation -->
-  <Modal show={!!forceTarget} onclose={() => (forceTarget = null)}>
+  <Modal show={!!forceTarget} onclose={() => (forceTarget = null)} maxWidth="max-w-sm">
     <div class="space-y-4 text-center">
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
@@ -224,7 +224,7 @@
   </Modal>
 
   <!-- Empty Trash Confirmation -->
-  <Modal show={showEmptyConfirm} onclose={() => (showEmptyConfirm = false)}>
+  <Modal show={showEmptyConfirm} onclose={() => (showEmptyConfirm = false)} maxWidth="max-w-sm">
     <div class="space-y-4 text-center">
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"

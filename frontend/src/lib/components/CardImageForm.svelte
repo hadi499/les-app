@@ -6,12 +6,15 @@
     onsave,
     oncancel,
     edit,
+    defaultCategory = "",
   }: {
     onsave: (card: Omit<Card, "id">) => void;
     oncancel?: () => void;
     edit?: Card | null;
+    defaultCategory?: string;
   } = $props();
 
+  let category = $state("");
   let image = $state("");
   let selectedFile = $state<File | null>(null);
   let previewUrl = $state("");
@@ -21,6 +24,7 @@
   let dragging = $state(false);
 
   $effect(() => {
+    category = edit?.category ?? defaultCategory;
     image = edit?.image ?? "";
     title = edit?.title ?? "";
   });
@@ -44,7 +48,7 @@
     }
 
     onsave({
-      category: "",
+      category: category.trim(),
       image: finalImageUrl.trim(),
       title: title.trim(),
       content: "",
@@ -53,6 +57,7 @@
     });
 
     if (!edit) {
+      category = defaultCategory;
       image = "";
       title = "";
       selectedFile = null;
@@ -206,6 +211,17 @@
     >
   {/if}
 
+  <!-- Kategori -->
+  <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+    Kategori (Folder)
+    <input
+      type="text"
+      bind:value={category}
+      placeholder="Kategori (opsional)"
+      class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+    />
+  </label>
+
   <!-- Judul -->
   <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
     Judul
@@ -222,6 +238,7 @@
     <button
       type="button"
       onclick={() => {
+        category = defaultCategory;
         image = "";
         selectedFile = null;
         if (previewUrl) URL.revokeObjectURL(previewUrl);
@@ -230,7 +247,7 @@
         uploadMsg = "";
         if (oncancel) oncancel();
       }}
-      class="px-4 py-2 text-sm rounded-lg border border-blue-500 text-blue-600 hover:bg-blue-50 cursor-pointer"
+      class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-700 cursor-pointer"
     >
       Batal
     </button>

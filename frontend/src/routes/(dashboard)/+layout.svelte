@@ -70,7 +70,7 @@
     >
       <!-- Logo -->
       <div class="h-16 flex items-center px-6 border-b border-slate-300">
-        <div class="flex items-center gap-3">
+        <div class="group flex items-center gap-3">
           <div
             class="w-8 h-8 bg-white border border-transparent rounded-lg flex items-center justify-center text-blue-600 font-extrabold text-sm shadow-md"
           >
@@ -87,16 +87,13 @@
       <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
         <a
           href="/dashboard"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
+          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
             .url.pathname === '/dashboard'
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
-          <svg
-            class="w-5 h-5 {page.url.pathname === '/dashboard'
-              ? 'text-blue-600'
-              : 'text-slate-400'}"
-            fill="none"
+          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname === '/dashboard' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
+            <svg class="w-5 h-5" fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             ><path
@@ -106,23 +103,21 @@
               d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
             ></path></svg
           >
+            </div>
           Dashboard
         </a>
 
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/notes"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/notes',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <svg
-              class="w-5 h-5 {page.url.pathname.includes('/notes')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
-              fill="none"
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/notes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
+            <svg class="w-5 h-5" fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               ><path
@@ -132,22 +127,20 @@
                 d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
               ></path></svg
             >
+            </div>
             Catatan
           </a>
 
           <a
             href="/dashboard/users"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/users',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <svg
-              class="w-5 h-5 {page.url.pathname.includes('/users')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
-              fill="none"
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/users') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
+            <svg class="w-5 h-5" fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               ><path
@@ -157,22 +150,20 @@
                 d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
               ></path></svg
             >
+            </div>
             Manajemen Users
           </a>
 
           <a
             href="/dashboard/absen"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/absen',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <svg
-              class="w-5 h-5 {page.url.pathname.includes('/absen')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
-              fill="none"
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/absen') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
+            <svg class="w-5 h-5" fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               ><path
@@ -182,21 +173,21 @@
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               ></path></svg
             >
+            </div>
             Absensi
           </a>
 
           <a
             href="/dashboard/typing-monitoring"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/typing-monitoring',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/typing-monitoring') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -207,21 +198,21 @@
                 d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
               ></path></svg
             >
+            </div>
             Pantau Mengetik
           </a>
 
           <a
             href="/dashboard/subjects"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/subjects',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/subjects') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname.includes('/subjects')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -232,21 +223,21 @@
                 d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
               ></path></svg
             >
+            </div>
             Mata Pelajaran
           </a>
 
           <a
             href="/dashboard/card-memory"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/card-memory',
             )
               ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
               : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/card-memory') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname.includes('/card-memory')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -257,22 +248,22 @@
                 d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
               ></path></svg
             >
+            </div>
             Card Memory
           </a>
         {/if}
 
         <a
           href="/dashboard/exams"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
             '/exams',
           )
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
+          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/exams') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
           <svg
-            class="w-5 h-5 {page.url.pathname.includes('/exams')
-              ? 'text-blue-600'
-              : 'text-slate-400'}"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -283,21 +274,21 @@
               d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
             ></path></svg
           >
+            </div>
           Nilai Harian
         </a>
 
         <a
           href="/dashboard/quizzes"
-          class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
             '/quizzes',
           )
             ? 'bg-white/80 text-slate-800 shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-600 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
         >
+          <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/quizzes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
           <svg
-            class="w-5 h-5 {page.url.pathname.includes('/quizzes')
-              ? 'text-blue-600'
-              : 'text-slate-400'}"
+            class="w-5 h-5"
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
@@ -308,17 +299,17 @@
               d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
             ></path></svg
           >
+            </div>
           Kuis & Nilai
         </a>
 
         <div class="pt-4 mt-2 border-t border-slate-200">
           <a
             href="/"
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
           >
-            <svg
-              class="w-5 h-5 text-slate-400"
-              fill="none"
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700">
+            <svg class="w-5 h-5" fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
               ><path
@@ -328,6 +319,7 @@
                 d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9"
               ></path></svg
             >
+            </div>
             Halaman Utama
           </a>
         </div>
@@ -335,7 +327,7 @@
 
       <!-- User & Logout -->
       <div class="p-4 border-t border-slate-300">
-        <div class="flex items-center gap-3 mb-4 px-2">
+        <div class="group flex items-center gap-3 mb-4 px-2">
           <div
             class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-transparent shadow-sm flex-shrink-0"
           >
@@ -376,7 +368,7 @@
     <!-- Desktop Sidebar Toggle Button -->
     <button
       onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
-      class="hidden md:flex fixed top-4 z-[60] p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen ? 'left-[15rem]' : 'left-4'}"
+      class="hidden md:flex fixed top-4 z-60 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen ? 'left-60' : 'left-4'}"
       title={isDesktopSidebarOpen ? 'Sembunyikan Sidebar' : 'Tampilkan Sidebar'}
     >
       <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -469,15 +461,14 @@
           <a
             href="/dashboard"
             onclick={() => (isMobileMenuOpen = false)}
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page
               .url.pathname === '/dashboard'
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname === '/dashboard' ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname === '/dashboard'
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -488,6 +479,7 @@
                 d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
               ></path></svg
             >
+            </div>
             Dashboard
           </a>
 
@@ -495,16 +487,15 @@
             <a
               href="/dashboard/notes"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/notes',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/notes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/notes')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -515,22 +506,22 @@
                   d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                 ></path></svg
               >
+              </div>
               Catatan
             </a>
 
             <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/users',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/users') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/users')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -541,22 +532,22 @@
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
                 ></path></svg
               >
+              </div>
               Manajemen Users
             </a>
 
             <a
               href="/dashboard/absen"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/absen',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/absen') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/absen')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -567,22 +558,22 @@
                   d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
                 ></path></svg
               >
+              </div>
               Absensi
             </a>
 
             <a
               href="/dashboard/typing-monitoring"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/typing-monitoring',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/typing-monitoring') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/typing-monitoring')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -593,22 +584,22 @@
                   d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
                 ></path></svg
               >
+              </div>
               Pantau Mengetik
             </a>
 
             <a
               href="/dashboard/subjects"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/subjects',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/subjects') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/subjects')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -619,22 +610,22 @@
                   d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
                 ></path></svg
               >
+            </div>
               Mata Pelajaran
             </a>
 
             <a
               href="/dashboard/card-memory"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
                 '/card-memory',
               )
                 ? 'bg-white/80 text-slate-800 border border-slate-300'
                 : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
+              <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/card-memory') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
               <svg
-                class="w-5 h-5 {page.url.pathname.includes('/card-memory')
-                  ? 'text-blue-600'
-                  : 'text-slate-400'}"
+                class="w-5 h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -645,6 +636,7 @@
                   d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
                 ></path></svg
               >
+            </div>
               Card Memory
             </a>
           {/if}
@@ -652,16 +644,15 @@
           <a
             href="/dashboard/exams"
             onclick={() => (isMobileMenuOpen = false)}
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/exams',
             )
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/exams') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname.includes('/exams')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -672,22 +663,22 @@
                 d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
               ></path></svg
             >
+            </div>
             Nilai Harian
           </a>
 
           <a
             href="/dashboard/quizzes"
             onclick={() => (isMobileMenuOpen = false)}
-            class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors no-underline {page.url.pathname.includes(
               '/quizzes',
             )
               ? 'bg-white/80 text-slate-800 border border-slate-300'
               : 'text-slate-600 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
           >
+            <div class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes('/quizzes') ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20' : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}">
             <svg
-              class="w-5 h-5 {page.url.pathname.includes('/quizzes')
-                ? 'text-blue-600'
-                : 'text-slate-400'}"
+              class="w-5 h-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -698,6 +689,7 @@
                 d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
               ></path></svg
             >
+            </div>
             Kuis & Nilai
           </a>
 
@@ -705,7 +697,7 @@
             <a
               href="/"
               onclick={() => (isMobileMenuOpen = false)}
-              class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
+              class="group flex items-center gap-3 px-3 py-2.5 rounded-xl font-medium transition-colors text-slate-600 hover:bg-white/50 hover:text-slate-900 no-underline"
             >
               <svg
                 class="w-5 h-5 text-slate-400"
@@ -726,9 +718,9 @@
 
         <!-- User & Logout (Mobile) -->
         <div class="p-4 border-t border-slate-200 bg-slate-100">
-          <div class="flex items-center gap-3 mb-4 px-2">
+          <div class="group flex items-center gap-3 mb-4 px-2">
             <div
-              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-transparent shadow-sm flex-shrink-0"
+              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-transparent shadow-sm shrink-0"
             >
               {user.username ? user.username.charAt(0).toUpperCase() : "U"}
             </div>

@@ -211,7 +211,7 @@
     297mm)
   </footer>
 
-  <Modal show={showClearConfirm} onclose={() => (showClearConfirm = false)}>
+  <Modal show={showClearConfirm} onclose={() => (showClearConfirm = false)} maxWidth="max-w-sm">
     <div class="space-y-4 text-center">
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"

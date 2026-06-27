@@ -12,10 +12,12 @@
     onsave,
     oncancel,
     edit,
+    defaultCategory = "",
   }: {
     onsave: (card: Omit<Card, "id">) => void;
     oncancel?: () => void;
     edit?: Card | null;
+    defaultCategory?: string;
   } = $props();
 
   let category = $state("");
@@ -28,7 +30,7 @@
   let editorRef = $state<RichEditorRef>();
 
   $effect(() => {
-    category = edit?.category ?? "";
+    category = edit?.category ?? defaultCategory;
     image = edit?.image ?? "";
     title = edit?.title ?? "";
     size = edit?.size ?? "6";

@@ -7,6 +7,9 @@
   import CardImageForm from "$lib/components/CardImageForm.svelte";
   import Modal from "$lib/components/Modal.svelte";
   import CardItem from "$lib/components/CardItem.svelte";
+  import FolderGrid from "$lib/components/FolderGrid.svelte";
+  import CardTable from "$lib/components/CardTable.svelte";
+  import BulkActionBar from "$lib/components/BulkActionBar.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { trashCount } from "$lib/stores/trash-count.svelte";
 
@@ -16,13 +19,12 @@
   let editingCard = $state<Card | null>(null);
   let deleteCardId = $state<string | null>(null);
   let detailCard = $state<Card | null>(null);
+  let activeCategory = $state<string | null>(null);
   let searchQuery = $state("");
   let cardWrapperWidth = $state(0);
 
   let cards = $state<Card[]>([]);
   let total = $state(0);
-  let totalPages = $state(1);
-  let currentPage = $state(1);
   let loading = $state(true);
   let error = $state("");
 
@@ -32,15 +34,13 @@
     try {
       const q: Record<string, any> = {
         page: params.page || 1,
-        limit: 20,
+        limit: 1000,
         all: true,
         ...params,
       };
       const res = await api.fetchCards(q);
       cards = res.data;
       total = res.total;
-      totalPages = res.totalPages;
-      currentPage = res.page;
     } catch (e: any) {
       error = e.message || "Gagal memuat data";
     } finally {
@@ -51,6 +51,15 @@
   let deleteTarget = $derived(cards.find((c) => c.id === deleteCardId));
   let queueCount = $derived(printQueue.count);
   let trashCountVal = $derived(trashCount.value);
+
+  let groupedCards = $derived(
+    cards.reduce((acc, card) => {
+      const cat = card.category || 'Tidak Berkategori';
+      if (!acc[cat]) acc[cat] = [];
+      acc[cat].push(card);
+      return acc;
+    }, {} as Record<string, Card[]>)
+  );
 
   // Bulk selection
   let selectedIds = $state(new Set<string>());
@@ -67,10 +76,11 @@
   }
 
   function selectAll() {
-    if (selectedIds.size === cards.length) {
+    const currentCards = activeCategory !== null ? (groupedCards[activeCategory] || []) : (searchQuery.trim() ? cards : []);
+    if (selectedIds.size === currentCards.length) {
       selectedIds = new Set();
     } else {
-      selectedIds = new Set(cards.map((c) => c.id));
+      selectedIds = new Set(currentCards.map((c) => c.id));
     }
   }
 
@@ -88,11 +98,18 @@
   }
 
   let selectedCount = $derived(selectedIds.size);
+  let activeCategoryCards = $derived(activeCategory !== null ? (groupedCards[activeCategory] || []) : (searchQuery.trim() ? cards : []));
   let allSelected = $derived(
-    cards.length > 0 && selectedCount === cards.length,
+    activeCategoryCards.length > 0 && selectedCount === activeCategoryCards.length,
   );
 
   onMount(async () => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const cat = params.get("category");
+      if (cat) activeCategory = cat;
+    }
+
     try {
       const res = await fetch(`/me`, {
         credentials: "include",
@@ -108,14 +125,22 @@
     trashCount.init();
   });
 
-  function changePage(n: number) {
-    loadCards({
-      page: n,
-      ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
-    });
+  function selectCategory(cat: string | null) {
+    activeCategory = cat;
+    selectedIds = new Set();
+    if (typeof window !== 'undefined') {
+      const url = new URL(window.location.href);
+      if (cat) {
+        url.searchParams.set("category", cat);
+      } else {
+        url.searchParams.delete("category");
+      }
+      window.history.replaceState({}, '', url);
+    }
   }
 
   function applySearch() {
+    selectCategory(null);
     loadCards({
       ...(searchQuery.trim() ? { search: searchQuery.trim() } : {}),
     });
@@ -160,6 +185,11 @@
   }
 
   async function handleAdd(card: Omit<Card, "id">) {
+    const cat = card.category || 'Tidak Berkategori';
+    if ((groupedCards[cat] || []).length >= 20) {
+      toast.error(`Kategori "${cat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
+      return;
+    }
     await api.createCard(card);
     showForm = false;
     toast.success("Kartu berhasil dibuat");
@@ -168,6 +198,14 @@
 
   async function handleUpdate(card: Omit<Card, "id">) {
     if (editingCard) {
+      const oldCat = editingCard.category || 'Tidak Berkategori';
+      const newCat = card.category || 'Tidak Berkategori';
+      
+      if (oldCat !== newCat && (groupedCards[newCat] || []).length >= 20) {
+        toast.error(`Kategori "${newCat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
+        return;
+      }
+
       await api.updateCard(editingCard.id, card);
       editingCard = null;
       showForm = false;
@@ -178,6 +216,11 @@
   }
 
   async function handleAddImage(card: Omit<Card, "id">) {
+    const cat = card.category || 'Tidak Berkategori';
+    if ((groupedCards[cat] || []).length >= 20) {
+      toast.error(`Kategori "${cat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
+      return;
+    }
     await api.createCard(card);
     showImageForm = false;
     toast.success("Kartu gambar berhasil dibuat");
@@ -214,7 +257,7 @@
 
 <div class="min-h-screen bg-transparent text-slate-900">
   <header
-    class="fixed top-16 md:top-0 left-0 md:left-[var(--sidebar-width)] right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
+    class="fixed top-16 md:top-0 left-0 md:left-(--sidebar-width) right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all"
   >
     <div
       class="max-w-5xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4"
@@ -297,13 +340,13 @@
           </button>
         </div>
         {#if isTeacher}
-          <div class="grid grid-cols-2 sm:flex items-center gap-2 w-full sm:w-auto">
+          <div class="flex flex-row items-center gap-2 w-full md:w-auto mt-1 md:mt-0">
             <button
               onclick={() => {
                 editingCard = null;
                 showForm = !showForm;
               }}
-              class="flex items-center justify-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer w-full sm:w-auto"
+              class="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-3 py-2 md:px-4 md:py-1.5 text-xs sm:text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer whitespace-nowrap"
             >
               <svg
                 class="w-4 h-4 shrink-0"
@@ -325,7 +368,7 @@
                 editingCard = null;
                 showImageForm = !showImageForm;
               }}
-              class="flex items-center justify-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all shadow-sm cursor-pointer w-full sm:w-auto"
+              class="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-3 py-2 md:px-4 md:py-1.5 text-xs sm:text-sm rounded-xl bg-indigo-500 border border-indigo-500 hover:bg-indigo-600 text-white font-medium transition-all shadow-sm cursor-pointer whitespace-nowrap"
             >
               <svg
                 class="w-4 h-4 shrink-0"
@@ -340,7 +383,7 @@
                   r="1.5"
                 /><polyline points="21 15 16 10 5 21" />
               </svg>
-              {showImageForm ? "Tutup" : "Kartu Gambar"}
+              {showImageForm ? "Tutup Form" : "Kartu Gambar"}
             </button>
           </div>
         {/if}
@@ -350,45 +393,14 @@
 
   <main class="max-w-5xl mx-auto p-4 pt-44 md:pt-20">
     <!-- Bulk selection bar -->
-    {#if cards.length > 0 && isTeacher}
-      <div class="flex items-center gap-3 mb-3">
-        <button
-          onclick={selectAll}
-          class="flex items-center gap-1.5 text-xs text-slate-600 hover:text-slate-800 cursor-pointer"
-        >
-          <span
-            class="w-5 h-5 flex items-center justify-center rounded border-2 {allSelected
-              ? 'bg-blue-500 border-blue-500'
-              : 'border-slate-300'}"
-          >
-            {#if allSelected}
-              <svg
-                class="w-3.5 h-3.5 text-slate-900"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="3"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M5 13l4 4L19 7"
-                /></svg
-              >
-            {/if}
-          </span>
-          {allSelected ? "Batal Pilih Semua" : "Pilih Semua"} ({cards.length})
-        </button>
-        {#if selectedCount > 0}
-          <span class="text-xs text-slate-500">|</span>
-          <span class="text-xs text-slate-600">{selectedCount} dipilih</span>
-          <button
-            onclick={() => (showBulkDeleteConfirm = true)}
-            class="px-3 py-1 text-xs rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
-          >
-            Hapus ({selectedCount})
-          </button>
-        {/if}
-      </div>
+    {#if cards.length > 0 && isTeacher && (activeCategory !== null || searchQuery.trim())}
+      <BulkActionBar
+        allSelected={allSelected}
+        selectedCount={selectedCount}
+        totalCards={activeCategoryCards.length}
+        onSelectAll={selectAll}
+        onDeleteBulk={() => (showBulkDeleteConfirm = true)}
+      />
     {/if}
 
     <Modal
@@ -406,6 +418,7 @@
           editingCard = null;
         }}
         edit={editingCard}
+        defaultCategory={activeCategory || ""}
       />
     </Modal>
 
@@ -424,15 +437,13 @@
           editingCard = null;
         }}
         edit={editingCard}
+        defaultCategory={activeCategory || ""}
       />
     </Modal>
 
     <div>
       <h2 class="text-md font-semibold text-slate-800 mb-3">
         Arsip ({total} kartu)
-        {#if totalPages > 1}
-          <span class="text-slate-500"> · hlm {currentPage}/{totalPages}</span>
-        {/if}
       </h2>
 
       {#if loading}
@@ -461,221 +472,51 @@
           </p>
         </div>
       {:else}
-        <div
-          class="bg-white/80 rounded-xl border border-slate-200 overflow-hidden"
-        >
-          <div class="overflow-x-auto">
-            <table class="w-full text-sm min-w-[600px]">
-            <thead>
-              <tr
-                class="bg-transparent border-b border-slate-200 text-left text-xs text-slate-800 uppercase tracking-wider"
+        {#if activeCategory === null && !searchQuery.trim()}
+          <FolderGrid
+            groupedCards={groupedCards}
+            onSelectCategory={selectCategory}
+          />
+        {:else}
+          {#if activeCategory !== null}
+            <div class="mb-4 flex items-center gap-3">
+              <button
+                onclick={() => selectCategory(null)}
+                class="flex items-center gap-1.5 px-3 py-1.5 text-sm rounded-xl bg-white border border-slate-200 text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
               >
-                {#if isTeacher}<th class="px-4 py-3 w-8"></th>{/if}
-                <th class="px-4 py-3">Title</th>
-                <th class="px-4 py-3">Kategori</th>
-                <th class="px-4 py-3">Layout Print</th>
-                <th class="px-4 py-3 text-right">Aksi</th>
-              </tr>
-            </thead>
-            <tbody>
-              {#each cards as card (card.id)}
-                <tr
-                  class="border-b border-slate-200 hover:bg-transparent text-slate-900 transition-colors"
-                >
-                  {#if isTeacher}
-                    <td class="px-4 py-3">
-                      <button
-                        onclick={() => toggleSelect(card)}
-                        class="w-5 h-5 flex items-center justify-center rounded border-2 cursor-pointer {selectedIds.has(
-                          card.id,
-                        )
-                          ? 'bg-blue-500 border-blue-500'
-                          : 'border-slate-300'}"
-                      >
-                        {#if selectedIds.has(card.id)}
-                          <svg
-                            class="w-3.5 h-3.5 text-slate-900"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="3"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M5 13l4 4L19 7"
-                            />
-                          </svg>
-                        {/if}
-                      </button>
-                    </td>
-                  {/if}
-                  <td class="px-4 py-3 font-semibold text-slate-800 text-md"
-                    >{card.title}</td
-                  >
-                  <td class="px-4 py-3 text-slate-600"
-                    >{card.category || "-"}</td
-                  >
-                  <td class="px-4 py-3">
-                    <span
-                      class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium {card.cardType ===
-                      'image'
-                        ? 'bg-purple-100 text-purple-800'
-                        : 'bg-slate-100 text-slate-600'}"
-                    >
-                      {layoutLabel(card)}
-                    </span>
-                  </td>
-                  <td class="px-4 py-3 text-right">
-                    <div class="flex items-center justify-end gap-1">
-                      <button
-                        onclick={() => handleDetailClick(card)}
-                        class="p-1.5 rounded-lg text-blue-500 hover:text-blue-700 hover:bg-blue-50 cursor-pointer"
-                        title="Detail"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                          />
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                          />
-                        </svg>
-                      </button>
-                      <button
-                        onclick={() => printQueue.toggle(card)}
-                        class="p-1.5 rounded-lg cursor-pointer {printQueue.has(
-                          card.id,
-                        )
-                          ? 'bg-slate-200 text-slate-600'
-                          : 'text-emerald-500 hover:text-emerald-700 hover:bg-emerald-50'}"
-                        title={printQueue.has(card.id)
-                          ? "Hapus dari antrian print"
-                          : "Tambah ke antrian print"}
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          stroke-width="2"
-                          viewBox="0 0 24 24"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-                          />
-                        </svg>
-                      </button>
-                      {#if isTeacher}
-                        <button
-                          onclick={() => handleEdit(card)}
-                          class="p-1.5 rounded-lg text-amber-500 hover:text-amber-700 hover:bg-amber-50 cursor-pointer"
-                          title="Edit"
-                        >
-                          <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            />
-                          </svg>
-                        </button>
-                        <button
-                          onclick={() => handleDeleteClick(card)}
-                          class="p-1.5 rounded-lg text-red-600 hover:text-red-700 hover:bg-red-100 cursor-pointer"
-                          title="Hapus"
-                        >
-                          <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            stroke-width="2"
-                            viewBox="0 0 24 24"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      {/if}
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-          </div>
-        </div>
-
-        {#if totalPages > 1}
-          <div class="flex items-center justify-center gap-1 mt-6">
-            <button
-              onclick={() => changePage(1)}
-              disabled={currentPage === 1}
-              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
-              >&laquo;</button
-            >
-            <button
-              onclick={() => changePage(currentPage - 1)}
-              disabled={currentPage === 1}
-              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
-              >&lsaquo;</button
-            >
-
-            {#each Array(totalPages) as _, i}
-              {@const p = i + 1}
-              {#if p === 1 || p === totalPages || (p >= currentPage - 2 && p <= currentPage + 2)}
-                <button
-                  onclick={() => changePage(p)}
-                  class="px-2 py-1 text-xs rounded border cursor-pointer {p ===
-                  currentPage
-                    ? 'bg-blue-500 text-white border-indigo-600'
-                    : 'border-slate-300 text-slate-600 hover:bg-white'}"
-                  >{p}</button
-                >
-              {:else if p === currentPage - 3 || p === currentPage + 3}
-                <span class="px-1 text-xs text-slate-500">...</span>
-              {/if}
-            {/each}
-
-            <button
-              onclick={() => changePage(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
-              >&rsaquo;</button
-            >
-            <button
-              onclick={() => changePage(totalPages)}
-              disabled={currentPage === totalPages}
-              class="px-2 py-1 text-xs rounded border border-slate-300 text-slate-600 hover:bg-white disabled:opacity-30 disabled:cursor-default cursor-pointer"
-              >&raquo;</button
-            >
-          </div>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali
+              </button>
+              <h3 class="font-semibold text-slate-800 text-lg flex items-center gap-2">
+                <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z" />
+                </svg>
+                {activeCategory}
+              </h3>
+            </div>
+          {:else}
+            <div class="mb-4">
+              <h3 class="font-semibold text-slate-800 text-lg">Hasil Pencarian</h3>
+            </div>
+          {/if}
+          <CardTable
+            cards={activeCategoryCards}
+            activeCategory={activeCategory}
+            isTeacher={isTeacher}
+            selectedIds={selectedIds}
+            onToggleSelect={toggleSelect}
+            onEdit={handleEdit}
+            onDelete={handleDeleteClick}
+            onDetailClick={handleDetailClick}
+          />
         {/if}
       {/if}
     </div>
   </main>
 
-  <Modal show={!!deleteCardId} onclose={() => (deleteCardId = null)}>
+  <Modal show={!!deleteCardId} onclose={() => (deleteCardId = null)} maxWidth="max-w-sm">
     <div class="space-y-4 text-center">
       <div
         class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
@@ -724,6 +565,7 @@
   <Modal
     show={showBulkDeleteConfirm}
     onclose={() => (showBulkDeleteConfirm = false)}
+    maxWidth="max-w-sm"
   >
     <div class="space-y-4 text-center">
       <div
