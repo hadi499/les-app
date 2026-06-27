@@ -138,6 +138,16 @@ func SetupRoutes(r *gin.Engine) {
 		folders.DELETE("/:id", controllers.DeleteFolder)
 	}
 
+	// Card Folders API routes (Teacher only)
+	cardFolders := r.Group("/api/card-folders")
+	cardFolders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		cardFolders.GET("", controllers.GetCardFolders)
+		cardFolders.POST("", controllers.CreateCardFolder)
+		cardFolders.PUT("/:id", controllers.UpdateCardFolder)
+		cardFolders.DELETE("/:id", controllers.DeleteCardFolder)
+	}
+
 	// Notes API routes (Teacher only)
 	notes := r.Group("/api/notes")
 	notes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))

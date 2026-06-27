@@ -1,6 +1,8 @@
 <script lang="ts">
   import type { Card } from "$lib/types";
   import { cardsStore } from "$lib/stores/cards.svelte";
+  import { cardFolders, fetchCardFolders, createCardFolder } from "$lib/stores/cardFolders";
+  import { onMount } from "svelte";
   import RichEditor from "./RichEditor.svelte";
 
   interface RichEditorRef {
@@ -12,15 +14,18 @@
     onsave,
     oncancel,
     edit,
-    defaultCategory = "",
+    initialFolderId,
   }: {
     onsave: (card: Omit<Card, "id">) => void;
     oncancel?: () => void;
     edit?: Card | null;
-    defaultCategory?: string;
+    initialFolderId?: number | null;
   } = $props();
 
-  let category = $state("");
+  let card_folder_id = $state<number | null>(initialFolderId ?? null);
+  let newFolderName = $state("");
+  let isCreatingFolder = $state(false);
+
   let image = $state("");
   let title = $state("");
   let size = $state("6");
@@ -29,8 +34,12 @@
 
   let editorRef = $state<RichEditorRef>();
 
+  onMount(() => {
+    fetchCardFolders();
+  });
+
   $effect(() => {
-    category = edit?.category ?? defaultCategory;
+    card_folder_id = edit?.card_folder_id ?? initialFolderId ?? null;
     image = edit?.image ?? "";
     title = edit?.title ?? "";
     size = edit?.size ?? "6";
@@ -43,8 +52,12 @@
     e.preventDefault();
     const html = editorRef?.getHTML() ?? "";
     if (!title.trim() || !(html.trim() || html.includes("<img"))) return;
+    if (!card_folder_id) {
+        alert("Pilih folder terlebih dahulu");
+        return;
+    }
     onsave({
-      category: category.trim(),
+      card_folder_id,
       image: image.trim(),
       title: title.trim(),
       content: html,
@@ -52,12 +65,19 @@
       cardType: "regular",
     });
     if (!edit) {
-      category = "";
+      card_folder_id = null;
       image = "";
       title = "";
       size = "6";
       editorRef?.setHTML("");
     }
+  }
+
+  async function handleCreateFolder() {
+    if (!newFolderName.trim()) return;
+    await createCardFolder(newFolderName.trim());
+    newFolderName = "";
+    isCreatingFolder = false;
   }
 
   async function handleFileUpload(e: Event) {
@@ -94,13 +114,32 @@
 <form onsubmit={handleSubmit} class="flex flex-col gap-3">
   <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
     <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-      Kategori (Header)
-      <input
-        type="text"
-        bind:value={category}
-        placeholder="Kategori..."
-        class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-      />
+      Folder Kartu
+      {#if isCreatingFolder}
+        <div class="flex gap-2">
+            <input
+                type="text"
+                bind:value={newFolderName}
+                placeholder="Nama folder baru..."
+                class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            />
+            <button type="button" onclick={handleCreateFolder} class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">Buat</button>
+            <button type="button" onclick={() => (isCreatingFolder = false)} class="px-3 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm">Batal</button>
+        </div>
+      {:else}
+        <div class="flex gap-2">
+            <select
+                bind:value={card_folder_id}
+                class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
+            >
+                <option value={null} disabled>-- Pilih Folder --</option>
+                {#each $cardFolders as folder}
+                    <option value={folder.id}>{folder.name}</option>
+                {/each}
+            </select>
+            <button type="button" onclick={() => (isCreatingFolder = true)} class="px-3 py-2 bg-slate-100 text-slate-600 border border-slate-300 rounded-lg text-sm">+</button>
+        </div>
+      {/if}
     </label>
 
     <div class="flex flex-col gap-1">

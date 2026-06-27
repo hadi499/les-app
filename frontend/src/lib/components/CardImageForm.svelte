@@ -1,20 +1,25 @@
 <script lang="ts">
   import type { Card } from "$lib/types";
   import { cardsStore } from "$lib/stores/cards.svelte";
+  import { cardFolders, fetchCardFolders, createCardFolder } from "$lib/stores/cardFolders";
+  import { onMount } from "svelte";
 
   let {
     onsave,
     oncancel,
     edit,
-    defaultCategory = "",
+    initialFolderId,
   }: {
     onsave: (card: Omit<Card, "id">) => void;
     oncancel?: () => void;
     edit?: Card | null;
-    defaultCategory?: string;
+    initialFolderId?: number | null;
   } = $props();
 
-  let category = $state("");
+  let card_folder_id = $state<number | null>(initialFolderId ?? null);
+  let newFolderName = $state("");
+  let isCreatingFolder = $state(false);
+
   let image = $state("");
   let selectedFile = $state<File | null>(null);
   let previewUrl = $state("");
@@ -23,8 +28,12 @@
   let uploadMsg = $state("");
   let dragging = $state(false);
 
+  onMount(() => {
+    fetchCardFolders();
+  });
+
   $effect(() => {
-    category = edit?.category ?? defaultCategory;
+    card_folder_id = edit?.card_folder_id ?? initialFolderId ?? null;
     image = edit?.image ?? "";
     title = edit?.title ?? "";
   });
@@ -32,6 +41,10 @@
   async function handleSubmit(e: Event) {
     e.preventDefault();
     if (!title.trim() || (!image.trim() && !selectedFile)) return;
+    if (!card_folder_id) {
+        alert("Pilih folder terlebih dahulu");
+        return;
+    }
     
     let finalImageUrl = image;
 
@@ -48,7 +61,7 @@
     }
 
     onsave({
-      category: category.trim(),
+      card_folder_id,
       image: finalImageUrl.trim(),
       title: title.trim(),
       content: "",
@@ -57,7 +70,7 @@
     });
 
     if (!edit) {
-      category = defaultCategory;
+      card_folder_id = null;
       image = "";
       title = "";
       selectedFile = null;
@@ -66,6 +79,13 @@
         previewUrl = "";
       }
     }
+  }
+
+  async function handleCreateFolder() {
+    if (!newFolderName.trim()) return;
+    await createCardFolder(newFolderName.trim());
+    newFolderName = "";
+    isCreatingFolder = false;
   }
 
   function handleDragOver(e: DragEvent) {
@@ -213,13 +233,32 @@
 
   <!-- Kategori -->
   <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-    Kategori (Folder)
-    <input
-      type="text"
-      bind:value={category}
-      placeholder="Kategori (opsional)"
-      class="px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-    />
+    Folder Kartu
+    {#if isCreatingFolder}
+      <div class="flex gap-2">
+          <input
+              type="text"
+              bind:value={newFolderName}
+              placeholder="Nama folder baru..."
+              class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          />
+          <button type="button" onclick={handleCreateFolder} class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">Buat</button>
+          <button type="button" onclick={() => (isCreatingFolder = false)} class="px-3 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm">Batal</button>
+      </div>
+    {:else}
+      <div class="flex gap-2">
+          <select
+              bind:value={card_folder_id}
+              class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
+          >
+              <option value={null} disabled>-- Pilih Folder --</option>
+              {#each $cardFolders as folder}
+                  <option value={folder.id}>{folder.name}</option>
+              {/each}
+          </select>
+          <button type="button" onclick={() => (isCreatingFolder = true)} class="px-3 py-2 bg-slate-100 text-slate-600 border border-slate-300 rounded-lg text-sm">+</button>
+      </div>
+    {/if}
   </label>
 
   <!-- Judul -->
@@ -238,7 +277,7 @@
     <button
       type="button"
       onclick={() => {
-        category = defaultCategory;
+        card_folder_id = null;
         image = "";
         selectedFile = null;
         if (previewUrl) URL.revokeObjectURL(previewUrl);

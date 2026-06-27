@@ -28,7 +28,13 @@ func main() {
 	database.Connect()
 
 	// Migrasi otomatis untuk memastikan tabel ada
-	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{})
+	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{})
+
+	// Bersihkan kolom 'category' lama jika masih ada
+	if database.DB.Migrator().HasColumn(&models.Card{}, "category") {
+		database.DB.Migrator().DropColumn(&models.Card{}, "category")
+		log.Println("Kolom 'category' lama berhasil dihapus dari tabel cards.")
+	}
 
 	// Background job untuk membersihkan token blacklist yang kedaluwarsa setiap 1 jam
 	go func() {

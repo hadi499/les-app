@@ -12,6 +12,7 @@
   import BulkActionBar from "$lib/components/BulkActionBar.svelte";
   import { toast } from "$lib/stores/toast.svelte";
   import { trashCount } from "$lib/stores/trash-count.svelte";
+  import { cardFolders, updateCardFolder, deleteCardFolder, fetchCardFolders, createCardFolder, type CardFolder } from "$lib/stores/cardFolders";
 
   let showForm = $state(false);
   let isTeacher = $state(false);
@@ -27,6 +28,73 @@
   let total = $state(0);
   let loading = $state(true);
   let error = $state("");
+
+  let showFolderForm = $state(false);
+  let editingFolder = $state<CardFolder | null>(null);
+  let newFolderName = $state("");
+  let showDeleteFolderModal = $state(false);
+  let folderToDelete = $state<CardFolder | null>(null);
+
+  function openNewFolder() {
+    editingFolder = null;
+    newFolderName = "";
+    showFolderForm = true;
+  }
+
+  function handleEditFolder(folderName: string) {
+    const cf = $cardFolders.find(f => f.name === folderName);
+    if (cf) {
+      editingFolder = cf;
+      newFolderName = cf.name;
+      showFolderForm = true;
+    }
+  }
+
+  function handleDeleteFolderClick(folderName: string) {
+    const cf = $cardFolders.find(f => f.name === folderName);
+    if (cf) {
+      folderToDelete = cf;
+      showDeleteFolderModal = true;
+    }
+  }
+
+  async function saveFolder(e: Event) {
+    e.preventDefault();
+    const name = newFolderName.trim();
+    if (!name) return;
+
+    if (editingFolder) {
+      const ok = await updateCardFolder(editingFolder.id, name);
+      if (ok) {
+        toast.success("Folder berhasil diupdate");
+        loadCards();
+      } else {
+        toast.error("Gagal mengupdate folder");
+      }
+    } else {
+      const ok = await createCardFolder(name);
+      if (ok) {
+        toast.success("Folder berhasil dibuat");
+        loadCards();
+      } else {
+        toast.error("Gagal membuat folder");
+      }
+    }
+    showFolderForm = false;
+  }
+
+  async function confirmDeleteFolder() {
+    if (!folderToDelete) return;
+    const ok = await deleteCardFolder(folderToDelete.id);
+    if (ok) {
+      toast.success(`Folder "${folderToDelete.name}" berhasil dihapus`);
+      loadCards();
+    } else {
+      toast.error("Gagal menghapus folder");
+    }
+    showDeleteFolderModal = false;
+    folderToDelete = null;
+  }
 
   async function loadCards(params: Record<string, any> = {}) {
     loading = true;
@@ -52,18 +120,30 @@
   let queueCount = $derived(printQueue.count);
   let trashCountVal = $derived(trashCount.value);
 
-  let groupedCards = $derived(
-    cards.reduce((acc, card) => {
-      const cat = card.category || 'Tidak Berkategori';
+  let groupedCards = $derived.by(() => {
+    const acc: Record<string, Card[]> = {};
+    // Inisialisasi folder kosong
+    for (const f of $cardFolders) {
+      acc[f.name] = [];
+    }
+    // Kelompokkan kartu berdasarkan folder
+    for (const card of cards) {
+      const cat = card.card_folder?.name || 'Tidak Berkategori';
       if (!acc[cat]) acc[cat] = [];
       acc[cat].push(card);
-      return acc;
-    }, {} as Record<string, Card[]>)
-  );
+    }
+    return acc;
+  });
 
   // Bulk selection
   let selectedIds = $state(new Set<string>());
   let showBulkDeleteConfirm = $state(false);
+
+  let activeFolderId = $derived.by(() => {
+    if (!activeCategory) return null;
+    const folder = $cardFolders.find(f => f.name === activeCategory);
+    return folder ? folder.id : null;
+  });
 
   function toggleSelect(card: Card) {
     const next = new Set(selectedIds);
@@ -104,7 +184,7 @@
     if (q) {
       list = list.filter(c => 
         (c.title && c.title.toLowerCase().includes(q)) || 
-        (c.category && c.category.toLowerCase().includes(q))
+        (c.card_folder?.name && c.card_folder.name.toLowerCase().includes(q))
       );
     }
     return list;
@@ -131,6 +211,7 @@
     } catch (e) {
       console.error(e);
     }
+    fetchCardFolders();
     loadCards();
     trashCount.init();
   });
@@ -194,11 +275,7 @@
   }
 
   async function handleAdd(card: Omit<Card, "id">) {
-    const cat = card.category || 'Tidak Berkategori';
-    if ((groupedCards[cat] || []).length >= 20) {
-      toast.error(`Kategori "${cat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
-      return;
-    }
+    // Note: Server limits or folder-based limits should be handled in backend
     await api.createCard(card);
     showForm = false;
     toast.success("Kartu berhasil dibuat");
@@ -207,13 +284,6 @@
 
   async function handleUpdate(card: Omit<Card, "id">) {
     if (editingCard) {
-      const oldCat = editingCard.category || 'Tidak Berkategori';
-      const newCat = card.category || 'Tidak Berkategori';
-      
-      if (oldCat !== newCat && (groupedCards[newCat] || []).length >= 20) {
-        toast.error(`Kategori "${newCat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
-        return;
-      }
 
       await api.updateCard(editingCard.id, card);
       editingCard = null;
@@ -225,11 +295,6 @@
   }
 
   async function handleAddImage(card: Omit<Card, "id">) {
-    const cat = card.category || 'Tidak Berkategori';
-    if ((groupedCards[cat] || []).length >= 20) {
-      toast.error(`Kategori "${cat}" sudah terisi penuh (Max 20 kartu). Silakan buat kategori lain.`);
-      return;
-    }
     await api.createCard(card);
     showImageForm = false;
     toast.success("Kartu gambar berhasil dibuat");
@@ -332,7 +397,7 @@
             </button>
           {/if}
         </div>
-        {#if isTeacher}
+        {#if isTeacher && activeCategory !== null}
           <div class="flex flex-row items-center gap-2 w-full md:w-auto mt-1 md:mt-0">
             <button
               onclick={() => {
@@ -404,15 +469,17 @@
       }}
       title={editingCard ? "Edit Kartu" : "Tambah Kartu Baru"}
     >
-      <CardForm
-        onsave={editingCard ? handleUpdate : handleAdd}
-        oncancel={() => {
-          showForm = false;
-          editingCard = null;
-        }}
-        edit={editingCard}
-        defaultCategory={activeCategory || ""}
-      />
+      {#if showForm}
+        <CardForm
+          onsave={editingCard ? handleUpdate : handleAdd}
+          oncancel={() => {
+            showForm = false;
+            editingCard = null;
+          }}
+          edit={editingCard}
+          initialFolderId={activeFolderId}
+        />
+      {/if}
     </Modal>
 
     <Modal
@@ -423,21 +490,34 @@
       }}
       title={editingCard ? "Edit Kartu Gambar" : "Tambah Kartu Gambar"}
     >
-      <CardImageForm
-        onsave={editingCard ? handleUpdate : handleAddImage}
-        oncancel={() => {
-          showImageForm = false;
-          editingCard = null;
-        }}
-        edit={editingCard}
-        defaultCategory={activeCategory || ""}
-      />
+      {#if showImageForm}
+        <CardImageForm
+          onsave={editingCard ? handleUpdate : handleAddImage}
+          oncancel={() => {
+            showImageForm = false;
+            editingCard = null;
+          }}
+          edit={editingCard}
+          initialFolderId={activeFolderId}
+        />
+      {/if}
     </Modal>
 
     <div>
-      <h2 class="text-md font-semibold text-slate-800 mb-3">
-        Arsip ({total} kartu)
-      </h2>
+      <div class="flex items-center justify-between mb-3">
+        <h2 class="text-md font-semibold text-slate-800">
+          Arsip ({total} kartu)
+        </h2>
+        {#if isTeacher && activeCategory === null && !searchQuery.trim()}
+          <button
+            onclick={openNewFolder}
+            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 bg-transparent border-none transition-colors cursor-pointer"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+            Folder Baru
+          </button>
+        {/if}
+      </div>
 
       {#if loading}
         <div
@@ -469,6 +549,9 @@
           <FolderGrid
             groupedCards={groupedCards}
             onSelectCategory={selectCategory}
+            isTeacher={isTeacher}
+            onEditFolder={handleEditFolder}
+            onDeleteFolder={handleDeleteFolderClick}
           />
         {:else}
           {#if activeCategory !== null}
@@ -738,5 +821,95 @@
         </div>
       </div>
     {/if}
+  </Modal>
+
+  <!-- Form Folder -->
+  <Modal
+    show={showFolderForm}
+    onclose={() => (showFolderForm = false)}
+    title={editingFolder ? "Edit Folder" : "Tambah Folder Baru"}
+    maxWidth="max-w-md"
+  >
+    <form onsubmit={saveFolder} class="space-y-4">
+      <div>
+        <label
+          for="folderName"
+          class="block text-sm font-medium text-slate-700 mb-1"
+        >
+          Nama Folder
+        </label>
+        <input
+          id="folderName"
+          type="text"
+          bind:value={newFolderName}
+          placeholder="Contoh: Matematika"
+          class="block w-full px-4 py-2 border border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition-colors"
+          required
+        />
+      </div>
+      <div class="flex justify-end gap-3 pt-4 border-t border-slate-100">
+        <button
+          type="button"
+          onclick={() => (showFolderForm = false)}
+          class="px-4 py-2 text-sm font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer"
+        >
+          Batal
+        </button>
+        <button
+          type="submit"
+          class="px-6 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-colors shadow-sm cursor-pointer"
+          disabled={!newFolderName.trim()}
+        >
+          Simpan
+        </button>
+      </div>
+    </form>
+  </Modal>
+
+  <!-- Konfirmasi Hapus Folder -->
+  <Modal
+    show={showDeleteFolderModal}
+    onclose={() => (showDeleteFolderModal = false)}
+    maxWidth="max-w-sm"
+  >
+    <div class="space-y-4 text-center">
+      <div
+        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Hapus Folder</h3>
+        <p class="text-sm text-slate-600 mt-1">
+          Folder "{folderToDelete?.name}" akan dihapus. Kartu di dalamnya mungkin akan kehilangan foldernya.
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-2">
+        <button
+          onclick={() => (showDeleteFolderModal = false)}
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
+        >
+          Batal
+        </button>
+        <button
+          onclick={confirmDeleteFolder}
+          class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
+        >
+          Hapus
+        </button>
+      </div>
+    </div>
   </Modal>
 </div>

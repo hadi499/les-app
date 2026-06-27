@@ -40,7 +40,8 @@ export interface TypingStats {
 
 export interface Card {
   id: string;
-  category: string;
+  card_folder_id?: number | null;
+  card_folder?: { id: number; name: string };
   image: string;
   title: string;
   content: string;

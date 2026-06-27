@@ -145,9 +145,9 @@
                     >Img</span
                   >
                 {/if}
-                {#if card.category}
+                {#if card.card_folder?.name}
                   <span class="text-xs font-medium text-red-500 bg-red-50 px-2 py-0.5 rounded"
-                    >{card.category}</span
+                    >{card.card_folder.name}</span
                   >
                 {/if}
               </div>

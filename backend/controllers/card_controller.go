@@ -51,7 +51,7 @@ func GetCards(c *gin.Context) {
 
 	showAll := c.Query("all")
 
-	query := database.DB.Model(&models.Card{})
+	query := database.DB.Model(&models.Card{}).Preload("CardFolder")
 
 	if showAll != "true" {
 		if cardType == "image" {
@@ -65,7 +65,8 @@ func GetCards(c *gin.Context) {
 		query = query.Where("size = ?", size)
 	}
 	if search != "" {
-		query = query.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		query = query.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").
+			Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
 	}
 
 	var total int64
@@ -78,11 +79,11 @@ func GetCards(c *gin.Context) {
 	countBase2 := database.DB.Model(&models.Card{}).Where("(card_type = ? OR card_type = '' OR card_type IS NULL)", "regular")
 	countBaseGambar := database.DB.Model(&models.Card{}).Where("card_type = ?", "image")
 	if search != "" {
-		countBaseAll = countBaseAll.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
-		countBase6 = countBase6.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
-		countBase4 = countBase4.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
-		countBase2 = countBase2.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
-		countBaseGambar = countBaseGambar.Where("(title ILIKE ? OR category ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		countBaseAll = countBaseAll.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		countBase6 = countBase6.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		countBase4 = countBase4.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		countBase2 = countBase2.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
+		countBaseGambar = countBaseGambar.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
 	}
 	countBaseAll.Count(&countAll)
 	countBase6.Where("size = ? OR size = '' OR size IS NULL", "6").Count(&count6)
@@ -129,19 +130,19 @@ func UpdateCard(c *gin.Context) {
 	}
 
 	var input struct {
-		Category string `json:"category"`
-		Image    string `json:"image"`
-		Title    string `json:"title"`
-		Content  string `json:"content"`
-		Size     string `json:"size"`
-		CardType string `json:"cardType"`
+		CardFolderID *uint  `json:"card_folder_id"`
+		Image        string `json:"image"`
+		Title        string `json:"title"`
+		Content      string `json:"content"`
+		Size         string `json:"size"`
+		CardType     string `json:"cardType"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	card.Category = input.Category
+	card.CardFolderID = input.CardFolderID
 	card.Image = input.Image
 	card.Title = input.Title
 	card.Content = input.Content
@@ -162,7 +163,7 @@ func DeleteCard(c *gin.Context) {
 
 func GetTrashCards(c *gin.Context) {
 	var cards []models.Card
-	database.DB.Unscoped().Where("deleted_at IS NOT NULL").Order("deleted_at desc").Find(&cards)
+	database.DB.Unscoped().Preload("CardFolder").Where("deleted_at IS NOT NULL").Order("deleted_at desc").Find(&cards)
 	var total int64
 	database.DB.Unscoped().Model(&models.Card{}).Where("deleted_at IS NOT NULL").Count(&total)
 	c.JSON(http.StatusOK, gin.H{

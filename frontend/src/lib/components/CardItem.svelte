@@ -211,7 +211,7 @@
         class="font-semibold uppercase tracking-wider truncate text-black"
         style="font-size: {headerFont}; "
       >
-        {card.category || "Umum"}
+        {card.card_folder?.name || "Umum"}
       </div>
     </div>
   {/if}

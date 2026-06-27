@@ -81,7 +81,7 @@
               >{card.title}</td
             >
             {#if activeCategory === null}
-              <td class="px-4 py-3 text-slate-600">{card.category || "-"}</td>
+              <td class="px-4 py-3 text-slate-600">{card.card_folder?.name || "-"}</td>
             {/if}
             <td class="px-4 py-3">
               <span
