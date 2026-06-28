@@ -17,6 +17,7 @@
   type TodoList = {
     id: number;
     title: string;
+    created_at: string;
     items: TodoItem[];
   };
 
@@ -174,11 +175,15 @@
     </div>
   {:else if list}
     <div class="p-2 md:p-10 transition-all">
-      <h1
-        class="text-xl md:text-2xl font-semibold text-slate-900 mb-6 p-2 md:mb-8 pb-4 md:pb-6 border-b border-slate-200"
-      >
-        {list.title}
-      </h1>
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200">
+        <h1 class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight">
+          {list.title}
+        </h1>
+        <div class="flex items-center text-[13px] text-slate-500 font-medium bg-slate-100/80 px-3 py-1.5 rounded-lg w-max shrink-0">
+          <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+          {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+        </div>
+      </div>
 
       <form onsubmit={addItem} class="flex items-center gap-3 mb-10">
         <input
