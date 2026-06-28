@@ -11,6 +11,11 @@
   let userToDelete: { id: number; username: string } | null = $state(null);
   let isDeleting = $state(false);
 
+  let showAddModal = $state(false);
+  let isAdding = $state(false);
+  let newUser = $state({ username: "", password: "" });
+  let addErrorMsg = $state("");
+
   async function fetchUsers() {
     isLoading = true;
     errorMsg = "";
@@ -77,6 +82,43 @@
     showDeleteModal = false;
     userToDelete = null;
   }
+
+  function promptAdd() {
+    newUser = { username: "", password: "" };
+    addErrorMsg = "";
+    showAddModal = true;
+  }
+
+  function cancelAdd() {
+    showAddModal = false;
+  }
+
+  async function confirmAdd() {
+    if (!newUser.username || !newUser.password) {
+      addErrorMsg = "Username dan password harus diisi.";
+      return;
+    }
+    isAdding = true;
+    addErrorMsg = "";
+    try {
+      const res = await fetch(`/api/auth/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newUser),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        addErrorMsg = data.error || "Gagal menambahkan user";
+        return;
+      }
+      showAddModal = false;
+      fetchUsers();
+    } catch (e) {
+      addErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+    } finally {
+      isAdding = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -84,17 +126,26 @@
 </svelte:head>
 
 <div class="animate-in fade-in duration-500">
-  <div class="mb-8">
-    <h1
-      class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
+  <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+    <div>
+      <h1
+        class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
+      >
+        Manajemen Users
+      </h1>
+      <p
+        class="mt-2 text-slate-600 text-sm sm:text-base font-light tracking-wide"
+      >
+        Lihat dan kelola seluruh pengguna di sistem ini.
+      </p>
+    </div>
+    <button
+      onclick={promptAdd}
+      class="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-xl hover:bg-blue-700 transition-colors shadow-md shadow-blue-500/20 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
     >
-      Manajemen Users
-    </h1>
-    <p
-      class="mt-2 text-slate-600 text-sm sm:text-base font-light tracking-wide"
-    >
-      Lihat dan kelola seluruh pengguna di sistem ini.
-    </p>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      Tambah User
+    </button>
   </div>
 
   {#if isLoading}
@@ -229,6 +280,64 @@
               ></div>
             {/if}
             Ya, Hapus
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Add User Modal -->
+  {#if showAddModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div class="bg-slate-50 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 transform transition-all">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">Tambah User Baru</h3>
+        
+        {#if addErrorMsg}
+          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            {addErrorMsg}
+          </div>
+        {/if}
+
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="username">Username</label>
+            <input
+              id="username"
+              type="text"
+              bind:value={newUser.username}
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900"
+              placeholder="Masukkan username"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="password">Password</label>
+            <input
+              id="password"
+              type="password"
+              bind:value={newUser.password}
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900"
+              placeholder="Masukkan password"
+            />
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            onclick={cancelAdd}
+            disabled={isAdding}
+            class="px-4 py-2 text-sm font-medium text-slate-800 bg-white shadow-md border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button
+            onclick={confirmAdd}
+            disabled={isAdding}
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 shadow-md hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {#if isAdding}
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            {/if}
+            Simpan
           </button>
         </div>
       </div>

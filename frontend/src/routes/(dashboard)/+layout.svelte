@@ -144,7 +144,7 @@
               ></path></svg
             >
           </div>
-          Student Todolist
+          Todolist
         </a>
 
         {#if user?.role === "teacher"}

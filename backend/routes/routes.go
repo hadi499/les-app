@@ -8,10 +8,10 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	r.POST("/api/auth/register", controllers.Register)
+	r.POST("/api/auth/register", middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"), controllers.Register)
 	r.POST("/api/auth/login", controllers.Login)
 	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
-	
+
 	// Route /me tidak menggunakan AuthMiddleware agar bisa mereturn 200 dengan status authenticated = false
 	// alih-alih mereturn 401 Unauthorized yang akan memicu log merah di browser.
 	r.GET("/me", controllers.Me)
@@ -52,7 +52,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		// Read can be done by any authenticated user (e.g. students or teachers viewing cards)
 		cards.GET("", controllers.GetCards)
-		
+
 		// Teacher only for modifications
 		teacherOnly := cards.Group("")
 		teacherOnly.Use(middleware.RoleMiddleware("teacher"))
@@ -60,7 +60,7 @@ func SetupRoutes(r *gin.Engine) {
 			teacherOnly.POST("", controllers.CreateCard)
 			teacherOnly.PUT("/:id", controllers.UpdateCard)
 			teacherOnly.DELETE("/:id", controllers.DeleteCard)
-			
+
 			teacherOnly.GET("/trash", controllers.GetTrashCards)
 			teacherOnly.POST("/trash/:id/restore", controllers.RestoreCard)
 			teacherOnly.DELETE("/trash/:id/force", controllers.ForceDeleteCard)
@@ -86,7 +86,7 @@ func SetupRoutes(r *gin.Engine) {
 	exams.Use(middleware.AuthMiddleware())
 	{
 		exams.GET("", controllers.GetExams)
-		
+
 		teacherExams := exams.Group("")
 		teacherExams.Use(middleware.RoleMiddleware("teacher"))
 		{
@@ -101,7 +101,7 @@ func SetupRoutes(r *gin.Engine) {
 	subjects.Use(middleware.AuthMiddleware())
 	{
 		subjects.GET("", controllers.GetSubjects)
-		
+
 		teacherSubjects := subjects.Group("")
 		teacherSubjects.Use(middleware.RoleMiddleware("teacher"))
 		{
@@ -178,6 +178,19 @@ func SetupRoutes(r *gin.Engine) {
 		targets.POST("", controllers.CreateTarget)
 		targets.PUT("/:id", controllers.UpdateTarget)
 		targets.DELETE("/:id", controllers.DeleteTarget)
+	}
+
+	// Todolist API routes (Teacher only)
+	todolists := r.Group("/api/todolists")
+	todolists.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		todolists.GET("", controllers.GetTodoLists)
+		todolists.GET("/:id", controllers.GetTodoList)
+		todolists.POST("", controllers.CreateTodoList)
+		todolists.DELETE("/:id", controllers.DeleteTodoList)
+		todolists.POST("/:id/items", controllers.CreateTodoItem)
+		todolists.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
+		todolists.DELETE("/:id/items/:item_id", controllers.DeleteTodoItem)
 	}
 
 	// Scores API routes (User submission)

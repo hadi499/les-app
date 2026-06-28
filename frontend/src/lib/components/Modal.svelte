@@ -18,7 +18,7 @@
 
 {#if show}
   <div
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
+    class="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4"
   >
     <div
       class="bg-slate-50 border border-slate-200 rounded-xl shadow-2xl {maxWidth} w-full max-h-[90vh] overflow-y-auto"

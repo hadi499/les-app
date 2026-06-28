@@ -137,6 +137,8 @@
   let newFolderName = $state("");
   let isFolderDropdownOpen = $state(false);
   let editorRef = $state<RichEditorRef>();
+  let openMenuId = $state<number | null>(null);
+  let openFolderMenuId = $state<number | null>(null);
 
   function openNewFolder() {
     editingFolder = null;
@@ -742,7 +744,7 @@
       >
         {#each folders as folder}
           <div
-            class="group relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer overflow-hidden flex items-center gap-4"
+            class="group relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center gap-4 {openFolderMenuId === folder.id ? 'z-50' : 'z-0'}"
             onclick={() => openFolder(folder)}
             role="button"
             tabindex="0"
@@ -763,51 +765,66 @@
                 {notes.filter((n) => n.folder_id === folder.id).length} catatan
               </p>
             </div>
-            <div
-              class="absolute top-2 right-2 flex items-center gap-1 transition-all"
-            >
+            <div class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10">
+              <!-- Mobile 3-dots button -->
               <button
                 onclick={(e) => {
                   e.stopPropagation();
-                  openEditFolder(folder);
+                  openFolderMenuId = openFolderMenuId === folder.id ? null : folder.id;
                 }}
-                class="p-1.5 text-slate-500 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
-                title="Edit folder"
+                class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
               >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  ></path></svg
-                >
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
               </button>
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  deleteFolder(folder);
-                }}
-                class="p-1.5 text-slate-500 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
-                title="Hapus folder"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  ></path></svg
+
+              <div class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openFolderMenuId === folder.id ? 'flex flex-col' : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all w-max">
+                <button
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    openFolderMenuId = null;
+                    openEditFolder(folder);
+                  }}
+                  class="w-full md:w-auto flex items-center gap-2 p-2 md:p-1.5 text-slate-600 md:text-slate-500 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
+                  title="Edit folder"
                 >
-              </button>
+                  <svg
+                    class="w-4 h-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    ></path></svg
+                  >
+                  <span class="md:hidden text-sm font-medium pr-2">Edit</span>
+                </button>
+                <button
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    openFolderMenuId = null;
+                    deleteFolder(folder);
+                  }}
+                  class="w-full md:w-auto flex items-center gap-2 p-2 md:p-1.5 text-slate-600 md:text-slate-500 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
+                  title="Hapus folder"
+                >
+                  <svg
+                    class="w-4 h-4 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    ></path></svg
+                  >
+                  <span class="md:hidden text-sm font-medium pr-2">Hapus</span>
+                </button>
+              </div>
             </div>
           </div>
         {/each}
@@ -849,11 +866,11 @@
         </div>
       {:else}
         <div
-          class="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden divide-y divide-slate-100"
+          class="flex flex-col gap-3"
         >
           {#each filteredNotes as note (note.id)}
             <div
-              class="group relative flex items-center justify-between p-4 hover:bg-slate-50 transition-colors cursor-pointer"
+              class="group relative flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all gap-4 {openMenuId === note.id ? 'z-50' : 'z-0'}"
               onclick={() => openNote(note)}
               role="button"
               tabindex="0"
@@ -904,77 +921,96 @@
                     day: "numeric",
                   })}</span
                 >
-                <div class="flex items-center gap-1 transition-all">
+                <div class="flex items-center gap-1 transition-all relative">
+                  <!-- Mobile 3-dots button -->
                   <button
                     onclick={(e) => {
                       e.stopPropagation();
-                      copyNote(note);
+                      openMenuId = openMenuId === note.id ? null : note.id;
                     }}
-                    class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer"
-                    title="Duplikat"
+                    class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
                   >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      viewBox="0 0 24 24"
-                      ><rect
-                        x="9"
-                        y="9"
-                        width="13"
-                        height="13"
-                        rx="2"
-                        ry="2"
-                      /><path
-                        d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                      /></svg
-                    >
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
                   </button>
-                  <button
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      openMoveModal(note);
-                    }}
-                    class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer"
-                    title="Pindah Folder"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
+                  
+                  <div class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openMenuId === note.id ? 'flex flex-col' : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all z-10 w-max">
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openMenuId = null;
+                        copyNote(note);
+                      }}
+                      class="w-full md:w-auto flex items-center gap-2 p-2 md:p-1.5 text-slate-600 md:text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer"
+                      title="Duplikat"
+                    >
+                      <svg
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
                         stroke-linecap="round"
                         stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                      /></svg
+                        viewBox="0 0 24 24"
+                        ><rect
+                          x="9"
+                          y="9"
+                          width="13"
+                          height="13"
+                          rx="2"
+                          ry="2"
+                        /><path
+                          d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                        /></svg
+                      >
+                      <span class="md:hidden text-sm font-medium pr-2">Duplikat</span>
+                    </button>
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openMenuId = null;
+                        openMoveModal(note);
+                      }}
+                      class="w-full md:w-auto flex items-center gap-2 p-2 md:p-1.5 text-slate-600 md:text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer"
+                      title="Pindah Folder"
                     >
-                  </button>
-                  <button
-                    onclick={(e) => {
-                      e.stopPropagation();
-                      deleteNote(note);
-                    }}
-                    class="p-1.5 text-slate-500 hover:text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
-                    title="Hapus"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      /></svg
+                      <svg
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                        /></svg
+                      >
+                      <span class="md:hidden text-sm font-medium pr-2">Pindah Folder</span>
+                    </button>
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openMenuId = null;
+                        deleteNote(note);
+                      }}
+                      class="w-full md:w-auto flex items-center gap-2 p-2 md:p-1.5 text-slate-600 md:text-slate-500 hover:text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
+                      title="Hapus"
                     >
-                  </button>
+                      <svg
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        /></svg
+                      >
+                      <span class="md:hidden text-sm font-medium pr-2">Hapus</span>
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>
