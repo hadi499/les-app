@@ -165,8 +165,11 @@
         });
         if (res.ok) {
           const updatedFolder = await res.json();
-          folders = folders.map((f) => (f.id === updatedFolder.id ? updatedFolder : f));
-          if (currentFolder?.id === updatedFolder.id) currentFolder = updatedFolder;
+          folders = folders.map((f) =>
+            f.id === updatedFolder.id ? updatedFolder : f,
+          );
+          if (currentFolder?.id === updatedFolder.id)
+            currentFolder = updatedFolder;
         }
       } else {
         const res = await fetch("/api/folders", {
@@ -384,52 +387,51 @@
   </style>
 </svelte:head>
 
-
-
-  <!-- Delete Folder Modal -->
-  <Modal
-    show={!!folderToDelete}
-    onclose={() => (folderToDelete = null)}
-    maxWidth="max-w-sm"
-  >
-    <div class="space-y-4 text-center">
-      <div
-        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+<!-- Delete Folder Modal -->
+<Modal
+  show={!!folderToDelete}
+  onclose={() => (folderToDelete = null)}
+  maxWidth="max-w-sm"
+>
+  <div class="space-y-4 text-center">
+    <div
+      class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+    >
+      <svg
+        class="w-6 h-6 text-red-600"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        viewBox="0 0 24 24"
       >
-        <svg
-          class="w-6 h-6 text-red-600"
-          fill="none"
-          stroke="currentColor"
-          stroke-width="2"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-          />
-        </svg>
-      </div>
-      <div>
-        <h3 class="text-lg font-semibold text-slate-900">Hapus Folder</h3>
-        <p class="text-sm text-slate-600 mt-1">
-          Folder "{folderToDelete?.name}" dan seluruh catatan di dalamnya akan dihapus.
-        </p>
-      </div>
-      <div class="flex gap-2 justify-center pt-2">
-        <button
-          onclick={() => (folderToDelete = null)}
-          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
-          >Batal</button
-        >
-        <button
-          onclick={confirmDeleteFolder}
-          class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
-          >Hapus</button
-        >
-      </div>
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        />
+      </svg>
     </div>
-  </Modal>
+    <div>
+      <h3 class="text-lg font-semibold text-slate-900">Hapus Folder</h3>
+      <p class="text-sm text-slate-600 mt-1">
+        Folder "{folderToDelete?.name}" dan seluruh catatan di dalamnya akan
+        dihapus.
+      </p>
+    </div>
+    <div class="flex gap-2 justify-center pt-2">
+      <button
+        onclick={() => (folderToDelete = null)}
+        class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-transparent text-slate-900 cursor-pointer"
+        >Batal</button
+      >
+      <button
+        onclick={confirmDeleteFolder}
+        class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-700 cursor-pointer"
+        >Hapus</button
+      >
+    </div>
+  </div>
+</Modal>
 
 <!-- VIEW: DETAIL CATATAN -->
 {#if viewingNote}
@@ -458,35 +460,60 @@
         Kembali
       </button>
       <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-
         <button
           onclick={() => deleteNote(viewingNote!)}
           class="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
           title="Hapus"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+            ></path></svg
+          >
         </button>
         <button
           onclick={() => openEdit(viewingNote!)}
           class="p-2.5 text-blue-600 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
           title="Edit Catatan"
         >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            ></path></svg
+          >
         </button>
-        <div class="flex items-center bg-slate-100 rounded-xl overflow-hidden print:hidden border border-slate-200 shrink-0">
+        <div
+          class="flex items-center bg-slate-100 rounded-xl overflow-hidden print:hidden border border-slate-200 shrink-0"
+        >
           <button
-            onclick={() => printFontSize = Math.max(10, printFontSize - 1)}
+            onclick={() => (printFontSize = Math.max(10, printFontSize - 1))}
             class="px-3 py-2 text-sm font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
-            title="Perkecil Font"
-          >A-</button>
-          <div class="px-2 py-2 text-xs font-medium text-slate-600 bg-white border-x border-slate-200 text-center min-w-12">
+            title="Perkecil Font">A-</button
+          >
+          <div
+            class="px-2 py-2 text-xs font-medium text-slate-600 bg-white border-x border-slate-200 text-center min-w-12"
+          >
             {printFontSize}px
           </div>
           <button
-            onclick={() => printFontSize = Math.min(36, printFontSize + 1)}
+            onclick={() => (printFontSize = Math.min(36, printFontSize + 1))}
             class="px-3 py-2 text-base font-bold text-slate-600 hover:bg-slate-200 hover:text-slate-900 transition-colors cursor-pointer"
-            title="Perbesar Font"
-          >A+</button>
+            title="Perbesar Font">A+</button
+          >
         </div>
         <button
           onclick={printNote}
@@ -512,7 +539,7 @@
     <!-- Print Area -->
     <div class="print:block">
       <h1
-        class="text-3xl sm:text-4xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight print:hidden"
+        class="text-xl sm:text-2xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight print:hidden"
       >
         {viewingNote.title}
       </h1>
@@ -736,7 +763,9 @@
                 {notes.filter((n) => n.folder_id === folder.id).length} catatan
               </p>
             </div>
-            <div class="absolute top-2 right-2 flex items-center gap-1 transition-all">
+            <div
+              class="absolute top-2 right-2 flex items-center gap-1 transition-all"
+            >
               <button
                 onclick={(e) => {
                   e.stopPropagation();
@@ -876,11 +905,54 @@
                   })}</span
                 >
                 <div class="flex items-center gap-1 transition-all">
-                  <button onclick={(e) => { e.stopPropagation(); copyNote(note); }} class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer" title="Duplikat">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1" /></svg>
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      copyNote(note);
+                    }}
+                    class="p-1.5 text-slate-500 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer"
+                    title="Duplikat"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      viewBox="0 0 24 24"
+                      ><rect
+                        x="9"
+                        y="9"
+                        width="13"
+                        height="13"
+                        rx="2"
+                        ry="2"
+                      /><path
+                        d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
+                      /></svg
+                    >
                   </button>
-                  <button onclick={(e) => { e.stopPropagation(); openMoveModal(note); }} class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer" title="Pindah Folder">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" /></svg>
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openMoveModal(note);
+                    }}
+                    class="p-1.5 text-slate-500 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer"
+                    title="Pindah Folder"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
+                      /></svg
+                    >
                   </button>
                   <button
                     onclick={(e) => {
@@ -890,7 +962,18 @@
                     class="p-1.5 text-slate-500 hover:text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
                     title="Hapus"
                   >
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      /></svg
+                    >
                   </button>
                 </div>
               </div>
@@ -926,7 +1009,7 @@
       />
     </div>
 
-    <div class={`relative ${isFolderDropdownOpen ? 'z-50' : 'z-10'}`}>
+    <div class={`relative ${isFolderDropdownOpen ? "z-50" : "z-10"}`}>
       <label
         for="folder"
         class="block text-sm font-medium text-slate-700 mb-1.5"
@@ -1131,8 +1214,9 @@
 >
   <div class="space-y-5">
     <p class="text-sm text-slate-600">
-      Apakah Anda yakin ingin menghapus catatan <strong>"{noteToDelete?.title}"</strong>? Tindakan ini tidak dapat
-      dibatalkan.
+      Apakah Anda yakin ingin menghapus catatan <strong
+        >"{noteToDelete?.title}"</strong
+      >? Tindakan ini tidak dapat dibatalkan.
     </p>
     <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
       <button
@@ -1162,7 +1246,9 @@
 >
   <div class="space-y-5">
     <div>
-      <label class="block text-sm font-medium text-slate-700 mb-1.5">Pilih Folder Tujuan</label>
+      <label class="block text-sm font-medium text-slate-700 mb-1.5"
+        >Pilih Folder Tujuan</label
+      >
       <div class="relative">
         <select
           bind:value={moveTargetFolderId}
@@ -1173,8 +1259,21 @@
             <option value={folder.id}>{folder.name}</option>
           {/each}
         </select>
-        <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
-          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        <div
+          class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none"
+        >
+          <svg
+            class="w-4 h-4 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M19 9l-7 7-7-7"
+            ></path></svg
+          >
         </div>
       </div>
     </div>
