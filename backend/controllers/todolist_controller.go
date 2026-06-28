@@ -60,6 +60,34 @@ func CreateTodoList(c *gin.Context) {
 	c.JSON(http.StatusOK, list)
 }
 
+// UpdateTodoList - Update a todo list title
+func UpdateTodoList(c *gin.Context) {
+	userID := c.GetUint("userID")
+	id := c.Param("id")
+
+	var list models.TodoList
+	if err := database.DB.Where("id = ? AND user_id = ?", id, userID).First(&list).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
+		return
+	}
+
+	var input struct {
+		Title string `json:"title" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	list.Title = input.Title
+	if err := database.DB.Save(&list).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update todo list"})
+		return
+	}
+
+	c.JSON(http.StatusOK, list)
+}
+
 // DeleteTodoList - Delete a todo list and its items (cascade)
 func DeleteTodoList(c *gin.Context) {
 	userID := c.GetUint("userID")

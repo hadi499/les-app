@@ -744,7 +744,10 @@
       >
         {#each folders as folder}
           <div
-            class="group relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center gap-4 {openFolderMenuId === folder.id ? 'z-50' : 'z-0'}"
+            class="group relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center gap-4 {openFolderMenuId ===
+            folder.id
+              ? 'z-50'
+              : 'z-0'}"
             onclick={() => openFolder(folder)}
             role="button"
             tabindex="0"
@@ -765,19 +768,31 @@
                 {notes.filter((n) => n.folder_id === folder.id).length} catatan
               </p>
             </div>
-            <div class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10">
+            <div
+              class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10"
+            >
               <!-- Mobile 3-dots button -->
               <button
                 onclick={(e) => {
                   e.stopPropagation();
-                  openFolderMenuId = openFolderMenuId === folder.id ? null : folder.id;
+                  openFolderMenuId =
+                    openFolderMenuId === folder.id ? null : folder.id;
                 }}
                 class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
               >
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
+                  ><path
+                    d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
+                  /></svg
+                >
               </button>
 
-              <div class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openFolderMenuId === folder.id ? 'flex flex-col' : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all w-max">
+              <div
+                class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openFolderMenuId ===
+                folder.id
+                  ? 'flex flex-col'
+                  : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all w-max"
+              >
                 <button
                   onclick={(e) => {
                     e.stopPropagation();
@@ -865,12 +880,13 @@
           <p class="mt-1 text-sm text-slate-500">Belum ada catatan di sini.</p>
         </div>
       {:else}
-        <div
-          class="flex flex-col gap-3"
-        >
+        <div class="flex flex-col gap-3">
           {#each filteredNotes as note (note.id)}
             <div
-              class="group relative flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all gap-4 {openMenuId === note.id ? 'z-50' : 'z-0'}"
+              class="group relative flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all gap-4 {openMenuId ===
+              note.id
+                ? 'z-50'
+                : 'z-0'}"
               onclick={() => openNote(note)}
               role="button"
               tabindex="0"
@@ -930,10 +946,19 @@
                     }}
                     class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
                   >
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
+                      ><path
+                        d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
+                      /></svg
+                    >
                   </button>
-                  
-                  <div class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openMenuId === note.id ? 'flex flex-col' : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all z-10 w-max">
+
+                  <div
+                    class="absolute md:static right-0 top-10 md:top-auto md:right-auto {openMenuId ===
+                    note.id
+                      ? 'flex flex-col'
+                      : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all z-10 w-max"
+                  >
                     <button
                       onclick={(e) => {
                         e.stopPropagation();
@@ -962,7 +987,9 @@
                           d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
                         /></svg
                       >
-                      <span class="md:hidden text-sm font-medium pr-2">Duplikat</span>
+                      <span class="md:hidden text-sm font-medium pr-2"
+                        >Duplikat</span
+                      >
                     </button>
                     <button
                       onclick={(e) => {
@@ -985,7 +1012,9 @@
                           d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
                         /></svg
                       >
-                      <span class="md:hidden text-sm font-medium pr-2">Pindah Folder</span>
+                      <span class="md:hidden text-sm font-medium pr-2"
+                        >Pindah Folder</span
+                      >
                     </button>
                     <button
                       onclick={(e) => {
@@ -1008,7 +1037,9 @@
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         /></svg
                       >
-                      <span class="md:hidden text-sm font-medium pr-2">Hapus</span>
+                      <span class="md:hidden text-sm font-medium pr-2"
+                        >Hapus</span
+                      >
                     </button>
                   </div>
                 </div>

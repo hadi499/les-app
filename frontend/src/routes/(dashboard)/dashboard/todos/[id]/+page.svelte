@@ -175,7 +175,7 @@
   {:else if list}
     <div class="p-2 md:p-10 transition-all">
       <h1
-        class="text-2xl md:text-4xl font-bold text-slate-900 mb-6 p-2 md:mb-8 pb-4 md:pb-6 border-b border-slate-200"
+        class="text-xl md:text-2xl font-semibold text-slate-900 mb-6 p-2 md:mb-8 pb-4 md:pb-6 border-b border-slate-200"
       >
         {list.title}
       </h1>
@@ -255,16 +255,16 @@
                 }}
               >
                 <div
-                  class="relative flex items-center justify-center w-7 h-7 md:w-8 md:h-8 shrink-0"
+                  class="relative flex items-center justify-center w-5 h-5 md:w-6 md:h-6 shrink-0"
                 >
                   <input
                     type="checkbox"
                     checked={item.completed}
                     tabindex="-1"
-                    class="peer appearance-none w-6 h-6 md:w-7 md:h-7 border-2 border-slate-300 rounded-xl checked:bg-blue-500 checked:border-blue-500 transition-all cursor-pointer pointer-events-none"
+                    class="peer appearance-none w-5 h-5 md:w-6 md:h-6 border-2 border-slate-300 rounded-full checked:bg-blue-500 checked:border-blue-500 transition-all cursor-pointer pointer-events-none"
                   />
                   <svg
-                    class="absolute w-4 h-4 md:w-5 md:h-5 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
+                    class="absolute w-3 h-3 md:w-4 md:h-4 text-white pointer-events-none opacity-0 peer-checked:opacity-100 transition-opacity"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"

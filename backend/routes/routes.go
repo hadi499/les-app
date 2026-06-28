@@ -175,8 +175,9 @@ func SetupRoutes(r *gin.Engine) {
 	todolists.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
 	{
 		todolists.GET("", controllers.GetTodoLists)
-		todolists.GET("/:id", controllers.GetTodoList)
 		todolists.POST("", controllers.CreateTodoList)
+		todolists.GET("/:id", controllers.GetTodoList)
+		todolists.PUT("/:id", controllers.UpdateTodoList)
 		todolists.DELETE("/:id", controllers.DeleteTodoList)
 		todolists.POST("/:id/items", controllers.CreateTodoItem)
 		todolists.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
