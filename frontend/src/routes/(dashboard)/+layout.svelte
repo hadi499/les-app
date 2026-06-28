@@ -467,7 +467,7 @@
     <!-- Desktop Sidebar Toggle Button -->
     <button
       onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
-      class="hidden md:flex fixed top-4 z-60 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen
+      class="hidden md:flex fixed top-4 z-40 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen
         ? 'left-60'
         : 'left-4'}"
       title={isDesktopSidebarOpen ? "Sembunyikan Sidebar" : "Tampilkan Sidebar"}

@@ -17,7 +17,17 @@
     },
   });
 
-  let { value = "" }: { value?: string } = $props();
+  let {
+    value = "",
+    minHeight = "min-h-[80px]",
+    containerMinHeight = "min-h-[100px]",
+    textSize = "prose-sm",
+  }: {
+    value?: string;
+    minHeight?: string;
+    containerMinHeight?: string;
+    textSize?: string;
+  } = $props();
 
   let editorEl = $state<HTMLDivElement>();
   let editor = $state<Editor>();
@@ -63,7 +73,7 @@
       content: value || "",
       editorProps: {
         attributes: {
-          class: "prose prose-sm max-w-none focus:outline-none min-h-[80px]",
+          class: `prose ${textSize} max-w-none focus:outline-none ${minHeight}`,
         },
       },
     });
@@ -260,7 +270,7 @@
     >
   </div>
   <div
-    class="border border-gray-300 rounded-b-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 min-h-[100px] px-3 py-2 text-sm cursor-text"
+    class={`border border-gray-300 rounded-b-lg focus-within:ring-2 focus-within:ring-indigo-500 focus-within:border-indigo-500 ${containerMinHeight} px-3 py-2 text-sm cursor-text`}
     onmousedown={(e) => {
       const selection = window.getSelection();
       // Hanya intercept jika ada teks yang sedang terseleksi
@@ -281,7 +291,6 @@
 
 <style>
   :global(.ProseMirror) {
-    min-height: 80px;
     height: 100%;
   }
 </style>

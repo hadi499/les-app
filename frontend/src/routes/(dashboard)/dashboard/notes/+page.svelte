@@ -1050,7 +1050,13 @@
         class="block text-sm font-medium text-slate-700 mb-1.5"
         >Isi Catatan</label
       >
-      <RichEditor bind:this={editorRef} value={editingNote?.content ?? ""} />
+      <RichEditor
+        bind:this={editorRef}
+        value={editingNote?.content ?? ""}
+        minHeight="min-h-[300px]"
+        containerMinHeight="min-h-[350px]"
+        textSize="prose-base sm:prose-lg"
+      />
     </div>
 
     <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
