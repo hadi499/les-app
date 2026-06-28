@@ -212,24 +212,20 @@
 </script>
 
 <svelte:head>
-  <title>Target Hafalan Murid - Portal</title>
+  <title>Todolist Murid - Portal</title>
 </svelte:head>
 
 <div class="max-w-6xl mx-auto p-4 md:p-6 lg:p-8">
-  <div class="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6">
+  <div
+    class="mb-8 flex flex-col md:flex-row md:items-start justify-between gap-6"
+  >
     <div>
       <h1
         class="text-xl md:text-2xl font-bold text-transparent bg-clip-text bg-linear-to-r from-blue-600 to-indigo-600 tracking-tight mb-2"
       >
-        Target Hafalan Murid
+        Student Todolists
       </h1>
-      <p class="text-slate-500 font-medium">
-        Kelola dan pantau target hafalan kartu memori untuk setiap murid secara
-        individu.
-      </p>
     </div>
-
-
   </div>
 
   {#if isLoading}
@@ -282,8 +278,6 @@
             {/each}
           </div>
         </div>
-
-
       </div>
 
       <!-- Main Target Area -->
@@ -296,9 +290,13 @@
                 {activeStudent.username}
               </h2>
               <p class="text-slate-500 text-sm font-medium mt-1">
-                {stats.completed} dari {stats.total} target selesai 
+                {stats.completed} dari {stats.total} target selesai
                 {#if stats.total > 0}
-                  <span class="text-blue-600 font-bold ml-1">({Math.round((stats.completed / stats.total) * 100)}%)</span>
+                  <span class="text-blue-600 font-bold ml-1"
+                    >({Math.round(
+                      (stats.completed / stats.total) * 100,
+                    )}%)</span
+                  >
                 {/if}
               </p>
             </div>
@@ -310,12 +308,11 @@
           >
             <form onsubmit={addTarget} class="flex items-center gap-2 md:gap-3">
               <div class="flex-1 flex items-center gap-2 md:gap-3 pl-2 md:pl-3">
-
                 <input
                   type="text"
                   bind:value={newTask}
-                  placeholder="Target hafalan ..."
-                  class="w-full bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 py-2 md:py-3 text-sm md:text-lg font-normal"
+                  placeholder="todolist..."
+                  class="w-full bg-transparent border-none outline-none text-slate-700 placeholder-slate-400 placeholder:font-light placeholder:italic py-2 md:py-3 text-sm md:text-lg font-normal"
                 />
               </div>
               <button
@@ -341,9 +338,7 @@
           </div>
 
           <!-- Target List -->
-          <div
-            class="mt-6"
-          >
+          <div class="mt-6">
             <!-- List Header / Filters -->
             <div
               class="flex flex-col sm:flex-row sm:items-center justify-between py-2 gap-4"
@@ -374,7 +369,7 @@
                     ? 'bg-white shadow-sm text-blue-600'
                     : 'text-slate-500 hover:text-slate-700'}"
                 >
-                  Sudah Hafal
+                  Selesei
                 </button>
               </div>
               {#if stats.completed > 0}
@@ -475,8 +470,8 @@
                         </svg>
                       </div>
                       <span
-                        class="text-lg font-semibold transition-all duration-300 {target.completed
-                          ? 'text-slate-400 italic line-through decoration-slate-500 decoration-2'
+                        class="text-lg italic transition-all duration-300 {target.completed
+                          ? 'text-slate-400  line-through decoration-slate-500 decoration-2'
                           : 'text-slate-700'}"
                       >
                         {target.text}
