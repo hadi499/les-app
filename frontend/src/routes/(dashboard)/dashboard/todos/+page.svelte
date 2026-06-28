@@ -97,9 +97,7 @@
   <title>Todolist - Portal Guru</title>
 </svelte:head>
 
-<div
-  class="max-w-7xl mx-auto p-4 md:p-6 lg:p-8 animate-in fade-in duration-500"
->
+<div class="max-w-7xl mx-auto md:p-4 lg:p-8 animate-in fade-in duration-500">
   <div
     class="mb-8 flex flex-col md:flex-row justify-between items-start md:items-end gap-4"
   >
@@ -238,7 +236,7 @@
             </div>
           </div>
           <div
-            class="mt-8 flex items-center justify-between text-sm text-slate-500 font-medium"
+            class="mt-3 flex items-center justify-between text-sm text-slate-500 font-medium"
           >
             <span>Buka List</span>
             <svg

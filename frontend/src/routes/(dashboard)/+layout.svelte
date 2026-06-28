@@ -635,7 +635,7 @@
                 ></path></svg
               >
             </div>
-            Target Hafalan
+            Todolist
           </a>
 
           {#if user?.role === "teacher"}
