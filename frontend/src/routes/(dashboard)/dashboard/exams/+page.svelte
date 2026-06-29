@@ -771,9 +771,7 @@
               >
                 <option value="" disabled hidden>-- Pilih Murid --</option>
                 {#each users as u}
-                  <option value={u.id} class="bg-slate-700 text-white"
-                    >{u.username}</option
-                  >
+                  <option value={u.id}>{u.username}</option>
                 {/each}
               </select>
             </div>
