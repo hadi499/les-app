@@ -13,7 +13,7 @@ export const toast = {
     message = msg;
     type = t;
     visible = true;
-    timeout = setTimeout(() => { visible = false; }, 3000);
+    timeout = setTimeout(() => { visible = false; }, 1200);
   },
 
   success(msg: string) { this.show(msg, 'success'); },

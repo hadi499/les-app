@@ -740,7 +740,7 @@
         Folder Kategori
       </h2>
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
       >
         {#each folders as folder}
           <div
@@ -1203,7 +1203,7 @@
         value={editingNote?.content ?? ""}
         minHeight="min-h-[300px]"
         containerMinHeight="min-h-[350px]"
-        textSize="prose-base sm:prose-lg"
+        textSize="prose-base"
       />
     </div>
 
