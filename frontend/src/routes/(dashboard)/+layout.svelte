@@ -89,7 +89,7 @@
       <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
         <a
           href="/dashboard"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page
             .url.pathname === '/dashboard'
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
@@ -118,7 +118,7 @@
 
         <a
           href="/dashboard/todos"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
             '/todos',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -150,7 +150,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/notes"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/notes',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -180,7 +180,7 @@
           </a>
           <a
             href="/dashboard/card-memory"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/card-memory',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -212,7 +212,7 @@
 
         <a
           href="/dashboard/exams"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
             '/exams',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -244,7 +244,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/subjects"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/subjects',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -276,7 +276,7 @@
 
         <a
           href="/dashboard/quizzes"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
             '/quizzes',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -308,7 +308,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/absen"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/absen',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -338,7 +338,7 @@
           </a>
           <a
             href="/dashboard/typing-monitoring"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/typing-monitoring',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -368,7 +368,7 @@
           </a>
           <a
             href="/dashboard/users"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/users',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -401,7 +401,7 @@
         <div class="pt-4 mt-2 border-t border-slate-200">
           <a
             href="/"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700"

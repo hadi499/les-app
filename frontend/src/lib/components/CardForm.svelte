@@ -231,7 +231,7 @@
   <div class="flex flex-col gap-1">
     <label class="text-sm font-medium text-slate-700">Konten / Ringkasan</label>
     <div class="font-normal">
-      <RichEditor bind:this={editorRef} value={edit?.content ?? ""} />
+      <RichEditor bind:this={editorRef} value={edit?.content ?? ""} textSize="prose-base" />
     </div>
   </div>
 

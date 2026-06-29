@@ -449,7 +449,7 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto p-4 pt-44 md:pt-20">
+  <main class="max-w-5xl mx-auto p-2 sm:p-4 {activeCategory !== null ? 'pt-44' : 'pt-32'} md:pt-20">
     <!-- Bulk selection bar -->
     {#if cards.length > 0 && isTeacher && (activeCategory !== null || searchQuery.trim())}
       <BulkActionBar
@@ -511,9 +511,9 @@
         {#if isTeacher && activeCategory === null && !searchQuery.trim()}
           <button
             onclick={openNewFolder}
-            class="inline-flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-slate-500 hover:text-slate-900 bg-transparent border-none transition-colors cursor-pointer"
+            class="inline-flex items-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-sm cursor-pointer"
           >
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
             Folder Baru
           </button>
         {/if}

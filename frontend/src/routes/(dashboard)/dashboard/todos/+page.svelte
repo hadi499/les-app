@@ -160,9 +160,10 @@
       <button
         type="submit"
         disabled={!newListTitle.trim()}
-        class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-medium px-4 py-2 rounded-xl transition-all shadow-md shrink-0 cursor-pointer"
+        class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-medium px-3 md:px-4 py-2 rounded-xl transition-all shadow-md shrink-0 cursor-pointer flex items-center justify-center"
       >
-        Buat List
+        <span class="hidden md:inline">Buat List</span>
+        <svg class="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
       </button>
     </form>
   </div>
@@ -225,7 +226,7 @@
           <div class="flex items-center gap-4 pr-4">
             <div class=" text-blue-500 rounded-xl sm:block shrink-0">
               <svg
-                class="w-6 h-6"
+                class="w-5 h-5 md:w-6 md:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -239,84 +240,89 @@
             </div>
             <div class="flex flex-col md:flex-row md:items-center gap-1.5 md:gap-3 mt-1 md:mt-0">
               <h3
-                class="text-lg md:text-xl font-semibold text-slate-800 group-hover:text-blue-600 transition-colors break-words leading-tight"
+                class="text-[15px] md:text-lg font-semibold text-slate-800 group-hover:text-blue-600 transition-colors break-words leading-tight"
               >
                 {list.title}
               </h3>
-              <div class="flex items-center text-[11px] md:text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-md w-max">
+              <div class="flex items-center text-[11px] md:text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-md w-max sm:hidden">
                 <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
             </div>
           </div>
 
-          <div class="relative shrink-0 ml-auto">
-            <button
-              onclick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                openMenuId = openMenuId === list.id ? null : list.id;
-              }}
-              class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-            >
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
-                ><path
-                  d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
-                /></svg
-              >
-            </button>
-
-            <div
-              class="absolute md:static right-0 top-12 md:top-auto md:right-auto {openMenuId ===
-              list.id
-                ? 'flex flex-col'
-                : 'hidden md:flex'} md:flex-row p-2 md:p-0 bg-white md:bg-transparent border md:border-none border-slate-100 shadow-xl md:shadow-none rounded-xl md:opacity-0 md:group-hover:opacity-100 items-center gap-1 transition-all z-10 w-max"
-            >
+          <div class="flex items-center gap-2 sm:gap-4 shrink-0 ml-auto pl-2 sm:pl-4">
+            <div class="hidden sm:flex items-center text-[11px] md:text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-md w-max">
+              <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+            <div class="relative shrink-0">
               <button
                 onclick={(e) => {
-                  openMenuId = null;
-                  promptEditList(list, e);
+                  e.preventDefault();
+                  e.stopPropagation();
+                  openMenuId = openMenuId === list.id ? null : list.id;
                 }}
-                class="w-full flex items-center gap-2 p-3 md:p-2 bg-white md:bg-transparent text-slate-600 md:text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
-                title="Edit List"
+                class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
               >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
+                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
                   ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                  ></path></svg
+                    d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
+                  /></svg
                 >
-                <span class="md:hidden text-sm font-medium pr-2">Edit</span>
               </button>
 
-              <button
-                onclick={(e) => {
-                  openMenuId = null;
-                  promptDeleteList(list, e);
-                }}
-                class="w-full flex items-center gap-2 p-3 md:p-2 bg-white md:bg-transparent text-red-600 md:text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
-                title="Hapus List"
+              <div
+                class="absolute right-0 top-12 {openMenuId === list.id
+                  ? 'flex flex-col'
+                  : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all z-50 w-max"
               >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                  ></path></svg
+                <button
+                  onclick={(e) => {
+                    openMenuId = null;
+                    promptEditList(list, e);
+                  }}
+                  class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
+                  title="Edit List"
                 >
-                <span class="md:hidden text-sm font-medium pr-2">Hapus</span>
-              </button>
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                    ></path></svg
+                  >
+                  <span class="text-sm font-medium pr-2">Edit</span>
+                </button>
+
+                <button
+                  onclick={(e) => {
+                    openMenuId = null;
+                    promptDeleteList(list, e);
+                  }}
+                  class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
+                  title="Hapus List"
+                >
+                  <svg
+                    class="w-5 h-5 shrink-0"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    ></path></svg
+                  >
+                  <span class="text-sm font-medium pr-2">Hapus</span>
+                </button>
+              </div>
             </div>
           </div>
         </a>
