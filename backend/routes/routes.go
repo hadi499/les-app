@@ -191,4 +191,11 @@ func SetupRoutes(r *gin.Engine) {
 		scores.POST("/quizzes", controllers.SubmitQuizScore)
 		scores.GET("/quizzes", controllers.GetMyQuizScores)
 	}
+
+	// System API routes (Teacher only)
+	system := r.Group("/api/system")
+	system.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		system.GET("/info", controllers.GetSystemInfo)
+	}
 }

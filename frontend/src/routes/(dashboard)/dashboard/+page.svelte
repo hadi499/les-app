@@ -10,10 +10,35 @@
     lessonHistoryStore,
   } from "$lib/stores/progress";
 
+  let systemInfo: any = $state(null);
+  let isRefreshing = $state(false);
+
+  async function fetchSystemInfo() {
+    isRefreshing = true;
+    try {
+      const meRes = await fetch("/me", { credentials: "include" });
+      if (meRes.ok) {
+        const meData = await meRes.json();
+        if (meData.authenticated && meData.user.role === "teacher") {
+          const res = await fetch("/api/system/info", { credentials: "include" });
+          if (res.ok) {
+            const json = await res.json();
+            systemInfo = json.data;
+          }
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isRefreshing = false;
+    }
+  }
+
   onMount(async () => {
     await fetchAllProgress();
     await fetchAllGameScores();
     await fetchHistory();
+    await fetchSystemInfo();
   });
 
   let completedLessons = $derived(
@@ -22,6 +47,14 @@
   let totalStars = $derived(
     Array.from($progressMap.values()).reduce((sum, p) => sum + p.stars, 0),
   );
+
+  function formatBytes(bytes: number) {
+    if (!bytes) return "0 B";
+    const k = 1024;
+    const sizes = ["B", "KB", "MB", "GB", "TB"];
+    const i = Math.floor(Math.log(bytes) / Math.log(k));
+    return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
+  }
 </script>
 
 <svelte:head>
@@ -40,6 +73,64 @@
 
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto space-y-6">
+    {#if systemInfo}
+      <!-- System Info Section (VPS) -->
+      <div
+        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
+      >
+        <div class="px-6 py-5 border-b border-slate-200 bg-white/40 flex justify-between items-center">
+          <h3 class="text-lg font-bold text-slate-900 drop-shadow-sm m-0 flex items-center gap-2">
+            <span>🖥️</span> Status Server (VPS)
+          </h3>
+          <button 
+            onclick={fetchSystemInfo}
+            disabled={isRefreshing}
+            class="text-sm font-medium text-slate-600 hover:text-slate-900 bg-white/50 border border-slate-300 hover:bg-white/80 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            <span class={isRefreshing ? "animate-spin inline-block" : "inline-block"}>🔄</span>
+            {isRefreshing ? "Memperbarui..." : "Perbarui"}
+          </button>
+        </div>
+        <div class="p-6">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <!-- Memory -->
+            <div class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-200">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">🧠</div>
+                <h4 class="font-bold text-slate-800 m-0">Memori (RAM)</h4>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-slate-600">Terpakai</span>
+                  <span class="font-bold text-slate-900">{formatBytes(systemInfo.memory.used)} / {formatBytes(systemInfo.memory.total)}</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div class="bg-indigo-500 h-2.5 rounded-full" style="width: {(systemInfo.memory.used / systemInfo.memory.total) * 100}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Storage -->
+            <div class="bg-fuchsia-50/50 rounded-2xl p-5 border border-fuchsia-200">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-full bg-fuchsia-100 flex items-center justify-center text-fuchsia-600">💾</div>
+                <h4 class="font-bold text-slate-800 m-0">Penyimpanan (Disk)</h4>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                  <span class="text-slate-600">Terpakai</span>
+                  <span class="font-bold text-slate-900">{formatBytes(systemInfo.storage.used)} / {formatBytes(systemInfo.storage.total)}</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div class="bg-fuchsia-500 h-2.5 rounded-full" style="width: {(systemInfo.storage.used / systemInfo.storage.total) * 100}%"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {/if}
+
     <!-- Typing Progress Section -->
     <div
       class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
