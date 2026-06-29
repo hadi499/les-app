@@ -441,11 +441,11 @@
     class="max-w-3xl mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-12 md:rounded-3xl md:shadow-sm md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]"
   >
     <div
-      class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 print:hidden mb-8 border-b border-slate-100 pb-5"
+      class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-4 print:hidden mb-8 border-b border-slate-100 pb-5"
     >
       <button
         onclick={() => closeNote()}
-        class="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors cursor-pointer"
+        class="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors cursor-pointer w-full justify-center sm:justify-start sm:w-auto"
       >
         <svg
           class="w-5 h-5"
@@ -461,7 +461,7 @@
         >
         Kembali
       </button>
-      <div class="flex flex-wrap items-center gap-6 w-full sm:w-auto">
+      <div class="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto mt-2 sm:mt-0">
         <button
           onclick={() => deleteNote(viewingNote!)}
           class="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
@@ -498,6 +498,24 @@
             ></path></svg
           >
         </button>
+        <button
+          onclick={printNote}
+          class="p-2.5 text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
+          title="Cetak A4"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+            ></path></svg
+          >
+        </button>
         <div
           class="flex items-center bg-slate-100 rounded-xl overflow-hidden print:hidden border border-slate-200 shrink-0"
         >
@@ -517,31 +535,13 @@
             title="Perbesar Font">A+</button
           >
         </div>
-        <button
-          onclick={printNote}
-          class="p-2.5 text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0"
-          title="Cetak A4"
-        >
-          <svg
-            class="w-5 h-5"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
-            ></path></svg
-          >
-        </button>
       </div>
     </div>
 
     <!-- Print Area -->
     <div class="print:block">
       <h1
-        class="text-xl sm:text-2xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight print:hidden"
+        class="text-xl sm:text-2xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight text-center sm:text-left print:hidden"
       >
         {viewingNote.title}
       </h1>
@@ -586,8 +586,8 @@
         </span>
       </div>
       <div
-        class="prose prose-slate text-slate-800 leading-loose whitespace-pre-wrap"
-        style="font-size: {printFontSize}px;"
+        class="prose prose-slate text-slate-800 leading-loose whitespace-pre-wrap text-[calc(var(--base-size)-2px)] sm:text-[length:var(--base-size)] print:text-[length:var(--base-size)]"
+        style="--base-size: {printFontSize}px;"
       >
         {@html renderMathContent(viewingNote.content)}
       </div>

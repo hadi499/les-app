@@ -175,8 +175,8 @@
     </div>
   {:else if list}
     <div class="p-2 md:p-10 transition-all">
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200">
-        <h1 class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight">
+      <div class="flex flex-col md:flex-row items-center md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200">
+        <h1 class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight text-center md:text-left">
           {list.title}
         </h1>
         <div class="flex items-center text-[13px] text-slate-500 font-medium bg-slate-100/80 px-3 py-1.5 rounded-lg w-max shrink-0">
