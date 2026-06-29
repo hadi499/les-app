@@ -520,19 +520,38 @@
                     Tanggal
                   </div>
                   <div class="relative w-full">
-                    <div class="absolute inset-0 bg-white border border-slate-300 rounded-lg pointer-events-none z-0"></div>
+                    <div
+                      class="absolute inset-0 bg-white border border-slate-300 rounded-lg pointer-events-none z-0"
+                    ></div>
                     {#if !filterDate}
-                      <div class="absolute inset-y-0 left-3 flex items-center pointer-events-none z-0">
+                      <div
+                        class="absolute inset-y-0 left-3 flex items-center pointer-events-none z-0"
+                      >
                         <span class="text-slate-900 text-sm">dd/mm/yyyy</span>
                       </div>
-                      <div class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-500">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                      <div
+                        class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-500"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                          ></path></svg
+                        >
                       </div>
                     {/if}
                     <input
                       type="date"
                       bind:value={filterDate}
-                      class="w-full pl-3 pr-8 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light relative z-10 bg-transparent border-transparent {filterDate ? 'text-slate-900' : 'text-transparent'} [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
+                      class="w-full pl-3 pr-8 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light relative z-10 bg-transparent border-transparent {filterDate
+                        ? 'text-slate-900'
+                        : 'text-transparent'} [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
                     />
                     {#if filterDate}
                       <button
@@ -569,9 +588,14 @@
                       bind:value={filterUser}
                       class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
                     >
-                      <option value="" class="bg-white text-slate-900">-- Semua Murid --</option>
+                      <option value="" class="bg-white text-slate-900"
+                        >-- Semua Murid --</option
+                      >
                       {#each users as u}
-                        <option value={u.username} class="bg-white text-slate-900">{u.username}</option>
+                        <option
+                          value={u.username}
+                          class="bg-white text-slate-900">{u.username}</option
+                        >
                       {/each}
                     </select>
                   </th>
@@ -588,9 +612,13 @@
                     bind:value={filterSubject}
                     class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
                   >
-                    <option value="" class="bg-white text-slate-900">-- Semua Pelajaran --</option>
+                    <option value="" class="bg-white text-slate-900"
+                      >-- Semua Pelajaran --</option
+                    >
                     {#each subjects as s}
-                      <option value={s.name} class="bg-white text-slate-900">{s.name}</option>
+                      <option value={s.name} class="bg-white text-slate-900"
+                        >{s.name}</option
+                      >
                     {/each}
                   </select>
                 </th>
@@ -842,9 +870,7 @@
           >
             <option value="" disabled hidden>-- Pilih Murid --</option>
             {#each users as u}
-              <option value={u.id} class="bg-slate-700 text-white"
-                >{u.username}</option
-              >
+              <option value={u.id}>{u.username}</option>
             {/each}
           </select>
         </div>
@@ -891,9 +917,7 @@
           >
             <option value="" disabled hidden>-- Pilih Mata Pelajaran --</option>
             {#each subjects as s}
-              <option value={s.id} class="bg-slate-700 text-white"
-                >{s.name}</option
-              >
+              <option value={s.id}>{s.name}</option>
             {/each}
           </select>
         </div>
@@ -991,4 +1015,3 @@
     </div>
   </div>
 {/if}
-
