@@ -60,8 +60,16 @@ func GetSystemInfo(c *gin.Context) {
 	var stat syscall.Statfs_t
 	if err := syscall.Statfs("/", &stat); err == nil {
 		info.Storage.Total = uint64(stat.Blocks) * uint64(stat.Bsize)
+		
+		// stat.Bavail = ruang kosong yang benar-benar bisa Anda pakai (sama dengan kolom Avail di df -h)
 		info.Storage.Free = uint64(stat.Bavail) * uint64(stat.Bsize)
-		info.Storage.Used = info.Storage.Total - info.Storage.Free
+		
+		// stat.Bfree = total ruang kosong SEBELUM dikurangi cadangan 5% untuk sistem root Linux
+		// Agar perhitungan 'Terpakai' sama dengan perintah 'df -h', kita kurangi Total dengan Bfree.
+		freeTermasukRoot := uint64(stat.Bfree) * uint64(stat.Bsize)
+		if info.Storage.Total >= freeTermasukRoot {
+			info.Storage.Used = info.Storage.Total - freeTermasukRoot
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{
