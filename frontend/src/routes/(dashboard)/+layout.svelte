@@ -968,7 +968,7 @@
       <div
         class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen
           ? ''
-          : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0 transition-all duration-300"
+          : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0"
       >
         {@render children()}
       </div>

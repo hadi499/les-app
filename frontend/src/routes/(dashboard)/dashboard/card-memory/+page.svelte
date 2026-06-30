@@ -1,3 +1,9 @@
+<script module>
+  // Cache sederhana agar tidak ada kedipan (flicker) saat kembali ke halaman ini
+  let cachedCards: any[] = [];
+  let cachedTotal = 0;
+</script>
+
 <script lang="ts">
   import { onMount } from "svelte";
   import type { Card } from "$lib/types";
@@ -24,9 +30,9 @@
   let searchQuery = $state("");
   let cardWrapperWidth = $state(0);
 
-  let cards = $state<Card[]>([]);
-  let total = $state(0);
-  let loading = $state(true);
+  let cards = $state<Card[]>(cachedCards);
+  let total = $state(cachedTotal);
+  let loading = $state(cachedCards.length === 0);
   let error = $state("");
 
   let showFolderForm = $state(false);
@@ -97,7 +103,7 @@
   }
 
   async function loadCards(params: Record<string, any> = {}) {
-    loading = true;
+    if (cachedCards.length === 0) loading = true;
     error = "";
     try {
       const q: Record<string, any> = {
@@ -109,6 +115,12 @@
       const res = await api.fetchCards(q);
       cards = res.data;
       total = res.total;
+      
+      // Update cache
+      if (!params.search && !params.category) {
+        cachedCards = res.data;
+        cachedTotal = res.total;
+      }
     } catch (e: any) {
       error = e.message || "Gagal memuat data";
     } finally {
@@ -504,7 +516,7 @@
     </Modal>
 
     <div>
-      <div class="flex items-center justify-between mb-3">
+      <div class="flex items-center justify-between mb-3 min-h-[40px]">
         <h2 class="text-md font-semibold text-slate-800">
           Arsip ({total} kartu)
         </h2>
@@ -519,13 +531,7 @@
         {/if}
       </div>
 
-      {#if loading}
-        <div
-          class="text-center py-8 bg-white/80 rounded-xl border border-slate-200"
-        >
-          <p class="text-slate-500">Memuat data dari server...</p>
-        </div>
-      {:else if error}
+      {#if error}
         <div
           class="text-center py-8 bg-white/80 rounded-xl border border-red-300"
         >
@@ -536,7 +542,7 @@
             >Coba Lagi</button
           >
         </div>
-      {:else if cards.length === 0}
+      {:else if cards.length === 0 && !loading}
         <div
           class="text-center py-8 bg-white/80 rounded-xl border border-slate-200"
         >

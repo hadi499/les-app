@@ -19,7 +19,7 @@
 </script>
 
 <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-  {#each Object.entries(groupedCards) as [category, categoryCards]}
+  {#each Object.entries(groupedCards) as [category, categoryCards] (category)}
     <div
       role="button"
       tabindex="0"
