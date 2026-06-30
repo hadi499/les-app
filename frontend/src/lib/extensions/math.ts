@@ -18,10 +18,13 @@ export function renderMathContent(html: string): string {
   };
 
   // Replace display math block first. Ignore math inside code/pre blocks.
-  out = out.replace(/(<code\b[^>]*>[\s\S]*?<\/code>|<pre\b[^>]*>[\s\S]*?<\/pre>)|(\$\$([\s\S]*?)\$\$)/gi, (match, codeBlock, mathGroup, latex) => {
+  out = out.replace(/(<code\b[^>]*>[\s\S]*?<\/code>|<pre\b[^>]*>[\s\S]*?<\/pre>)|(\$\$([\s\S]*?)\$\$|\\\[([\s\S]*?)\\\])/gi, (match, codeBlock, mathGroup, latexDollar, latexBracket) => {
     if (codeBlock) return codeBlock;
     try {
-      const cleanLatex = unescapeHtml(latex.trim());
+      const latex = latexDollar || latexBracket || '';
+      // Membersihkan tag HTML (seperti <p> atau <br>) yang mungkin disisipkan oleh editor
+      const stripHtml = (htmlText: string) => htmlText.replace(/<\/p>\s*<p[^>]*>/gi, '\n').replace(/<br\s*\/?>/gi, '\n').replace(/<[^>]*>?/gm, '');
+      const cleanLatex = unescapeHtml(stripHtml(latex).trim());
       const rendered = katex.renderToString(cleanLatex, { throwOnError: false, displayMode: true });
       return `<div style="text-align:center;margin:4px 0">${rendered}</div>`;
     } catch {
