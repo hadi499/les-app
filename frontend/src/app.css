@@ -14,7 +14,8 @@
 /* Ensure empty paragraphs take up space (multiple enters) */
 .prose p:empty::before,
 .prose p:has(> br:first-child:last-child)::before {
-  content: "\00A0";
+  content: " ";
+  white-space: pre;
 }
 .prose ul, .prose ol {
   margin-top: 0.25em !important;
