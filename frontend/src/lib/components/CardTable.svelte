@@ -38,7 +38,7 @@
           {#if isTeacher}<th class="px-4 py-3 w-8"></th>{/if}
           <th class="px-4 py-3">Title</th>
           {#if activeCategory === null}
-            <th class="px-4 py-3">Kategori</th>
+            <th class="px-4 py-3">Folder</th>
           {/if}
           <th class="px-4 py-3">Layout Print</th>
           <th class="px-4 py-3 text-right">Aksi</th>
@@ -81,7 +81,9 @@
               >{card.title}</td
             >
             {#if activeCategory === null}
-              <td class="px-4 py-3 text-slate-600">{card.card_folder?.name || "-"}</td>
+              <td class="px-4 py-3 text-slate-600"
+                >{card.card_folder?.name || "-"}</td
+              >
             {/if}
             <td class="px-4 py-3">
               <span
