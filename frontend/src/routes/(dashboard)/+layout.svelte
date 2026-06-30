@@ -66,7 +66,7 @@
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 {isDesktopSidebarOpen
+      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 z-30 {isDesktopSidebarOpen
         ? 'w-64 opacity-100'
         : 'w-0 opacity-0 overflow-hidden border-transparent'}"
     >
@@ -467,9 +467,8 @@
     <!-- Desktop Sidebar Toggle Button -->
     <button
       onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
-      class="hidden md:flex fixed top-4 z-40 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer {isDesktopSidebarOpen
-        ? 'left-60'
-        : 'left-4'}"
+      class="hidden md:flex fixed top-4 z-40 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer"
+      style="left: {isDesktopSidebarOpen ? '15.25rem' : '1rem'};"
       title={isDesktopSidebarOpen ? "Sembunyikan Sidebar" : "Tampilkan Sidebar"}
     >
       <svg
