@@ -35,6 +35,24 @@
     }
   });
 
+  $effect(() => {
+    if (!isLoading && user.role !== "teacher") {
+      const path = page.url.pathname;
+      const teacherOnlyRoutes = [
+        "/dashboard/todos",
+        "/dashboard/notes",
+        "/dashboard/card-memory",
+        "/dashboard/subjects",
+        "/dashboard/absen",
+        "/dashboard/typing-monitoring",
+        "/dashboard/users"
+      ];
+      if (teacherOnlyRoutes.some(r => path.startsWith(r))) {
+        goto("/dashboard", { replaceState: true });
+      }
+    }
+  });
+
   async function handleLogout() {
     try {
       await fetch(`/api/auth/logout`, {
@@ -116,38 +134,38 @@
           Dashboard
         </a>
 
-        <a
-          href="/dashboard/todos"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
-            '/todos',
-          )
-            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-        >
-          <div
-            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+        {#if user?.role === "teacher"}
+          <a
+            href="/dashboard/todos"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
               '/todos',
             )
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
           >
-            <svg
-              class="w-5 h-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-              ></path></svg
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/todos',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
-          </div>
-          Todolist
-        </a>
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                ></path></svg
+              >
+            </div>
+            Todolist
+          </a>
 
-        {#if user?.role === "teacher"}
           <a
             href="/dashboard/notes"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
@@ -605,39 +623,39 @@
             Dashboard
           </a>
 
-          <a
-            href="/dashboard/todos"
-            onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
-              '/todos',
-            )
-              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-          >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+          {#if user?.role === "teacher"}
+            <a
+              href="/dashboard/todos"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-sm transition-colors no-underline {page.url.pathname.includes(
                 '/todos',
               )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                ></path></svg
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/todos',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
               >
-            </div>
-            Todolist
-          </a>
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                  ></path></svg
+                >
+              </div>
+              Todolist
+            </a>
 
-          {#if user?.role === "teacher"}
             <a
               href="/dashboard/notes"
               onclick={() => (isMobileMenuOpen = false)}
