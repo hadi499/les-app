@@ -61,8 +61,13 @@
             class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium transition-all"
             >Arsip</a
           >
+          <a
+            href="/dashboard/card-memory/recent"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium transition-all"
+            >Recent</a
+          >
           <span
-            class="px-4 py-1.5 text-sm rounded-lg bg-white/80 text-slate-900 shadow-sm font-medium transition-all"
+            class="px-4 py-1.5 text-sm rounded-lg bg-slate-800 text-white shadow-md font-medium transition-all"
           >
             Print ({queueCards.length})
           </span>

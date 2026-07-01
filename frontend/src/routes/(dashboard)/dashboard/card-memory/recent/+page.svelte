@@ -1,7 +1,7 @@
 <script module>
   // Cache sederhana agar tidak ada kedipan (flicker) saat kembali ke halaman ini
-  let cachedCards: any[] = [];
-  let cachedTotal = 0;
+  let cachedRecentCards: any[] = [];
+  let cachedRecentTotal = 0;
 </script>
 
 <script lang="ts">
@@ -30,9 +30,9 @@
   let searchQuery = $state("");
   let cardWrapperWidth = $state(0);
 
-  let cards = $state<Card[]>(cachedCards);
-  let total = $state(cachedTotal);
-  let loading = $state(cachedCards.length === 0);
+  let cards = $state<Card[]>(cachedRecentCards);
+  let total = $state(cachedRecentTotal);
+  let loading = $state(cachedRecentCards.length === 0);
   let error = $state("");
 
   let showFolderForm = $state(false);
@@ -103,7 +103,7 @@
   }
 
   async function loadCards(params: Record<string, any> = {}) {
-    if (cachedCards.length === 0) loading = true;
+    if (cachedRecentCards.length === 0) loading = true;
     error = "";
     try {
       const q: Record<string, any> = {
@@ -113,13 +113,18 @@
         ...params,
       };
       const res = await api.fetchCards(q);
-      cards = res.data;
-      total = res.total;
+      let sortedCards = res.data.sort((a: any, b: any) => {
+        const idA = parseInt(a.id) || 0;
+        const idB = parseInt(b.id) || 0;
+        return idB - idA;
+      });
+      cards = sortedCards.slice(0, 10);
+      total = cards.length;
       
       // Update cache
       if (!params.search && !params.category) {
-        cachedCards = res.data;
-        cachedTotal = res.total;
+        cachedRecentCards = cards;
+        cachedRecentTotal = total;
       }
     } catch (e: any) {
       error = e.message || "Gagal memuat data";
@@ -191,7 +196,7 @@
 
   let selectedCount = $derived(selectedIds.size);
   let activeCategoryCards = $derived.by(() => {
-    let list = activeCategory !== null ? (groupedCards[activeCategory] || []) : cards;
+    let list = cards;
     const q = searchQuery.trim().toLowerCase();
     if (q) {
       list = list.filter(c => 
@@ -350,17 +355,17 @@
     >
       <div class="flex items-center overflow-x-auto hide-scrollbar -mx-2 px-2 md:mx-0 md:px-0">
         <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl w-max">
+          <a
+            href="/dashboard/card-memory"
+            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base transition-all"
+          >
+            Arsip
+          </a>
           <span
             class="px-4 py-1.5 text-sm rounded-lg bg-slate-800 text-white shadow-md font-base transition-all"
           >
-            Arsip
-          </span>
-          <a
-            href="/dashboard/card-memory/recent"
-            class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base transition-all"
-          >
             Recent
-          </a>
+          </span>
           <a
             href="/dashboard/card-memory/print"
             class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
@@ -524,17 +529,8 @@
     <div>
       <div class="flex items-center justify-between mb-3 min-h-[40px]">
         <h2 class="text-md font-semibold text-slate-800">
-          Arsip ({total} kartu)
+          Recent ({total} Kartu Terbaru)
         </h2>
-        {#if isTeacher && activeCategory === null && !searchQuery.trim()}
-          <button
-            onclick={openNewFolder}
-            class="inline-flex items-center gap-1.5 px-3 md:px-4 py-2 text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 rounded-xl transition-all shadow-sm cursor-pointer"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m-9 1V7a2 2 0 012-2h6l2 2h6a2 2 0 012 2v8a2 2 0 01-2 2H5a2 2 0 01-2-2z"></path></svg>
-            Folder Baru
-          </button>
-        {/if}
       </div>
 
       {#if loading}
@@ -561,34 +557,7 @@
           </p>
         </div>
       {:else}
-        {#if activeCategory === null && !searchQuery.trim()}
-          <FolderGrid
-            groupedCards={groupedCards}
-            onSelectCategory={selectCategory}
-            isTeacher={isTeacher}
-            onEditFolder={handleEditFolder}
-            onDeleteFolder={handleDeleteFolderClick}
-          />
-        {:else}
-          {#if activeCategory !== null}
-            <div class="mb-4 flex items-center justify-between">
-              <button
-                onclick={() => selectCategory(null)}
-                class="p-1.5 text-slate-500 bg-white/50 hover:text-slate-900 hover:bg-white rounded-lg border border-slate-200 shadow-sm transition-all cursor-pointer"
-                title="Kembali"
-              >
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                </svg>
-              </button>
-              <h3 class="font-semibold text-slate-800 text-lg flex items-center gap-2">
-                <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z" />
-                </svg>
-                {activeCategory}
-              </h3>
-            </div>
-          {:else}
+          {#if searchQuery.trim()}
             <div class="mb-4">
               <h3 class="font-semibold text-slate-800 text-lg">Hasil Pencarian</h3>
             </div>
@@ -603,7 +572,6 @@
             onDelete={handleDeleteClick}
             onDetailClick={handleDetailClick}
           />
-        {/if}
       {/if}
     </div>
   </main>
