@@ -56,7 +56,7 @@
       });
       if (res.ok) {
         const newList = await res.json();
-        lists = [...lists, newList];
+        lists = [newList, ...lists];
         newListTitle = "";
       } else {
         const err = await res.json();

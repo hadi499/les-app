@@ -13,7 +13,7 @@ func GetTodoLists(c *gin.Context) {
 	userID := c.GetUint("userID")
 
 	var lists []models.TodoList
-	if err := database.DB.Preload("Items").Where("user_id = ?", userID).Find(&lists).Error; err != nil {
+	if err := database.DB.Preload("Items").Where("user_id = ?", userID).Order("created_at desc").Find(&lists).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todo lists"})
 		return
 	}
