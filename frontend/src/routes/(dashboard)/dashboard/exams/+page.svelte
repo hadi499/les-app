@@ -34,45 +34,15 @@
   let currentPage = $state(1);
   const itemsPerPage = 20;
 
-  let filterUser = $state("");
-  let filterSubject = $state("");
-  let filterDate = $state("");
-
-  let filteredExams = $derived(
-    exams.filter((exam) => {
-      const matchUser =
-        filterUser === "" ||
-        (exam.user?.username || "")
-          .toLowerCase()
-          .includes(filterUser.toLowerCase());
-      const matchSubject =
-        filterSubject === "" ||
-        (exam.subject?.name || "")
-          .toLowerCase()
-          .includes(filterSubject.toLowerCase());
-      const matchDate =
-        filterDate === "" || (exam.exam_date || "").startsWith(filterDate);
-      return matchUser && matchSubject && matchDate;
-    }),
-  );
-
   let paginatedExams = $derived(
-    filteredExams.slice(
+    exams.slice(
       (currentPage - 1) * itemsPerPage,
       currentPage * itemsPerPage,
     ),
   );
   let totalPages = $derived(
-    Math.ceil(filteredExams.length / itemsPerPage) || 1,
+    Math.ceil(exams.length / itemsPerPage) || 1,
   );
-
-  $effect(() => {
-    // Reset page to 1 when filters change
-    filterUser;
-    filterSubject;
-    filterDate;
-    currentPage = 1;
-  });
 
   function nextPage() {
     if (currentPage < totalPages) currentPage++;
@@ -510,127 +480,18 @@
         class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden max-w-full"
       >
         <div class="overflow-x-auto w-full max-w-full">
-          <table
-            class="w-full text-left border-collapse min-w-[600px]"
-          >
+          <table class="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
-                  <div class="font-bold text-slate-900 text-sm mb-2">
-                    Tanggal
-                  </div>
-                  <div class="relative w-full">
-                    <div
-                      class="absolute inset-0 bg-white border border-slate-300 rounded-lg pointer-events-none z-0"
-                    ></div>
-                    {#if !filterDate}
-                      <div
-                        class="absolute inset-y-0 left-3 flex items-center pointer-events-none z-0"
-                      >
-                        <span class="text-slate-900 text-sm">dd/mm/yyyy</span>
-                      </div>
-                      <div
-                        class="absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none z-0 text-slate-500"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                          ></path></svg
-                        >
-                      </div>
-                    {/if}
-                    <input
-                      type="date"
-                      bind:value={filterDate}
-                      class="w-full pl-3 pr-8 py-2 text-sm focus:ring-1 focus:ring-indigo-500 outline-none transition-all scheme-light relative z-10 bg-transparent border-transparent {filterDate
-                        ? 'text-slate-900'
-                        : 'text-transparent'} [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:w-full [&::-webkit-calendar-picker-indicator]:h-full [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer"
-                    />
-                    {#if filterDate}
-                      <button
-                        onclick={(e) => {
-                          e.preventDefault();
-                          e.stopPropagation();
-                          filterDate = "";
-                        }}
-                        class="absolute right-1 top-1/2 -translate-y-1/2 text-slate-500 hover:text-red-600 transition-colors z-20 bg-white rounded-lg w-8 h-8 flex items-center justify-center"
-                        title="Hapus Filter Tanggal"
-                      >
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M6 18L18 6M6 6l12 12"
-                          ></path></svg
-                        >
-                      </button>
-                    {/if}
-                  </div>
-                </th>
+                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Tanggal</th>
                 {#if isTeacher}
-                  <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
-                    <div class="font-bold text-slate-900 text-sm mb-2">
-                      Murid
-                    </div>
-                    <select
-                      bind:value={filterUser}
-                      class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
-                    >
-                      <option value="" class="bg-white text-slate-900"
-                        >-- Semua Murid --</option
-                      >
-                      {#each users as u}
-                        <option
-                          value={u.username}
-                          class="bg-white text-slate-900">{u.username}</option
-                        >
-                      {/each}
-                    </select>
-                  </th>
+                  <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Murid</th>
                 {/if}
-                <th
-                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm pb-5"
-                  >Nama Ujian</th
-                >
-                <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
-                  <div class="font-bold text-slate-900 text-sm mb-2">
-                    Mata Pelajaran
-                  </div>
-                  <select
-                    bind:value={filterSubject}
-                    class="w-full bg-white border border-slate-300 rounded-lg pl-3 pr-8 py-2 text-sm text-slate-900 focus:ring-1 focus:ring-indigo-500 outline-none transition-all appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_0.5rem_center] bg-no-repeat scheme-light"
-                  >
-                    <option value="" class="bg-white text-slate-900"
-                      >-- Semua Pelajaran --</option
-                    >
-                    {#each subjects as s}
-                      <option value={s.name} class="bg-white text-slate-900"
-                        >{s.name}</option
-                      >
-                    {/each}
-                  </select>
-                </th>
-                <th
-                  class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5"
-                  >Nilai</th
-                >
+                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Nama Ujian</th>
+                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Mata Pelajaran</th>
+                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Nilai</th>
                 {#if isTeacher}
-                  <th
-                    class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5"
-                    >Aksi</th
-                  >
+                  <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Aksi</th>
                 {/if}
               </tr>
             </thead>
@@ -667,21 +528,43 @@
                           class="inline-flex items-center justify-center p-1.5 text-blue-600 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors border border-blue-300"
                           title="Edit"
                         >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                          <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            ><path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                            ></path></svg
+                          >
                         </button>
                         <button
                           onclick={() => openDeleteModal(exam.id)}
                           class="inline-flex items-center justify-center p-1.5 text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
                           title="Hapus"
                         >
-                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          <svg
+                            class="w-4 h-4"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            ><path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                            ></path></svg
+                          >
                         </button>
                       </div>
                     </td>
                   {/if}
                 </tr>
               {/each}
-              {#if filteredExams.length === 0}
+              {#if exams.length === 0}
                 <tr>
                   <td
                     colspan={isTeacher ? 6 : 4}
@@ -701,7 +584,7 @@
           >
             <div class="text-sm text-slate-600 text-center sm:text-left">
               Menampilkan <span class="font-medium text-slate-900"
-                >{filteredExams.length > 0
+                >{exams.length > 0
                   ? (currentPage - 1) * itemsPerPage + 1
                   : 0}</span
               >
@@ -709,12 +592,12 @@
               <span class="font-medium text-slate-900"
                 >{Math.min(
                   currentPage * itemsPerPage,
-                  filteredExams.length,
+                  exams.length,
                 )}</span
               >
               dari
               <span class="font-medium text-slate-900"
-                >{filteredExams.length}</span
+                >{exams.length}</span
               > data
             </div>
             <div class="flex gap-2">
