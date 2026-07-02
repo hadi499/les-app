@@ -204,6 +204,7 @@
   let allSelected = $derived(
     activeCategoryCards.length > 0 && selectedCount === activeCategoryCards.length,
   );
+  let detailCardIndex = $derived(detailCard ? activeCategoryCards.findIndex((c) => c.id === detailCard!.id) : -1);
 
   onMount(async () => {
     if (typeof window !== 'undefined') {
@@ -706,34 +707,68 @@
       detailCard = null;
       cardWrapperWidth = 0;
     }}
+    maxWidth="max-w-[190mm]"
   >
     {#if detailCard}
       <div
-        class="space-y-5 w-full {getModalMaxWidth(
-          detailCard.size,
-        )} mx-auto pb-2 transition-all duration-300"
+        class="space-y-5 w-full max-w-[190mm] mx-auto pb-2 transition-all duration-300 relative group"
       >
-        <div
-          class="w-full mx-auto shadow-lg rounded-xl overflow-hidden border border-slate-200 transition-all duration-300 bg-white/80"
-          style="aspect-ratio: {getCardAspect(detailCard.size)};"
-          bind:clientWidth={cardWrapperWidth}
+        {#if detailCardIndex > 0}
+          <button
+            onclick={() => {
+              detailCard = activeCategoryCards[detailCardIndex - 1];
+            }}
+            class="absolute top-[40%] -left-3 md:-left-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
+            title="Sebelumnya"
+          >
+            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+        {/if}
+
+        {#if detailCardIndex >= 0 && detailCardIndex < activeCategoryCards.length - 1}
+          <button
+            onclick={() => {
+              detailCard = activeCategoryCards[detailCardIndex + 1];
+            }}
+            class="absolute top-[40%] -right-3 md:-right-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
+            title="Selanjutnya"
+          >
+            <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        {/if}
+
+        <div 
+          class="w-full flex items-center justify-center bg-transparent rounded-xl"
+          style="aspect-ratio: 190 / 137;"
         >
-          {#if cardWrapperWidth > 0}
-            <div
-              style="width: {getCardPrintWidth(
-                detailCard.size,
-              )}mm; height: {getCardPrintHeight(
-                detailCard.size,
-              )}mm; transform: scale({cardWrapperWidth /
-                (getCardPrintWidth(detailCard.size) *
-                  3.7795)}); transform-origin: top left;"
-            >
-              <CardItem card={detailCard} index={0} />
-            </div>
-          {/if}
+          <div
+            class="w-full {getModalMaxWidth(
+              detailCard.size,
+            )} mx-auto shadow-lg rounded-xl overflow-hidden border border-slate-200 transition-all duration-300 bg-white"
+            style="aspect-ratio: {getCardAspect(detailCard.size)};"
+            bind:clientWidth={cardWrapperWidth}
+          >
+            {#if cardWrapperWidth > 0}
+              <div
+                style="width: {getCardPrintWidth(
+                  detailCard.size,
+                )}mm; height: {getCardPrintHeight(
+                  detailCard.size,
+                )}mm; transform: scale({cardWrapperWidth /
+                  (getCardPrintWidth(detailCard.size) *
+                    3.7795)}); transform-origin: top left;"
+              >
+                <CardItem card={detailCard} index={0} />
+              </div>
+            {/if}
+          </div>
         </div>
 
-        <div class="flex items-center justify-center gap-4">
+        <div class="flex items-center justify-center gap-4 flex-wrap">
           <button
             onclick={() => printQueue.toggle(detailCard!)}
             class="w-12 h-12 flex items-center justify-center rounded-full transition-all cursor-pointer shadow-sm border {printQueue.has(
