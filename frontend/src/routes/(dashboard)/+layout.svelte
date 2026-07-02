@@ -79,7 +79,7 @@
   </div>
 {:else}
   <div
-    class="min-h-screen bg-slate-50 flex selection:bg-slate-200 selection:text-slate-800 font-sans text-slate-900"
+    class="min-h-screen w-full overflow-x-hidden bg-slate-50 flex selection:bg-slate-200 selection:text-slate-800 font-sans text-slate-900"
     style="--sidebar-width: {isDesktopSidebarOpen ? '16rem' : '0px'};"
   >
     <!-- Sidebar (Desktop) -->

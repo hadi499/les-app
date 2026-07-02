@@ -507,9 +507,9 @@
 
     {#if activeTab === "table"}
       <div
-        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
+        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden max-w-full"
       >
-        <div class="overflow-x-auto w-full">
+        <div class="overflow-x-auto w-full max-w-full">
           <table
             class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]"
           >
