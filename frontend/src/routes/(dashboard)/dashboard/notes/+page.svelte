@@ -438,7 +438,7 @@
 <!-- VIEW: DETAIL CATATAN -->
 {#if viewingNote}
   <div
-    class="max-w-3xl mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-12 md:rounded-3xl md:shadow-sm md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]"
+    class="w-full mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:max-w-[210mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]"
   >
     <div
       class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-4 print:hidden mb-8 border-b border-slate-100 pb-5"
@@ -586,7 +586,7 @@
         </span>
       </div>
       <div
-        class="prose prose-slate text-slate-800 leading-loose whitespace-pre-wrap text-[calc(var(--base-size)-2px)] sm:text-[length:var(--base-size)] print:text-[length:var(--base-size)]"
+        class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap text-justify wrap-break-word sm:text-(length:--base-size) print:text-(length:--base-size)"
         style="--base-size: {printFontSize}px;"
       >
         {@html renderMathContent(viewingNote.content)}

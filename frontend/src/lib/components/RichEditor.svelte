@@ -44,6 +44,7 @@
     alignLeft: false,
     alignCenter: false,
     alignRight: false,
+    alignJustify: false,
   });
 
   function updateActive() {
@@ -58,6 +59,7 @@
     active.alignLeft = editor.isActive({ textAlign: "left" });
     active.alignCenter = editor.isActive({ textAlign: "center" });
     active.alignRight = editor.isActive({ textAlign: "right" });
+    active.alignJustify = editor.isActive({ textAlign: "justify" });
   }
 
   onMount(() => {
@@ -253,6 +255,29 @@
         ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
           d="M4 6l16 0"
         /><path d="M10 12l10 0" /><path d="M6 18l14 0" /></svg
+      >
+    </button>
+    <button
+      type="button"
+      onclick={() => editor?.chain().focus().setTextAlign("justify").run()}
+      class="px-1.5 py-1 text-xs rounded cursor-pointer {active.alignJustify
+        ? 'bg-indigo-100 text-indigo-700'
+        : 'text-gray-600 hover:bg-gray-100'}"
+      title="Align Justify"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        width="16"
+        height="16"
+        viewBox="0 0 24 24"
+        stroke-width="2"
+        stroke="currentColor"
+        fill="none"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+          d="M4 6l16 0"
+        /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg
       >
     </button>
     <span class="w-px bg-gray-300 mx-0.5"></span>
