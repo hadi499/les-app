@@ -511,11 +511,11 @@
       >
         <div class="overflow-x-auto w-full max-w-full">
           <table
-            class="w-full text-left border-collapse whitespace-nowrap min-w-[800px]"
+            class="w-full text-left border-collapse min-w-[600px]"
           >
             <thead>
               <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 align-bottom min-w-[200px]">
+                <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
                   <div class="font-bold text-slate-900 text-sm mb-2">
                     Tanggal
                   </div>
@@ -580,7 +580,7 @@
                   </div>
                 </th>
                 {#if isTeacher}
-                  <th class="py-4 px-6 align-bottom min-w-[200px]">
+                  <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
                     <div class="font-bold text-slate-900 text-sm mb-2">
                       Murid
                     </div>
@@ -604,7 +604,7 @@
                   class="py-4 px-6 align-bottom font-bold text-slate-900 text-sm pb-5"
                   >Nama Ujian</th
                 >
-                <th class="py-4 px-6 align-bottom min-w-[200px]">
+                <th class="py-4 px-4 sm:px-6 align-bottom min-w-[150px]">
                   <div class="font-bold text-slate-900 text-sm mb-2">
                     Mata Pelajaran
                   </div>
