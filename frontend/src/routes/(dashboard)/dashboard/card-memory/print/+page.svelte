@@ -139,6 +139,22 @@
           >+</button
         >
       </div>
+      <div class="flex items-center gap-1.5">
+        <span class="text-xs text-slate-600 w-16">Judul</span>
+        <button
+          onclick={() => printSettings.titleDown()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
+          >A</button
+        >
+        <span class="text-xs font-medium text-slate-800 w-10 text-center"
+          >{titlePct}%</span
+        >
+        <button
+          onclick={() => printSettings.titleUp()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-base font-bold cursor-pointer"
+          >A</button
+        >
+      </div>
       <div class="w-px h-6 bg-gray-200"></div>
 
       <div class="flex items-center gap-1.5">
