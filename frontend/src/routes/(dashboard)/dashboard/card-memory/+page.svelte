@@ -354,7 +354,7 @@
           <span
             class="px-4 py-1.5 text-sm rounded-lg bg-slate-800 text-white shadow-md font-base transition-all"
           >
-            Arsip
+            Arsip ({total} kartu)
           </span>
           <a
             href="/dashboard/card-memory/recent"
@@ -523,10 +523,7 @@
     </Modal>
 
     <div>
-      <div class="flex items-center justify-between mb-3 min-h-[40px]">
-        <h2 class="text-md font-semibold text-slate-800">
-          Arsip ({total} kartu)
-        </h2>
+      <div class="flex items-center justify-end mb-6 min-h-[40px]">
         {#if isTeacher && activeCategory === null && !searchQuery.trim()}
           <button
             onclick={openNewFolder}
@@ -586,7 +583,7 @@
                 <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z" />
                 </svg>
-                {activeCategory}
+                {activeCategory} <span class="text-sm font-normal text-slate-500">({activeCategoryCards.length} kartu)</span>
               </h3>
             </div>
           {:else}
