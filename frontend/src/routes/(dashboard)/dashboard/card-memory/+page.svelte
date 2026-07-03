@@ -354,7 +354,7 @@
           <span
             class="px-4 py-1.5 text-sm rounded-lg bg-slate-800 text-white shadow-md font-base transition-all"
           >
-            Arsip ({total} kartu)
+            Arsip ({total})
           </span>
           <a
             href="/dashboard/card-memory/recent"
@@ -583,7 +583,7 @@
                 <svg class="w-5 h-5 text-blue-400" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z" />
                 </svg>
-                {activeCategory} <span class="text-sm font-normal text-slate-500">({activeCategoryCards.length} kartu)</span>
+                {activeCategory} <span class="text-sm font-normal text-slate-500">({activeCategoryCards.length})</span>
               </h3>
             </div>
           {:else}
