@@ -711,14 +711,14 @@
   >
     {#if detailCard}
       <div
-        class="space-y-5 w-full max-w-[190mm] mx-auto pb-2 transition-all duration-300 relative group"
+        class="flex flex-col gap-4 w-full max-w-[190mm] mx-auto pb-2 transition-all duration-300 relative group"
       >
         {#if detailCardIndex > 0}
           <button
             onclick={() => {
               detailCard = activeCategoryCards[detailCardIndex - 1];
             }}
-            class="absolute top-[40%] -left-3 md:-left-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
+            class="hidden sm:flex absolute top-[40%] -left-3 md:-left-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
             title="Sebelumnya"
           >
             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -732,7 +732,7 @@
             onclick={() => {
               detailCard = activeCategoryCards[detailCardIndex + 1];
             }}
-            class="absolute top-[40%] -right-3 md:-right-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
+            class="hidden sm:flex absolute top-[40%] -right-3 md:-right-4 -translate-y-1/2 w-10 h-10 md:w-12 md:h-12 items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 hover:text-blue-600 hover:border-blue-300 hover:bg-blue-50 transition-all cursor-pointer shadow-md z-10 opacity-80 group-hover:opacity-100"
             title="Selanjutnya"
           >
             <svg class="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -740,6 +740,38 @@
             </svg>
           </button>
         {/if}
+
+        <div class="flex sm:hidden items-center justify-between px-2 pt-1">
+          <div class="font-bold text-slate-800 text-sm truncate pr-2 flex-1">
+            {detailCard.card_folder?.name || 'Tidak Berkategori'}
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <button
+              onclick={() => {
+                if (detailCardIndex > 0) detailCard = activeCategoryCards[detailCardIndex - 1];
+              }}
+              disabled={detailCardIndex <= 0}
+              class="w-8 h-8 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+              title="Sebelumnya"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <button
+              onclick={() => {
+                if (detailCardIndex >= 0 && detailCardIndex < activeCategoryCards.length - 1) detailCard = activeCategoryCards[detailCardIndex + 1];
+              }}
+              disabled={detailCardIndex < 0 || detailCardIndex >= activeCategoryCards.length - 1}
+              class="w-8 h-8 flex items-center justify-center rounded-full bg-white/90 border border-slate-200 text-slate-600 disabled:opacity-30 disabled:cursor-not-allowed hover:bg-slate-50 transition-all cursor-pointer shadow-sm"
+              title="Selanjutnya"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
+          </div>
+        </div>
 
         <div 
           class="w-full flex items-center justify-center bg-transparent rounded-xl"
