@@ -23,7 +23,7 @@
   } = $props();
 
   function layoutLabel(card: Card): string {
-    if (card.cardType === "image") return "Gambar";
+    if (card.cardType === "image") return `Gambar (${card.size || "6"}/A4)`;
     return `${card.size || "6"}/A4`;
   }
 </script>

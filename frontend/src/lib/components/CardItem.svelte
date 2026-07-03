@@ -229,7 +229,7 @@
         {card.title || "Judul"}
       </h3>
     </div>
-    <div class="flex-1 overflow-hidden" style="flex-basis: 80%;">
+    <div class="flex-1 overflow-hidden py-[25px]" style="flex-basis: 80%;">
       {#if card.image}
         <img
           src={card.image}

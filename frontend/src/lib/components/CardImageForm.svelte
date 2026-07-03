@@ -24,6 +24,7 @@
   let selectedFile = $state<File | null>(null);
   let previewUrl = $state("");
   let title = $state("");
+  let size = $state("6");
   let uploading = $state(false);
   let uploadMsg = $state("");
   let dragging = $state(false);
@@ -36,6 +37,7 @@
     card_folder_id = edit?.card_folder_id ?? initialFolderId ?? null;
     image = edit?.image ?? "";
     title = edit?.title ?? "";
+    size = edit?.size ?? "6";
   });
 
   async function handleSubmit(e: Event) {
@@ -65,7 +67,7 @@
       image: finalImageUrl.trim(),
       title: title.trim(),
       content: "",
-      size: "6",
+      size,
       cardType: "image",
     });
 
@@ -73,6 +75,7 @@
       card_folder_id = null;
       image = "";
       title = "";
+      size = "6";
       selectedFile = null;
       if (previewUrl) {
         URL.revokeObjectURL(previewUrl);
@@ -232,34 +235,64 @@
   {/if}
 
   <!-- Kategori -->
-  <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
-    Folder Kartu
-    {#if isCreatingFolder}
-      <div class="flex gap-2">
-          <input
-              type="text"
-              bind:value={newFolderName}
-              placeholder="Nama folder baru..."
-              class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
-          />
-          <button type="button" onclick={handleCreateFolder} class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">Buat</button>
-          <button type="button" onclick={() => (isCreatingFolder = false)} class="px-3 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm">Batal</button>
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+      Folder Kartu
+      {#if isCreatingFolder}
+        <div class="flex gap-2">
+            <input
+                type="text"
+                bind:value={newFolderName}
+                placeholder="Nama folder baru..."
+                class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+            />
+            <button type="button" onclick={handleCreateFolder} class="px-3 py-2 bg-indigo-600 text-white rounded-lg text-sm">Buat</button>
+            <button type="button" onclick={() => (isCreatingFolder = false)} class="px-3 py-2 bg-slate-200 text-slate-700 rounded-lg text-sm">Batal</button>
+        </div>
+      {:else}
+        <div class="flex gap-2">
+            <select
+                bind:value={card_folder_id}
+                class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
+            >
+                <option value={null} disabled>-- Pilih Folder --</option>
+                {#each $cardFolders as folder}
+                    <option value={folder.id}>{folder.name}</option>
+                {/each}
+            </select>
+            <button type="button" onclick={() => (isCreatingFolder = true)} class="px-3 py-2 bg-slate-100 text-slate-600 border border-slate-300 rounded-lg text-sm">+</button>
+        </div>
+      {/if}
+    </label>
+
+    <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
+      Ukuran Kartu
+      <div class="flex border border-slate-300 rounded-lg overflow-hidden w-fit">
+        <button
+          type="button"
+          onclick={() => (size = "6")}
+          class="px-3 py-2 text-sm cursor-pointer {size === '6'
+            ? 'bg-blue-600 text-white'
+            : 'bg-white text-slate-700 hover:bg-slate-50'}">Kecil (6/A4)</button
+        >
+        <button
+          type="button"
+          onclick={() => (size = "4")}
+          class="px-3 py-2 text-sm cursor-pointer border-x border-slate-300 {size ===
+          '4'
+            ? 'bg-blue-600 text-white'
+            : 'bg-white text-slate-700 hover:bg-slate-50'}">Sedang (4/A4)</button
+        >
+        <button
+          type="button"
+          onclick={() => (size = "2")}
+          class="px-3 py-2 text-sm cursor-pointer {size === '2'
+            ? 'bg-blue-600 text-white'
+            : 'bg-white text-slate-700 hover:bg-slate-50'}">Besar (2/A4)</button
+        >
       </div>
-    {:else}
-      <div class="flex gap-2">
-          <select
-              bind:value={card_folder_id}
-              class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none bg-white"
-          >
-              <option value={null} disabled>-- Pilih Folder --</option>
-              {#each $cardFolders as folder}
-                  <option value={folder.id}>{folder.name}</option>
-              {/each}
-          </select>
-          <button type="button" onclick={() => (isCreatingFolder = true)} class="px-3 py-2 bg-slate-100 text-slate-600 border border-slate-300 rounded-lg text-sm">+</button>
-      </div>
-    {/if}
-  </label>
+    </label>
+  </div>
 
   <!-- Judul -->
   <label class="flex flex-col gap-1 text-sm font-medium text-slate-700">
@@ -283,6 +316,7 @@
         if (previewUrl) URL.revokeObjectURL(previewUrl);
         previewUrl = "";
         title = "";
+        size = "6";
         uploadMsg = "";
         if (oncancel) oncancel();
       }}
