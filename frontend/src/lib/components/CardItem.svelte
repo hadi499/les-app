@@ -16,6 +16,7 @@
     selected,
     onselect,
     contentOnly,
+    isPrint = false,
   }: {
     card: Card;
     index: number;
@@ -29,13 +30,14 @@
     selected?: boolean;
     onselect?: (card: Card) => void;
     contentOnly?: boolean;
+    isPrint?: boolean;
   } = $props();
 
-  let zoom = $derived(printSettings.imageZoom);
+  let zoom = $derived(isPrint ? printSettings.imageZoom : 1.0);
 
-  let headerScale = $derived(printSettings.headerSize);
-  let titleScale = $derived(printSettings.titleSize);
-  let contentScale = $derived(printSettings.contentSize);
+  let headerScale = $derived(isPrint ? printSettings.headerSize : 1.0);
+  let titleScale = $derived(isPrint ? printSettings.titleSize : 1.0);
+  let contentScale = $derived(isPrint ? printSettings.contentSize : 1.0);
 
   let perPage = $derived(parseInt(card.size || "6") || 6);
   let isImageCard = $derived(card.cardType === "image");
