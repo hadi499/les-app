@@ -52,10 +52,10 @@
     class="fixed top-16 md:top-0 left-0 md:left-[var(--sidebar-width)] right-0 bg-white/80/90 backdrop-blur-md px-6 md:px-10 py-3 z-40 transition-all print:hidden"
   >
     <div
-      class="max-w-5xl mx-auto flex items-center justify-between gap-3 flex-wrap"
+      class="max-w-5xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4"
     >
-      <div class="flex items-center gap-4">
-        <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl">
+      <div class="w-full md:w-auto flex items-center justify-center md:justify-start overflow-x-auto hide-scrollbar -mx-2 px-2 md:mx-0 md:px-0">
+        <nav class="flex items-center justify-center gap-1 bg-white/80 p-1 rounded-xl w-max mx-auto md:mx-0">
           <a
             href="/dashboard/card-memory"
             class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-medium transition-all"
@@ -86,11 +86,11 @@
         </nav>
       </div>
 
-      <div class="flex items-center gap-2 flex-wrap">
+      <div class="flex items-center gap-2 w-full md:w-auto mt-1 md:mt-0">
         {#if queueCards.length > 0}
           <button
             onclick={handlePrint}
-            class="flex items-center gap-1.5 px-4 py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer"
+            class="flex-1 md:flex-none flex items-center justify-center gap-1.5 px-4 py-2 md:py-1.5 text-sm rounded-xl bg-blue-500 text-white hover:bg-blue-600 font-medium transition-all shadow-sm cursor-pointer whitespace-nowrap"
           >
             <svg
               class="w-4 h-4"
@@ -110,7 +110,7 @@
         {/if}
         <button
           onclick={() => (showClearConfirm = true)}
-          class="px-4 py-1.5 text-sm rounded-xl bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer"
+          class="flex-1 md:flex-none px-4 py-2 md:py-1.5 text-sm rounded-xl bg-white/80 border border-slate-200 text-slate-600 hover:text-red-600 hover:border-red-300 hover:bg-red-100 font-medium transition-all shadow-sm cursor-pointer whitespace-nowrap"
         >
           Kosongkan
         </button>
@@ -118,10 +118,10 @@
     </div>
   </header>
 
-  <main class="max-w-5xl mx-auto p-4 print:p-0 pt-24 md:pt-20 print:pt-0">
+  <main class="max-w-5xl mx-auto p-4 print:p-0 pt-36 md:pt-24 pb-32 print:pt-0 print:pb-0">
     <!-- Settings toolbar -->
     <div
-      class="mb-4 p-3 w-fit bg-white/80 rounded-xl border border-slate-200 flex items-center gap-4 flex-wrap print:hidden"
+      class="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 p-3 w-max max-w-[95vw] overflow-x-auto hide-scrollbar bg-white/95 backdrop-blur-md shadow-2xl rounded-2xl border border-slate-200 flex items-center gap-4 flex-nowrap print:hidden"
     >
       <div class="flex items-center gap-1.5">
         <span class="text-xs text-slate-600 w-16">Gambar</span>
@@ -175,6 +175,42 @@
       </div>
       <div class="w-px h-6 bg-gray-200"></div>
 
+      <div class="flex items-center gap-1.5">
+        <span class="text-xs text-slate-600 w-16">Margin L</span>
+        <button
+          onclick={() => printSettings.marginLeftDown()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
+          >-</button
+        >
+        <span class="text-xs font-medium text-slate-800 w-10 text-center"
+          >{printSettings.marginLeft}mm</span
+        >
+        <button
+          onclick={() => printSettings.marginLeftUp()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-base font-bold cursor-pointer"
+          >+</button
+        >
+      </div>
+      <div class="w-px h-6 bg-gray-200"></div>
+
+      <div class="flex items-center gap-1.5">
+        <span class="text-xs text-slate-600 w-16">Margin R</span>
+        <button
+          onclick={() => printSettings.marginRightDown()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-sm cursor-pointer"
+          >-</button
+        >
+        <span class="text-xs font-medium text-slate-800 w-10 text-center"
+          >{printSettings.marginRight}mm</span
+        >
+        <button
+          onclick={() => printSettings.marginRightUp()}
+          class="w-7 h-7 flex items-center justify-center rounded border border-slate-300 text-slate-600 hover:bg-white text-base font-bold cursor-pointer"
+          >+</button
+        >
+      </div>
+      <div class="w-px h-6 bg-gray-200"></div>
+
       <button
         onclick={() => printSettings.reset()}
         class="px-2 py-1 text-xs rounded border border-slate-200 text-slate-500 hover:text-slate-600 cursor-pointer"
@@ -210,8 +246,8 @@
               {label} · {group.size}/A4 · {group.cards.length} kartu
             </p>
           {/if}
-          <div class="flex justify-center print:contents">
-            <div class="w-full max-w-[210mm] print:contents">
+          <div class="print:contents overflow-x-auto max-w-full pb-4 hide-scrollbar">
+            <div class="w-[210mm] mx-auto print:contents print:w-auto">
               <CardGrid
                 cards={group.cards}
                 perPage={group.size}

@@ -349,8 +349,8 @@
     <div
       class="max-w-5xl mx-auto flex flex-col md:flex-row items-stretch md:items-center justify-between gap-4"
     >
-      <div class="flex items-center overflow-x-auto hide-scrollbar -mx-2 px-2 md:mx-0 md:px-0">
-        <nav class="flex items-center gap-1 bg-white/80 p-1 rounded-xl w-max">
+      <div class="w-full md:w-auto flex items-center justify-center md:justify-start overflow-x-auto hide-scrollbar -mx-2 px-2 md:mx-0 md:px-0">
+        <nav class="flex items-center justify-center gap-1 bg-white/80 p-1 rounded-xl w-max mx-auto md:mx-0">
           <span
             class="px-4 py-1.5 text-sm rounded-lg bg-slate-800 text-white shadow-md font-base transition-all"
           >

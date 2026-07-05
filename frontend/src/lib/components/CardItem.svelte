@@ -38,6 +38,9 @@
   let headerScale = $derived(isPrint ? printSettings.headerSize : 1.0);
   let titleScale = $derived(isPrint ? printSettings.titleSize : 1.0);
   let contentScale = $derived(isPrint ? printSettings.contentSize : 1.0);
+  
+  let marginLeft = $derived(isPrint ? printSettings.marginLeft : 0);
+  let marginRight = $derived(isPrint ? printSettings.marginRight : 0);
 
   let perPage = $derived(parseInt(card.size || "6") || 6);
   let isImageCard = $derived(card.cardType === "image");
@@ -62,6 +65,7 @@
   class="card-item flex flex-col border-2 {selected
     ? 'border-indigo-500 bg-indigo-50/30'
     : 'border-gray-400'} bg-white overflow-hidden h-full relative group"
+  style="padding-left: {marginLeft}mm; padding-right: {marginRight}mm;"
 >
   <!-- Selection checkbox (top-left) -->
   {#if selectable}
