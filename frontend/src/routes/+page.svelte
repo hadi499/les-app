@@ -43,11 +43,12 @@
 </script>
 
 <svelte:head>
-  <title>Les Balongarut | Portal Akademik Eksklusif</title>
+  <title>Les Balongarut | Bimbingan Belajar Terbaik</title>
   <meta
     name="description"
-    content="Sistem pendukung akademik terintegrasi untuk Les Balongarut."
+    content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
   />
+  <meta name="keywords" content="Les Balongarut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel" />
 </svelte:head>
 
 <div
