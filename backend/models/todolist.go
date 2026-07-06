@@ -4,11 +4,12 @@ import "time"
 
 // TodoList represents a collection of TodoItems (Title/Category)
 type TodoList struct {
-	ID        uint       `json:"id" gorm:"primaryKey"`
-	UserID    uint       `json:"user_id"`
-	Title     string     `json:"title"`
-	CreatedAt time.Time  `json:"created_at"`
-	UpdatedAt time.Time  `json:"updated_at"`
+	ID              uint       `json:"id" gorm:"primaryKey"`
+	UserID          uint       `json:"user_id"`
+	Title           string     `json:"title"`
+	StudentUsername string     `json:"student_username"`
+	CreatedAt       time.Time  `json:"created_at"`
+	UpdatedAt       time.Time  `json:"updated_at"`
 	Items     []TodoItem `json:"items" gorm:"foreignKey:TodoListID;constraint:OnDelete:CASCADE;"`
 }
 

@@ -100,6 +100,10 @@
       addErrorMsg = "Username dan password harus diisi.";
       return;
     }
+    if (newUser.password.length < 6) {
+      addErrorMsg = "Password minimal 6 karakter.";
+      return;
+    }
     isAdding = true;
     addErrorMsg = "";
     try {

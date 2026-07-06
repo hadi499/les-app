@@ -11,6 +11,7 @@ func SetupRoutes(r *gin.Engine) {
 	r.POST("/api/auth/register", middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"), controllers.Register)
 	r.POST("/api/auth/login", controllers.Login)
 	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
+	r.PUT("/api/auth/change-password", middleware.AuthMiddleware(), controllers.ChangePassword)
 
 	// Route /me tidak menggunakan AuthMiddleware agar bisa mereturn 200 dengan status authenticated = false
 	// alih-alih mereturn 401 Unauthorized yang akan memicu log merah di browser.
@@ -158,30 +159,35 @@ func SetupRoutes(r *gin.Engine) {
 		notes.DELETE("/:id", controllers.DeleteNote)
 	}
 
-	// Absences API routes (Teacher only)
+	// Absences API routes
 	absences := r.Group("/api/absences")
-	absences.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	absences.Use(middleware.AuthMiddleware())
 	{
-		absences.POST("", controllers.CreateAbsence)
+		absences.POST("", middleware.RoleMiddleware("teacher"), controllers.CreateAbsence)
 		absences.GET("/recap", controllers.GetAbsenceRecap)
 		absences.GET("/user/:id", controllers.GetAbsenceHistory)
-		absences.POST("/reset", controllers.ResetAbsences)
-		absences.PUT("/:id", controllers.UpdateAbsence)
-		absences.DELETE("/:id", controllers.DeleteAbsence)
+		absences.POST("/reset", middleware.RoleMiddleware("teacher"), controllers.ResetAbsences)
+		absences.PUT("/:id", middleware.RoleMiddleware("teacher"), controllers.UpdateAbsence)
+		absences.DELETE("/:id", middleware.RoleMiddleware("teacher"), controllers.DeleteAbsence)
 	}
 
-	// Todolist API routes (Teacher only)
+	// Todolist API routes
 	todolists := r.Group("/api/todolists")
-	todolists.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	todolists.Use(middleware.AuthMiddleware())
 	{
 		todolists.GET("", controllers.GetTodoLists)
-		todolists.POST("", controllers.CreateTodoList)
 		todolists.GET("/:id", controllers.GetTodoList)
-		todolists.PUT("/:id", controllers.UpdateTodoList)
-		todolists.DELETE("/:id", controllers.DeleteTodoList)
-		todolists.POST("/:id/items", controllers.CreateTodoItem)
-		todolists.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
-		todolists.DELETE("/:id/items/:item_id", controllers.DeleteTodoItem)
+
+		teacherTodos := todolists.Group("")
+		teacherTodos.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherTodos.POST("", controllers.CreateTodoList)
+			teacherTodos.PUT("/:id", controllers.UpdateTodoList)
+			teacherTodos.DELETE("/:id", controllers.DeleteTodoList)
+			teacherTodos.POST("/:id/items", controllers.CreateTodoItem)
+			teacherTodos.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
+			teacherTodos.DELETE("/:id/items/:item_id", controllers.DeleteTodoItem)
+		}
 	}
 
 	// Scores API routes (User submission)

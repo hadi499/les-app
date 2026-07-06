@@ -2,6 +2,8 @@
   import { onMount } from "svelte";
   import { toast } from "$lib/stores/toast.svelte";
 
+  let user = $state<{ id?: number; username?: string; role?: string } | null>(null);
+
   // State for absence form
   let selectedUserId = $state("");
 
@@ -60,7 +62,23 @@
 
   onMount(async () => {
     isLoading = true;
-    await Promise.all([fetchUsers(), fetchRecap()]);
+    try {
+      const res = await fetch("/me", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated) {
+          user = data.user;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (user?.role === "teacher") {
+      await Promise.all([fetchUsers(), fetchRecap()]);
+    } else {
+      await fetchRecap();
+    }
     isLoading = false;
   });
 
@@ -152,8 +170,9 @@
       </p>
     </div>
 
-    <button
-      onclick={() => (showResetModal = true)}
+    {#if user?.role === "teacher"}
+      <button
+        onclick={() => (showResetModal = true)}
       disabled={isResetting}
       class="px-4 py-2 text-sm font-bold text-white bg-red-600 shadow-md shadow-red-600/30 hover:bg-red-700 rounded-xl transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed w-fit"
     >
@@ -185,7 +204,8 @@
         >
         Reset Data Absensi
       {/if}
-    </button>
+      </button>
+    {/if}
   </div>
 
   {#if isLoading}
@@ -201,8 +221,9 @@
       {errorMsg}
     </div>
   {:else}
-    <!-- Form Input Ketidakhadiran -->
-    <div
+    {#if user?.role === "teacher"}
+      <!-- Form Input Ketidakhadiran -->
+      <div
       class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 mb-8"
     >
       <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
@@ -312,6 +333,7 @@
         </button>
       </div>
     </div>
+    {/if}
 
     <!-- Table Recap -->
     <div

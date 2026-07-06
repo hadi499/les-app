@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"backend/database"
@@ -59,6 +60,9 @@ type RecapData struct {
 }
 
 func GetAbsenceRecap(c *gin.Context) {
+	currentUserID := c.GetUint("user_id")
+	role := c.GetString("role")
+
 	// Filter for current month and year
 	now := time.Now()
 	startOfMonth := time.Date(now.Year(), now.Month(), 1, 0, 0, 0, 0, time.Local)
@@ -66,7 +70,12 @@ func GetAbsenceRecap(c *gin.Context) {
 
 	var absences []models.Absence
 	// Fetch all absences for total_all calculation
-	if err := database.DB.Preload("User").Find(&absences).Error; err != nil {
+	query := database.DB.Preload("User")
+	if role == "student" {
+		query = query.Where("user_id = ?", currentUserID)
+	}
+
+	if err := query.Find(&absences).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch absence recap"})
 		return
 	}
@@ -76,7 +85,12 @@ func GetAbsenceRecap(c *gin.Context) {
 	
 	// Also fetch all students to ensure students with 0 absences are included
 	var students []models.User
-	if err := database.DB.Where("role = ?", "student").Find(&students).Error; err != nil {
+	studentQuery := database.DB.Where("role = ?", "student")
+	if role == "student" {
+		studentQuery = studentQuery.Where("id = ?", currentUserID)
+	}
+
+	if err := studentQuery.Find(&students).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
@@ -128,6 +142,14 @@ func ResetAbsences(c *gin.Context) {
 
 func GetAbsenceHistory(c *gin.Context) {
 	userId := c.Param("id")
+	
+	currentUserID := c.GetUint("user_id")
+	role := c.GetString("role")
+
+	if role == "student" && strconv.Itoa(int(currentUserID)) != userId {
+		c.JSON(http.StatusForbidden, gin.H{"error": "You can only view your own absence history"})
+		return
+	}
 
 	var absences []models.Absence
 	if err := database.DB.Preload("User").Where("user_id = ?", userId).Order("date desc").Find(&absences).Error; err != nil {

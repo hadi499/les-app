@@ -374,6 +374,8 @@
   let printFontSize = $state(16);
 </script>
 
+<svelte:window onclick={() => { openMenuId = null; openFolderMenuId = null; }} />
+
 <svelte:head>
   <title>Catatan - Les Balongarut</title>
   <style>
@@ -754,7 +756,7 @@
             onkeydown={(e) => e.key === "Enter" && openFolder(folder)}
           >
             <div
-              class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 group-hover:bg-blue-500 group-hover:text-white transition-colors"
+              class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 transition-colors"
             >
               <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
                 ><path
@@ -786,6 +788,12 @@
                   /></svg
                 >
               </button>
+              
+              {#if openFolderMenuId === folder.id}
+                <!-- svelte-ignore a11y_click_events_have_key_events -->
+                <!-- svelte-ignore a11y_no_static_element_interactions -->
+                <div class="fixed inset-0 z-40" onclick={(e) => { e.stopPropagation(); openFolderMenuId = null; }}></div>
+              {/if}
 
               <div
                 class="absolute right-0 top-10 {openFolderMenuId === folder.id
@@ -951,6 +959,12 @@
                       /></svg
                     >
                   </button>
+
+                  {#if openMenuId === note.id}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="fixed inset-0 z-40" onclick={(e) => { e.stopPropagation(); openMenuId = null; }}></div>
+                  {/if}
 
                   <div
                     class="absolute right-0 top-10 {openMenuId === note.id

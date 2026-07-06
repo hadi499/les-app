@@ -5,22 +5,45 @@
   type TodoList = {
     id: number;
     title: string;
+    student_username?: string;
     created_at: string;
   };
 
   let lists = $state<TodoList[]>([]);
   let newListTitle = $state("");
+  let newListStudentUsername = $state("");
   let isLoading = $state(true);
   let errorMsg = $state("");
 
+  let showCreateListModal = $state(false);
   let showDeleteListModal = $state(false);
   let listToDelete = $state<TodoList | null>(null);
   let showEditListModal = $state(false);
   let listToEdit = $state<TodoList | null>(null);
   let editListTitle = $state("");
+  let editListStudentUsername = $state("");
   let openMenuId = $state<number | null>(null);
+  let userRole = $state("");
+  let students = $state<{id: number, username: string, role: string}[]>([]);
 
   onMount(async () => {
+    try {
+      const meRes = await fetch("/me");
+      if (meRes.ok) {
+        const data = await meRes.json();
+        userRole = data.user?.role || "";
+      }
+
+      if (userRole === "teacher") {
+        const usersRes = await fetch("/api/users", { credentials: "include" });
+        if (usersRes.ok) {
+          const data = await usersRes.json();
+          students = data.users?.filter((u: any) => u.role === "student") || [];
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
     await fetchLists();
   });
 
@@ -52,12 +75,17 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ title: newListTitle.trim() }),
+        body: JSON.stringify({ 
+          title: newListTitle.trim(),
+          student_username: newListStudentUsername.trim()
+        }),
       });
       if (res.ok) {
         const newList = await res.json();
         lists = [newList, ...lists];
         newListTitle = "";
+        newListStudentUsername = "";
+        showCreateListModal = false;
       } else {
         const err = await res.json();
         alert(err.error || "Gagal membuat list");
@@ -101,6 +129,7 @@
     e.stopPropagation();
     listToEdit = list;
     editListTitle = list.title;
+    editListStudentUsername = list.student_username || "";
     showEditListModal = true;
   }
 
@@ -112,7 +141,10 @@
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ title: editListTitle.trim() }),
+        body: JSON.stringify({ 
+          title: editListTitle.trim(),
+          student_username: editListStudentUsername.trim()
+        }),
       });
       if (res.ok) {
         const updatedList = await res.json();
@@ -130,8 +162,10 @@
   }
 </script>
 
+<svelte:window onclick={() => openMenuId = null} />
+
 <svelte:head>
-  <title>Todolist - Portal Guru</title>
+  <title>Todolist - Les App</title>
 </svelte:head>
 
 <div class="max-w-4xl mx-auto md:p-4 lg:p-8 animate-in fade-in duration-500">
@@ -150,22 +184,15 @@
         Kelola dan kategorikan daftar tugas Anda.
       </p>
     </div>
-    <form onsubmit={addList} class="w-full md:w-auto flex gap-2">
-      <input
-        type="text"
-        bind:value={newListTitle}
-        placeholder="Nama list baru..."
-        class="w-full md:w-64 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm"
-      />
+    {#if userRole === "teacher"}
       <button
-        type="submit"
-        disabled={!newListTitle.trim()}
-        class="bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 text-white font-medium px-3 md:px-4 py-2 rounded-xl transition-all shadow-md shrink-0 cursor-pointer flex items-center justify-center"
+        onclick={() => (showCreateListModal = true)}
+        class="bg-blue-600 hover:bg-blue-700 text-white font-medium px-4 md:px-5 py-2.5 rounded-xl transition-all shadow-md shadow-blue-500/20 flex items-center gap-2 cursor-pointer w-max justify-center"
       >
-        <span class="hidden md:inline">Buat List</span>
-        <svg class="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <span>Buat Todolist</span>
       </button>
-    </form>
+    {/if}
   </div>
 
   {#if isLoading}
@@ -239,11 +266,18 @@
               >
             </div>
             <div class="flex flex-col md:flex-row md:items-center gap-1.5 md:gap-3 mt-1 md:mt-0">
-              <h3
-                class="text-[15px] md:text-lg font-semibold text-slate-800 group-hover:text-blue-600 transition-colors break-words leading-tight"
-              >
-                {list.title}
-              </h3>
+              <div class="flex items-center gap-2">
+                <h3
+                  class="text-[15px] md:text-lg font-semibold text-slate-800 group-hover:text-blue-600 transition-colors break-words leading-tight"
+                >
+                  {list.title}
+                </h3>
+                {#if list.student_username}
+                  <span class="px-2 py-0.5 text-[10px] md:text-xs font-medium bg-blue-100 text-blue-700 rounded-md shrink-0">
+                    @{list.student_username}
+                  </span>
+                {/if}
+              </div>
               <div class="flex items-center text-[11px] md:text-xs text-slate-500 font-medium bg-slate-100 px-2.5 py-1 rounded-md w-max sm:hidden">
                 <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
                 {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
@@ -256,7 +290,8 @@
               <svg class="w-3.5 h-3.5 mr-1 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
               {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
             </div>
-            <div class="relative shrink-0">
+            {#if userRole === "teacher"}
+              <div class="relative shrink-0">
               <button
                 onclick={(e) => {
                   e.preventDefault();
@@ -324,6 +359,7 @@
                 </button>
               </div>
             </div>
+            {/if}
           </div>
         </a>
       {/each}
@@ -378,9 +414,18 @@
         type="text"
         bind:value={editListTitle}
         placeholder="Nama Todolist"
-        class="w-full px-4 py-2 mb-6 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm"
+        class="w-full px-4 py-2 mb-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm"
         onkeydown={(e) => e.key === "Enter" && confirmEditList()}
       />
+      <select
+        bind:value={editListStudentUsername}
+        class="w-full px-4 pr-10 py-2 mb-6 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7rem_auto] bg-[right_1rem_center] bg-no-repeat"
+      >
+        <option value="">Pilih Murid (opsional)</option>
+        {#each students as student}
+          <option value={student.username}>@{student.username}</option>
+        {/each}
+      </select>
       <div class="flex justify-end gap-3">
         <button
           onclick={() => {
@@ -397,6 +442,66 @@
           class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 shadow-sm shadow-blue-500/30 hover:bg-blue-700 hover:shadow-blue-500/50 rounded-xl transition-all cursor-pointer disabled:opacity-50"
         >
           Simpan
+        </button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+{#if showCreateListModal}
+  <div
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    transition:fade={{ duration: 150 }}
+  >
+    <div
+      class="bg-white rounded-3xl shadow-xl max-w-sm w-full p-6 border border-slate-100"
+      transition:scale={{ duration: 150, start: 0.95 }}
+    >
+      <h3 class="text-xl font-bold text-slate-900 mb-4">Buat Todolist Baru</h3>
+      
+      <div class="mb-4">
+        <label class="block text-sm font-medium text-slate-700 mb-1" for="new_title">Nama Todolist</label>
+        <input
+          id="new_title"
+          type="text"
+          bind:value={newListTitle}
+          placeholder="Contoh: Tugas Matematika"
+          class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm"
+          onkeydown={(e) => e.key === "Enter" && addList()}
+        />
+      </div>
+
+      <div class="mb-6">
+        <label class="block text-sm font-medium text-slate-700 mb-1" for="new_student">Pilih Murid (Opsional)</label>
+        <select
+          id="new_student"
+          bind:value={newListStudentUsername}
+          class="w-full px-4 pr-10 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7rem_auto] bg-[right_1rem_center] bg-no-repeat"
+        >
+          <option value="">- Tidak ada (Semua Murid) -</option>
+          {#each students as student}
+            <option value={student.username}>@{student.username}</option>
+          {/each}
+        </select>
+      </div>
+
+      <div class="flex justify-end gap-3">
+        <button
+          onclick={() => {
+            showCreateListModal = false;
+            newListTitle = "";
+            newListStudentUsername = "";
+          }}
+          class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-white shadow-sm border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-all cursor-pointer"
+        >
+          Batal
+        </button>
+        <button
+          onclick={addList}
+          disabled={!newListTitle.trim()}
+          class="px-5 py-2.5 text-sm font-medium text-white bg-blue-600 shadow-sm shadow-blue-500/30 hover:bg-blue-700 hover:shadow-blue-500/50 rounded-xl transition-all cursor-pointer disabled:opacity-50"
+        >
+          Buat
         </button>
       </div>
     </div>
