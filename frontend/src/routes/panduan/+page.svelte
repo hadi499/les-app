@@ -49,7 +49,9 @@
             >
             Metode Unggulan
           </div>
-          <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Metode Card Memory</h2>
+          <h2 class="text-2xl md:text-3xl font-bold text-slate-900">
+            Metode Card Memory
+          </h2>
           <p class="text-slate-600 leading-relaxed text-lg">
             Mata pelajaran dipecah menjadi bagian kecil-kecil sehingga tidak
             membebani anak-anak.
@@ -86,21 +88,7 @@
           <div
             class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-100 rounded-full blur-2xl opacity-50"
           ></div>
-          <h3
-            class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2"
-          >
-            <svg
-              class="w-5 h-5 text-blue-600"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              /></svg
-            >
+          <h3 class="text-md md:text-xl font-semibold text-slate-900 mb-4">
             Mengapa Harus Card Memory?
           </h3>
           <div class="space-y-4">
@@ -108,9 +96,14 @@
               class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 group-hover:-translate-y-1 transition-transform duration-300"
             >
               <p class="text-slate-700">
-                Banyak anak sekarang <span class="font-semibold text-red-500"
+                Anak zaman sekarang <span class="font-semibold text-red-500"
                   >tidak suka membaca</span
-                > buku. Baca sedikit sudah ngantuk. <span class="text-2xl ml-1 align-middle inline-block animate-pulse">😴</span>
+                >
+                . Baca buku sedikit sudah ngantuk.
+                <span
+                  class="text-2xl ml-1 align-middle inline-block animate-pulse"
+                  >😴</span
+                >
               </p>
             </div>
             <div
@@ -133,7 +126,9 @@
       class="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300"
     >
       <div class="text-center">
-        <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Contoh Card Memory</h2>
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-900">
+          Contoh Card Memory
+        </h2>
         <p class="text-slate-600 mt-2">
           Visual yang menarik membantu otak mengingat lebih cepat.
         </p>
@@ -278,7 +273,7 @@
       </div>
 
       <div class="bg-slate-900 rounded-3xl p-8 shadow-xl text-white">
-        <h2 class="text-xl md:text-2xl font-bold mb-8 flex items-center gap-3">
+        <h2 class="text-lg md:text-2xl font-bold mb-8 flex items-center gap-3">
           <div class="p-2 bg-white/10 text-white rounded-lg">
             <svg
               class="w-6 h-6"
@@ -394,6 +389,141 @@
               <h4 class="font-bold text-lg text-white mb-1">Absensi</h4>
               <p class="text-slate-400 text-sm leading-relaxed">
                 Digunakan untuk melihat riwayat kehadiran dan absensi harian.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Keterangan Menu Utama Section -->
+    <section
+      class="animate-in fade-in slide-in-from-bottom-8 duration-700 delay-700 mt-8"
+    >
+      <div
+        class="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100"
+      >
+        <h2
+          class="text-xl md:text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3"
+        >
+          <div class="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm14 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zm-9 4a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+              />
+            </svg>
+          </div>
+          Keterangan Menu Utama
+        </h2>
+
+        <div class="grid sm:grid-cols-2 gap-8">
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-indigo-50 transition-colors border border-slate-100"
+            >
+              <svg
+                class="w-6 h-6 text-indigo-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">
+                Mengetik 10 Jari
+              </h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Melatih kecepatan dan ketepatan mengetik menggunakan 10 jari
+                agar lebih terampil dan produktif.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-cyan-50 transition-colors border border-slate-100"
+            >
+              <svg
+                class="w-6 h-6 text-cyan-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">Cetak Code</h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Fitur untuk mencetak script coding.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-rose-50 transition-colors border border-slate-100"
+            >
+              <svg
+                class="w-6 h-6 text-rose-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">Kuis</h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Menyediakan soal-soal latihan interaktif untuk mengevaluasi dan
+                menguji seberapa jauh pemahaman siswa.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-amber-50 transition-colors border border-slate-100"
+            >
+              <svg
+                class="w-6 h-6 text-amber-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">Berhitung</h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Latihan berhitung anak PAUD dan TK.
               </p>
             </div>
           </div>

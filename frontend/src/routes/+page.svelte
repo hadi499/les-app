@@ -70,15 +70,14 @@
         >
           Les Balongarut
         </h1>
-        <p
-          class="text-[10px] sm:text-xs tracking-[0.2em] text-slate-600 uppercase flex flex-wrap justify-center gap-4 items-center font-medium"
+        <div
+          class="text-xs sm:text-sm tracking-[0.2em] text-slate-600 uppercase flex flex-col items-center gap-3 font-medium"
         >
           <span>Komputer</span>
-          <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
           <span>Matematika</span>
-          <span class="w-1.5 h-1.5 bg-blue-400 rounded-full"></span>
           <span>Bahasa Inggris</span>
-        </p>
+          <span>TKA</span>
+        </div>
       </div>
 
       <div class="pt-4 flex justify-center">
