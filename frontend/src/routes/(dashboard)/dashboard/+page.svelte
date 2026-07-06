@@ -12,6 +12,45 @@
 
   let systemInfo: any = $state(null);
   let isRefreshing = $state(false);
+  
+  let isClassOpen = $state(true);
+  let isLoadingToggle = $state(false);
+
+  async function fetchSettings() {
+    try {
+      const res = await fetch("/api/settings", { credentials: "include" });
+      if (res.ok) {
+        const json = await res.json();
+        isClassOpen = json.is_class_open === "true";
+      }
+    } catch (e) {
+      console.error("Gagal memuat pengaturan", e);
+    }
+  }
+
+  async function toggleClassOpen() {
+    isLoadingToggle = true;
+    const newValue = !isClassOpen;
+    try {
+      const res = await fetch("/api/settings/is_class_open", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ value: newValue ? "true" : "false" })
+      });
+      if (res.ok) {
+        isClassOpen = newValue;
+        alert("Status kelas berhasil diperbarui!");
+      } else {
+        alert("Gagal memperbarui status kelas.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Terjadi kesalahan koneksi.");
+    } finally {
+      isLoadingToggle = false;
+    }
+  }
 
   async function fetchSystemInfo() {
     isRefreshing = true;
@@ -39,6 +78,7 @@
     await fetchAllGameScores();
     await fetchHistory();
     await fetchSystemInfo();
+    await fetchSettings();
   });
 
   let completedLessons = $derived(
@@ -73,6 +113,29 @@
 
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto space-y-6">
+    <!-- Control Panel -->
+    <div class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden">
+      <div class="p-6 flex items-center justify-between">
+        <div>
+          <h4 class="font-bold text-slate-800 m-0">Status Kelas Hari Ini</h4>
+          <p class="text-sm text-slate-500 m-0 mt-1">Ubah status ini menjadi libur jika tidak ada jadwal masuk hari ini.</p>
+        </div>
+        <div class="flex items-center gap-3">
+          <span class="text-sm font-bold {isClassOpen ? 'text-emerald-600' : 'text-slate-400'}">{isClassOpen ? 'BUKA' : 'LIBUR'}</span>
+          <button
+            onclick={toggleClassOpen}
+            disabled={isLoadingToggle}
+            class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpen ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
+          >
+            <span class="sr-only">Toggle Kelas</span>
+            <span
+              class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpen ? 'translate-x-7' : 'translate-x-1'}"
+            ></span>
+          </button>
+        </div>
+      </div>
+    </div>
+
     {#if systemInfo}
       <!-- System Info Section (VPS) -->
       <div

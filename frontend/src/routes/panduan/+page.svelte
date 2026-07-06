@@ -2,6 +2,9 @@
   import mathCard2 from "$lib/assets/card2.png";
   import mathCard3 from "$lib/assets/card3.png";
   import mathCard4 from "$lib/assets/card4.png";
+  import mathCard5 from "$lib/assets/card5.png";
+  import mathCard6 from "$lib/assets/card6.png";
+  import mathCard7 from "$lib/assets/card7.png";
 </script>
 
 <svelte:head>
@@ -158,6 +161,33 @@
         >
           <img
             src={mathCard4}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2"
+        >
+          <img
+            src={mathCard5}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-75"
+        >
+          <img
+            src={mathCard6}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-150"
+        >
+          <img
+            src={mathCard7}
             alt="Card Memory"
             class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
           />

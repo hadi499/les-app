@@ -204,4 +204,13 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		system.GET("/info", controllers.GetSystemInfo)
 	}
+
+	// Settings API routes
+	r.GET("/api/settings", controllers.GetSettings) // Publik
+	
+	settingsAdmin := r.Group("/api/settings")
+	settingsAdmin.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		settingsAdmin.PUT("/:key", controllers.UpdateSetting)
+	}
 }
