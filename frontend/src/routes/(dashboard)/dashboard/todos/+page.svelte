@@ -245,7 +245,7 @@
       {#each lists as list (list.id)}
         <a
           href={`/dashboard/todos/${list.id}`}
-          class="group relative flex items-center justify-between bg-white border border-slate-200 rounded-2xl px-4 py-2 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 {openMenuId ===
+          class="group relative flex items-center justify-between bg-white border border-slate-200 rounded-2xl px-4 py-2 min-h-[56px] shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 {openMenuId ===
           list.id
             ? 'z-50'
             : 'z-0'}"
