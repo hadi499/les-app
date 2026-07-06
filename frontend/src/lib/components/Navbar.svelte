@@ -129,6 +129,15 @@
             : 'border-transparent text-slate-700 hover:text-blue-600'}"
           >Berhitung</a
         >
+        <a
+          href="/panduan"
+          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
+            '/panduan',
+          )
+            ? 'border-blue-500 text-blue-700'
+            : 'border-transparent text-slate-700 hover:text-blue-600'}"
+          >Panduan</a
+        >
 
         {#if !authChecked}
           <div class="ml-4 w-10 h-10"></div>
@@ -319,6 +328,16 @@
             ? 'bg-blue-50 text-blue-700'
             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Berhitung</a
+        >
+        <a
+          href="/panduan"
+          onclick={closeMobileMenu}
+          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
+            '/panduan',
+          )
+            ? 'bg-blue-50 text-blue-700'
+            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
+          >Panduan</a
         >
       </div>
       {#if isAuthenticated}

@@ -1,0 +1,404 @@
+<script lang="ts">
+  import mathCard2 from "$lib/assets/card2.png";
+  import mathCard3 from "$lib/assets/card3.png";
+  import mathCard4 from "$lib/assets/card4.png";
+</script>
+
+<svelte:head>
+  <title>Panduan & Metode Belajar - Les Balongarut</title>
+</svelte:head>
+
+<div class="min-h-screen bg-slate-50 pt-24 pb-16 font-sans">
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+    <!-- Header Section -->
+    <section
+      class="text-center space-y-4 animate-in fade-in slide-in-from-bottom-4 duration-700"
+    >
+      <h1
+        class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight"
+      >
+        Panduan Les <span class="text-blue-600">Balongarut</span>
+      </h1>
+      <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+        Tempat belajar modern dengan metode <span
+          class="font-semibold text-blue-600">Card Memory</span
+        > dan latihan soal terstruktur untuk hasil yang optimal.
+      </p>
+    </section>
+
+    <!-- Metode Card Memory Section -->
+    <section
+      class="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150"
+    >
+      <div class="grid md:grid-cols-2 gap-12 items-center">
+        <div class="space-y-6">
+          <div
+            class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-blue-50 text-blue-600 font-medium text-sm"
+          >
+            <svg
+              class="w-4 h-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
+              /></svg
+            >
+            Metode Unggulan
+          </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Metode Card Memory</h2>
+          <p class="text-slate-600 leading-relaxed text-lg">
+            Mata pelajaran dipecah menjadi bagian kecil-kecil sehingga tidak
+            membebani anak-anak.
+          </p>
+          <ul class="space-y-4">
+            <li class="flex gap-4">
+              <div
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0"
+              >
+                1
+              </div>
+              <p class="text-slate-700">
+                <strong>Baca & Hafalkan:</strong> Baca card memory, hafalkan selama
+                5 menit per card lalu tulis.
+              </p>
+            </li>
+            <li class="flex gap-4">
+              <div
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0"
+              >
+                2
+              </div>
+              <p class="text-slate-700">
+                <strong>Latihan Teratur:</strong> Soal latihan 2 atau 3 kali perminggu
+                untuk memastikan anak bisa menerapkan apa yang dihafal.
+              </p>
+            </li>
+          </ul>
+        </div>
+
+        <div
+          class="bg-slate-50 rounded-2xl p-6 border border-slate-100 relative overflow-hidden group"
+        >
+          <div
+            class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-100 rounded-full blur-2xl opacity-50"
+          ></div>
+          <h3
+            class="text-xl font-bold text-slate-900 mb-4 flex items-center gap-2"
+          >
+            <svg
+              class="w-5 h-5 text-blue-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              /></svg
+            >
+            Mengapa Harus Card Memory?
+          </h3>
+          <div class="space-y-4">
+            <div
+              class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 group-hover:-translate-y-1 transition-transform duration-300"
+            >
+              <p class="text-slate-700">
+                Banyak anak sekarang <span class="font-semibold text-red-500"
+                  >tidak suka membaca</span
+                > buku. Baca sedikit sudah ngantuk. <span class="text-2xl ml-1 align-middle inline-block animate-pulse">😴</span>
+              </p>
+            </div>
+            <div
+              class="bg-white p-4 rounded-xl shadow-sm border border-slate-100 group-hover:-translate-y-1 transition-transform duration-300 delay-75"
+            >
+              <p class="text-slate-700">
+                Walaupun membaca materi, kita <span
+                  class="font-semibold text-amber-500">tidak tahu pasti</span
+                > apakah materi tersebut benar-benar diserap dan dipahami secara
+                optimal atau tidak.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Contoh Card Memory Section -->
+    <section
+      class="space-y-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-300"
+    >
+      <div class="text-center">
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-900">Contoh Card Memory</h2>
+        <p class="text-slate-600 mt-2">
+          Visual yang menarik membantu otak mengingat lebih cepat.
+        </p>
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2"
+        >
+          <img
+            src={mathCard2}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-75"
+        >
+          <img
+            src={mathCard3}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+        <div
+          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-150"
+        >
+          <img
+            src={mathCard4}
+            alt="Card Memory"
+            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
+          />
+        </div>
+      </div>
+    </section>
+
+    <!-- Panduan Aplikasi Section -->
+    <section
+      class="grid md:grid-cols-2 gap-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-500"
+    >
+      <div
+        class="bg-white rounded-3xl p-8 shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col"
+      >
+        <h2
+          class="text-xl md:text-2xl font-bold text-slate-900 mb-6 flex items-center gap-3"
+        >
+          <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+              /></svg
+            >
+          </div>
+          Panduan Login
+        </h2>
+        <ul class="space-y-4 mb-8">
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Klik menu <strong class="text-slate-900">Masuk Portal</strong> di navigasi
+              atas.
+            </p>
+          </li>
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Masukkan <strong class="text-slate-900">username</strong> dan
+              <strong class="text-slate-900">password</strong> yang telah diberikan
+              oleh admin.
+            </p>
+          </li>
+        </ul>
+
+        <hr class="my-auto border-slate-100" />
+
+        <h2
+          class="text-xl md:text-2xl font-bold text-slate-900 mt-8 mb-6 flex items-center gap-3"
+        >
+          <div class="p-2 bg-amber-100 text-amber-600 rounded-lg">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+              /></svg
+            >
+          </div>
+          Panduan Ganti Password
+        </h2>
+        <ul class="space-y-4">
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Masuk ke <strong class="text-slate-900">Dashboard</strong>.
+            </p>
+          </li>
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Klik icon <strong class="text-slate-900">inisial nama</strong> di pojok
+              kanan atas untuk membuka menu.
+            </p>
+          </li>
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Klik <strong class="text-slate-900">tanda panah</strong> di pojok bawah
+              kiri menu profil.
+            </p>
+          </li>
+          <li class="flex gap-3 items-start">
+            <div
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+            ></div>
+            <p class="text-slate-700">
+              Pilih opsi <strong class="text-slate-900">Ganti Password</strong>.
+            </p>
+          </li>
+        </ul>
+      </div>
+
+      <div class="bg-slate-900 rounded-3xl p-8 shadow-xl text-white">
+        <h2 class="text-xl md:text-2xl font-bold mb-8 flex items-center gap-3">
+          <div class="p-2 bg-white/10 text-white rounded-lg">
+            <svg
+              class="w-6 h-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+              /></svg
+            >
+          </div>
+          Keterangan Menu Dashboard
+        </h2>
+
+        <div class="space-y-6">
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-white/5 rounded-xl group-hover:bg-blue-500/20 transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-blue-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-white mb-1">Todolist</h4>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Digunakan untuk melihat apa saja yang sudah dihafal oleh siswa.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-white/5 rounded-xl group-hover:bg-emerald-500/20 transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-emerald-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-white mb-1">Nilai Harian</h4>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Digunakan untuk melihat hasil nilai ujian dari soal-soal
+                latihan.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-white/5 rounded-xl group-hover:bg-purple-500/20 transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-purple-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 002-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-white mb-1">Kuis dan Nilai</h4>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Digunakan untuk melihat skor hasil quiz interaktif.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-white/5 rounded-xl group-hover:bg-pink-500/20 transition-colors"
+            >
+              <svg
+                class="w-6 h-6 text-pink-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-white mb-1">Absensi</h4>
+              <p class="text-slate-400 text-sm leading-relaxed">
+                Digunakan untuk melihat riwayat kehadiran dan absensi harian.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
