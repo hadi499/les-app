@@ -11,6 +11,7 @@ type Exam struct {
 	SubjectID uint      `json:"subject_id" gorm:"index;not null"`
 	Subject   Subject   `json:"subject" gorm:"foreignKey:SubjectID"`
 	Score     int       `json:"score" gorm:"not null"`
+	Image     string    `json:"image"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }

@@ -9,6 +9,7 @@
     exam_name: string;
     subject_id: number;
     score: number;
+    image?: string;
     user?: { username: string };
     subject?: { name: string };
   };
@@ -70,6 +71,41 @@
   let formExamName = $state("");
   let formSubjectId: number | string = $state("");
   let formScore = $state(0);
+  let formImage = $state("");
+  let isUploadingImage = $state(false);
+
+  async function handleImageUpload(e: Event) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+    
+    const file = target.files[0];
+    if (file.size > 1 * 1024 * 1024) {
+      alert("Ukuran file maksimal 1MB");
+      return;
+    }
+    
+    const formData = new FormData();
+    formData.append("image", file);
+    
+    isUploadingImage = true;
+    try {
+      const res = await fetch("/api/upload?type=exam", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Gagal mengunggah gambar");
+      }
+      const data = await res.json();
+      formImage = data.url;
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    } finally {
+      isUploadingImage = false;
+    }
+  }
 
   async function fetchExams() {
     try {
@@ -150,6 +186,7 @@
     formExamName = "";
     formSubjectId = "";
     formScore = 0;
+    formImage = "";
     showModal = true;
   }
 
@@ -161,6 +198,7 @@
     formExamName = exam.exam_name;
     formSubjectId = exam.subject_id;
     formScore = exam.score;
+    formImage = exam.image || "";
     showModal = true;
   }
 
@@ -181,6 +219,7 @@
       exam_name: formExamName,
       subject_id: Number(formSubjectId),
       score: formScore,
+      image: formImage,
     };
 
     try {
@@ -490,6 +529,7 @@
                 <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Nama Ujian</th>
                 <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Mata Pelajaran</th>
                 <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Nilai</th>
+                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Detail</th>
                 {#if isTeacher}
                   <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Aksi</th>
                 {/if}
@@ -519,6 +559,11 @@
                     >
                       {exam.score}
                     </span>
+                  </td>
+                  <td class="py-4 px-6 text-sm text-center">
+                    <a href={`/dashboard/exams/${exam.id}`} class="inline-flex items-center justify-center p-1.5 text-indigo-600 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors border border-indigo-300" title="Lihat Detail">
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    </a>
                   </td>
                   {#if isTeacher}
                     <td class="py-4 px-6 text-center">
@@ -567,7 +612,7 @@
               {#if exams.length === 0}
                 <tr>
                   <td
-                    colspan={isTeacher ? 6 : 4}
+                    colspan={isTeacher ? 7 : 5}
                     class="py-12 text-center text-slate-500 font-light"
                     >Belum ada data nilai ujian.</td
                   >
@@ -829,6 +874,43 @@
             class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm"
             required
           />
+        </div>
+
+        <div>
+          <label
+            class="block text-sm font-medium text-slate-600 mb-1.5"
+            for="image">Bukti Ujian (Opsional, Maks 1MB)</label
+          >
+          <input
+            type="file"
+            id="image"
+            accept="image/*"
+            onchange={handleImageUpload}
+            disabled={isUploadingImage}
+            class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
+          />
+          {#if isUploadingImage}
+            <p class="text-xs text-indigo-600 mt-2 flex items-center gap-2">
+              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              Mengunggah...
+            </p>
+          {/if}
+          {#if formImage}
+            <div class="mt-3 relative inline-block">
+              <img src={formImage} alt="Bukti Ujian" class="h-24 object-cover rounded-xl border border-slate-200 shadow-sm" />
+              <button
+                type="button"
+                onclick={() => (formImage = "")}
+                class="absolute -top-2 -right-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-full p-1 border border-red-300 shadow-sm transition-colors"
+                title="Hapus Bukti"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            </div>
+          {/if}
         </div>
 
         <div class="pt-4 flex justify-end gap-3">

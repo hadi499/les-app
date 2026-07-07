@@ -4,7 +4,9 @@ import (
 	"backend/database"
 	"backend/models"
 	"net/http"
+	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -28,6 +30,32 @@ func GetExams(c *gin.Context) {
 	c.JSON(http.StatusOK, exams)
 }
 
+// GetExamByID fetches a single exam by its ID
+func GetExamByID(c *gin.Context) {
+	idParam := c.Param("id")
+	id, err := strconv.Atoi(idParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid ID format"})
+		return
+	}
+
+	var exam models.Exam
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+
+	query := database.DB.Preload("User").Preload("Subject")
+	if role != "teacher" && role != "admin" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	if err := query.First(&exam, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Exam score not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, exam)
+}
+
 // CreateExam creates a new exam score record
 func CreateExam(c *gin.Context) {
 	var input struct {
@@ -36,6 +64,7 @@ func CreateExam(c *gin.Context) {
 		ExamName  string `json:"exam_name" binding:"required"`
 		SubjectID uint   `json:"subject_id" binding:"required"`
 		Score     int    `json:"score"`
+		Image     string `json:"image"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -55,6 +84,7 @@ func CreateExam(c *gin.Context) {
 		ExamName:  input.ExamName,
 		SubjectID: input.SubjectID,
 		Score:     input.Score,
+		Image:     input.Image,
 	}
 
 	if err := database.DB.Create(&exam).Error; err != nil {
@@ -88,6 +118,7 @@ func UpdateExam(c *gin.Context) {
 		ExamName  string `json:"exam_name" binding:"required"`
 		SubjectID uint   `json:"subject_id" binding:"required"`
 		Score     int    `json:"score"`
+		Image     string `json:"image"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -101,22 +132,29 @@ func UpdateExam(c *gin.Context) {
 		return
 	}
 
+	oldImage := exam.Image
+
 	exam.UserID = input.UserID
 	exam.ExamDate = date
 	exam.ExamName = input.ExamName
 	exam.SubjectID = input.SubjectID
 	exam.Score = input.Score
+	exam.Image = input.Image
 
 	if err := database.DB.Save(&exam).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update exam score"})
 		return
 	}
 
+	if oldImage != "" && oldImage != input.Image {
+		filePath := strings.TrimPrefix(oldImage, "/")
+		_ = os.Remove(filePath)
+	}
+
 	database.DB.Preload("User").Preload("Subject").First(&exam, exam.ID)
 	c.JSON(http.StatusOK, exam)
 }
 
-// DeleteExam deletes an exam score record
 func DeleteExam(c *gin.Context) {
 	idParam := c.Param("id")
 	id, err := strconv.Atoi(idParam)
@@ -125,9 +163,20 @@ func DeleteExam(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Delete(&models.Exam{}, id).Error; err != nil {
+	var exam models.Exam
+	if err := database.DB.First(&exam, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Exam score not found"})
+		return
+	}
+
+	if err := database.DB.Delete(&exam).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete exam score"})
 		return
+	}
+
+	if exam.Image != "" {
+		filePath := strings.TrimPrefix(exam.Image, "/")
+		_ = os.Remove(filePath)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Exam score deleted successfully"})

@@ -223,8 +223,24 @@ func UploadImage(c *gin.Context) {
 
 	ext := filepath.Ext(header.Filename)
 	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), ext)
-	savePath := filepath.Join("uploads", filename)
 
+	// Tentukan subfolder berdasarkan query parameter "type"
+	uploadType := c.Query("type")
+	subfolder := ""
+	if uploadType == "exam" {
+		subfolder = "exams"
+	} else if uploadType == "card" {
+		subfolder = "cards"
+	}
+
+	// Buat folder jika belum ada
+	dirPath := filepath.Join("uploads", subfolder)
+	if err := os.MkdirAll(dirPath, os.ModePerm); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create directory"})
+		return
+	}
+
+	savePath := filepath.Join(dirPath, filename)
 	out, err := os.Create(savePath)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
@@ -237,7 +253,13 @@ func UploadImage(c *gin.Context) {
 		return
 	}
 
-	url := fmt.Sprintf("/uploads/%s", filename)
+	// Format URL relatif
+	urlPath := "uploads"
+	if subfolder != "" {
+		urlPath += "/" + subfolder
+	}
+	url := fmt.Sprintf("/%s/%s", urlPath, filename)
+	
 	c.JSON(http.StatusOK, gin.H{"url": url})
 }
 

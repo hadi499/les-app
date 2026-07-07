@@ -133,9 +133,10 @@
   let trashCountVal = $derived(trashCount.value);
 
   let groupedCards = $derived.by(() => {
+    const folders = $cardFolders; // Reactivity dependency
     const acc: Record<string, Card[]> = {};
     // Inisialisasi folder kosong
-    for (const f of $cardFolders) {
+    for (const f of folders) {
       acc[f.name] = [];
     }
     // Kelompokkan kartu berdasarkan folder
@@ -153,7 +154,8 @@
 
   let activeFolderId = $derived.by(() => {
     if (!activeCategory) return null;
-    const folder = $cardFolders.find(f => f.name === activeCategory);
+    const folders = $cardFolders;
+    const folder = folders.find(f => f.name === activeCategory);
     return folder ? folder.id : null;
   });
 
@@ -550,14 +552,6 @@
             >Coba Lagi</button
           >
         </div>
-      {:else if cards.length === 0 && !loading}
-        <div
-          class="text-center py-8 bg-white/80 rounded-xl border border-slate-200"
-        >
-          <p class="text-slate-500 mb-3">
-            Belum ada kartu. Tambah kartu baru via form di atas.
-          </p>
-        </div>
       {:else}
         {#if activeCategory === null && !searchQuery.trim()}
           <FolderGrid
@@ -567,6 +561,15 @@
             onEditFolder={handleEditFolder}
             onDeleteFolder={handleDeleteFolderClick}
           />
+          {#if Object.keys(groupedCards).length === 0}
+            <div
+              class="text-center py-8 bg-white/80 rounded-xl border border-slate-200 mt-4"
+            >
+              <p class="text-slate-500 mb-3">
+                Belum ada folder atau kartu. Tambah folder atau kartu baru via tombol di atas.
+              </p>
+            </div>
+          {/if}
         {:else}
           {#if activeCategory !== null}
             <div class="mb-4 flex items-center justify-between">
@@ -591,16 +594,27 @@
               <h3 class="font-semibold text-slate-800 text-lg">Hasil Pencarian</h3>
             </div>
           {/if}
-          <CardTable
-            cards={activeCategoryCards}
-            activeCategory={activeCategory}
-            isTeacher={isTeacher}
-            selectedIds={selectedIds}
-            onToggleSelect={toggleSelect}
-            onEdit={handleEdit}
-            onDelete={handleDeleteClick}
-            onDetailClick={handleDetailClick}
-          />
+          
+          {#if activeCategoryCards.length === 0}
+            <div
+              class="text-center py-8 bg-white/80 rounded-xl border border-slate-200 mt-4"
+            >
+              <p class="text-slate-500 mb-3">
+                Belum ada kartu di sini.
+              </p>
+            </div>
+          {:else}
+            <CardTable
+              cards={activeCategoryCards}
+              activeCategory={activeCategory}
+              isTeacher={isTeacher}
+              selectedIds={selectedIds}
+              onToggleSelect={toggleSelect}
+              onEdit={handleEdit}
+              onDelete={handleDeleteClick}
+              onDetailClick={handleDetailClick}
+            />
+          {/if}
         {/if}
       {/if}
     </div>

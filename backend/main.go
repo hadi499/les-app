@@ -8,6 +8,8 @@ import (
 	"backend/models"
 	"backend/routes"
 
+	"os"
+	"strings"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -41,6 +43,31 @@ func main() {
 		for {
 			database.DB.Where("expires_at < ?", time.Now()).Delete(&models.BlacklistedToken{})
 			time.Sleep(1 * time.Hour)
+		}
+	}()
+
+	// Background job untuk menghapus gambar bukti nilai ujian yang usianya lebih dari 1 bulan
+	go func() {
+		for {
+			var exams []models.Exam
+			// Batas waktu penghapusan: 30 hari (1 bulan) sejak update terakhir
+			batasWaktu := time.Now().AddDate(0, -1, 0)
+			
+			// Cari data ujian yang memiliki gambar dan diupdate sebelum batas waktu
+			database.DB.Where("image != ? AND image IS NOT NULL AND updated_at < ?", "", batasWaktu).Find(&exams)
+			
+			for _, exam := range exams {
+				if exam.Image != "" {
+					// Hapus slash di awal agar path menjadi relatif (misal: /uploads/file.jpg -> uploads/file.jpg)
+					filePath := strings.TrimPrefix(exam.Image, "/")
+					_ = os.Remove(filePath)
+					
+					// Hapus path gambar dari database tanpa menghapus data nilainya
+					database.DB.Model(&exam).Update("image", "")
+				}
+			}
+			// Cek setiap 24 jam sekali
+			time.Sleep(24 * time.Hour)
 		}
 	}()
 

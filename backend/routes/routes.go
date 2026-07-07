@@ -87,6 +87,7 @@ func SetupRoutes(r *gin.Engine) {
 	exams.Use(middleware.AuthMiddleware())
 	{
 		exams.GET("", controllers.GetExams)
+		exams.GET("/:id", controllers.GetExamByID)
 
 		teacherExams := exams.Group("")
 		teacherExams.Use(middleware.RoleMiddleware("teacher"))
