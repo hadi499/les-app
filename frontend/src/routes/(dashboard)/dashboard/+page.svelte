@@ -15,6 +15,9 @@
   
   let isClassOpen = $state(true);
   let isLoadingToggle = $state(false);
+  let userRole = $state("");
+  let isSettingsLoaded = $state(false);
+  let isRoleLoaded = $state(false);
 
   async function fetchSettings() {
     try {
@@ -25,6 +28,8 @@
       }
     } catch (e) {
       console.error("Gagal memuat pengaturan", e);
+    } finally {
+      isSettingsLoaded = true;
     }
   }
 
@@ -58,11 +63,14 @@
       const meRes = await fetch("/me", { credentials: "include" });
       if (meRes.ok) {
         const meData = await meRes.json();
-        if (meData.authenticated && meData.user.role === "teacher") {
-          const res = await fetch("/api/system/info", { credentials: "include" });
-          if (res.ok) {
-            const json = await res.json();
-            systemInfo = json.data;
+        if (meData.authenticated) {
+          userRole = meData.user.role;
+          if (userRole === "teacher") {
+            const res = await fetch("/api/system/info", { credentials: "include" });
+            if (res.ok) {
+              const json = await res.json();
+              systemInfo = json.data;
+            }
           }
         }
       }
@@ -70,6 +78,7 @@
       console.error(e);
     } finally {
       isRefreshing = false;
+      isRoleLoaded = true;
     }
   }
 
@@ -118,20 +127,43 @@
       <div class="p-6 flex items-center justify-between">
         <div>
           <h4 class="font-bold text-slate-800 m-0">Status Kelas Hari Ini</h4>
-          <p class="text-sm text-slate-500 m-0 mt-1">Ubah status ini menjadi libur jika tidak ada jadwal masuk hari ini.</p>
+          {#if userRole === 'teacher'}
+            <p class="text-sm text-slate-500 m-0 mt-1">Ubah status ini menjadi libur jika tidak ada jadwal masuk hari ini.</p>
+          {:else}
+            <p class="text-sm text-slate-500 m-0 mt-1">Menunjukkan apakah ada jadwal masuk les hari ini.</p>
+          {/if}
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-sm font-bold {isClassOpen ? 'text-emerald-600' : 'text-slate-400'}">{isClassOpen ? 'BUKA' : 'LIBUR'}</span>
-          <button
-            onclick={toggleClassOpen}
-            disabled={isLoadingToggle}
-            class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpen ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
-          >
-            <span class="sr-only">Toggle Kelas</span>
-            <span
-              class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpen ? 'translate-x-7' : 'translate-x-1'}"
-            ></span>
-          </button>
+          {#if !isSettingsLoaded || !isRoleLoaded}
+            <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
+          {:else if userRole === 'teacher'}
+            <span class="text-sm font-bold {isClassOpen ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpen ? 'BUKA' : 'LIBUR'}</span>
+            <button
+              onclick={toggleClassOpen}
+              disabled={isLoadingToggle}
+              class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpen ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
+            >
+              <span class="sr-only">Toggle Kelas</span>
+              <span
+                class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpen ? 'translate-x-7' : 'translate-x-1'}"
+              ></span>
+            </button>
+          {:else}
+            <div class="px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-2 shadow-sm {isClassOpen ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
+              {#if isClassOpen}
+                <span class="relative flex h-2.5 w-2.5">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                </span>
+                KELAS BUKA
+              {:else}
+                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                KELAS LIBUR
+              {/if}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
