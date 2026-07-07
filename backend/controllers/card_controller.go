@@ -22,14 +22,16 @@ func deleteCardImage(card models.Card) {
 	if card.Image == "" {
 		return
 	}
-	filename := filepath.Base(card.Image)
-	if filename == "." || filename == "/" || filename == "" {
+	
+	// Format di DB biasanya `/uploads/cards/filename.ext` atau `/uploads/filename.ext`
+	// Hapus prefix "/" agar menjadi path relatif ke direktori kerja (backend)
+	filePath := strings.TrimPrefix(card.Image, "/")
+	
+	// Validasi keamanan sederhana
+	if filePath == "." || filePath == "" || strings.Contains(filePath, "..") || strings.HasPrefix(filepath.Base(filePath), "?") {
 		return
 	}
-	filePath := filepath.Join("uploads", filename)
-	if strings.HasPrefix(filename, "?") {
-		return
-	}
+	
 	if err := os.Remove(filePath); err != nil {
 		log.Printf("Failed to delete image %s: %v", filePath, err)
 	}
@@ -142,6 +144,11 @@ func UpdateCard(c *gin.Context) {
 		return
 	}
 
+	// Hapus gambar lama jika gambar diubah (URL berbeda) dan tidak kosong
+	if input.Image != card.Image && card.Image != "" {
+		deleteCardImage(card)
+	}
+
 	card.CardFolderID = input.CardFolderID
 	card.Image = input.Image
 	card.Title = input.Title
@@ -226,11 +233,9 @@ func UploadImage(c *gin.Context) {
 
 	// Tentukan subfolder berdasarkan query parameter "type"
 	uploadType := c.Query("type")
-	subfolder := ""
+	subfolder := "cards" // default folder untuk image card
 	if uploadType == "exam" {
 		subfolder = "exams"
-	} else if uploadType == "card" {
-		subfolder = "cards"
 	}
 
 	// Buat folder jika belum ada

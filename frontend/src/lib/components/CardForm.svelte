@@ -27,6 +27,7 @@
   let isCreatingFolder = $state(false);
 
   let image = $state("");
+  let selectedFile = $state<File | null>(null);
   let title = $state("");
   let size = $state("6");
   let uploading = $state(false);
@@ -48,7 +49,7 @@
     }
   });
 
-  function handleSubmit(e: Event) {
+  async function handleSubmit(e: Event) {
     e.preventDefault();
     const html = editorRef?.getHTML() ?? "";
     if (!title.trim() || !(html.trim() || html.includes("<img"))) return;
@@ -56,19 +57,35 @@
         alert("Pilih folder terlebih dahulu");
         return;
     }
+
+    let finalImageUrl = image;
+    if (selectedFile) {
+      uploading = true;
+      try {
+        finalImageUrl = await cardsStore.uploadImage(selectedFile);
+      } catch (err: any) {
+        uploadMsg = "Upload gagal: " + (err.message || "unknown");
+        uploading = false;
+        return;
+      }
+      uploading = false;
+    }
+
     onsave({
       card_folder_id,
-      image: image.trim(),
+      image: finalImageUrl.trim(),
       title: title.trim(),
       content: html,
       size,
       cardType: "regular",
     });
+
     if (!edit) {
       card_folder_id = null;
       image = "";
       title = "";
       size = "6";
+      selectedFile = null;
       editorRef?.setHTML("");
     }
   }
@@ -80,7 +97,7 @@
     isCreatingFolder = false;
   }
 
-  async function handleFileUpload(e: Event) {
+  function handleFileUpload(e: Event) {
     const target = e.target as HTMLInputElement;
     const file = target.files?.[0];
     if (!file) return;
@@ -96,18 +113,9 @@
       return;
     }
 
-    uploading = true;
-    uploadMsg = "";
-    try {
-      const url = await cardsStore.uploadImage(file);
-      image = url;
-      uploadMsg = "Upload berhasil";
-    } catch (err: any) {
-      uploadMsg = "Upload gagal: " + (err.message || "unknown");
-    } finally {
-      uploading = false;
-      target.value = "";
-    }
+    selectedFile = file;
+    uploadMsg = `File dipilih: ${file.name}`;
+    target.value = "";
   }
 </script>
 
@@ -147,15 +155,21 @@
       <div class="flex gap-2 items-start">
         <input
           type="text"
-          bind:value={image}
+          value={selectedFile ? selectedFile.name : image}
+          oninput={(e) => {
+            image = e.currentTarget.value;
+            selectedFile = null;
+            uploadMsg = "";
+          }}
           placeholder="URL gambar atau upload..."
-          class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none"
+          class="flex-1 px-3 py-2 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none {selectedFile ? 'bg-slate-50 text-slate-500' : ''}"
         />
-        {#if image}
+        {#if image || selectedFile}
           <button
             type="button"
             onclick={() => {
               image = "";
+              selectedFile = null;
               uploadMsg = "";
             }}
             class="px-3 py-2 text-sm rounded-lg bg-red-50 border border-red-500 text-red-600 hover:bg-red-100 cursor-pointer whitespace-nowrap"
@@ -181,7 +195,9 @@
       </div>
       {#if uploadMsg}
         <span
-          class="text-xs {uploadMsg === 'Upload berhasil'
+          class="text-xs {uploadMsg.includes('dipilih')
+            ? 'text-blue-600'
+            : uploadMsg.includes('berhasil')
             ? 'text-green-600'
             : 'text-red-500'}">{uploadMsg}</span
         >
