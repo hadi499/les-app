@@ -81,13 +81,7 @@ func GetSystemInfo(c *gin.Context) {
 	var dirSize uint64
 	var walkErr error
 	
-	// Jika folder uploads adalah symlink (sering terjadi di VPS), kita harus mengevaluasinya
-	uploadsPath := "./uploads"
-	if evaluatedPath, err := filepath.EvalSymlinks("./uploads"); err == nil {
-		uploadsPath = evaluatedPath
-	}
-
-	err = filepath.Walk(uploadsPath, func(path string, info os.FileInfo, err error) error {
+	err = filepath.Walk("./uploads", func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			walkErr = err
 			return nil // lanjutkan ke file lain meskipun ada error
