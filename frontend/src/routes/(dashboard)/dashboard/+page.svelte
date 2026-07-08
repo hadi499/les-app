@@ -13,8 +13,10 @@
   let systemInfo: any = $state(null);
   let isRefreshing = $state(false);
   
-  let isClassOpen = $state(true);
-  let isLoadingToggle = $state(false);
+  let isClassOpenPaud = $state(true);
+  let isClassOpenSd = $state(true);
+  let isLoadingTogglePaud = $state(false);
+  let isLoadingToggleSd = $state(false);
   let userRole = $state("");
   let isSettingsLoaded = $state(false);
   let isRoleLoaded = $state(false);
@@ -24,7 +26,8 @@
       const res = await fetch("/api/settings", { credentials: "include" });
       if (res.ok) {
         const json = await res.json();
-        isClassOpen = json.is_class_open === "true";
+        isClassOpenPaud = json.is_class_open_paud === "true";
+        isClassOpenSd = json.is_class_open_sd === "true";
       }
     } catch (e) {
       console.error("Gagal memuat pengaturan", e);
@@ -33,27 +36,49 @@
     }
   }
 
-  async function toggleClassOpen() {
-    isLoadingToggle = true;
-    const newValue = !isClassOpen;
+  async function toggleClassOpenPaud() {
+    isLoadingTogglePaud = true;
+    const newValue = !isClassOpenPaud;
     try {
-      const res = await fetch("/api/settings/is_class_open", {
+      const res = await fetch("/api/settings/is_class_open_paud", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({ value: newValue ? "true" : "false" })
       });
       if (res.ok) {
-        isClassOpen = newValue;
-        alert("Status kelas berhasil diperbarui!");
+        isClassOpenPaud = newValue;
       } else {
-        alert("Gagal memperbarui status kelas.");
+        alert("Gagal memperbarui status kelas PAUD/TK.");
       }
     } catch (e) {
       console.error(e);
       alert("Terjadi kesalahan koneksi.");
     } finally {
-      isLoadingToggle = false;
+      isLoadingTogglePaud = false;
+    }
+  }
+
+  async function toggleClassOpenSd() {
+    isLoadingToggleSd = true;
+    const newValue = !isClassOpenSd;
+    try {
+      const res = await fetch("/api/settings/is_class_open_sd", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ value: newValue ? "true" : "false" })
+      });
+      if (res.ok) {
+        isClassOpenSd = newValue;
+      } else {
+        alert("Gagal memperbarui status kelas SD/SMP.");
+      }
+    } catch (e) {
+      console.error(e);
+      alert("Terjadi kesalahan koneksi.");
+    } finally {
+      isLoadingToggleSd = false;
     }
   }
 
@@ -124,46 +149,81 @@
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Control Panel -->
     <div class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden">
-      <div class="p-6 flex items-center justify-between">
+      <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h4 class="font-bold text-slate-800 m-0">Status Kelas Hari Ini</h4>
-          {#if userRole === 'teacher'}
-            <p class="text-sm text-slate-500 m-0 mt-1">Ubah status ini menjadi libur jika tidak ada jadwal masuk hari ini.</p>
-          {:else}
-            <p class="text-sm text-slate-500 m-0 mt-1">Menunjukkan apakah ada jadwal masuk les hari ini.</p>
-          {/if}
         </div>
-        <div class="flex items-center gap-3">
-          {#if !isSettingsLoaded || !isRoleLoaded}
-            <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
-          {:else if userRole === 'teacher'}
-            <span class="text-sm font-bold {isClassOpen ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpen ? 'BUKA' : 'LIBUR'}</span>
-            <button
-              onclick={toggleClassOpen}
-              disabled={isLoadingToggle}
-              class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpen ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
-            >
-              <span class="sr-only">Toggle Kelas</span>
-              <span
-                class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpen ? 'translate-x-7' : 'translate-x-1'}"
-              ></span>
-            </button>
-          {:else}
-            <div class="px-4 py-1.5 rounded-full font-bold text-sm flex items-center gap-2 shadow-sm {isClassOpen ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
-              {#if isClassOpen}
-                <span class="relative flex h-2.5 w-2.5">
-                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-                </span>
-                KELAS BUKA
-              {:else}
-                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                KELAS LIBUR
-              {/if}
-            </div>
-          {/if}
+        
+        <div class="flex flex-col sm:flex-row items-center gap-4">
+          <!-- PAUD/TK -->
+          <div class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
+            <span class="text-sm font-semibold text-slate-700">PAUD/TK:</span>
+            {#if !isSettingsLoaded || !isRoleLoaded}
+              <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
+            {:else if userRole === 'teacher'}
+              <span class="text-sm font-bold {isClassOpenPaud ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpenPaud ? 'BUKA' : 'LIBUR'}</span>
+              <button
+                onclick={toggleClassOpenPaud}
+                disabled={isLoadingTogglePaud}
+                class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenPaud ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
+              >
+                <span class="sr-only">Toggle Kelas PAUD</span>
+                <span
+                  class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenPaud ? 'translate-x-7' : 'translate-x-1'}"
+                ></span>
+              </button>
+            {:else}
+              <div class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenPaud ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
+                {#if isClassOpenPaud}
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  BUKA
+                {:else}
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  LIBUR
+                {/if}
+              </div>
+            {/if}
+          </div>
+
+          <!-- SD/SMP -->
+          <div class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
+            <span class="text-sm font-semibold text-slate-700">SD/SMP:</span>
+            {#if !isSettingsLoaded || !isRoleLoaded}
+              <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
+            {:else if userRole === 'teacher'}
+              <span class="text-sm font-bold {isClassOpenSd ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpenSd ? 'BUKA' : 'LIBUR'}</span>
+              <button
+                onclick={toggleClassOpenSd}
+                disabled={isLoadingToggleSd}
+                class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenSd ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
+              >
+                <span class="sr-only">Toggle Kelas SD</span>
+                <span
+                  class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenSd ? 'translate-x-7' : 'translate-x-1'}"
+                ></span>
+              </button>
+            {:else}
+              <div class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenSd ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
+                {#if isClassOpenSd}
+                  <span class="relative flex h-2 w-2">
+                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                  </span>
+                  BUKA
+                {:else}
+                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                  LIBUR
+                {/if}
+              </div>
+            {/if}
+          </div>
         </div>
       </div>
     </div>

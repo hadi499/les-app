@@ -236,6 +236,8 @@ func UploadImage(c *gin.Context) {
 	subfolder := "cards" // default folder untuk image card
 	if uploadType == "exam" {
 		subfolder = "exams"
+	} else if uploadType == "writing_progress" {
+		subfolder = "writing_progress"
 	}
 
 	// Buat folder jika belum ada

@@ -30,12 +30,17 @@ func main() {
 	database.Connect()
 
 	// Migrasi otomatis untuk memastikan tabel ada
-	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{})
+	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{}, &models.WritingProgress{})
 
 	// Seeding pengaturan awal
-	var setting models.SystemSetting
-	if err := database.DB.Where("key = ?", "is_class_open").First(&setting).Error; err != nil {
-		database.DB.Create(&models.SystemSetting{Key: "is_class_open", Value: "true"})
+	var settingPaud models.SystemSetting
+	if err := database.DB.Where("key = ?", "is_class_open_paud").First(&settingPaud).Error; err != nil {
+		database.DB.Create(&models.SystemSetting{Key: "is_class_open_paud", Value: "true"})
+	}
+
+	var settingSd models.SystemSetting
+	if err := database.DB.Where("key = ?", "is_class_open_sd").First(&settingSd).Error; err != nil {
+		database.DB.Create(&models.SystemSetting{Key: "is_class_open_sd", Value: "true"})
 	}
 
 	// Background job untuk membersihkan token blacklist yang kedaluwarsa setiap 1 jam
@@ -67,6 +72,25 @@ func main() {
 				}
 			}
 			// Cek setiap 24 jam sekali
+			time.Sleep(24 * time.Hour)
+		}
+	}()
+
+	// Background job untuk menghapus gambar bukti perkembangan menulis yang usianya lebih dari 1 bulan
+	go func() {
+		for {
+			var progresses []models.WritingProgress
+			batasWaktu := time.Now().AddDate(0, -1, 0)
+			
+			database.DB.Where("image != ? AND image IS NOT NULL AND updated_at < ?", "", batasWaktu).Find(&progresses)
+			
+			for _, wp := range progresses {
+				if wp.Image != "" {
+					filePath := strings.TrimPrefix(wp.Image, "/")
+					_ = os.Remove(filePath)
+					database.DB.Model(&wp).Update("image", "")
+				}
+			}
 			time.Sleep(24 * time.Hour)
 		}
 	}()

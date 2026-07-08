@@ -5,7 +5,8 @@
   let authChecked = $state(false);
   
   // Mengambil status dari server
-  let isClassOpen = $state(true);
+  let isClassOpenPaud = $state(true);
+  let isClassOpenSd = $state(true);
   let isSettingsLoaded = $state(false);
 
   onMount(async () => {
@@ -14,8 +15,11 @@
       const resSettings = await fetch("/api/settings");
       if (resSettings.ok) {
         const settings = await resSettings.json();
-        if (settings.is_class_open !== undefined) {
-          isClassOpen = settings.is_class_open === "true";
+        if (settings.is_class_open_paud !== undefined) {
+          isClassOpenPaud = settings.is_class_open_paud === "true";
+        }
+        if (settings.is_class_open_sd !== undefined) {
+          isClassOpenSd = settings.is_class_open_sd === "true";
         }
       }
     } catch (e) {
@@ -74,22 +78,43 @@
 
 
       {#if isSettingsLoaded}
-        {#if isClassOpen}
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10 mt-4">
-            <span class="relative flex h-2.5 w-2.5">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
-            </span>
-            Kelas Hari Ini Buka
-          </div>
-        {:else}
-          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10 mt-4">
-            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            Kelas Sedang Libur
-          </div>
-        {/if}
+        <div class="flex flex-col sm:flex-row gap-3 mt-4">
+          <!-- Status PAUD/TK -->
+          {#if isClassOpenPaud}
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              PAUD/TK: Buka
+            </div>
+          {:else}
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              PAUD/TK: Libur
+            </div>
+          {/if}
+
+          <!-- Status SD/SMP -->
+          {#if isClassOpenSd}
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10">
+              <span class="relative flex h-2.5 w-2.5">
+                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+              </span>
+              SD/SMP: Buka
+            </div>
+          {:else}
+            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10">
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              SD/SMP: Libur
+            </div>
+          {/if}
+        </div>
       {:else}
         <!-- Placeholder agar layout tidak lompat -->
         <div class="h-9 sm:h-9 mt-4 opacity-0"></div>

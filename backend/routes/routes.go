@@ -140,6 +140,22 @@ func SetupRoutes(r *gin.Engine) {
 		folders.DELETE("/:id", controllers.DeleteFolder)
 	}
 
+	// Writing Progress API routes
+	writingProgress := r.Group("/api/writing-progress")
+	writingProgress.Use(middleware.AuthMiddleware())
+	{
+		writingProgress.GET("", controllers.GetWritingProgresses)
+		writingProgress.GET("/:id", controllers.GetWritingProgressByID)
+
+		teacherWritingProgress := writingProgress.Group("")
+		teacherWritingProgress.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherWritingProgress.POST("", controllers.CreateWritingProgress)
+			teacherWritingProgress.PUT("/:id", controllers.UpdateWritingProgress)
+			teacherWritingProgress.DELETE("/:id", controllers.DeleteWritingProgress)
+		}
+	}
+
 	// Card Folders API routes (Teacher only)
 	cardFolders := r.Group("/api/card-folders")
 	cardFolders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
