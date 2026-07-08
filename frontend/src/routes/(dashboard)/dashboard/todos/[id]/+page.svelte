@@ -186,20 +186,64 @@
     </div>
   {:else if list}
     <div class="p-2 md:p-10 transition-all">
-      <div class="flex flex-col md:flex-row items-center md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200">
-        <div class="flex items-center gap-2">
-          <h1 class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight text-center md:text-left">
+      <div
+        class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200"
+      >
+        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 flex-1 min-w-0 w-full">
+          <h1
+            class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight truncate w-full"
+          >
             {list.title}
           </h1>
-          {#if list.student_username}
-            <span class="px-2.5 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-lg shrink-0">
-              @{list.student_username}
-            </span>
-          {/if}
+          <div class="flex items-center gap-2 shrink-0">
+            {#if list.student_username}
+              <span
+                class="px-2.5 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-lg"
+              >
+                @{list.student_username}
+              </span>
+            {/if}
+            {#if list.items && list.items.length > 0 && list.items.every((i) => i.completed)}
+              <span
+                class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 flex items-center gap-1"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M5 13l4 4L19 7"
+                  ></path></svg
+                >
+                Selesai
+              </span>
+            {/if}
+          </div>
         </div>
-        <div class="flex items-center text-[13px] text-slate-500 font-medium bg-slate-100/80 px-3 py-1.5 rounded-lg w-max shrink-0">
-          <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-          {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+        <div
+          class="flex items-center text-[13px] text-slate-500 font-medium bg-slate-100/80 px-3 py-1.5 rounded-lg w-max shrink-0"
+        >
+          <svg
+            class="w-4 h-4 mr-1.5 text-slate-400"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+            ></path></svg
+          >
+          {new Date(list.created_at).toLocaleDateString("id-ID", {
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          })}
         </div>
       </div>
 
@@ -273,12 +317,19 @@
               <div
                 role={userRole === "teacher" ? "button" : "presentation"}
                 tabindex={userRole === "teacher" ? 0 : -1}
-                class="flex items-center gap-3 flex-1 outline-none {userRole === 'teacher' ? 'cursor-pointer' : 'cursor-default'}"
+                class="flex items-center gap-3 flex-1 outline-none {userRole ===
+                'teacher'
+                  ? 'cursor-pointer'
+                  : 'cursor-default'}"
                 onclick={() => {
-                  if (userRole === "teacher") toggleItem(item.id, item.completed);
+                  if (userRole === "teacher")
+                    toggleItem(item.id, item.completed);
                 }}
                 onkeydown={(e) => {
-                  if (userRole === "teacher" && (e.key === "Enter" || e.key === " "))
+                  if (
+                    userRole === "teacher" &&
+                    (e.key === "Enter" || e.key === " ")
+                  )
                     toggleItem(item.id, item.completed);
                 }}
               >
@@ -306,7 +357,7 @@
                 </div>
                 <span
                   class="text-base md:text-lg transition-all duration-300 {item.completed
-                    ? 'text-slate-400 line-through decoration-slate-400 decoration-2'
+                    ? 'text-slate-400 font-medium'
                     : 'text-slate-700 font-medium'}"
                 >
                   {item.text}
@@ -314,50 +365,28 @@
               </div>
 
               {#if userRole === "teacher"}
-                <div class="relative shrink-0 flex items-center gap-1 z-10">
-                  <!-- Mobile 3-dots button -->
-                  <button
-                    onclick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      openMenuId = openMenuId === item.id ? null : item.id;
-                    }}
-                    class="md:hidden p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-                    aria-label="Opsi tugas"
+                <button
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    deleteItem(item.id);
+                  }}
+                  class="shrink-0 flex items-center justify-center p-2.5 text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-colors cursor-pointer ml-auto z-10"
+                  title="Hapus tugas"
+                  aria-label="Hapus tugas"
+                >
+                  <svg
+                    class="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                    ></path></svg
                   >
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
-                      ><path
-                        d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
-                      /></svg
-                    >
-                  </button>
-
-                  <button
-                    onclick={() => {
-                      openMenuId = null;
-                      deleteItem(item.id);
-                    }}
-                    class="absolute md:static right-0 top-12 md:top-auto md:right-auto {openMenuId ===
-                    item.id
-                      ? 'flex'
-                      : 'hidden md:flex'} md:opacity-0 md:group-hover:opacity-100 items-center gap-2 p-3 md:p-2 bg-white md:bg-transparent border md:border-transparent border-slate-100 shadow-xl md:shadow-none text-red-600 md:text-slate-400 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer w-max"
-                    title="Hapus tugas"
-                    aria-label="Hapus tugas"
-                  >
-                    <svg
-                      class="w-5 h-5 shrink-0"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      ></path></svg
-                    >
-                  </button>
-                </div>
+                </button>
               {/if}
             </div>
           {/each}
