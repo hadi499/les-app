@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import Chart from "chart.js/auto";
+  import { compressImageFile } from "$lib/utils";
 
   type Exam = {
     id: number;
@@ -78,17 +79,21 @@
     const target = e.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) return;
     
-    const file = target.files[0];
-    if (file.size > 1 * 1024 * 1024) {
-      alert("Ukuran file maksimal 1MB");
-      return;
-    }
-    
-    const formData = new FormData();
-    formData.append("image", file);
-    
     isUploadingImage = true;
     try {
+      let file = target.files[0];
+      
+      // Compress image
+      file = await compressImageFile(file);
+      
+      if (file.size > 1 * 1024 * 1024) {
+        alert("Ukuran file setelah kompresi masih lebih dari 1MB. Silakan pilih gambar lain.");
+        return;
+      }
+    
+      const formData = new FormData();
+      formData.append("image", file);
+      
       const res = await fetch("/api/upload?type=exam", {
         method: "POST",
         body: formData,
@@ -100,8 +105,8 @@
       }
       const data = await res.json();
       formImage = data.url;
-    } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan");
     } finally {
       isUploadingImage = false;
     }

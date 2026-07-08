@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { page } from "$app/state";
+  import { compressImageFile } from "$lib/utils";
 
   type WritingProgress = {
     id: number;
@@ -63,14 +64,23 @@
     const target = e.target as HTMLInputElement;
     if (!target.files || target.files.length === 0) return;
     
-    const file = target.files[0];
-    if (file.size > 1 * 1024 * 1024) {
-      alert("Ukuran file maksimal 1MB");
-      return;
+    isUploadingImage = true;
+    try {
+      let file = target.files[0];
+      
+      // Compress image
+      file = await compressImageFile(file);
+      
+      if (file.size > 1 * 1024 * 1024) {
+        alert("Ukuran file setelah kompresi masih lebih dari 1MB. Silakan pilih gambar lain.");
+        return;
+      }
+      
+      formFile = file;
+      localImagePreview = URL.createObjectURL(file);
+    } finally {
+      isUploadingImage = false;
     }
-    
-    formFile = file;
-    localImagePreview = URL.createObjectURL(file);
   }
 
   async function fetchProgresses() {
@@ -551,9 +561,9 @@
           {#if isUploadingImage}
             <p class="mt-2 text-sm text-indigo-600 font-medium animate-pulse">Mengunggah gambar...</p>
           {/if}
-          {#if formImage}
+          {#if localImagePreview || formImage}
             <div class="mt-3 rounded-xl overflow-hidden border border-slate-200 shadow-sm relative group">
-              <img src={formImage} alt="Preview" class="w-full h-40 object-cover" />
+              <img src={localImagePreview || formImage} alt="Preview" class="w-full h-40 object-cover" />
               <div class="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center">
                 <span class="text-white text-xs font-medium px-3 py-1 bg-black/60 rounded-full">Preview</span>
               </div>

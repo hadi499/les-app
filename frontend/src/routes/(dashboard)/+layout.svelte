@@ -239,6 +239,7 @@
             Todolist
           </a>
 
+
           <a
             href="/dashboard/writing-progress"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
@@ -555,7 +556,7 @@
           class="w-full group flex items-center justify-between gap-3 px-2 py-2 rounded-xl hover:bg-white/50 transition-colors cursor-pointer border border-transparent"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm flex-shrink-0">
+            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm shrink-0">
               {user.username ? user.username.charAt(0).toUpperCase() : "U"}
             </div>
             <div class="flex-1 min-w-0 text-left">
@@ -768,6 +769,7 @@
               </div>
               Todolist
             </a>
+
 
             <a
               href="/dashboard/writing-progress"
