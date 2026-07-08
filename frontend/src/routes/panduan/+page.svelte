@@ -1,10 +1,32 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import mathCard2 from "$lib/assets/card2.png";
   import mathCard3 from "$lib/assets/card3.png";
   import mathCard4 from "$lib/assets/card4.png";
   import mathCard5 from "$lib/assets/card5.png";
   import mathCard6 from "$lib/assets/card6.png";
   import mathCard7 from "$lib/assets/card7.png";
+
+  let isAuthenticated = $state(false);
+  let authChecked = $state(false);
+
+  onMount(async () => {
+    try {
+      const res = await fetch(`/me`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = (await res.json()) as { authenticated: boolean };
+        if (data.authenticated) {
+          isAuthenticated = true;
+        }
+      }
+    } catch (e) {
+      // Ignore error if no session
+    } finally {
+      authChecked = true;
+    }
+  });
 </script>
 
 <svelte:head>
@@ -29,6 +51,41 @@
       </p>
     </section>
 
+    <!-- Aturan Dasar Section -->
+    <section
+      class="bg-blue-50/50 border border-blue-100 rounded-3xl p-8 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-700 delay-75"
+    >
+      <div class="space-y-6 max-w-4xl mx-auto">
+        <h2 class="text-2xl md:text-3xl font-bold text-slate-800 text-center">
+          Aturan Dasar
+        </h2>
+        <div class="grid gap-4 md:grid-cols-2">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4">
+            <div class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-lg">
+              1
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 mb-2">Syarat Kelas Komputer</h3>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Penguasaan perkalian dasar adalah syarat wajib sebelum siswa dapat mengikuti pelajaran komputer.
+              </p>
+            </div>
+          </div>
+          
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4">
+            <div class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+              2
+            </div>
+            <div>
+              <h3 class="font-bold text-slate-800 mb-2">Kebijakan Mengerjakan PR</h3>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Fokus utama bimbingan adalah materi les. PR sekolah dapat dibahas setelah sesi utama selesai, di mana guru hanya akan memberikan panduan penyelesaiannya.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
     <!-- Metode Card Memory Section -->
     <section
       class="bg-white rounded-3xl p-8 md:p-12 shadow-xl shadow-blue-900/5 border border-slate-100 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150"
@@ -62,7 +119,7 @@
           <ul class="space-y-4">
             <li class="flex gap-4">
               <div
-                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0"
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
               >
                 1
               </div>
@@ -73,7 +130,7 @@
             </li>
             <li class="flex gap-4">
               <div
-                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold flex-shrink-0"
+                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
               >
                 2
               </div>
@@ -224,7 +281,7 @@
         <ul class="space-y-4 mb-8">
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Klik menu <strong class="text-slate-900">Masuk Portal</strong> di navigasi
@@ -233,7 +290,7 @@
           </li>
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-blue-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Masukkan <strong class="text-slate-900">username</strong> dan
@@ -267,7 +324,7 @@
         <ul class="space-y-4">
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Masuk ke <strong class="text-slate-900">Dashboard</strong>.
@@ -275,7 +332,7 @@
           </li>
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Klik icon <strong class="text-slate-900">inisial nama</strong> di pojok
@@ -284,7 +341,7 @@
           </li>
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Klik <strong class="text-slate-900">tanda panah</strong> di pojok bawah
@@ -293,7 +350,7 @@
           </li>
           <li class="flex gap-3 items-start">
             <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 flex-shrink-0"
+              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
             ></div>
             <p class="text-slate-700">
               Pilih opsi <strong class="text-slate-900">Ganti Password</strong>.
@@ -560,5 +617,64 @@
         </div>
       </div>
     </section>
+
+    <!-- Action Section -->
+    <div class="flex justify-center pb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+      {#if authChecked}
+        {#if !isAuthenticated}
+          <a
+            href="/login"
+            class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg rounded-xl"
+          >
+            <span class="relative z-10 flex items-center gap-3">
+              Masuk Portal
+              <svg
+                class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                ></path>
+              </svg>
+            </span>
+            <div
+              class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
+            ></div>
+          </a>
+        {:else}
+          <a
+            href="/dashboard"
+            class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg rounded-xl"
+          >
+            <span class="relative z-10 flex items-center gap-3">
+              Dashboard
+              <svg
+                class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 8l4 4m0 0l-4 4m4-4H3"
+                ></path>
+              </svg>
+            </span>
+            <div
+              class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
+            ></div>
+          </a>
+        {/if}
+      {/if}
+    </div>
   </div>
 </div>

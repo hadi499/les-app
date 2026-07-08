@@ -111,10 +111,10 @@
         </div>
       </div>
 
-      <div class="pt-4 flex justify-center">
+      <div class="pt-6 flex flex-col items-center gap-6">
         <a
           href="/panduan"
-          class="group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-slate-800 border border-slate-300 hover:text-slate-950 hover:border-blue-500 transition-all duration-700 bg-white/60 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-sm hover:shadow-md hover:shadow-blue-500/10"
+          class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-slate-800 border border-slate-300 hover:text-slate-950 hover:border-blue-500 transition-all duration-700 bg-white/60 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-sm hover:shadow-md hover:shadow-blue-500/10"
         >
           <span class="relative z-10 flex items-center gap-3">
             Panduan
@@ -137,6 +137,62 @@
             class="absolute inset-0 -translate-x-full bg-blue-100/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
           ></div>
         </a>
+
+        {#if authChecked}
+          {#if !isAuthenticated}
+            <a
+              href="/login"
+              class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg"
+            >
+              <span class="relative z-10 flex items-center gap-3">
+                Masuk Portal
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  ></path>
+                </svg>
+              </span>
+              <div
+                class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
+              ></div>
+            </a>
+          {:else}
+            <a
+              href="/dashboard"
+              class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg"
+            >
+              <span class="relative z-10 flex items-center gap-3">
+                Dashboard
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  ></path>
+                </svg>
+              </span>
+              <div
+                class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
+              ></div>
+            </a>
+          {/if}
+        {/if}
       </div>
     </div>
   </section>

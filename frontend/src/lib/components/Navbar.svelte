@@ -69,11 +69,11 @@
 />
 
 <nav
-  class="bg-white/80 backdrop-blur-md shadow-md border-b border-slate-100 fixed top-0 w-full z-50 subpixel-antialiased"
+  class="bg-white/80 backdrop-blur-md shadow-md border-b border-slate-100 fixed top-0 w-full z-50 subpixel-antialiased {isMobileMenuOpen ? 'bottom-0' : ''}"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
-      <div class="flex-shrink-0 flex items-center gap-3">
+      <div class="shrink-0 flex items-center gap-3">
         <div
           class="w-10 h-10 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-extrabold text-xl"
         >
@@ -154,7 +154,6 @@
                 <div
                   class="px-4 py-3 border-b border-slate-100 bg-slate-50 text-left"
                 >
-                  <p class="text-xs text-slate-600 m-0">Masuk sebagai</p>
                   <p class="text-sm font-bold text-slate-900 truncate m-0">
                     {user?.username}
                   </p>
@@ -179,7 +178,7 @@
                     Dashboard
                   </a>
                 </div>
-                <div class="border-t border-slate-100 py-1 text-left">
+                <div class="border-t border-slate-100 mt-4 pt-2 pb-1 text-left">
                   <button
                     onclick={handleLogout}
                     class="flex w-full items-center px-4 py-2 text-sm text-red-600 hover:bg-red-50 hover:text-red-700 font-medium border-none bg-transparent cursor-pointer"
@@ -202,30 +201,12 @@
               </div>
             {/if}
           </div>
-        {:else}
-          <a
-            href="/login"
-            class="ml-4 px-4 py-2 rounded-lg bg-white text-slate-800 hover:bg-slate-50 hover:text-blue-600 font-semibold text-sm transition-colors border border-slate-200 shadow-sm no-underline"
-            >Masuk Portal</a
-          >
         {/if}
       </div>
 
       <!-- Mobile menu button -->
       <div class="flex items-center sm:hidden gap-4">
-        {#if authChecked && isAuthenticated}
-          <div
-            class="w-8 h-8 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm"
-          >
-            {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
-          </div>
-        {:else if authChecked && !isAuthenticated}
-          <a
-            href="/login"
-            class="px-3 py-1.5 rounded-lg bg-white text-slate-800 hover:bg-slate-50 hover:text-blue-600 font-semibold text-xs transition-colors border border-slate-200 shadow-sm no-underline"
-            >Masuk</a
-          >
-        {/if}
+
         <button
           onclick={toggleMobileMenu}
           class="inline-flex items-center justify-center p-2 rounded-md text-slate-800 hover:text-blue-600 hover:bg-blue-50 focus:outline-none border-none bg-transparent cursor-pointer transition-colors"
@@ -268,10 +249,42 @@
 
   <!-- Mobile menu dropdown -->
   {#if isMobileMenuOpen}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="sm:hidden bg-white/95 shadow-lg border-t border-slate-100 animate-in slide-in-from-top-2 duration-200"
+      class="sm:hidden absolute inset-0 top-16 bg-black/10 z-40 animate-in fade-in duration-200"
+      onclick={closeMobileMenu}
+    ></div>
+    <div
+      class="sm:hidden relative z-50 bg-white/95 shadow-lg border-t border-slate-100 animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto"
     >
-      <div class="px-2 pt-2 pb-3 space-y-1">
+      {#if isAuthenticated}
+        <div class="pt-4 pb-3 border-b border-slate-200">
+          <div class="flex items-center px-5">
+            <div class="shrink-0">
+              <div
+                class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm"
+              >
+                {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
+              </div>
+            </div>
+            <div class="ml-3">
+              <div class="text-base font-medium leading-none text-slate-900">
+                {user?.username}
+              </div>
+            </div>
+          </div>
+          <div class="mt-6 px-2 space-y-1">
+            <a
+              href="/dashboard"
+              onclick={closeMobileMenu}
+              class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 no-underline"
+              >Dashboard</a
+            >
+          </div>
+        </div>
+      {/if}
+      <div class="px-2 pt-3 pb-3 space-y-1">
         <a
           href="/"
           onclick={closeMobileMenu}
@@ -322,36 +335,12 @@
         >
       </div>
       {#if isAuthenticated}
-        <div class="pt-4 pb-3 border-t border-slate-200">
-          <div class="flex items-center px-5">
-            <div class="flex-shrink-0">
-              <div
-                class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-600 font-bold border border-blue-200 shadow-sm"
-              >
-                {user?.username ? user.username.charAt(0).toUpperCase() : "U"}
-              </div>
-            </div>
-            <div class="ml-3">
-              <div class="text-base font-medium leading-none text-slate-900">
-                {user?.username}
-              </div>
-              <div class="text-sm font-medium leading-none text-slate-600 mt-1">
-                Masuk sebagai {user?.username}
-              </div>
-            </div>
-          </div>
-          <div class="mt-3 px-2 space-y-1">
-            <a
-              href="/dashboard"
-              class="block px-3 py-2 rounded-md text-base font-medium text-slate-700 hover:text-slate-900 hover:bg-slate-50 no-underline"
-              >Dashboard</a
-            >
-            <button
-              onclick={handleLogout}
-              class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border-none bg-transparent cursor-pointer"
-              >Keluar Akun</button
-            >
-          </div>
+        <div class="px-2 pt-2 pb-3 border-t border-slate-200 mt-6">
+          <button
+            onclick={handleLogout}
+            class="block w-full text-left px-3 py-2 rounded-md text-base font-medium text-red-600 hover:text-red-700 hover:bg-red-50 border-none bg-transparent cursor-pointer"
+            >Keluar Akun</button
+          >
         </div>
       {/if}
     </div>
