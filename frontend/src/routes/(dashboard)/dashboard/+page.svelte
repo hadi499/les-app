@@ -291,7 +291,11 @@
               <div class="space-y-2">
                 <div class="flex justify-between text-sm mt-6">
                   <span class="text-slate-600">Total Ukuran</span>
-                  <span class="font-bold text-slate-900">{systemInfo.uploads ? formatBytes(systemInfo.uploads.size) : '0 B'}</span>
+                  {#if systemInfo.uploads && systemInfo.uploads.error}
+                    <span class="font-bold text-red-600 cursor-help" title={systemInfo.uploads.error}>Error (Arahkan Mouse)</span>
+                  {:else}
+                    <span class="font-bold text-slate-900">{systemInfo.uploads ? formatBytes(systemInfo.uploads.size) : '0 B'}</span>
+                  {/if}
                 </div>
                 <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
                   <div class="bg-amber-500 h-2.5 rounded-full w-full"></div>

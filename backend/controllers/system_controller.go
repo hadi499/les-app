@@ -23,7 +23,8 @@ type SystemInfo struct {
 		Used  uint64 `json:"used"`
 	} `json:"storage"`
 	Uploads struct {
-		Size uint64 `json:"size"`
+		Size  uint64 `json:"size"`
+		Error string `json:"error,omitempty"`
 	} `json:"uploads"`
 }
 
@@ -78,13 +79,31 @@ func GetSystemInfo(c *gin.Context) {
 
 	// Uploads Folder Info
 	var dirSize uint64
-	filepath.Walk("./uploads", func(_ string, info os.FileInfo, err error) error {
-		if err == nil && !info.IsDir() {
+	var walkErr error
+	
+	// Jika folder uploads adalah symlink (sering terjadi di VPS), kita harus mengevaluasinya
+	uploadsPath := "./uploads"
+	if evaluatedPath, err := filepath.EvalSymlinks("./uploads"); err == nil {
+		uploadsPath = evaluatedPath
+	}
+
+	err = filepath.Walk(uploadsPath, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			walkErr = err
+			return nil // lanjutkan ke file lain meskipun ada error
+		}
+		if !info.IsDir() {
 			dirSize += uint64(info.Size())
 		}
 		return nil
 	})
+	
 	info.Uploads.Size = dirSize
+	if err != nil {
+		info.Uploads.Error = err.Error()
+	} else if walkErr != nil {
+		info.Uploads.Error = walkErr.Error()
+	}
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": info,
