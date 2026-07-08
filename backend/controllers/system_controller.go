@@ -6,6 +6,7 @@ import (
 	"os"
 	"strings"
 	"syscall"
+	"path/filepath"
 
 	"github.com/gin-gonic/gin"
 )
@@ -21,6 +22,9 @@ type SystemInfo struct {
 		Free  uint64 `json:"free"`
 		Used  uint64 `json:"used"`
 	} `json:"storage"`
+	Uploads struct {
+		Size uint64 `json:"size"`
+	} `json:"uploads"`
 }
 
 // GetSystemInfo mengembalikan informasi memori dan storage dari server (VPS)
@@ -71,6 +75,16 @@ func GetSystemInfo(c *gin.Context) {
 			info.Storage.Used = info.Storage.Total - freeTermasukRoot
 		}
 	}
+
+	// Uploads Folder Info
+	var dirSize uint64
+	filepath.Walk("./uploads", func(_ string, info os.FileInfo, err error) error {
+		if err == nil && !info.IsDir() {
+			dirSize += uint64(info.Size())
+		}
+		return nil
+	})
+	info.Uploads.Size = dirSize
 
 	c.JSON(http.StatusOK, gin.H{
 		"data": info,

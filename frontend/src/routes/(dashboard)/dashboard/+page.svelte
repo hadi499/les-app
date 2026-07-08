@@ -247,7 +247,7 @@
           </button>
         </div>
         <div class="p-6">
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
             <!-- Memory -->
             <div class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-200">
               <div class="flex items-center gap-3 mb-3">
@@ -278,6 +278,23 @@
                 </div>
                 <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
                   <div class="bg-fuchsia-500 h-2.5 rounded-full" style="width: {(systemInfo.storage.used / systemInfo.storage.total) * 100}%"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Uploads Folder -->
+            <div class="bg-amber-50/50 rounded-2xl p-5 border border-amber-200">
+              <div class="flex items-center gap-3 mb-3">
+                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">📁</div>
+                <h4 class="font-bold text-slate-800 m-0">Folder Uploads</h4>
+              </div>
+              <div class="space-y-2">
+                <div class="flex justify-between text-sm mt-6">
+                  <span class="text-slate-600">Total Ukuran</span>
+                  <span class="font-bold text-slate-900">{systemInfo.uploads ? formatBytes(systemInfo.uploads.size) : '0 B'}</span>
+                </div>
+                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                  <div class="bg-amber-500 h-2.5 rounded-full w-full"></div>
                 </div>
               </div>
             </div>
