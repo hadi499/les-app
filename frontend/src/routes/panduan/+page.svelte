@@ -50,14 +50,16 @@
 
     <!-- Aturan Dasar Section -->
     <section
-      class="bg-blue-50/50 border border-blue-100 rounded-3xl p-8 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-700 delay-75"
+      class="bg-blue-50/50 border border-blue-100 rounded-3xl p-4 sm:p-8 shadow-sm animate-in fade-in slide-in-from-bottom-6 duration-700 delay-75"
     >
       <div class="space-y-6 max-w-4xl mx-auto">
         <h2 class="text-2xl md:text-3xl font-bold text-slate-800 text-center">
           Aturan Dasar
         </h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2">
+          <div
+            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2"
+          >
             <div class="flex items-center gap-4">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-md"
@@ -69,12 +71,14 @@
               </h3>
             </div>
             <p class="text-slate-600 text-md leading-relaxed pl-14 text-left">
-              Penguasaan perkalian dasar adalah syarat wajib sebelum siswa
-              dapat mengikuti pelajaran komputer.
+              Penguasaan perkalian dasar adalah syarat wajib sebelum siswa dapat
+              mengikuti pelajaran komputer.
             </p>
           </div>
 
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2">
+          <div
+            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2"
+          >
             <div class="flex items-center gap-4">
               <div
                 class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-md"
@@ -86,9 +90,9 @@
               </h3>
             </div>
             <p class="text-slate-600 text-md leading-relaxed pl-14 text-left">
-              Fokus utama bimbingan adalah materi les. PR sekolah dapat
-              dibahas setelah sesi utama selesai, di mana guru hanya akan
-              memberikan panduan penyelesaiannya.
+              Fokus utama bimbingan adalah materi les. PR sekolah dapat dibahas
+              setelah sesi utama selesai, di mana guru hanya akan memberikan
+              panduan penyelesaiannya.
             </p>
           </div>
         </div>
