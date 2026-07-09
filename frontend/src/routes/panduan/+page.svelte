@@ -57,43 +57,39 @@
           Aturan Dasar
         </h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div
-            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4"
-          >
-            <div
-              class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-md"
-            >
-              1
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-800 mb-2 text-md">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2">
+            <div class="flex items-center gap-4">
+              <div
+                class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-md"
+              >
+                1
+              </div>
+              <h3 class="font-bold text-slate-800 text-md">
                 Syarat Kelas Komputer
               </h3>
-              <p class="text-slate-600 text-md leading-relaxed">
-                Penguasaan perkalian dasar adalah syarat wajib sebelum siswa
-                dapat mengikuti pelajaran komputer.
-              </p>
             </div>
+            <p class="text-slate-600 text-md leading-relaxed pl-14 text-left">
+              Penguasaan perkalian dasar adalah syarat wajib sebelum siswa
+              dapat mengikuti pelajaran komputer.
+            </p>
           </div>
 
-          <div
-            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4"
-          >
-            <div
-              class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-md"
-            >
-              2
-            </div>
-            <div>
-              <h3 class="font-bold text-slate-800 mb-2 text-md">
+          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col gap-2">
+            <div class="flex items-center gap-4">
+              <div
+                class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-md"
+              >
+                2
+              </div>
+              <h3 class="font-bold text-slate-800 text-md">
                 Kebijakan Mengerjakan PR
               </h3>
-              <p class="text-slate-600 text-md leading-relaxed">
-                Fokus utama bimbingan adalah materi les. PR sekolah dapat
-                dibahas setelah sesi utama selesai, di mana guru hanya akan
-                memberikan panduan penyelesaiannya.
-              </p>
             </div>
+            <p class="text-slate-600 text-md leading-relaxed pl-14 text-left">
+              Fokus utama bimbingan adalah materi les. PR sekolah dapat
+              dibahas setelah sesi utama selesai, di mana guru hanya akan
+              memberikan panduan penyelesaiannya.
+            </p>
           </div>
         </div>
       </div>
