@@ -387,7 +387,10 @@
                   <th class="px-6 py-4 font-semibold">Siswa</th>
                 {/if}
                 <th class="px-6 py-4 font-semibold">Tanggal</th>
-                <th class="px-6 py-4 font-semibold text-center w-32">Aksi</th>
+                <th class="px-6 py-4 font-semibold text-center w-32">Detail</th>
+                {#if isTeacher}
+                  <th class="px-6 py-4 font-semibold text-center w-32">Aksi</th>
+                {/if}
               </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
@@ -410,7 +413,7 @@
                     </div>
                   </td>
                   <td class="px-6 py-4">
-                    <div class="flex items-center justify-center gap-2">
+                    <div class="flex items-center justify-center">
                       <a
                         href={`/dashboard/writing-progress/${progress.id}`}
                         title="Lihat Detail"
@@ -434,7 +437,11 @@
                           ></path></svg
                         >
                       </a>
-                      {#if isTeacher}
+                    </div>
+                  </td>
+                  {#if isTeacher}
+                    <td class="px-6 py-4">
+                      <div class="flex items-center justify-center gap-2">
                         <button
                           onclick={() => openEditModal(progress)}
                           title="Edit"
@@ -471,9 +478,9 @@
                             ></path></svg
                           >
                         </button>
-                      {/if}
-                    </div>
-                  </td>
+                      </div>
+                    </td>
+                  {/if}
                 </tr>
               {/each}
             </tbody>

@@ -2,7 +2,10 @@ export async function GET({ url }) {
   const pages = [
     '',
     '/panduan',
-    '/login' // Add more public routes here
+    '/login',
+    '/quiz',
+    '/compress-image',
+    '/berhitung' // Add more public routes here
   ];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>
@@ -15,14 +18,14 @@ export async function GET({ url }) {
   xmlns:video="https://www.google.com/schemas/sitemap-video/1.1"
 >
   ${pages
-    .map(
-      (page) => `  <url>
+      .map(
+        (page) => `  <url>
     <loc>${new URL(page, url.origin).href}</loc>
     <changefreq>daily</changefreq>
     <priority>${page === '' ? '1.0' : '0.7'}</priority>
   </url>`
-    )
-    .join('\n')}
+      )
+      .join('\n')}
 </urlset>`;
 
   return new Response(sitemap, {
