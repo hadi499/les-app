@@ -8,26 +8,57 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"math"
 
 	"github.com/gin-gonic/gin"
 )
 
 func GetWritingProgresses(c *gin.Context) {
 	var progresses []models.WritingProgress
+	var total int64
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "50"))
+	if limit < 1 {
+		limit = 50
+	}
+	offset := (page - 1) * limit
 
 	role, _ := c.Get("role")
 	userID, _ := c.Get("user_id")
 
-	query := database.DB.Preload("User").Order("date desc")
+	query := database.DB.Model(&models.WritingProgress{})
 	if role != "teacher" && role != "admin" {
 		query = query.Where("user_id = ?", userID)
 	}
+
+	if err := query.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung data perkembangan menulis"})
+		return
+	}
+
+	query = query.Preload("User").Order("created_at desc").Limit(limit).Offset(offset)
 
 	if err := query.Find(&progresses).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data perkembangan menulis"})
 		return
 	}
-	c.JSON(http.StatusOK, progresses)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	if totalPages == 0 {
+		totalPages = 1
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":        progresses,
+		"total":       total,
+		"page":        page,
+		"limit":       limit,
+		"total_pages": totalPages,
+	})
 }
 
 func GetWritingProgressByID(c *gin.Context) {

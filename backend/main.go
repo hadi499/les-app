@@ -76,21 +76,25 @@ func main() {
 		}
 	}()
 
-	// Background job untuk menghapus gambar bukti perkembangan menulis yang usianya lebih dari 1 bulan
+	// Background job untuk menghapus data dan gambar bukti perkembangan menulis yang usianya lebih dari 1 bulan
 	go func() {
 		for {
 			var progresses []models.WritingProgress
+			// Batas waktu penghapusan: 30 hari yang lalu
 			batasWaktu := time.Now().AddDate(0, -1, 0)
 			
-			database.DB.Where("image != ? AND image IS NOT NULL AND updated_at < ?", "", batasWaktu).Find(&progresses)
+			// Cari semua data perkembangan menulis yang diupdate sebelum batas waktu
+			database.DB.Where("updated_at < ?", batasWaktu).Find(&progresses)
 			
 			for _, wp := range progresses {
 				if wp.Image != "" {
 					filePath := strings.TrimPrefix(wp.Image, "/")
 					_ = os.Remove(filePath)
-					database.DB.Model(&wp).Update("image", "")
 				}
+				// Hapus record dari database
+				database.DB.Delete(&wp)
 			}
+			// Cek setiap 24 jam sekali
 			time.Sleep(24 * time.Hour)
 		}
 	}()
