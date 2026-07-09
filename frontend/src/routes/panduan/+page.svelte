@@ -3,9 +3,6 @@
   import mathCard2 from "$lib/assets/card2.png";
   import mathCard3 from "$lib/assets/card3.png";
   import mathCard4 from "$lib/assets/card4.png";
-  import mathCard5 from "$lib/assets/card5.png";
-  import mathCard6 from "$lib/assets/card6.png";
-  import mathCard7 from "$lib/assets/card7.png";
 
   let isAuthenticated = $state(false);
   let authChecked = $state(false);
@@ -60,26 +57,41 @@
           Aturan Dasar
         </h2>
         <div class="grid gap-4 md:grid-cols-2">
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4">
-            <div class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-lg">
+          <div
+            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4"
+          >
+            <div
+              class="shrink-0 w-10 h-10 rounded-full bg-red-50 text-red-600 flex items-center justify-center font-bold text-lg"
+            >
               1
             </div>
             <div>
-              <h3 class="font-bold text-slate-800 mb-2">Syarat Kelas Komputer</h3>
+              <h3 class="font-bold text-slate-800 mb-2">
+                Syarat Kelas Komputer
+              </h3>
               <p class="text-slate-600 text-sm leading-relaxed">
-                Penguasaan perkalian dasar adalah syarat wajib sebelum siswa dapat mengikuti pelajaran komputer.
+                Penguasaan perkalian dasar adalah syarat wajib sebelum siswa
+                dapat mengikuti pelajaran komputer.
               </p>
             </div>
           </div>
-          
-          <div class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex gap-4">
-            <div class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg">
+
+          <div
+            class="bg-white rounded-2xl p-6 shadow-sm border border-slate-100 flex flex-col sm:flex-row items-center sm:items-start text-center sm:text-left gap-4"
+          >
+            <div
+              class="shrink-0 w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold text-lg"
+            >
               2
             </div>
             <div>
-              <h3 class="font-bold text-slate-800 mb-2">Kebijakan Mengerjakan PR</h3>
+              <h3 class="font-bold text-slate-800 mb-2">
+                Kebijakan Mengerjakan PR
+              </h3>
               <p class="text-slate-600 text-sm leading-relaxed">
-                Fokus utama bimbingan adalah materi les. PR sekolah dapat dibahas setelah sesi utama selesai, di mana guru hanya akan memberikan panduan penyelesaiannya.
+                Fokus utama bimbingan adalah materi les. PR sekolah dapat
+                dibahas setelah sesi utama selesai, di mana guru hanya akan
+                memberikan panduan penyelesaiannya.
               </p>
             </div>
           </div>
@@ -109,34 +121,47 @@
             >
             Metode Unggulan
           </div>
-          <h2 class="text-2xl md:text-3xl font-bold text-slate-900">
+          <h2
+            class="text-2xl md:text-3xl font-bold text-slate-900 text-center sm:text-left"
+          >
             Metode Card Memory
           </h2>
-          <p class="text-slate-600 leading-relaxed text-lg">
+          <p
+            class="text-slate-600 leading-relaxed text-lg text-center sm:text-left"
+          >
             Mata pelajaran dipecah menjadi bagian kecil-kecil sehingga tidak
             membebani anak-anak.
           </p>
           <ul class="space-y-4">
-            <li class="flex gap-4">
-              <div
-                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
-              >
-                1
+            <li class="flex flex-col gap-1">
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
+                >
+                  1
+                </div>
+                <h4 class="font-bold text-slate-900 text-lg">
+                  Baca & Hafalkan
+                </h4>
               </div>
-              <p class="text-slate-700">
-                <strong>Baca & Hafalkan:</strong> Baca card memory, hafalkan selama
-                5 menit per card lalu tulis.
+              <p class="text-slate-700 pl-12">
+                Baca card memory, hafalkan selama 5 menit per card lalu tulis.
               </p>
             </li>
-            <li class="flex gap-4">
-              <div
-                class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
-              >
-                2
+            <li class="flex flex-col gap-2">
+              <div class="flex items-center gap-4">
+                <div
+                  class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold shrink-0"
+                >
+                  2
+                </div>
+                <h4 class="font-bold text-slate-900 text-lg">
+                  Latihan Teratur
+                </h4>
               </div>
-              <p class="text-slate-700">
-                <strong>Latihan Teratur:</strong> Soal latihan 2 atau 3 kali perminggu
-                untuk memastikan anak bisa menerapkan apa yang dihafal.
+              <p class="text-slate-700 pl-12">
+                Soal latihan 2 atau 3 kali perminggu untuk memastikan anak bisa
+                menerapkan apa yang dihafal.
               </p>
             </li>
           </ul>
@@ -148,7 +173,9 @@
           <div
             class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-blue-100 rounded-full blur-2xl opacity-50"
           ></div>
-          <h3 class="text-md md:text-xl font-semibold text-slate-900 mb-4">
+          <h3
+            class="text-md md:text-xl font-semibold text-slate-900 mb-4 text-center sm:text-left"
+          >
             Mengapa Harus Card Memory?
           </h3>
           <div class="space-y-4">
@@ -222,33 +249,6 @@
             class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
           />
         </div>
-        <div
-          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2"
-        >
-          <img
-            src={mathCard5}
-            alt="Card Memory"
-            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <div
-          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-75"
-        >
-          <img
-            src={mathCard6}
-            alt="Card Memory"
-            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
-        <div
-          class="bg-transparent overflow-visible group transition-all duration-300 hover:-translate-y-2 delay-150"
-        >
-          <img
-            src={mathCard7}
-            alt="Card Memory"
-            class="w-[70%] sm:w-full mx-auto block h-auto object-contain group-hover:scale-105 transition-transform duration-500"
-          />
-        </div>
       </div>
     </section>
 
@@ -280,18 +280,14 @@
         </h2>
         <ul class="space-y-4 mb-8">
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"
-            ></div>
+            <div class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
             <p class="text-slate-700">
               Klik menu <strong class="text-slate-900">Masuk Portal</strong> di navigasi
               atas.
             </p>
           </li>
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"
-            ></div>
+            <div class="mt-1 w-2 h-2 rounded-full bg-blue-500 shrink-0"></div>
             <p class="text-slate-700">
               Masukkan <strong class="text-slate-900">username</strong> dan
               <strong class="text-slate-900">password</strong> yang telah diberikan
@@ -323,35 +319,40 @@
         </h2>
         <ul class="space-y-4">
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
-            ></div>
+            <div class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
             <p class="text-slate-700">
               Masuk ke <strong class="text-slate-900">Dashboard</strong>.
             </p>
           </li>
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
-            ></div>
-            <p class="text-slate-700">
-              Klik icon <strong class="text-slate-900">inisial nama</strong> di pojok
-              kanan atas untuk membuka menu.
+            <div class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
+            <p class="text-slate-700 leading-relaxed">
+              Klik icon <span
+                class="inline-flex items-center justify-center p-1 bg-slate-100 rounded border border-slate-200 mx-1 align-middle"
+                ><svg
+                  class="w-4 h-4 text-slate-700"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M4 6h16M4 12h16M4 18h16"
+                  /></svg
+                ></span
+              > di pojok kanan atas untuk membuka menu.
             </p>
           </li>
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
-            ></div>
+            <div class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
             <p class="text-slate-700">
               Klik <strong class="text-slate-900">tanda panah</strong> di pojok bawah
               kiri menu profil.
             </p>
           </li>
           <li class="flex gap-3 items-start">
-            <div
-              class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"
-            ></div>
+            <div class="mt-1 w-2 h-2 rounded-full bg-amber-500 shrink-0"></div>
             <p class="text-slate-700">
               Pilih opsi <strong class="text-slate-900">Ganti Password</strong>.
             </p>
@@ -359,9 +360,13 @@
         </ul>
       </div>
 
-      <div class="bg-slate-900 rounded-3xl p-8 shadow-xl text-white">
-        <h2 class="text-lg md:text-2xl font-bold mb-8 flex items-center gap-3">
-          <div class="p-2 bg-white/10 text-white rounded-lg">
+      <div
+        class="bg-white rounded-3xl p-8 shadow-xl shadow-blue-900/5 border border-slate-100 flex flex-col"
+      >
+        <h2
+          class="text-lg md:text-2xl font-bold text-slate-900 mb-8 flex items-center gap-3"
+        >
+          <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
             <svg
               class="w-6 h-6"
               fill="none"
@@ -381,10 +386,10 @@
         <div class="space-y-6">
           <div class="flex gap-4 items-start group">
             <div
-              class="p-3 bg-white/5 rounded-xl group-hover:bg-blue-500/20 transition-colors"
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-blue-50 transition-colors border border-slate-100"
             >
               <svg
-                class="w-6 h-6 text-blue-400"
+                class="w-6 h-6 text-blue-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -397,8 +402,8 @@
               >
             </div>
             <div>
-              <h4 class="font-bold text-lg text-white mb-1">Todolist</h4>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <h4 class="font-bold text-lg text-slate-900 mb-1">Todolist</h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
                 Digunakan untuk melihat apa saja yang sudah dihafal oleh siswa.
               </p>
             </div>
@@ -406,10 +411,10 @@
 
           <div class="flex gap-4 items-start group">
             <div
-              class="p-3 bg-white/5 rounded-xl group-hover:bg-emerald-500/20 transition-colors"
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-emerald-50 transition-colors border border-slate-100"
             >
               <svg
-                class="w-6 h-6 text-emerald-400"
+                class="w-6 h-6 text-emerald-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -422,8 +427,10 @@
               >
             </div>
             <div>
-              <h4 class="font-bold text-lg text-white mb-1">Nilai Harian</h4>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <h4 class="font-bold text-lg text-slate-900 mb-1">
+                Nilai Harian
+              </h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
                 Digunakan untuk melihat hasil nilai ujian dari soal-soal
                 latihan.
               </p>
@@ -432,10 +439,10 @@
 
           <div class="flex gap-4 items-start group">
             <div
-              class="p-3 bg-white/5 rounded-xl group-hover:bg-purple-500/20 transition-colors"
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-purple-50 transition-colors border border-slate-100"
             >
               <svg
-                class="w-6 h-6 text-purple-400"
+                class="w-6 h-6 text-purple-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -448,8 +455,10 @@
               >
             </div>
             <div>
-              <h4 class="font-bold text-lg text-white mb-1">Kuis dan Nilai</h4>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <h4 class="font-bold text-lg text-slate-900 mb-1">
+                Kuis dan Nilai
+              </h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
                 Digunakan untuk melihat skor hasil quiz interaktif.
               </p>
             </div>
@@ -457,10 +466,10 @@
 
           <div class="flex gap-4 items-start group">
             <div
-              class="p-3 bg-white/5 rounded-xl group-hover:bg-pink-500/20 transition-colors"
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-pink-50 transition-colors border border-slate-100"
             >
               <svg
-                class="w-6 h-6 text-pink-400"
+                class="w-6 h-6 text-pink-500"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -473,9 +482,37 @@
               >
             </div>
             <div>
-              <h4 class="font-bold text-lg text-white mb-1">Absensi</h4>
-              <p class="text-slate-400 text-sm leading-relaxed">
+              <h4 class="font-bold text-lg text-slate-900 mb-1">Absensi</h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
                 Digunakan untuk melihat riwayat kehadiran dan absensi harian.
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-4 items-start group">
+            <div
+              class="p-3 bg-slate-50 rounded-xl group-hover:bg-orange-50 transition-colors border border-slate-100"
+            >
+              <svg
+                class="w-6 h-6 text-orange-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                /></svg
+              >
+            </div>
+            <div>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">
+                Perkembangan Menulis
+              </h4>
+              <p class="text-slate-600 text-sm leading-relaxed">
+                Digunakan untuk memantau perkembangan dan kemampuan menulis
+                siswa.
               </p>
             </div>
           </div>
@@ -633,9 +670,12 @@
               >
             </div>
             <div>
-              <h4 class="font-bold text-lg text-slate-900 mb-1">Compress Image</h4>
+              <h4 class="font-bold text-lg text-slate-900 mb-1">
+                Compress Image
+              </h4>
               <p class="text-slate-600 text-sm leading-relaxed">
-                Alat untuk mengecilkan ukuran gambar secara aman & privat langsung dari browser.
+                Alat untuk mengecilkan ukuran gambar secara aman & privat
+                langsung dari browser.
               </p>
             </div>
           </div>
@@ -644,7 +684,9 @@
     </section>
 
     <!-- Action Section -->
-    <div class="flex justify-center pb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200">
+    <div
+      class="flex justify-center pb-8 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-200"
+    >
       {#if authChecked}
         {#if !isAuthenticated}
           <a

@@ -630,15 +630,9 @@
         <!-- Pagination Controls -->
         {#if totalPages > 1}
           <div
-            class="px-4 sm:px-6 py-4 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-4"
+            class="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-200 flex flex-row items-center justify-between gap-4"
           >
-            <div class="text-sm text-slate-600 text-center sm:text-left">
-              Menampilkan <span class="font-medium text-slate-900"
-                >{exams.length > 0
-                  ? (currentPage - 1) * itemsPerPage + 1
-                  : 0}</span
-              >
-              sampai
+            <div class="text-sm text-slate-600 text-left">
               <span class="font-medium text-slate-900"
                 >{Math.min(
                   currentPage * itemsPerPage,
@@ -652,22 +646,25 @@
             </div>
             <div class="flex gap-2">
               <button
+                aria-label="Sebelumnya"
                 onclick={prevPage}
                 disabled={currentPage === 1}
-                class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors {currentPage ===
+                class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
                 1
                   ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
                   : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
               >
-                Sebelumnya
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
               </button>
               <div
-                class="flex items-center gap-1 px-2 flex-wrap justify-center"
+                class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center"
               >
                 {#each Array(totalPages) as _, i}
                   <button
                     onclick={() => goToPage(i + 1)}
-                    class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors {currentPage ===
+                    class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {currentPage ===
                     i + 1
                       ? 'bg-indigo-600 text-slate-100'
                       : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
@@ -677,14 +674,17 @@
                 {/each}
               </div>
               <button
+                aria-label="Selanjutnya"
                 onclick={nextPage}
                 disabled={currentPage === totalPages}
-                class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors {currentPage ===
+                class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
                 totalPages
                   ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
                   : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
               >
-                Selanjutnya
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
               </button>
             </div>
           </div>

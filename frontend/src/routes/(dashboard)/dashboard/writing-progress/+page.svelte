@@ -86,9 +86,12 @@
 
   async function fetchProgresses() {
     try {
-      const res = await fetch(`/api/writing-progress?page=${currentPage}&limit=${itemsPerPage}`, {
-        credentials: "include",
-      });
+      const res = await fetch(
+        `/api/writing-progress?page=${currentPage}&limit=${itemsPerPage}`,
+        {
+          credentials: "include",
+        },
+      );
       if (!res.ok) throw new Error("Gagal mengambil data perkembangan menulis");
       const data = await res.json();
       progresses = data.data || [];
@@ -482,15 +485,9 @@
     <!-- Pagination Controls -->
     {#if totalPages > 1}
       <div
-        class="mt-8 px-6 py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-4"
+        class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4"
       >
-        <div class="text-sm text-slate-600 text-center sm:text-left">
-          Menampilkan <span class="font-medium text-slate-900"
-            >{totalRecords > 0
-              ? (currentPage - 1) * itemsPerPage + 1
-              : 0}</span
-          >
-          sampai
+        <div class="text-sm text-slate-600 text-left">
           <span class="font-medium text-slate-900"
             >{Math.min(currentPage * itemsPerPage, totalRecords)}</span
           >
@@ -499,16 +496,31 @@
         </div>
         <div class="flex gap-2">
           <button
+            aria-label="Sebelumnya"
             onclick={prevPage}
             disabled={currentPage === 1}
-            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors cursor-pointer {currentPage ===
+            class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
             1
               ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
               : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
           >
-            Sebelumnya
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
           </button>
-          <div class="flex items-center gap-1 px-2 flex-wrap justify-center">
+          <div
+            class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center"
+          >
             {#each Array(totalPages) as _, i}
               <button
                 onclick={() => goToPage(i + 1)}
@@ -522,14 +534,27 @@
             {/each}
           </div>
           <button
+            aria-label="Selanjutnya"
             onclick={nextPage}
             disabled={currentPage === totalPages}
-            class="px-3 py-1.5 text-sm font-medium rounded-lg transition-colors cursor-pointer {currentPage ===
+            class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
             totalPages
               ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
               : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
           >
-            Selanjutnya
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
           </button>
         </div>
       </div>
