@@ -3,7 +3,9 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"math"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -14,21 +16,45 @@ func GetTodoLists(c *gin.Context) {
 	role := c.GetString("role")
 	username := c.GetString("username")
 
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	if limit < 1 {
+		limit = 24
+	}
+	offset := (page - 1) * limit
+
 	var lists []models.TodoList
+	var totalItems int64
+
+	query := database.DB.Model(&models.TodoList{})
 	if role == "teacher" {
-		if err := database.DB.Preload("Items").Where("user_id = ?", userID).Order("created_at desc").Find(&lists).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todo lists"})
-			return
-		}
+		query = query.Where("user_id = ?", userID)
 	} else {
 		// Student sees todolists assigned to them via student_username
-		if err := database.DB.Preload("Items").Where("student_username = ?", username).Order("created_at desc").Find(&lists).Error; err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todo lists"})
-			return
-		}
+		query = query.Where("student_username = ?", username)
 	}
 
-	c.JSON(http.StatusOK, lists)
+	if err := query.Count(&totalItems).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count todo lists"})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+
+	if err := query.Preload("Items").Order("created_at desc").Limit(limit).Offset(offset).Find(&lists).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch todo lists"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         lists,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  totalItems,
+	})
 }
 
 // GetTodoList - Get a single todo list by id

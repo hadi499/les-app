@@ -3,7 +3,9 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -212,37 +214,113 @@ func GetLessonHistory(c *gin.Context) {
 // --- Admin / Teacher Endpoints ---
 
 func GetAllLessonProgress(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	offset := (page - 1) * limit
+
 	var progress []models.LessonProgress
-	if err := database.DB.Preload("User").Order("lesson_id asc").Find(&progress).Error; err != nil {
+	var total int64
+
+	database.DB.Model(&models.LessonProgress{}).Count(&total)
+
+	if err := database.DB.Preload("User").Order("lesson_id asc").Offset(offset).Limit(limit).Find(&progress).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch progress"})
 		return
 	}
-	c.JSON(http.StatusOK, progress)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         progress,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  total,
+	})
 }
 
 func GetAllGameScores(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	offset := (page - 1) * limit
+
 	var scores []models.GameHighScore
-	if err := database.DB.Preload("User").Order("score desc").Find(&scores).Error; err != nil {
+	var total int64
+
+	database.DB.Model(&models.GameHighScore{}).Count(&total)
+
+	if err := database.DB.Preload("User").Order("score desc").Offset(offset).Limit(limit).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch scores"})
 		return
 	}
-	c.JSON(http.StatusOK, scores)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         scores,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  total,
+	})
 }
 
 func GetAllGameHistory(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	offset := (page - 1) * limit
+
 	var history []models.GameHistory
-	if err := database.DB.Preload("User").Order("created_at desc").Limit(500).Find(&history).Error; err != nil {
+	var total int64
+
+	database.DB.Model(&models.GameHistory{}).Count(&total)
+
+	if err := database.DB.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
 		return
 	}
-	c.JSON(http.StatusOK, history)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         history,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  total,
+	})
 }
 
 func GetAllLessonHistory(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	offset := (page - 1) * limit
+
 	var history []models.LessonHistory
-	if err := database.DB.Preload("User").Order("created_at desc").Limit(500).Find(&history).Error; err != nil {
+	var total int64
+
+	database.DB.Model(&models.LessonHistory{}).Count(&total)
+
+	if err := database.DB.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
 		return
 	}
-	c.JSON(http.StatusOK, history)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         history,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  total,
+	})
 }

@@ -887,73 +887,48 @@
           <p class="mt-1 text-sm text-slate-500">Belum ada catatan di sini.</p>
         </div>
       {:else}
-        <div class="flex flex-col gap-3">
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           {#each filteredNotes as note (note.id)}
             <div
-              class="group relative flex items-center justify-between p-4 bg-white border border-slate-200 rounded-2xl hover:border-blue-300 hover:shadow-md transition-all cursor-pointer gap-4 {openMenuId ===
-              note.id
-                ? 'z-50'
-                : 'z-0'}"
-              onclick={() => openNote(note)}
-              role="button"
-              tabindex="0"
-              onkeydown={(e) => e.key === "Enter" && openNote(note)}
+              class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === note.id ? 'z-50' : 'z-0'}"
             >
-              <div class="flex items-center gap-3 min-w-0">
-                <svg
-                  class="w-5 h-5 text-slate-400 shrink-0 group-hover:text-blue-500 transition-colors"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  ></path></svg
-                >
-                <div class="min-w-0">
-                  <h3
-                    class="text-[15px] font-semibold text-slate-800 truncate group-hover:text-blue-600 transition-colors"
-                  >
-                    {note.title}
-                  </h3>
-                  <div class="flex items-center gap-2 mt-0.5">
-                    {#if searchQuery}
-                      <p class="text-xs text-slate-500 truncate">
-                        {note.folder ? note.folder.name : "Tanpa Folder"}
-                      </p>
-                      <span class="text-xs text-slate-300 sm:hidden">•</span>
-                    {/if}
-                    <p class="text-xs text-slate-400 truncate sm:hidden">
-                      {new Date(note.created_at).toLocaleDateString("id-ID", {
-                        year: "numeric",
-                        month: "short",
-                        day: "numeric",
-                      })}
-                    </p>
-                  </div>
+              <div class="flex justify-between items-start mb-2">
+                <div>
+                  <span class="text-xs font-bold text-slate-400">#{note.id}</span>
+                  <h3 class="text-lg font-bold text-slate-900 mt-1 leading-tight line-clamp-2">{note.title}</h3>
                 </div>
+                {#if note.folder}
+                  <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 whitespace-nowrap uppercase tracking-wide">
+                    {note.folder.name}
+                  </span>
+                {/if}
+              </div>
+              
+              <div class="flex items-center text-xs font-medium text-slate-500 mb-4 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
+                <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                {new Date(note.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
               </div>
 
-              <div class="flex items-center gap-4 shrink-0 pl-4">
-                <span class="text-xs text-slate-400 font-medium hidden sm:block"
-                  >{new Date(note.created_at).toLocaleDateString("id-ID", {
-                    year: "numeric",
-                    month: "short",
-                    day: "numeric",
-                  })}</span
+              <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
+                <button
+                  onclick={() => openNote(note)}
+                  class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-blue-700 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors cursor-pointer"
+                  title="Buka Catatan"
                 >
-                <div class="flex items-center gap-1 transition-all relative">
-                  <!-- 3-dots button -->
+                  <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  Buka
+                </button>
+                
+                <div class="relative shrink-0">
                   <button
                     onclick={(e) => {
                       e.stopPropagation();
                       openMenuId = openMenuId === note.id ? null : note.id;
                     }}
-                    class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                    class="p-2.5 text-slate-500 bg-slate-50 border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer flex items-center justify-center h-full"
+                    title="Menu"
                   >
-                    <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                       ><path
                         d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
                       /></svg
@@ -967,7 +942,7 @@
                   {/if}
 
                   <div
-                    class="absolute right-0 top-10 {openMenuId === note.id
+                    class="absolute right-0 bottom-14 {openMenuId === note.id
                       ? 'flex flex-col'
                       : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all z-50 w-max"
                   >
@@ -977,81 +952,37 @@
                         openMenuId = null;
                         copyNote(note);
                       }}
-                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-emerald-600 rounded-lg hover:bg-emerald-50 cursor-pointer"
+                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-emerald-600 hover:bg-emerald-50 rounded-xl transition-all cursor-pointer"
                       title="Duplikat"
                     >
-                      <svg
-                        class="w-4 h-4 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        stroke-width="2"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        viewBox="0 0 24 24"
-                        ><rect
-                          x="9"
-                          y="9"
-                          width="13"
-                          height="13"
-                          rx="2"
-                          ry="2"
-                        /><path
-                          d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"
-                        /></svg
-                      >
-                      <span class="text-sm font-medium pr-2"
-                        >Duplikat</span
-                      >
+                      <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+                      <span class="text-sm font-medium pr-2">Duplikat</span>
                     </button>
+
                     <button
                       onclick={(e) => {
                         e.stopPropagation();
                         openMenuId = null;
                         openMoveModal(note);
                       }}
-                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-indigo-600 rounded-lg hover:bg-indigo-50 cursor-pointer"
+                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-indigo-600 hover:bg-indigo-50 rounded-xl transition-all cursor-pointer"
                       title="Pindah Folder"
                     >
-                      <svg
-                        class="w-4 h-4 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"
-                        /></svg
-                      >
-                      <span class="text-sm font-medium pr-2"
-                        >Pindah Folder</span
-                      >
+                      <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4"/></svg>
+                      <span class="text-sm font-medium pr-2">Pindah Folder</span>
                     </button>
+
                     <button
                       onclick={(e) => {
                         e.stopPropagation();
                         openMenuId = null;
                         deleteNote(note);
                       }}
-                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-red-600 rounded-lg hover:bg-red-50 cursor-pointer"
+                      class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                       title="Hapus"
                     >
-                      <svg
-                        class="w-4 h-4 shrink-0"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        /></svg
-                      >
-                      <span class="text-sm font-medium pr-2"
-                        >Hapus</span
-                      >
+                      <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+                      <span class="text-sm font-medium pr-2">Hapus</span>
                     </button>
                   </div>
                 </div>

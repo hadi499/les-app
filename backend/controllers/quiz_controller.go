@@ -3,7 +3,9 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"math"
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/gin-gonic/gin"
@@ -12,12 +14,39 @@ import (
 
 // GetQuizzes - Mendapatkan daftar semua kuis
 func GetQuizzes(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	if limit < 1 {
+		limit = 24
+	}
+	offset := (page - 1) * limit
+
 	var quizzes []models.Quiz
-	if err := database.DB.Find(&quizzes).Error; err != nil {
+	var totalItems int64
+
+	query := database.DB.Model(&models.Quiz{})
+
+	if err := query.Count(&totalItems).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung data kuis"})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+
+	if err := query.Order("id desc").Limit(limit).Offset(offset).Find(&quizzes).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data kuis"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": quizzes})
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         quizzes,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  totalItems,
+	})
 }
 
 // GetQuizByID - Mendapatkan detail kuis beserta soal-soalnya
@@ -181,12 +210,39 @@ func SubmitQuizScore(c *gin.Context) {
 
 // GetQuizScores - Mengambil daftar skor (hanya untuk guru/admin)
 func GetQuizScores(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	if limit < 1 {
+		limit = 24
+	}
+	offset := (page - 1) * limit
+
 	var scores []models.ScoreQuiz
-	if err := database.DB.Preload("Quiz").Order("created_at desc").Find(&scores).Error; err != nil {
+	var totalItems int64
+
+	query := database.DB.Model(&models.ScoreQuiz{})
+
+	if err := query.Count(&totalItems).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung skor"})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+
+	if err := query.Preload("Quiz").Order("created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil daftar skor"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": scores})
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         scores,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  totalItems,
+	})
 }
 
 // GetMyQuizScores - Mengambil riwayat skor kuis pengguna
@@ -198,10 +254,37 @@ func GetMyQuizScores(c *gin.Context) {
 	}
 	usernameStr := username.(string)
 
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "24"))
+	if limit < 1 {
+		limit = 24
+	}
+	offset := (page - 1) * limit
+
 	var scores []models.ScoreQuiz
-	if err := database.DB.Preload("Quiz").Where("username = ?", usernameStr).Order("created_at desc").Find(&scores).Error; err != nil {
+	var totalItems int64
+
+	query := database.DB.Model(&models.ScoreQuiz{}).Where("username = ?", usernameStr)
+
+	if err := query.Count(&totalItems).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung skor"})
+		return
+	}
+
+	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
+
+	if err := query.Preload("Quiz").Order("created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil daftar skor"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": scores})
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":         scores,
+		"total_pages":  totalPages,
+		"current_page": page,
+		"total_items":  totalItems,
+	})
 }

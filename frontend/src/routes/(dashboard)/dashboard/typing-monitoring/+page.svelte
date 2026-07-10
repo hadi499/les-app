@@ -8,6 +8,17 @@
   type GameHistory = { created_at: string; user?: UserRef; mode: string; score: number };
 
   let activeTab = $state("progress");
+
+  onMount(() => {
+    const savedTab = localStorage.getItem("typingAdminTab");
+    if (savedTab) {
+      activeTab = savedTab;
+    }
+  });
+
+  $effect(() => {
+    localStorage.setItem("typingAdminTab", activeTab);
+  });
   let isLoading = $state(true);
   let errorMsg = $state("");
 
@@ -16,44 +27,45 @@
   let lessonHistoryData: LessonHistory[] = $state([]);
   let gameHistoryData: GameHistory[] = $state([]);
 
-  async function fetchData() {
+  let pageState = $state({ progress: 1, gameScores: 1, lessonHistory: 1, gameHistory: 1 });
+  let totalPages = $state({ progress: 1, gameScores: 1, lessonHistory: 1, gameHistory: 1 });
+  const limit = 24;
+
+  async function fetchTabData(tab: string, page: number) {
     isLoading = true;
     errorMsg = "";
-    try {
-      const [resProgress, resGameScores, resLessonHistory, resGameHistory] =
-        await Promise.all([
-          fetch(`/api/typing/admin/progress`, {
-            credentials: "include",
-          }),
-          fetch(`/api/typing/admin/game-scores`, {
-            credentials: "include",
-          }),
-          fetch(`/api/typing/admin/history/lesson`, {
-            credentials: "include",
-          }),
-          fetch(`/api/typing/admin/history/game`, {
-            credentials: "include",
-          }),
-        ]);
+    
+    let endpoint = "";
+    if (tab === "progress") endpoint = `/api/typing/admin/progress?page=${page}&limit=${limit}`;
+    else if (tab === "gameScores") endpoint = `/api/typing/admin/game-scores?page=${page}&limit=${limit}`;
+    else if (tab === "lessonHistory") endpoint = `/api/typing/admin/history/lesson?page=${page}&limit=${limit}`;
+    else if (tab === "gameHistory") endpoint = `/api/typing/admin/history/game?page=${page}&limit=${limit}`;
 
-      if (resProgress.status === 403) {
+    try {
+      const res = await fetch(endpoint, { credentials: "include" });
+      if (res.status === 403) {
         errorMsg = "Akses ditolak. Anda bukan Guru.";
         return;
       }
-
-      if (
-        !resProgress.ok ||
-        !resGameScores.ok ||
-        !resLessonHistory.ok ||
-        !resGameHistory.ok
-      ) {
-        throw new Error("Gagal mengambil data dari server");
+      if (!res.ok) throw new Error("Gagal mengambil data dari server");
+      
+      const resJson = await res.json();
+      const data = resJson.data || [];
+      const total = resJson.total_pages || 1;
+      
+      if (tab === "progress") {
+        progressData = data;
+        totalPages.progress = total;
+      } else if (tab === "gameScores") {
+        gameScoresData = data;
+        totalPages.gameScores = total;
+      } else if (tab === "lessonHistory") {
+        lessonHistoryData = data;
+        totalPages.lessonHistory = total;
+      } else if (tab === "gameHistory") {
+        gameHistoryData = data;
+        totalPages.gameHistory = total;
       }
-
-      progressData = (await resProgress.json() as Progress[]) || [];
-      gameScoresData = (await resGameScores.json() as GameScore[]) || [];
-      lessonHistoryData = (await resLessonHistory.json() as LessonHistory[]) || [];
-      gameHistoryData = (await resGameHistory.json() as GameHistory[]) || [];
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : String(e);
     } finally {
@@ -61,8 +73,8 @@
     }
   }
 
-  onMount(() => {
-    fetchData();
+  $effect(() => {
+    fetchTabData(activeTab, pageState[activeTab as keyof typeof pageState]);
   });
 
   const tabs = [
@@ -126,14 +138,11 @@
     </div>
   {:else}
     <!-- Tabs -->
-    <div class="border-b border-slate-200">
-      <div class="flex flex-nowrap overflow-x-auto gap-2 -mb-px">
+    <div class="mb-6 flex">
+      <div class="grid grid-cols-2 w-full md:w-max md:flex p-1.5 gap-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl">
         {#each tabs as tab}
           <button
-            class="px-4 py-2.5 whitespace-nowrap rounded-t-lg text-sm font-medium transition-all duration-200 border-b-2 {activeTab ===
-            tab.id
-              ? 'border-indigo-500 text-indigo-600 bg-indigo-800/10'
-              : 'border-transparent text-slate-600 hover:bg-white/50'}"
+            class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {activeTab === tab.id ? 'bg-white text-indigo-600 shadow-sm ring-1 ring-slate-900/5' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}"
             onclick={() => (activeTab = tab.id)}
           >
             {tab.label}
@@ -143,239 +152,290 @@
     </div>
 
     <!-- Content -->
-    <div
-      class="bg-white/60 backdrop-blur-md rounded-b-3xl rounded-tr-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
-    >
-      <div class="overflow-x-auto">
+    <div class="mt-6 pt-2">
+      <div>
         {#if activeTab === "progress"}
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Murid</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Lesson ID</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Best WPM</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Akurasi</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Bintang</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Selesai</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Percobaan</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
+          {#if progressData.length === 0}
+            <div class="py-12 text-center">
+              <h3 class="text-lg font-bold text-slate-700 mb-1">Belum ada data progress.</h3>
+            </div>
+          {:else}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each progressData as p}
-                <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-3 px-6 text-sm font-medium text-slate-900"
-                    >{p.user?.username || "Unknown"}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-slate-800 text-center"
-                    >{p.lessonId}</td
-                  >
-                  <td
-                    class="py-3 px-6 text-sm text-indigo-500 font-bold text-center"
-                    >{p.bestWPM}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-slate-800 text-center"
-                    >{p.bestAccuracy}%</td
-                  >
-                  <td class="py-3 px-6 text-sm text-yellow-500 text-center"
-                    >{"★".repeat(p.stars)}{"☆".repeat(3 - p.stars)}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-center">
-                    <span
-                      class={`px-2 py-1 rounded-full text-xs font-medium border ${p.completed ? "bg-green-100 text-green-600 border-green-800/50" : "bg-white text-slate-600 border-slate-300"}`}
-                    >
-                      {p.completed ? "Ya" : "Belum"}
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                  <div class="flex justify-between items-start mb-4">
+                    <div class="flex flex-col">
+                      <span class="text-xs font-bold text-slate-400">Lesson {p.lessonId}</span>
+                      <h3 class="text-lg font-bold text-slate-900 mt-0.5">@{p.user?.username || "Unknown"}</h3>
+                    </div>
+                    <span class={`px-2 py-1 rounded-md text-[10px] font-bold border whitespace-nowrap uppercase tracking-wide ${p.completed ? "bg-emerald-50 text-emerald-600 border-emerald-100" : "bg-slate-50 text-slate-500 border-slate-200"}`}>
+                      {p.completed ? "Selesai" : "Belum Selesai"}
                     </span>
-                  </td>
-                  <td class="py-3 px-6 text-sm text-slate-600 text-center"
-                    >{p.attempts}</td
-                  >
-                </tr>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-indigo-50 border border-indigo-100 rounded-xl p-3 flex flex-col items-center justify-center">
+                      <span class="text-2xl font-black text-indigo-600">{p.bestWPM}</span>
+                      <span class="text-[10px] font-bold text-indigo-400 uppercase tracking-wider">Best WPM</span>
+                    </div>
+                    <div class="bg-blue-50 border border-blue-100 rounded-xl p-3 flex flex-col items-center justify-center">
+                      <span class="text-2xl font-black text-blue-600">{p.bestAccuracy}%</span>
+                      <span class="text-[10px] font-bold text-blue-400 uppercase tracking-wider">Akurasi</span>
+                    </div>
+                  </div>
+
+                  <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+                    <div class="flex gap-1 text-lg">
+                      <span class="text-amber-400">{"★".repeat(p.stars)}</span><span class="text-slate-200">{"★".repeat(3 - p.stars)}</span>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100">
+                      {p.attempts} Percobaan
+                    </span>
+                  </div>
+                </div>
               {/each}
-              {#if progressData.length === 0}
-                <tr
-                  ><td colspan="7" class="py-8 text-center text-slate-500"
-                    >Belum ada data progress.</td
-                  ></tr
+            </div>
+
+            <!-- Pagination Controls -->
+            {#if totalPages.progress > 1}
+            <div class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4 mb-4">
+              <div class="text-sm text-slate-600 text-left">
+                Halaman <span class="font-medium text-slate-900">{pageState.progress}</span> dari <span class="font-medium text-slate-900">{totalPages.progress}</span>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  aria-label="Sebelumnya"
+                  onclick={() => pageState.progress--}
+                  disabled={pageState.progress === 1}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.progress === 1 ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
                 >
-              {/if}
-            </tbody>
-          </table>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center">
+                  {#each Array(totalPages.progress) as _, i}
+                    <button
+                      onclick={() => pageState.progress = i + 1}
+                      class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {pageState.progress === i + 1 ? 'bg-indigo-600 text-slate-100' : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
+                    >
+                      {i + 1}
+                    </button>
+                  {/each}
+                </div>
+                <button
+                  aria-label="Selanjutnya"
+                  onclick={() => pageState.progress++}
+                  disabled={pageState.progress === totalPages.progress}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.progress === totalPages.progress ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+            </div>
+            {/if}
+          {/if}
         {/if}
 
         {#if activeTab === "gameScores"}
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Murid</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Mode</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Skor Tertinggi</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
+          {#if gameScoresData.length === 0}
+            <div class="py-12 text-center">
+              <h3 class="text-lg font-bold text-slate-700 mb-1">Belum ada skor game.</h3>
+            </div>
+          {:else}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each gameScoresData as gs}
-                <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-3 px-6 text-sm font-medium text-slate-900"
-                    >{gs.user?.username || "Unknown"}</td
-                  >
-                  <td
-                    class="py-3 px-6 text-sm text-slate-800 text-center capitalize"
-                    >{gs.mode}</td
-                  >
-                  <td
-                    class="py-3 px-6 text-sm text-green-400 font-bold text-center"
-                    >{gs.score}</td
-                  >
-                </tr>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+                  <div>
+                    <h3 class="text-lg font-bold text-slate-900">@{gs.user?.username || "Unknown"}</h3>
+                    <div class="inline-flex items-center mt-1 px-2 py-0.5 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 uppercase tracking-wide">
+                      Mode: {gs.mode}
+                    </div>
+                  </div>
+                  <div class="bg-emerald-50 border border-emerald-100 rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[80px]">
+                    <span class="text-xl font-black text-emerald-600">{gs.score}</span>
+                    <span class="text-[9px] font-bold text-emerald-400 uppercase tracking-wider">Tertinggi</span>
+                  </div>
+                </div>
               {/each}
-              {#if gameScoresData.length === 0}
-                <tr
-                  ><td colspan="3" class="py-8 text-center text-slate-500"
-                    >Belum ada skor game.</td
-                  ></tr
+            </div>
+
+            <!-- Pagination Controls -->
+            {#if totalPages.gameScores > 1}
+            <div class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4 mb-4">
+              <div class="text-sm text-slate-600 text-left">
+                Halaman <span class="font-medium text-slate-900">{pageState.gameScores}</span> dari <span class="font-medium text-slate-900">{totalPages.gameScores}</span>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  aria-label="Sebelumnya"
+                  onclick={() => pageState.gameScores--}
+                  disabled={pageState.gameScores === 1}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.gameScores === 1 ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
                 >
-              {/if}
-            </tbody>
-          </table>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center">
+                  {#each Array(totalPages.gameScores) as _, i}
+                    <button
+                      onclick={() => pageState.gameScores = i + 1}
+                      class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {pageState.gameScores === i + 1 ? 'bg-indigo-600 text-slate-100' : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
+                    >
+                      {i + 1}
+                    </button>
+                  {/each}
+                </div>
+                <button
+                  aria-label="Selanjutnya"
+                  onclick={() => pageState.gameScores++}
+                  disabled={pageState.gameScores === totalPages.gameScores}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.gameScores === totalPages.gameScores ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+            </div>
+            {/if}
+          {/if}
         {/if}
 
         {#if activeTab === "lessonHistory"}
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Tanggal</th
-                >
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Murid</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Lesson ID</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >WPM</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Akurasi</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Bintang</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
+          {#if lessonHistoryData.length === 0}
+            <div class="py-12 text-center">
+              <h3 class="text-lg font-bold text-slate-700 mb-1">Belum ada riwayat lesson.</h3>
+            </div>
+          {:else}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each lessonHistoryData as lh}
-                <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-3 px-6 text-xs text-slate-600"
-                    >{formatDate(lh.created_at)}</td
-                  >
-                  <td class="py-3 px-6 text-sm font-medium text-slate-900"
-                    >{lh.user?.username || "Unknown"}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-slate-800 text-center"
-                    >{lh.lessonId}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-slate-800 text-center"
-                    >{lh.wpm}</td
-                  >
-                  <td class="py-3 px-6 text-sm text-slate-800 text-center"
-                    >{lh.accuracy}%</td
-                  >
-                  <td class="py-3 px-6 text-sm text-yellow-500 text-center"
-                    >{"★".repeat(lh.stars)}{"☆".repeat(3 - lh.stars)}</td
-                  >
-                </tr>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex flex-col h-full">
+                  <div class="flex justify-between items-start mb-3">
+                    <div class="flex flex-col">
+                      <span class="text-sm font-bold text-slate-400">Lesson {lh.lessonId}</span>
+                      <h3 class="text-lg font-bold text-slate-900 mt-0.5">@{lh.user?.username || "Unknown"}</h3>
+                    </div>
+                    <span class="text-xs font-medium text-slate-500 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">
+                      {formatDate(lh.created_at)}
+                    </span>
+                  </div>
+                  
+                  <div class="grid grid-cols-2 gap-2 mb-4">
+                    <div class="bg-indigo-50/50 border border-indigo-100 rounded-lg p-2 text-center">
+                      <span class="text-lg font-bold text-indigo-600 block">{lh.wpm}</span>
+                      <span class="text-[9px] font-bold text-indigo-400 uppercase tracking-wider">WPM</span>
+                    </div>
+                    <div class="bg-blue-50/50 border border-blue-100 rounded-lg p-2 text-center">
+                      <span class="text-lg font-bold text-blue-600 block">{lh.accuracy}%</span>
+                      <span class="text-[9px] font-bold text-blue-400 uppercase tracking-wider">Akurasi</span>
+                    </div>
+                  </div>
+
+                  <div class="mt-auto flex justify-center pt-3 border-t border-slate-100">
+                    <div class="flex gap-1 text-base">
+                      <span class="text-amber-400">{"★".repeat(lh.stars)}</span><span class="text-slate-200">{"★".repeat(3 - lh.stars)}</span>
+                    </div>
+                  </div>
+                </div>
               {/each}
-              {#if lessonHistoryData.length === 0}
-                <tr
-                  ><td colspan="6" class="py-8 text-center text-slate-500"
-                    >Belum ada riwayat lesson.</td
-                  ></tr
+            </div>
+
+            <!-- Pagination Controls -->
+            {#if totalPages.lessonHistory > 1}
+            <div class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4 mb-4">
+              <div class="text-sm text-slate-600 text-left">
+                Halaman <span class="font-medium text-slate-900">{pageState.lessonHistory}</span> dari <span class="font-medium text-slate-900">{totalPages.lessonHistory}</span>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  aria-label="Sebelumnya"
+                  onclick={() => pageState.lessonHistory--}
+                  disabled={pageState.lessonHistory === 1}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.lessonHistory === 1 ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
                 >
-              {/if}
-            </tbody>
-          </table>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center">
+                  {#each Array(totalPages.lessonHistory) as _, i}
+                    <button
+                      onclick={() => pageState.lessonHistory = i + 1}
+                      class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {pageState.lessonHistory === i + 1 ? 'bg-indigo-600 text-slate-100' : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
+                    >
+                      {i + 1}
+                    </button>
+                  {/each}
+                </div>
+                <button
+                  aria-label="Selanjutnya"
+                  onclick={() => pageState.lessonHistory++}
+                  disabled={pageState.lessonHistory === totalPages.lessonHistory}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.lessonHistory === totalPages.lessonHistory ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+            </div>
+            {/if}
+          {/if}
         {/if}
 
         {#if activeTab === "gameHistory"}
-          <table class="w-full text-left border-collapse">
-            <thead>
-              <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Tanggal</th
-                >
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                  >Murid</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Mode</th
-                >
-                <th
-                  class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                  >Skor</th
-                >
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
+          {#if gameHistoryData.length === 0}
+            <div class="py-12 text-center">
+              <h3 class="text-lg font-bold text-slate-700 mb-1">Belum ada riwayat game.</h3>
+            </div>
+          {:else}
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {#each gameHistoryData as gh}
-                <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-3 px-6 text-xs text-slate-600"
-                    >{formatDate(gh.created_at)}</td
-                  >
-                  <td class="py-3 px-6 text-sm font-medium text-slate-900"
-                    >{gh.user?.username || "Unknown"}</td
-                  >
-                  <td
-                    class="py-3 px-6 text-sm text-slate-800 text-center capitalize"
-                    >{gh.mode}</td
-                  >
-                  <td
-                    class="py-3 px-6 text-sm text-slate-800 font-bold text-center"
-                    >{gh.score}</td
-                  >
-                </tr>
+                <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow flex items-center justify-between">
+                  <div class="flex flex-col">
+                    <span class="text-xs font-medium text-slate-500 mb-1.5">{formatDate(gh.created_at)}</span>
+                    <h3 class="text-lg font-bold text-slate-900 leading-none">@{gh.user?.username || "Unknown"}</h3>
+                    <div class="mt-2.5 w-max px-2.5 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-bold border border-slate-200 uppercase tracking-wide">
+                      Mode: {gh.mode}
+                    </div>
+                  </div>
+                  <div class="bg-blue-50 border border-blue-100 rounded-xl px-4 py-2 flex flex-col items-center justify-center min-w-[70px]">
+                    <span class="text-xl font-black text-blue-600">{gh.score}</span>
+                    <span class="text-[9px] font-bold text-blue-400 uppercase tracking-wider">Skor</span>
+                  </div>
+                </div>
               {/each}
-              {#if gameHistoryData.length === 0}
-                <tr
-                  ><td colspan="4" class="py-8 text-center text-slate-500"
-                    >Belum ada riwayat game.</td
-                  ></tr
+            </div>
+
+            <!-- Pagination Controls -->
+            {#if totalPages.gameHistory > 1}
+            <div class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4 mb-4">
+              <div class="text-sm text-slate-600 text-left">
+                Halaman <span class="font-medium text-slate-900">{pageState.gameHistory}</span> dari <span class="font-medium text-slate-900">{totalPages.gameHistory}</span>
+              </div>
+              <div class="flex gap-2">
+                <button
+                  aria-label="Sebelumnya"
+                  onclick={() => pageState.gameHistory--}
+                  disabled={pageState.gameHistory === 1}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.gameHistory === 1 ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
                 >
-              {/if}
-            </tbody>
-          </table>
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+                </button>
+                <div class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center">
+                  {#each Array(totalPages.gameHistory) as _, i}
+                    <button
+                      onclick={() => pageState.gameHistory = i + 1}
+                      class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {pageState.gameHistory === i + 1 ? 'bg-indigo-600 text-slate-100' : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
+                    >
+                      {i + 1}
+                    </button>
+                  {/each}
+                </div>
+                <button
+                  aria-label="Selanjutnya"
+                  onclick={() => pageState.gameHistory++}
+                  disabled={pageState.gameHistory === totalPages.gameHistory}
+                  class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {pageState.gameHistory === totalPages.gameHistory ? 'bg-white/40 text-slate-400 cursor-not-allowed' : 'bg-white border border-slate-200 text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+                >
+                  <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+                </button>
+              </div>
+            </div>
+            {/if}
+          {/if}
         {/if}
       </div>
     </div>

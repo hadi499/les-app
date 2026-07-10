@@ -25,6 +25,16 @@
   let isLoading = $state(true);
   let isLoadingScores = $state(false);
 
+  // Paginasi State
+  let currentQuizPage = $state(1);
+  let totalQuizPages = $state(1);
+  
+  let currentScorePage = $state(1);
+  let totalScorePages = $state(1);
+  
+  let itemsPerPage = 24;
+  let isInitialLoad = true;
+
   async function checkRole() {
     try {
       const res = await fetch(`/me`, {
@@ -34,11 +44,9 @@
       if (data.authenticated && data.user && data.user.role === "teacher") {
         isTeacher = true;
       } else {
-        // Jika murid, mungkin tab default langsung ke skor jika tidak mau akses manajemen kuis.
-        // Tapi kita biarkan mereka bisa lihat daftar kuis juga (optional).
-        // Kita juga bisa sembunyikan Manajemen Kuis dari murid kalau memang hanya untuk guru.
-        // Untuk sekarang, murid diarahkan default ke "scores" atau daftar kuis.
-        activeTab = "scores"; // Asumsi student lebih peduli nilainya
+        if (!localStorage.getItem("quizzesActiveTab")) {
+          activeTab = "scores"; 
+        }
       }
     } catch (e) {
       console.error(e);
@@ -47,12 +55,13 @@
 
   async function fetchQuizzes() {
     try {
-      const res = await fetch(`/api/quizzes`, {
+      const res = await fetch(`/api/quizzes?page=${currentQuizPage}&limit=${itemsPerPage}`, {
         credentials: "include",
       });
       if (res.ok) {
         const json = await res.json();
         quizzes = json.data || [];
+        totalQuizPages = json.total_pages || 1;
       }
     } catch (e) {
       console.error(e);
@@ -63,13 +72,14 @@
     isLoadingScores = true;
     try {
       const url = isTeacher 
-        ? `/api/quizzes/scores`
-        : `/api/scores/quizzes`;
+        ? `/api/quizzes/scores?page=${currentScorePage}&limit=${itemsPerPage}`
+        : `/api/scores/quizzes?page=${currentScorePage}&limit=${itemsPerPage}`;
       
       const res = await fetch(url, { credentials: "include" });
       if (res.ok) {
         const json = await res.json();
         scores = json.data || [];
+        totalScorePages = json.total_pages || 1;
       }
     } catch (e) {
       console.error(e);
@@ -96,11 +106,35 @@
     }
   }
 
+  $effect(() => {
+    if (!isInitialLoad) {
+      fetchQuizzes();
+    }
+  });
+
+  $effect(() => {
+    if (!isInitialLoad) {
+      fetchScores();
+    }
+  });
+
   onMount(async () => {
+    const savedTab = localStorage.getItem("quizzesActiveTab");
+    if (savedTab === "quizzes" || savedTab === "scores") {
+      activeTab = savedTab;
+    }
+
     await checkRole();
     await fetchQuizzes();
     await fetchScores();
+    isInitialLoad = false;
     isLoading = false;
+  });
+
+  $effect(() => {
+    if (!isLoading) {
+      localStorage.setItem("quizzesActiveTab", activeTab);
+    }
   });
 </script>
 
@@ -129,19 +163,21 @@
 </div>
 
 <!-- Tabs Navigation -->
-<div class="flex gap-2 mb-6 border-b border-slate-200 overflow-x-auto whitespace-nowrap">
-  <button
-    class="px-6 py-3 font-semibold text-sm border-b-2 transition-colors cursor-pointer {activeTab === 'quizzes' ? 'border-blue-600 text-slate-800' : 'border-transparent text-slate-500 hover:text-slate-800'}"
-    onclick={() => activeTab = 'quizzes'}
-  >
-    Daftar Kuis
-  </button>
-  <button
-    class="px-6 py-3 font-semibold text-sm border-b-2 transition-colors cursor-pointer {activeTab === 'scores' ? 'border-blue-600 text-slate-800' : 'border-transparent text-slate-500 hover:text-slate-800'}"
-    onclick={() => activeTab = 'scores'}
-  >
-    Riwayat Nilai
-  </button>
+<div class="mb-6 flex">
+  <div class="grid grid-cols-2 w-full md:w-max md:flex p-1.5 gap-1.5 bg-slate-100/80 backdrop-blur-sm rounded-2xl">
+    <button
+      class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {activeTab === 'quizzes' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-900/5' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}"
+      onclick={() => activeTab = 'quizzes'}
+    >
+      Daftar Kuis
+    </button>
+    <button
+      class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {activeTab === 'scores' ? 'bg-white text-blue-600 shadow-sm ring-1 ring-slate-900/5' : 'text-slate-500 hover:text-slate-700 hover:bg-slate-200/50'}"
+      onclick={() => activeTab = 'scores'}
+    >
+      Riwayat Nilai
+    </button>
+  </div>
 </div>
 
 {#if isLoading}
@@ -151,70 +187,84 @@
 {:else}
 
   {#if activeTab === "quizzes"}
-    <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-      <div class="overflow-x-auto w-full">
-        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-          <thead>
-            <tr class="bg-slate-50/50 border-b border-slate-200">
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">ID</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Judul Kuis</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Kategori</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Batas Waktu</th>
-              <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-100">
-            {#each quizzes as quiz}
-              <tr class="hover:bg-slate-50/50 transition-colors">
-                <td class="px-6 py-4 text-sm font-medium text-slate-900">#{quiz.id}</td>
-                <td class="px-6 py-4 text-sm font-semibold text-slate-800">{quiz.title}</td>
-                <td class="px-6 py-4 text-sm text-slate-600">
-                  <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-xs font-medium border border-slate-200">
-                    {quiz.category}
-                  </span>
-                </td>
-                <td class="px-6 py-4 text-sm text-slate-600">{quiz.timeLimit} Menit</td>
-                <td class="px-6 py-4 text-center space-x-2">
-                  {#if isTeacher}
-                    <a
-                      href="/dashboard/quizzes/{quiz.id}/edit"
-                      class="inline-flex items-center justify-center p-2 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors"
-                      title="Edit Kuis"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
-                      </svg>
-                    </a>
-                    <button
-                      onclick={() => deleteQuiz(quiz.id)}
-                      class="inline-flex items-center justify-center p-2 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 transition-colors cursor-pointer border-none"
-                      title="Hapus Kuis"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                      </svg>
-                    </button>
-                  {:else}
-                    <a
-                      href="/quiz/{quiz.id}"
-                      class="inline-flex items-center justify-center px-4 py-2 text-xs font-bold text-white bg-blue-500 rounded-lg hover:bg-blue-600 transition-colors no-underline"
-                    >
-                      Kerjakan Kuis
-                    </a>
-                  {/if}
-                </td>
-              </tr>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+      {#each quizzes as quiz}
+        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full">
+          <div class="flex justify-between items-start mb-2">
+            <div>
+              <span class="text-xs font-bold text-slate-400">#{quiz.id}</span>
+              <h3 class="text-lg font-bold text-slate-900 mt-1 leading-tight">{quiz.title}</h3>
+            </div>
+            <span class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200 whitespace-nowrap uppercase tracking-wide">
+              {quiz.category}
+            </span>
+          </div>
+          
+          <div class="flex items-center text-xs font-medium text-slate-500 mb-6 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
+            <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+            {quiz.timeLimit} Menit
+          </div>
+
+          <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
+            {#if isTeacher}
+              <a
+                href="/dashboard/quizzes/{quiz.id}/edit"
+                class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-blue-700 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors no-underline"
+              >
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Edit
+              </a>
+              <button
+                onclick={() => deleteQuiz(quiz.id)}
+                class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-red-600 bg-red-50 rounded-xl border border-red-100 hover:bg-red-100 transition-colors cursor-pointer"
+              >
+                <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+                Hapus
+              </button>
             {:else}
-              <tr>
-                <td colspan="5" class="px-6 py-8 text-center text-sm text-slate-600">
-                  Belum ada kuis yang tersedia.
-                </td>
-              </tr>
-            {/each}
-          </tbody>
-        </table>
-      </div>
+              <a
+                href="/quiz/{quiz.id}"
+                class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors no-underline"
+              >
+                Kerjakan Kuis
+              </a>
+            {/if}
+          </div>
+        </div>
+      {:else}
+        <div class="col-span-full text-center p-12 bg-white rounded-2xl border border-slate-200 shadow-sm text-sm text-slate-500">Belum ada kuis yang tersedia.</div>
+      {/each}
     </div>
+
+    <!-- Pagination Controls Kuis -->
+    {#if totalQuizPages > 1}
+      <div class="flex items-center justify-between bg-white px-4 py-3 border border-slate-200 rounded-xl shadow-sm">
+        <div class="text-sm text-slate-600">
+          Halaman <span class="font-bold text-slate-900">{currentQuizPage}</span> dari <span class="font-bold text-slate-900">{totalQuizPages}</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <button
+            class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            onclick={() => currentQuizPage = Math.max(1, currentQuizPage - 1)}
+            disabled={currentQuizPage === 1}
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          
+          <button
+            class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+            onclick={() => currentQuizPage = Math.min(totalQuizPages, currentQuizPage + 1)}
+            disabled={currentQuizPage === totalQuizPages}
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
+      </div>
+    {/if}
   {/if}
 
   {#if activeTab === "scores"}
@@ -223,50 +273,68 @@
         <div class="w-6 h-6 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
       </div>
     {:else}
-      <div class="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-        <div class="overflow-x-auto w-full">
-          <table class="w-full text-left border-collapse whitespace-nowrap min-w-[500px]">
-            <thead>
-              <tr class="bg-slate-50/50 border-b border-slate-200">
-                <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Kuis</th>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        {#each scores as s}
+          <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full">
+            <div class="flex justify-between items-start mb-4">
+              <div class="pr-4">
+                <h3 class="text-lg font-bold text-slate-900 leading-tight">
+                  {s.quiz ? s.quiz.title : `Kuis #${s.quiz_id}`}
+                </h3>
                 {#if isTeacher}
-                  <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Siswa</th>
+                  <div class="flex items-center text-sm text-slate-500 mt-2 font-medium bg-slate-50 px-2.5 py-1 rounded-md w-max border border-slate-100">
+                    <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>
+                    @{s.username}
+                  </div>
                 {/if}
-                <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Skor</th>
-                <th class="px-6 py-4 text-xs font-bold text-slate-800 uppercase tracking-wider">Waktu Selesai</th>
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-100">
-              {#each scores as s}
-                <tr class="hover:bg-slate-50/50 transition-colors">
-                  <td class="px-6 py-4 text-sm font-semibold text-slate-800">
-                    {s.quiz ? s.quiz.title : `Kuis #${s.quiz_id}`}
-                  </td>
-                  {#if isTeacher}
-                    <td class="px-6 py-4 text-sm text-slate-600 font-medium">@{s.username}</td>
-                  {/if}
-                  <td class="px-6 py-4">
-                    <span class={`px-3 py-1 rounded-full text-xs font-bold border ${s.score >= 80 ? 'bg-green-100 text-green-700 border-green-300' : s.score >= 60 ? 'bg-yellow-100 text-yellow-700 border-yellow-300' : 'bg-red-100 text-red-600 border-red-300'}`}>
-                      {s.score}
-                    </span>
-                  </td>
-                  <td class="px-6 py-4 text-sm text-slate-600">
-                    {new Date(s.created_at).toLocaleString("id-ID", {
-                      day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit"
-                    })}
-                  </td>
-                </tr>
-              {:else}
-                <tr>
-                  <td colspan={isTeacher ? 4 : 3} class="px-6 py-8 text-center text-sm text-slate-600">
-                    Belum ada riwayat pengerjaan kuis.
-                  </td>
-                </tr>
-              {/each}
-            </tbody>
-          </table>
-        </div>
+              </div>
+              <div class="shrink-0 text-right mt-0.5">
+                <span class={`inline-block px-3 py-1.5 rounded-xl text-sm font-black border shadow-sm tracking-wide ${s.score >= 80 ? 'bg-green-50 text-green-700 border-green-200' : s.score >= 60 ? 'bg-yellow-50 text-yellow-700 border-yellow-200' : 'bg-red-50 text-red-600 border-red-200'}`}>
+                  SKOR {s.score}
+                </span>
+              </div>
+            </div>
+            
+            <div class="mt-auto flex items-center justify-between pt-4 border-t border-slate-100">
+              <div class="flex items-center text-xs text-slate-600 font-semibold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200/60">
+                <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
+                {new Date(s.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+              </div>
+              <div class="text-xs text-slate-500 font-medium bg-slate-50 px-2.5 py-1.5 rounded-lg border border-slate-100">
+                {new Date(s.created_at).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+              </div>
+            </div>
+          </div>
+        {:else}
+          <div class="col-span-full text-center p-12 bg-white rounded-2xl border border-slate-200 shadow-sm text-sm text-slate-500">Belum ada riwayat pengerjaan kuis.</div>
+        {/each}
       </div>
+
+      <!-- Pagination Controls Skor -->
+      {#if totalScorePages > 1}
+        <div class="flex items-center justify-between bg-white px-4 py-3 border border-slate-200 rounded-xl shadow-sm">
+          <div class="text-sm text-slate-600">
+            Halaman <span class="font-bold text-slate-900">{currentScorePage}</span> dari <span class="font-bold text-slate-900">{totalScorePages}</span>
+          </div>
+          <div class="flex items-center gap-2">
+            <button
+              class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              onclick={() => currentScorePage = Math.max(1, currentScorePage - 1)}
+              disabled={currentScorePage === 1}
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+            </button>
+            
+            <button
+              class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
+              onclick={() => currentScorePage = Math.min(totalScorePages, currentScorePage + 1)}
+              disabled={currentScorePage === totalScorePages}
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+            </button>
+          </div>
+        </div>
+      {/if}
     {/if}
   {/if}
 
