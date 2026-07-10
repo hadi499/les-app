@@ -892,16 +892,16 @@
             <div
               class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === note.id ? 'z-50' : 'z-0'}"
             >
-              <div class="flex justify-between items-start mb-2">
-                <div>
-                  <span class="text-xs font-bold text-slate-400">#{note.id}</span>
-                  <h3 class="text-lg font-bold text-slate-900 mt-1 leading-tight line-clamp-2">{note.title}</h3>
-                </div>
+              <div class="flex justify-between items-center mb-2.5">
+                <span class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">#{note.id}</span>
                 {#if note.folder}
-                  <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 whitespace-nowrap uppercase tracking-wide">
+                  <span class="px-2.5 py-1 bg-blue-50 text-blue-700 rounded-md text-[10px] font-bold border border-blue-100 whitespace-nowrap uppercase tracking-wide">
                     {note.folder.name}
                   </span>
                 {/if}
+              </div>
+              <div class="grow">
+                <h3 class="text-[17px] font-bold text-slate-900 leading-snug line-clamp-3 mb-3" title={note.title}>{note.title}</h3>
               </div>
               
               <div class="flex items-center text-xs font-medium text-slate-500 mb-4 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
