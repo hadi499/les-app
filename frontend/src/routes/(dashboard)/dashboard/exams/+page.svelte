@@ -1,6 +1,5 @@
 <script lang="ts">
   import { onMount } from "svelte";
-  import Chart from "chart.js/auto";
   import { compressImageFile } from "$lib/utils";
 
   type Exam = {
@@ -23,28 +22,53 @@
   let isLoading = $state(true);
   let errorMsg = $state("");
   let isTeacher = $state(false);
-  let currentUserId = $state<number | null>(null);
+  let activeTab: "card" | "table" = $state("card");
+  let isLoadingMore = $state(false);
 
-  // Tabs & Chart State
-  let activeTab = $state("table");
-  let chartCanvas: HTMLCanvasElement | null = $state(null);
-  let chartInstance: Chart | null = null;
-  let chartSelectedUserId = $state("");
-  let chartTimeframe = $state("harian");
-
-  // Pagination & Filter State
+  // Pagination State
   let currentPage = $state(1);
-  const itemsPerPage = 20;
+  const itemsPerPage = 24;
 
-  let paginatedExams = $derived(
-    exams.slice(
-      (currentPage - 1) * itemsPerPage,
-      currentPage * itemsPerPage,
-    ),
-  );
   let totalPages = $derived(
     Math.ceil(exams.length / itemsPerPage) || 1,
   );
+
+  let paginatedExams = $derived(
+    activeTab === "card"
+      ? exams.slice(0, currentPage * itemsPerPage)
+      : exams.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+  );
+
+  function switchTab(tab: "card" | "table") {
+    if (activeTab === tab) return;
+    activeTab = tab;
+    currentPage = 1;
+  }
+
+  function infiniteScroll(node: HTMLElement) {
+    const observer = new IntersectionObserver((entries) => {
+      if (
+        entries[0].isIntersecting &&
+        activeTab === "card" &&
+        currentPage < totalPages &&
+        !isLoadingMore &&
+        !isLoading
+      ) {
+        isLoadingMore = true;
+        // Simulate a small network delay for smooth UX like real fetching
+        setTimeout(() => {
+          currentPage++;
+          isLoadingMore = false;
+        }, 300);
+      }
+    });
+    observer.observe(node);
+    return {
+      destroy() {
+        observer.disconnect();
+      }
+    };
+  }
 
   function nextPage() {
     if (currentPage < totalPages) currentPage++;
@@ -157,7 +181,6 @@
         if (data.user.role === "teacher") {
           isTeacher = true;
         }
-        currentUserId = data.user.id;
       }
     } catch (e) {
       console.error(e);
@@ -173,9 +196,6 @@
       promises.push(fetchUsers());
     }
     await Promise.all(promises);
-    if (!isTeacher && currentUserId) {
-      chartSelectedUserId = currentUserId.toString();
-    }
     isLoading = false;
   }
 
@@ -187,7 +207,7 @@
     isEditing = false;
     currentExamId = null;
     formUserId = "";
-    formExamDate = new Date().toLocaleDateString("en-CA"); // "en-CA" formats as YYYY-MM-DD
+    formExamDate = new Date().toLocaleDateString("en-CA");
     formExamName = "";
     formSubjectId = "";
     formScore = 0;
@@ -291,163 +311,16 @@
       day: "numeric",
     });
   }
-
-  function getWeekNumber(d: Date) {
-    const date = new Date(Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()));
-    const dayNum = date.getUTCDay() || 7;
-    date.setUTCDate(date.getUTCDate() + 4 - dayNum);
-    const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
-    return Math.ceil(
-      ((date.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
-    );
-  }
-
-  function getTimeframeLabel(dateStr: string, timeframe: string) {
-    const d = new Date(dateStr);
-    if (timeframe === "harian") {
-      return formatDate(dateStr);
-    } else if (timeframe === "mingguan") {
-      const w = getWeekNumber(d);
-      return `Minggu ${w}, ${d.getFullYear()}`;
-    } else if (timeframe === "bulanan") {
-      return d.toLocaleDateString("id-ID", { month: "long", year: "numeric" });
-    }
-    return formatDate(dateStr);
-  }
-
-  function drawChart() {
-    if (activeTab !== "chart" || !chartCanvas) return;
-    if (chartInstance) chartInstance.destroy();
-
-    if (!chartSelectedUserId) return;
-
-    // Filter exams for selected user
-    const userExams = exams.filter(
-      (e) => e.user_id === parseInt(chartSelectedUserId),
-    );
-
-    // Sort by date ascending (base sort)
-    userExams.sort(
-      (a, b) =>
-        new Date(a.exam_date).getTime() - new Date(b.exam_date).getTime(),
-    );
-
-    // Group by subject.name
-    const subjectsMap: Record<string, { x: string; y: number }[]> = {};
-    const datesSet = new Set<string>();
-    const labelSortValue: Record<string, number> = {};
-
-    userExams.forEach((e) => {
-      const subjectName = e.subject?.name || "Unknown";
-      const d = new Date(e.exam_date);
-      const label = getTimeframeLabel(e.exam_date, chartTimeframe);
-
-      datesSet.add(label);
-      if (!labelSortValue[label]) {
-        labelSortValue[label] = d.getTime();
-      }
-
-      if (!subjectsMap[subjectName]) subjectsMap[subjectName] = [];
-      subjectsMap[subjectName].push({ x: label, y: e.score });
-    });
-
-    const labels = Array.from(datesSet).sort(
-      (a, b) => labelSortValue[a] - labelSortValue[b],
-    );
-
-    const datasets = [];
-    const colors = [
-      "#60a5fa",
-      "#34d399",
-      "#fbbf24",
-      "#f87171",
-      "#a78bfa",
-      "#f472b6",
-    ];
-    let colorIndex = 0;
-
-    for (const [subjectName, dataPoints] of Object.entries(subjectsMap)) {
-      // Map dataPoints to labels and calculate average if multiple scores in the same timeframe
-      const data = labels.map((label) => {
-        const points = dataPoints.filter((dp) => dp.x === label);
-        if (points.length === 0) return null;
-        const sum = points.reduce((acc, curr) => acc + curr.y, 0);
-        return sum / points.length;
-      });
-
-      datasets.push({
-        label: subjectName,
-        data: data,
-        borderColor: colors[colorIndex % colors.length],
-        backgroundColor: colors[colorIndex % colors.length],
-        pointBackgroundColor: colors[colorIndex % colors.length],
-        tension: 0.3,
-        fill: false,
-        spanGaps: true,
-      });
-      colorIndex++;
-    }
-
-    chartInstance = new Chart(chartCanvas, {
-      type: "line",
-      data: { labels, datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            labels: {
-              color: "#431407",
-              font: { weight: "bold" },
-              usePointStyle: true,
-              pointStyle: "circle",
-              padding: 20,
-            },
-          },
-        },
-        scales: {
-          y: {
-            beginAtZero: true,
-            max: 100,
-            grid: { color: "#fed7aa" },
-            ticks: { color: "#9a3412", font: { weight: 500 } },
-          },
-          x: {
-            grid: { color: "#fed7aa" },
-            ticks: { color: "#9a3412", font: { weight: 500 } },
-          },
-        },
-      },
-    });
-  }
-
-  $effect(() => {
-    if (activeTab === "chart") {
-      // Small delay to ensure canvas is mounted
-      setTimeout(drawChart, 0);
-    }
-  });
-
-  $effect(() => {
-    // Redraw if selected user or timeframe changes
-    chartSelectedUserId;
-    chartTimeframe;
-    setTimeout(drawChart, 0);
-  });
 </script>
 
 <svelte:head>
-  <title>Nilai Harian Ujian - Portal Guru</title>
+  <title>Nilai Harian Ujian - Portal {isTeacher ? "Guru" : "Siswa"}</title>
 </svelte:head>
 
-<div class="animate-in fade-in duration-500 max-w-7xl mx-auto space-y-6">
-  <div
-    class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8"
-  >
+<div class="animate-in fade-in duration-500 max-w-7xl mx-auto space-y-6 p-4 sm:p-0">
+  <div class="flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4 mb-8">
     <div>
-      <h1
-        class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
-      >
+      <h1 class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm">
         Nilai Harian
       </h1>
       <p class="mt-2 text-slate-600 text-sm sm:text-base tracking-wide">
@@ -457,300 +330,195 @@
     {#if isTeacher}
       <button
         onclick={openAddModal}
-        class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20"
+        class="inline-flex items-center gap-2 px-4 py-2.5 bg-indigo-300 hover:bg-indigo-200 text-slate-900 font-medium rounded-xl transition-all shadow-md shadow-indigo-900/20 cursor-pointer"
       >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          ></path></svg
-        >
-        Nilai Ujian
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Tambah Data
       </button>
     {/if}
   </div>
 
   {#if isLoading}
     <div class="flex justify-center p-12">
-      <div
-        class="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
-      ></div>
+      <div class="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"></div>
     </div>
   {:else if errorMsg}
-    <div
-      class="bg-red-100 text-red-800 p-6 rounded-2xl border border-red-300 font-medium flex items-center gap-3"
-    >
-      <svg
-        class="w-6 h-6 flex-shrink-0"
-        fill="none"
-        stroke="currentColor"
-        viewBox="0 0 24 24"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-        ></path></svg
-      >
+    <div class="bg-red-100 text-red-800 p-6 rounded-2xl border border-red-300 font-medium flex items-center gap-3">
+      <svg class="w-6 h-6 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       {errorMsg}
     </div>
   {:else}
-    <!-- Tabs Header -->
-    <div
-      class="flex gap-4 sm:gap-6 border-b border-slate-200 pb-0 overflow-x-auto whitespace-nowrap px-1"
-    >
-      <button
-        onclick={() => (activeTab = "table")}
-        class="pb-3 px-1 font-medium transition-colors {activeTab === 'table'
-          ? 'text-indigo-400 border-b-2 border-indigo-400'
-          : 'text-slate-500 hover:text-slate-800'}">Tabel Nilai</button
-      >
-      <button
-        onclick={() => (activeTab = "chart")}
-        class="pb-3 px-1 font-medium transition-colors {activeTab === 'chart'
-          ? 'text-indigo-400 border-b-2 border-indigo-400'
-          : 'text-slate-500 hover:text-slate-800'}">Grafik Perkembangan</button
-      >
-    </div>
-
-    {#if activeTab === "table"}
-      <div
-        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden max-w-full"
-      >
-        <div class="overflow-x-auto w-full max-w-full">
-          <table class="w-full text-left border-collapse min-w-[600px]">
-            <thead>
-              <tr class="bg-white/40 border-b border-slate-200">
-                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Tanggal</th>
-                {#if isTeacher}
-                  <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Murid</th>
-                {/if}
-                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Nama Ujian</th>
-                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm pb-5">Mata Pelajaran</th>
-                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Nilai</th>
-                <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Detail</th>
-                {#if isTeacher}
-                  <th class="py-4 px-4 sm:px-6 align-bottom font-bold text-slate-900 text-sm text-center pb-5">Aksi</th>
-                {/if}
-              </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-200">
-              {#each paginatedExams as exam}
-                <tr class="hover:bg-white/40 transition-colors">
-                  <td class="py-4 px-6 text-sm text-slate-600"
-                    >{formatDate(exam.exam_date)}</td
-                  >
-                  {#if isTeacher}
-                    <td
-                      class="py-4 px-6 text-sm font-medium text-slate-900 drop-shadow-sm"
-                      >{exam.user?.username || "Unknown"}</td
-                    >
-                  {/if}
-                  <td class="py-4 px-6 text-sm text-slate-800"
-                    >{exam.exam_name}</td
-                  >
-                  <td class="py-4 px-6 text-sm text-slate-800"
-                    >{exam.subject?.name || "Unknown"}</td
-                  >
-                  <td class="py-4 px-6 text-sm text-center">
-                    <span
-                      class={`px-3 py-1 rounded-full font-bold text-xs border ${exam.score >= 80 ? "bg-green-100 text-green-700 border-green-500" : exam.score >= 60 ? "bg-yellow-100 text-yellow-700 border-yellow-800/50" : "bg-red-100 text-red-600 border-red-300"}`}
-                    >
-                      {exam.score}
-                    </span>
-                  </td>
-                  <td class="py-4 px-6 text-sm text-center">
-                    <a href={`/dashboard/exams/${exam.id}`} class="inline-flex items-center justify-center p-1.5 text-indigo-600 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors border border-indigo-300" title="Lihat Detail">
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                    </a>
-                  </td>
-                  {#if isTeacher}
-                    <td class="py-4 px-6 text-center">
-                      <div class="flex justify-center gap-2">
-                        <button
-                          onclick={() => openEditModal(exam)}
-                          class="inline-flex items-center justify-center p-1.5 text-blue-600 bg-blue-100 hover:bg-blue-200 rounded-lg transition-colors border border-blue-300"
-                          title="Edit"
-                        >
-                          <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            ><path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                            ></path></svg
-                          >
-                        </button>
-                        <button
-                          onclick={() => openDeleteModal(exam.id)}
-                          class="inline-flex items-center justify-center p-1.5 text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
-                          title="Hapus"
-                        >
-                          <svg
-                            class="w-4 h-4"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                            ><path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            ></path></svg
-                          >
-                        </button>
-                      </div>
-                    </td>
-                  {/if}
-                </tr>
-              {/each}
-              {#if exams.length === 0}
-                <tr>
-                  <td
-                    colspan={isTeacher ? 7 : 5}
-                    class="py-12 text-center text-slate-500 font-light"
-                    >Belum ada data nilai ujian.</td
-                  >
-                </tr>
-              {/if}
-            </tbody>
-          </table>
+    {#if exams.length === 0}
+      <div class="py-16 text-center bg-white/60 backdrop-blur-md rounded-xl border border-slate-200 shadow-sm flex flex-col items-center justify-center">
+        <div class="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center text-slate-400 mb-4">
+          <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         </div>
-
-        <!-- Pagination Controls -->
-        {#if totalPages > 1}
-          <div
-            class="px-4 py-3 sm:px-6 sm:py-4 border-t border-slate-200 flex flex-row items-center justify-between gap-4"
-          >
-            <div class="text-sm text-slate-600 text-left">
-              <span class="font-medium text-slate-900"
-                >{Math.min(
-                  currentPage * itemsPerPage,
-                  exams.length,
-                )}</span
-              >
-              dari
-              <span class="font-medium text-slate-900"
-                >{exams.length}</span
-              > data
-            </div>
-            <div class="flex gap-2">
-              <button
-                aria-label="Sebelumnya"
-                onclick={prevPage}
-                disabled={currentPage === 1}
-                class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
-                1
-                  ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
-                  : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
-              >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-                </svg>
-              </button>
-              <div
-                class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center"
-              >
-                {#each Array(totalPages) as _, i}
-                  <button
-                    onclick={() => goToPage(i + 1)}
-                    class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {currentPage ===
-                    i + 1
-                      ? 'bg-indigo-600 text-slate-100'
-                      : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
-                  >
-                    {i + 1}
-                  </button>
-                {/each}
-              </div>
-              <button
-                aria-label="Selanjutnya"
-                onclick={nextPage}
-                disabled={currentPage === totalPages}
-                class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage ===
-                totalPages
-                  ? 'bg-white/40 text-zinc-600 cursor-not-allowed'
-                  : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
-              >
-                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
-                </svg>
-              </button>
-            </div>
-          </div>
+        <p class="text-slate-500 font-medium text-lg">Belum ada data ujian.</p>
+        {#if isTeacher}
+          <p class="text-slate-400 text-sm mt-1">Silakan tambahkan data baru melalui tombol di atas.</p>
         {/if}
       </div>
-    {:else if activeTab === "chart"}
-      <div
-        class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 space-y-6"
-      >
-        <div class="flex flex-col sm:flex-row gap-4">
-          {#if isTeacher}
-            <div class="w-full sm:max-w-xs">
-              <label
-                class="block text-sm font-medium text-slate-600 mb-2"
-                for="chartUser">Pilih Murid</label
-              >
-              <select
-                id="chartUser"
-                bind:value={chartSelectedUserId}
-                class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
-              >
-                <option value="" disabled hidden>-- Pilih Murid --</option>
-                {#each users as u}
-                  <option value={u.id}>{u.username}</option>
-                {/each}
-              </select>
-            </div>
-          {/if}
-
-          {#if chartSelectedUserId}
-            <div class="w-full sm:max-w-[12rem]">
-              <label
-                class="block text-sm font-medium text-slate-600 mb-2"
-                for="chartTimeframe">Rentang Waktu</label
-              >
-              <select
-                id="chartTimeframe"
-                bind:value={chartTimeframe}
-                class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl pl-4 pr-10 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm cursor-pointer appearance-none bg-[url('data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20fill%3D%22none%22%20viewBox%3D%220%200%2024%2024%22%20stroke%3D%22%2364748b%22%3E%3Cpath%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20stroke-width%3D%222%22%20d%3D%22M19%209l-7%207-7-7%22%2F%3E%3C%2Fsvg%3E')] bg-[length:1.25rem_1.25rem] bg-[position:right_1rem_center] bg-no-repeat"
-              >
-                <option value="harian" class="bg-slate-700 text-white"
-                  >Harian</option
-                >
-                <option value="mingguan" class="bg-slate-700 text-white"
-                  >Mingguan</option
-                >
-                <option value="bulanan" class="bg-slate-700 text-white"
-                  >Bulanan</option
-                >
-              </select>
-            </div>
-          {/if}
-        </div>
-
-        {#if chartSelectedUserId}
-          <div class="h-96 w-full">
-            <canvas bind:this={chartCanvas}></canvas>
-          </div>
-        {:else}
-          <div
-            class="py-16 text-center text-slate-500 font-light border-2 border-dashed border-slate-200 rounded-2xl"
+    {:else}
+      {#if isTeacher}
+        <div class="flex items-center gap-2 mb-6">
+          <button
+            onclick={() => switchTab("card")}
+            class="px-4 py-2 text-sm font-medium rounded-xl transition-all {activeTab === 'card' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 cursor-pointer'}"
           >
-            Silakan pilih nama murid terlebih dahulu untuk melihat grafik
-            perkembangan.
+            Tampilan Kartu
+          </button>
+          <button
+            onclick={() => switchTab("table")}
+            class="px-4 py-2 text-sm font-medium rounded-xl transition-all {activeTab === 'table' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 cursor-pointer'}"
+          >
+            Tampilan Tabel
+          </button>
+        </div>
+      {/if}
+
+      {#if activeTab === "table" && isTeacher}
+        <div class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse min-w-[600px]">
+              <thead>
+                <tr class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-sm">
+                  {#if isTeacher}
+                    <th class="px-6 py-4 font-semibold">Murid</th>
+                  {/if}
+                  <th class="px-6 py-4 font-semibold">Tanggal</th>
+                  <th class="px-6 py-4 font-semibold">Ujian</th>
+                  <th class="px-6 py-4 font-semibold">Pelajaran</th>
+                  <th class="px-6 py-4 font-semibold text-center">Nilai</th>
+                  <th class="px-6 py-4 font-semibold text-center w-32">Detail</th>
+                  {#if isTeacher}
+                    <th class="px-6 py-4 font-semibold text-center w-32">Aksi</th>
+                  {/if}
+                </tr>
+              </thead>
+              <tbody class="divide-y divide-slate-100">
+                {#each paginatedExams as exam}
+                  <tr class="hover:bg-slate-50/50 transition-colors group">
+                    {#if isTeacher}
+                      <td class="px-6 py-4">
+                        <span class="font-bold text-slate-800">{exam.user?.username || "Unknown"}</span>
+                      </td>
+                    {/if}
+                    <td class="px-6 py-4">
+                      <span class="text-sm text-slate-600 font-medium">{formatDate(exam.exam_date)}</span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-slate-800">{exam.exam_name}</td>
+                    <td class="px-6 py-4 text-sm text-slate-800">{exam.subject?.name || "Unknown"}</td>
+                    <td class="px-6 py-4 text-center">
+                      <span class={`px-3.5 py-1.5 rounded-full font-bold text-sm border ${exam.score >= 80 ? "bg-green-100 text-green-700 border-green-500" : exam.score >= 60 ? "bg-yellow-100 text-yellow-700 border-yellow-800/50" : "bg-red-100 text-red-600 border-red-300"}`}>
+                        {exam.score}
+                      </span>
+                    </td>
+                    <td class="px-6 py-4 text-center">
+                      <a href={`/dashboard/exams/${exam.id}`} title="Lihat Detail" class="inline-flex items-center justify-center p-1.5 text-indigo-600 bg-indigo-100 hover:bg-indigo-200 rounded-lg transition-colors border border-indigo-300 cursor-pointer">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                      </a>
+                    </td>
+                    {#if isTeacher}
+                      <td class="px-6 py-4">
+                        <div class="flex items-center justify-center gap-2">
+                          <button onclick={() => openEditModal(exam)} title="Edit" class="inline-flex items-center justify-center w-8 h-8 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors border border-blue-100 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                          </button>
+                          <button onclick={() => openDeleteModal(exam.id)} title="Hapus" class="inline-flex items-center justify-center w-8 h-8 text-red-700 bg-red-50 hover:bg-red-100 rounded-xl transition-colors border border-red-100 cursor-pointer">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                          </button>
+                        </div>
+                      </td>
+                    {/if}
+                  </tr>
+                {/each}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      {:else}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {#each paginatedExams as exam}
+            <a 
+              href={`/dashboard/exams/${exam.id}`}
+              class="group bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col cursor-pointer"
+            >
+              <div class="h-40 w-full bg-slate-100 overflow-hidden relative">
+                {#if exam.image}
+                  <img src={exam.image} alt="Exam" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {:else}
+                  <div class="w-full h-full flex items-center justify-center text-slate-400 bg-indigo-50/50">
+                    <svg class="w-12 h-12 text-indigo-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                  </div>
+                {/if}
+                <div class="absolute top-2 right-2">
+                  <span class={`px-3.5 py-1.5 rounded-full font-bold text-sm border shadow-sm ${exam.score >= 80 ? "bg-green-100 text-green-700 border-green-500" : exam.score >= 60 ? "bg-yellow-100 text-yellow-700 border-yellow-800/50" : "bg-red-100 text-red-600 border-red-300"}`}>
+                    {exam.score}
+                  </span>
+                </div>
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                <div>
+                  <h3 class="font-bold text-slate-800 line-clamp-1">{exam.exam_name}</h3>
+                  {#if isTeacher}
+                    <p class="text-sm font-medium text-slate-600 mt-1">{exam.user?.username || "Unknown"}</p>
+                  {/if}
+                  <p class="text-sm text-slate-500 mt-1 flex justify-between">
+                    <span>{exam.subject?.name}</span>
+                    <span>{formatDate(exam.exam_date)}</span>
+                  </p>
+                </div>
+                <div class="pt-3 border-t border-slate-100 flex justify-end">
+                  <span class="text-xs font-semibold text-indigo-600 group-hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors">Lihat Detail &rarr;</span>
+                </div>
+              </div>
+            </a>
+          {/each}
+        </div>
+        {#if activeTab === "card" && currentPage < totalPages}
+          <div use:infiniteScroll class="flex justify-center p-6">
+            <div class="w-8 h-8 border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
           </div>
         {/if}
+      {/if}
+    {/if}
+
+    <!-- Pagination Controls (Table Only) -->
+    {#if activeTab === "table" && totalPages > 1}
+      <div class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4">
+        <div class="text-sm text-slate-600 text-left">
+          <span class="font-medium text-slate-900">{Math.min(currentPage * itemsPerPage, exams.length)}</span>
+          dari
+          <span class="font-medium text-slate-900">{exams.length}</span> data
+        </div>
+        <div class="flex gap-2">
+          <button
+            aria-label="Sebelumnya"
+            onclick={prevPage}
+            disabled={currentPage === 1}
+            class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage === 1 ? 'bg-white/40 text-zinc-600 cursor-not-allowed' : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div class="hidden sm:flex items-center gap-1 px-2 flex-wrap justify-center">
+            {#each Array(totalPages) as _, i}
+              <button
+                onclick={() => goToPage(i + 1)}
+                class="w-8 h-8 flex items-center justify-center text-sm font-medium rounded-lg transition-colors cursor-pointer {currentPage === i + 1 ? 'bg-indigo-600 text-slate-100' : 'text-slate-600 hover:bg-white hover:text-slate-900'}"
+              >
+                {i + 1}
+              </button>
+            {/each}
+          </div>
+          <button
+            aria-label="Selanjutnya"
+            onclick={nextPage}
+            disabled={currentPage === totalPages}
+            class="p-2 text-sm font-medium rounded-lg transition-colors cursor-pointer flex items-center justify-center {currentPage === totalPages ? 'bg-white/40 text-zinc-600 cursor-not-allowed' : 'bg-white text-slate-800 hover:bg-slate-50 hover:text-slate-900'}"
+          >
+            <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" /></svg>
+          </button>
+        </div>
       </div>
     {/if}
   {/if}
@@ -759,44 +527,20 @@
 <!-- Modal Dialog -->
 {#if showModal}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div
-      class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-      onclick={closeModal}
-    ></div>
-    <div
-      class="relative bg-slate-50 border border-slate-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]"
-    >
-      <div
-        class="p-4 sm:p-6 border-b border-slate-200 flex justify-between items-center"
-      >
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick={closeModal}></div>
+    <div class="relative bg-slate-50 border border-slate-300 rounded-2xl shadow-2xl w-[95%] sm:w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 flex flex-col max-h-[90vh]">
+      <div class="p-4 sm:p-6 border-b border-slate-200 flex justify-between items-center bg-white">
         <h3 class="text-xl font-bold text-slate-900">
           {isEditing ? "Edit Nilai Ujian" : "Tambah Nilai Ujian"}
         </h3>
-        <button
-          onclick={closeModal}
-          class="text-slate-500 hover:text-slate-900 transition-colors"
-        >
-          <svg
-            class="w-6 h-6"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M6 18L18 6M6 6l12 12"
-            ></path></svg
-          >
+        <button onclick={closeModal} class="text-slate-500 hover:text-slate-900 transition-colors cursor-pointer">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
       </div>
 
       <form onsubmit={saveExam} class="p-4 sm:p-6 space-y-4 overflow-y-auto">
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="user">Pilih Murid</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="user">Pilih Murid</label>
           <select
             id="user"
             bind:value={formUserId}
@@ -811,10 +555,7 @@
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="date">Tanggal Ujian</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="date">Tanggal Ujian</label>
           <input
             type="date"
             id="date"
@@ -825,10 +566,7 @@
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="examName">Nama Ujian</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="examName">Nama Ujian</label>
           <input
             type="text"
             id="examName"
@@ -840,10 +578,7 @@
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="subject">Mata Pelajaran</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="subject">Mata Pelajaran</label>
           <select
             id="subject"
             bind:value={formSubjectId}
@@ -858,10 +593,7 @@
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="score">Nilai (0 - 100)</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="score">Nilai (0 - 100)</label>
           <input
             type="number"
             id="score"
@@ -882,10 +614,7 @@
         </div>
 
         <div>
-          <label
-            class="block text-sm font-medium text-slate-600 mb-1.5"
-            for="image">Bukti Ujian (Opsional, Maks 1MB)</label
-          >
+          <label class="block text-sm font-medium text-slate-600 mb-1.5" for="image">Bukti Ujian (Opsional, Maks 1MB)</label>
           <input
             type="file"
             id="image"
@@ -895,11 +624,7 @@
             class="w-full bg-slate-50 hover:bg-white border border-slate-200 focus:bg-white focus:border-indigo-400 focus:ring-4 focus:ring-indigo-400/20 rounded-2xl px-4 py-3 text-sm text-slate-700 outline-none transition-all shadow-sm file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100"
           />
           {#if isUploadingImage}
-            <p class="text-xs text-indigo-600 mt-2 flex items-center gap-2">
-              <svg class="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-              </svg>
+            <p class="text-xs text-indigo-600 mt-2 flex items-center gap-2 animate-pulse">
               Mengunggah...
             </p>
           {/if}
@@ -909,7 +634,7 @@
               <button
                 type="button"
                 onclick={() => (formImage = "")}
-                class="absolute -top-2 -right-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-full p-1 border border-red-300 shadow-sm transition-colors"
+                class="absolute -top-2 -right-2 bg-red-100 text-red-600 hover:bg-red-200 rounded-full p-1 border border-red-300 shadow-sm transition-colors cursor-pointer"
                 title="Hapus Bukti"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
@@ -918,17 +643,17 @@
           {/if}
         </div>
 
-        <div class="pt-4 flex justify-end gap-3">
+        <div class="pt-4 flex justify-end gap-3 border-t border-slate-200 mt-4">
           <button
             type="button"
             onclick={closeModal}
-            class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-200 hover:bg-slate-100 shadow-md rounded-xl transition-colors"
+            class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-200 hover:bg-slate-100 shadow-md rounded-xl transition-colors cursor-pointer"
           >
             Batal
           </button>
           <button
             type="submit"
-            class="px-4 py-2.5 text-sm font-medium text-slate-900 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-xl transition-all shadow-md shadow-indigo-900/20"
+            class="px-4 py-2.5 text-sm font-medium text-slate-900 bg-indigo-50 border border-indigo-200 hover:bg-indigo-100 rounded-xl transition-all shadow-md shadow-indigo-900/20 cursor-pointer"
           >
             {isEditing ? "Simpan Perubahan" : "Tambahkan"}
           </button>
@@ -941,48 +666,18 @@
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal}
   <div class="fixed inset-0 z-50 flex items-center justify-center p-4">
-    <div
-      class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-      onclick={closeDeleteModal}
-    ></div>
-    <div
-      class="relative bg-slate-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center"
-    >
-      <div
-        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4"
-      >
-        <svg
-          class="w-6 h-6 text-red-600"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-          />
-        </svg>
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm" onclick={closeDeleteModal}></div>
+    <div class="relative bg-slate-50 border border-red-300 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200 p-6 text-center">
+      <div class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center mb-4">
+        <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-2">Hapus Nilai Ujian?</h3>
       <p class="text-sm text-slate-600 mb-6">
-        Apakah Anda yakin ingin menghapus nilai ini? Data yang dihapus tidak
-        dapat dikembalikan.
+        Apakah Anda yakin ingin menghapus nilai ini? Data yang dihapus tidak dapat dikembalikan.
       </p>
       <div class="flex justify-center gap-3">
-        <button
-          onclick={closeDeleteModal}
-          class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors"
-        >
-          Batal
-        </button>
-        <button
-          onclick={executeDelete}
-          class="px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-md shadow-red-900/20"
-        >
-          Ya, Hapus
-        </button>
+        <button onclick={closeDeleteModal} class="px-4 py-2.5 text-sm font-medium text-slate-800 bg-white border border-slate-300 rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">Batal</button>
+        <button onclick={executeDelete} class="px-4 py-2.5 text-sm font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-all shadow-md shadow-red-900/20 cursor-pointer">Ya, Hapus</button>
       </div>
     </div>
   </div>

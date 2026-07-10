@@ -17,10 +17,35 @@
   let isLoading = $state(true);
   let errorMsg = $state("");
   let isTeacher = $state(false);
+  let activeTab: "card" | "table" = $state("card");
+  let isLoadingMore = $state(false);
+
+  function switchTab(tab: "card" | "table") {
+    if (activeTab === tab) return;
+    activeTab = tab;
+    currentPage = 1;
+    fetchProgresses();
+  }
+
+  function infiniteScroll(node: HTMLElement) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting && activeTab === 'card' && currentPage < totalPages && !isLoadingMore && !isLoading) {
+        isLoadingMore = true;
+        currentPage++;
+        fetchProgresses().finally(() => { isLoadingMore = false; });
+      }
+    });
+    observer.observe(node);
+    return {
+      destroy() {
+        observer.disconnect();
+      }
+    };
+  }
 
   // Pagination State
   let currentPage = $state(1);
-  const itemsPerPage = 50;
+  const itemsPerPage = 24;
   let totalPages = $state(1);
   let totalRecords = $state(0);
 
@@ -94,7 +119,13 @@
       );
       if (!res.ok) throw new Error("Gagal mengambil data perkembangan menulis");
       const data = await res.json();
-      progresses = data.data || [];
+      
+      if (activeTab === "card" && currentPage > 1) {
+        progresses = [...progresses, ...(data.data || [])];
+      } else {
+        progresses = data.data || [];
+      }
+      
       totalPages = data.total_pages || 1;
       totalRecords = data.total || 0;
     } catch (e) {
@@ -374,10 +405,28 @@
         {/if}
       </div>
     {:else}
-      <div
-        class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
-      >
-        <div class="overflow-x-auto">
+      {#if isTeacher}
+        <div class="flex items-center gap-2 mb-6">
+          <button
+            onclick={() => switchTab("card")}
+            class="px-4 py-2 text-sm font-medium rounded-xl transition-all {activeTab === 'card' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 cursor-pointer'}"
+          >
+            Tampilan Kartu
+          </button>
+          <button
+            onclick={() => switchTab("table")}
+            class="px-4 py-2 text-sm font-medium rounded-xl transition-all {activeTab === 'table' ? 'bg-indigo-600 text-white shadow-md' : 'bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 cursor-pointer'}"
+          >
+            Tampilan Tabel
+          </button>
+        </div>
+      {/if}
+
+      {#if activeTab === "table" && isTeacher}
+        <div
+          class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
+        >
+          <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse">
             <thead>
               <tr
@@ -487,10 +536,49 @@
           </table>
         </div>
       </div>
+      {:else}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          {#each progresses as progress}
+            <a 
+              href={`/dashboard/writing-progress/${progress.id}`}
+              class="group bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col cursor-pointer"
+            >
+              <div class="h-40 w-full bg-slate-100 overflow-hidden relative">
+                {#if progress.image}
+                  <img src={progress.image} alt="Progress" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                {:else}
+                  <div class="w-full h-full flex items-center justify-center text-slate-400">
+                    <svg class="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                  </div>
+                {/if}
+              </div>
+              <div class="p-4 flex-1 flex flex-col justify-between gap-3">
+                <div>
+                  {#if isTeacher}
+                    <h3 class="font-bold text-slate-800 line-clamp-1">{progress.user?.username || "Siswa Tidak Diketahui"}</h3>
+                  {/if}
+                  <p class="text-sm text-slate-500 flex items-center gap-1.5 mt-1">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    {formatDate(progress.date)}
+                  </p>
+                </div>
+                <div class="pt-3 border-t border-slate-100 flex justify-end">
+                  <span class="text-xs font-semibold text-indigo-600 group-hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors">Lihat Detail &rarr;</span>
+                </div>
+              </div>
+            </a>
+          {/each}
+        </div>
+        {#if activeTab === "card" && currentPage < totalPages}
+          <div use:infiniteScroll class="flex justify-center p-6">
+            <div class="w-8 h-8 border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
+          </div>
+        {/if}
+      {/if}
     {/if}
 
     <!-- Pagination Controls -->
-    {#if totalPages > 1}
+    {#if activeTab === "table" && totalPages > 1}
       <div
         class="mt-8 px-4 py-3 sm:px-6 sm:py-4 bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-sm flex flex-row items-center justify-between gap-4"
       >
