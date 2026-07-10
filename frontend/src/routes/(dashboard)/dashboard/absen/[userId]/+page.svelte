@@ -170,71 +170,60 @@
       {errorMsg}
     </div>
   {:else}
-    <div class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden">
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-white/40 border-b border-slate-200">
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm w-16">No</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Tanggal</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Alasan</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Catatan</th>
-              {#if userStore?.role === "teacher"}
-                <th class="py-4 px-6 font-bold text-slate-900 text-sm text-right">Aksi</th>
-              {/if}
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            {#each historyData as item, i}
-              <tr class="hover:bg-white/40 transition-colors">
-                <td class="py-4 px-6 text-sm text-slate-600 font-medium">{i + 1}</td>
-                <td class="py-4 px-6 text-sm font-medium text-slate-900">
-                  {new Date(item.date).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-                </td>
-                <td class="py-4 px-6">
-                  <span class={`px-2.5 py-1 rounded-md text-xs font-bold border ${
-                    item.reason_type === 'Sakit' ? 'bg-amber-100 text-amber-700 border-amber-200' :
-                    item.reason_type === 'Izin' ? 'bg-blue-100 text-blue-700 border-blue-200' :
-                    'bg-red-100 text-red-700 border-red-200'
-                  }`}>
-                    {item.reason_type}
-                  </span>
-                </td>
-                <td class="py-4 px-6 text-sm text-slate-600">
-                  {#if item.note}
-                    <span class="italic text-slate-500">"{item.note}"</span>
-                  {:else}
-                    <span class="text-slate-400">-</span>
-                  {/if}
-                </td>
-                {#if userStore?.role === "teacher"}
-                  <td class="py-4 px-6 text-right">
-                    <div class="flex items-center justify-end gap-2">
-                      <button 
-                        onclick={() => openEdit(item)}
-                        class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200 cursor-pointer"
-                        title="Edit">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                      </button>
-                      <button 
-                        onclick={() => promptDelete(item.id)}
-                        class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 cursor-pointer"
-                        title="Hapus">
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
-                    </div>
-                  </td>
-                {/if}
-              </tr>
-            {/each}
-            {#if historyData.length === 0}
-              <tr>
-                <td colspan={userStore?.role === "teacher" ? 5 : 4} class="py-8 text-center text-slate-500 font-light">Tidak ada riwayat ketidakhadiran.</td>
-              </tr>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {#each historyData as item}
+        <div class="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col h-full relative group">
+          
+          {#if userStore?.role === "teacher"}
+            <div class="absolute top-3 right-3 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white/80 p-1 rounded-xl backdrop-blur-sm">
+              <button 
+                onclick={() => openEdit(item)}
+                class="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors border border-transparent hover:border-blue-200 cursor-pointer"
+                title="Edit">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+              </button>
+              <button 
+                onclick={() => promptDelete(item.id)}
+                class="p-1.5 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors border border-transparent hover:border-red-200 cursor-pointer"
+                title="Hapus">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              </button>
+            </div>
+          {/if}
+
+          <div class="flex flex-col gap-2 mb-4 pr-16">
+            <span class="text-sm font-bold text-slate-900">
+              {new Date(item.date).toLocaleDateString("id-ID", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+            </span>
+            <span class={`w-max px-2.5 py-1 rounded-md text-xs font-bold border ${
+              item.reason_type === 'Sakit' ? 'bg-amber-100 text-amber-700 border-amber-200' :
+              item.reason_type === 'Izin' ? 'bg-blue-100 text-blue-700 border-blue-200' :
+              'bg-red-100 text-red-700 border-red-200'
+            }`}>
+              {item.reason_type}
+            </span>
+          </div>
+
+          <div class="bg-slate-50 border border-slate-100 rounded-xl p-3 flex-grow">
+            <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1 block">Catatan</span>
+            {#if item.note}
+              <p class="text-sm font-medium text-slate-700 italic">"{item.note}"</p>
+            {:else}
+              <p class="text-sm font-medium text-slate-400">-</p>
             {/if}
-          </tbody>
-        </table>
-      </div>
+          </div>
+          
+        </div>
+      {/each}
+
+      {#if historyData.length === 0}
+        <div class="col-span-full py-16 flex flex-col items-center justify-center bg-white/40 backdrop-blur-sm rounded-3xl border border-slate-200">
+          <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span class="text-slate-500 font-medium text-center text-lg">Tidak ada riwayat ketidakhadiran.</span>
+        </div>
+      {/if}
     </div>
   {/if}
 

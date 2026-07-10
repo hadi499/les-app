@@ -647,7 +647,7 @@
         {#if !currentFolder && !searchQuery}
           <button
             onclick={openNewFolder}
-            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full bg-indigo-600 text-white hover:bg-indigo-700 transition-colors shadow-sm cursor-pointer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 hover:bg-indigo-100 transition-colors shadow-sm cursor-pointer"
           >
             <svg
               class="w-4 h-4"
@@ -667,7 +667,7 @@
         {#if currentFolder}
           <button
             onclick={() => openEdit()}
-            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-medium rounded-full bg-blue-600 text-white hover:bg-blue-700 transition-colors shadow-sm cursor-pointer"
+            class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm cursor-pointer"
           >
             <svg
               class="w-4 h-4"

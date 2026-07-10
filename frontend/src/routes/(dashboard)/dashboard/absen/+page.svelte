@@ -173,12 +173,12 @@
     {#if user?.role === "teacher"}
       <button
         onclick={() => (showResetModal = true)}
-      disabled={isResetting}
-      class="px-4 py-2 text-sm font-bold text-white bg-red-600 shadow-md shadow-red-600/30 hover:bg-red-700 rounded-xl transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed w-fit"
-    >
+        disabled={isResetting}
+        class="px-4 py-2 text-sm font-bold text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 shadow-sm rounded-xl transition-all flex items-center gap-2 disabled:opacity-70 disabled:cursor-not-allowed w-fit"
+      >
       {#if isResetting}
         <div
-          class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+          class="w-4 h-4 border-2 border-red-200 border-t-red-600 rounded-full animate-spin"
         ></div>
         Mereset...
       {:else}
@@ -224,8 +224,8 @@
     {#if user?.role === "teacher"}
       <!-- Form Input Ketidakhadiran -->
       <div
-      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 mb-8"
-    >
+        class="max-w-4xl bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 mb-8"
+      >
       <h2 class="text-lg font-bold text-slate-900 mb-4 flex items-center gap-2">
         <svg
           class="w-5 h-5 text-blue-500"
@@ -335,139 +335,72 @@
     </div>
     {/if}
 
-    <!-- Table Recap -->
-    <div
-      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
-    >
-      <div class="p-5 border-b border-slate-200 bg-white/40">
-        <h2 class="text-lg font-bold text-slate-900 flex items-center gap-2">
-          <svg
-            class="w-5 h-5 text-purple-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            ><path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-            ></path></svg
-          >
-          Rekap Ketidakhadiran
-        </h2>
-      </div>
-      <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[700px]">
-          <thead>
-            <tr class="bg-white/40 border-b border-slate-200">
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                >Nama Siswa</th
-              >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Bulan Ini</th
-              >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Total</th
-              >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Rincian</th
-              >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Aksi</th
-              >
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            {#each recapData as data}
-              <tr class="hover:bg-white/40 transition-colors">
-                <td class="py-4 px-6 text-sm font-medium text-slate-900">
-                  {data.name}
-                </td>
-                <td class="py-4 px-6 text-center">
-                  {#if data.total > 0}
-                    <span
-                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-red-100 text-red-700 border border-red-200"
-                    >
-                      {data.total} Hari
-                    </span>
-                  {:else}
-                    <span
-                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200"
-                    >
-                      0 Hari
-                    </span>
-                  {/if}
-                </td>
-                <td class="py-4 px-6 text-center">
-                  {#if data.total_all > 0}
-                    <span
-                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-orange-100 text-orange-700 border border-orange-200"
-                    >
-                      {data.total_all} Hari
-                    </span>
-                  {:else}
-                    <span
-                      class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-green-100 text-green-700 border border-green-200"
-                    >
-                      0 Hari
-                    </span>
-                  {/if}
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <div class="flex items-center justify-center gap-2">
-                    <div class="flex flex-col items-center">
-                      <span
-                        class="text-[10px] text-slate-500 font-semibold uppercase"
-                        >Sakit</span
-                      >
-                      <span class="text-sm font-bold text-slate-700"
-                        >{data.sakit}</span
-                      >
-                    </div>
-                    <div class="w-px h-6 bg-slate-200"></div>
-                    <div class="flex flex-col items-center">
-                      <span
-                        class="text-[10px] text-slate-500 font-semibold uppercase"
-                        >Izin</span
-                      >
-                      <span class="text-sm font-bold text-slate-700"
-                        >{data.izin}</span
-                      >
-                    </div>
-                    <div class="w-px h-6 bg-slate-200"></div>
-                    <div class="flex flex-col items-center">
-                      <span
-                        class="text-[10px] text-slate-500 font-semibold uppercase"
-                        >Alpa</span
-                      >
-                      <span class="text-sm font-bold text-slate-700"
-                        >{data.alpa}</span
-                      >
-                    </div>
-                  </div>
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <a
-                    href={`/dashboard/absen/${data.user_id}`}
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer no-underline"
-                  >
-                    Detail Historis
-                  </a>
-                </td>
-              </tr>
-            {/each}
-            {#if recapData.length === 0}
-              <tr>
-                <td
-                  colspan="5"
-                  class="py-8 text-center text-slate-500 font-light"
-                  >Belum ada data siswa.</td
-                >
-              </tr>
-            {/if}
-          </tbody>
-        </table>
-      </div>
+    <!-- Rekap Heading -->
+    <div class="mb-6 mt-8 flex items-center justify-between">
+      <h2 class="text-xl font-bold text-slate-900 flex items-center gap-2 drop-shadow-sm">
+        <svg class="w-6 h-6 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+        </svg>
+        Rekap Ketidakhadiran
+      </h2>
+    </div>
+
+    <!-- Grid Cards -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      {#each recapData as data}
+        <div class="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col h-full group">
+          <div class="flex justify-between items-start mb-5">
+            <h3 class="text-lg font-bold text-slate-900 group-hover:text-blue-700 transition-colors">{data.name}</h3>
+          </div>
+
+          <div class="grid grid-cols-2 gap-3 mb-5">
+            <div class="{data.total > 0 ? 'bg-red-50 border-red-100 text-red-600' : 'bg-green-50 border-green-100 text-green-600'} border rounded-xl p-3 flex flex-col items-center justify-center">
+              <span class="text-3xl font-black mb-0.5">{data.total}</span>
+              <span class="text-[10px] font-bold {data.total > 0 ? 'text-red-400' : 'text-green-500'} uppercase tracking-wider">Bulan Ini</span>
+            </div>
+            <div class="{data.total_all > 0 ? 'bg-orange-50 border-orange-100 text-orange-600' : 'bg-green-50 border-green-100 text-green-600'} border rounded-xl p-3 flex flex-col items-center justify-center">
+              <span class="text-3xl font-black mb-0.5">{data.total_all}</span>
+              <span class="text-[10px] font-bold {data.total_all > 0 ? 'text-orange-400' : 'text-green-500'} uppercase tracking-wider">Total Hari</span>
+            </div>
+          </div>
+
+          <div class="flex items-center justify-between mb-5 px-4 py-3 bg-slate-50/80 rounded-xl border border-slate-100">
+            <div class="flex flex-col items-center w-1/3">
+              <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Sakit</span>
+              <span class="text-base font-bold text-slate-700">{data.sakit}</span>
+            </div>
+            <div class="w-px h-8 bg-slate-200"></div>
+            <div class="flex flex-col items-center w-1/3">
+              <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Izin</span>
+              <span class="text-base font-bold text-slate-700">{data.izin}</span>
+            </div>
+            <div class="w-px h-8 bg-slate-200"></div>
+            <div class="flex flex-col items-center w-1/3">
+              <span class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-1">Alpa</span>
+              <span class="text-base font-bold text-slate-700">{data.alpa}</span>
+            </div>
+          </div>
+
+          <div class="mt-auto pt-4 border-t border-slate-100">
+            <a
+              href={`/dashboard/absen/${data.user_id}`}
+              class="w-full inline-flex items-center justify-center gap-1.5 px-4 py-2.5 text-sm font-semibold text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-xl transition-colors border border-blue-200 cursor-pointer no-underline"
+            >
+              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" /></svg>
+              Detail Historis
+            </a>
+          </div>
+        </div>
+      {/each}
+      
+      {#if recapData.length === 0}
+        <div class="col-span-full py-16 flex flex-col items-center justify-center bg-white/40 backdrop-blur-sm rounded-3xl border border-slate-200">
+          <svg class="w-16 h-16 text-slate-300 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <span class="text-slate-500 font-medium text-center text-lg">Belum ada data siswa.</span>
+        </div>
+      {/if}
     </div>
   {/if}
 </div>
