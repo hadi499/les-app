@@ -43,9 +43,9 @@
         "/dashboard/card-memory",
         "/dashboard/subjects",
         "/dashboard/typing-monitoring",
-        "/dashboard/users"
+        "/dashboard/users",
       ];
-      if (teacherOnlyRoutes.some(r => path.startsWith(r))) {
+      if (teacherOnlyRoutes.some((r) => path.startsWith(r))) {
         goto("/dashboard", { replaceState: true });
       }
     }
@@ -113,12 +113,12 @@
       const res = await fetch("/api/auth/change-password", {
         method: "PUT",
         headers: {
-          "Content-Type": "application/json"
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({
           old_password: oldPassword,
-          new_password: newPassword
-        })
+          new_password: newPassword,
+        }),
       });
 
       const data = await res.json();
@@ -139,7 +139,12 @@
   }
 </script>
 
-<svelte:window onclick={() => { showUserDropdown = false; showMobileUserDropdown = false; }} />
+<svelte:window
+  onclick={() => {
+    showUserDropdown = false;
+    showMobileUserDropdown = false;
+  }}
+/>
 
 {#if isLoading}
   <!-- Layar Loading Sederhana -->
@@ -208,68 +213,67 @@
           Dashboard
         </a>
 
-          <a
-            href="/dashboard/todos"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+        <a
+          href="/dashboard/todos"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            '/todos',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
               '/todos',
             )
-              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                '/todos',
-              )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+              ></path></svg
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                ></path></svg
-              >
-            </div>
-            Todolist
-          </a>
+          </div>
+          Todolist
+        </a>
 
-
-          <a
-            href="/dashboard/writing-progress"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+        <a
+          href="/dashboard/writing-progress"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            '/writing-progress',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
               '/writing-progress',
             )
-              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                '/writing-progress',
-              )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+              ></path></svg
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                ></path></svg
-              >
-            </div>
-            Perkembangan Menulis
-          </a>
+          </div>
+          Menulis TK/PAUD
+        </a>
 
         {#if user?.role === "teacher"}
           <a
@@ -429,36 +433,36 @@
           Kuis & Nilai
         </a>
 
-          <a
-            href="/dashboard/absen"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+        <a
+          href="/dashboard/absen"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            '/absen',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
               '/absen',
             )
-              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                '/absen',
-              )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+              ></path></svg
             >
-              <svg
-                class="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                ><path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                ></path></svg
-              >
-            </div>
-            Absensi
-          </a>
+          </div>
+          Absensi
+        </a>
 
         {#if user?.role === "teacher"}
           <a
@@ -551,45 +555,91 @@
 
       <!-- User & Logout -->
       <div class="p-4 border-t border-slate-300 relative">
-        <button 
-          onclick={(e) => { e.stopPropagation(); showUserDropdown = !showUserDropdown; }}
+        <button
+          onclick={(e) => {
+            e.stopPropagation();
+            showUserDropdown = !showUserDropdown;
+          }}
           class="w-full group flex items-center justify-between gap-3 px-2 py-2 rounded-xl hover:bg-white/50 transition-colors cursor-pointer border border-transparent"
         >
           <div class="flex items-center gap-3 min-w-0">
-            <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm shrink-0">
+            <div
+              class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm shrink-0"
+            >
               {user.username ? user.username.charAt(0).toUpperCase() : "U"}
             </div>
             <div class="flex-1 min-w-0 text-left">
               <p class="text-sm font-bold text-slate-900 truncate m-0">
                 {user.username}
               </p>
-              <p class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5">
+              <p
+                class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5"
+              >
                 {user.role}
               </p>
             </div>
           </div>
-          <svg class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-transform {showUserDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+          <svg
+            class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-transform {showUserDropdown
+              ? 'rotate-180'
+              : ''}"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M5 15l7-7 7 7"
+            ></path></svg
+          >
         </button>
 
         {#if showUserDropdown}
           <!-- svelte-ignore a11y_click_events_have_key_events -->
           <!-- svelte-ignore a11y_no_static_element_interactions -->
-          <div 
+          <div
             class="absolute bottom-[calc(100%-1rem)] left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200 z-50"
             onclick={(e) => e.stopPropagation()}
           >
             <button
-              onclick={() => { showUserDropdown = false; showPasswordModal = true; resetPasswordForm(); }}
+              onclick={() => {
+                showUserDropdown = false;
+                showPasswordModal = true;
+                resetPasswordForm();
+              }}
               class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer text-left border-b border-slate-100"
             >
-              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+              <svg
+                class="w-4 h-4 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                ></path></svg
+              >
               Ganti Password
             </button>
             <button
               onclick={handleLogout}
               class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer text-left"
             >
-              <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+              <svg
+                class="w-4 h-4 text-red-500"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                ></path></svg
+              >
               Keluar Akun
             </button>
           </div>
@@ -738,70 +788,69 @@
             Dashboard
           </a>
 
-            <a
-              href="/dashboard/todos"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          <a
+            href="/dashboard/todos"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+              '/todos',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
                 '/todos',
               )
-                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
-                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
-              <div
-                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                  '/todos',
-                )
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                ></path></svg
               >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
-                  ></path></svg
-                >
-              </div>
-              Todolist
-            </a>
+            </div>
+            Todolist
+          </a>
 
-
-            <a
-              href="/dashboard/writing-progress"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          <a
+            href="/dashboard/writing-progress"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+              '/writing-progress',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
                 '/writing-progress',
               )
-                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
-                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
-              <div
-                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                  '/writing-progress',
-                )
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                ></path></svg
               >
-                <svg
-                  class="w-5 h-5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
-                  ></path></svg
-                >
-              </div>
-              Perkembangan Menulis
-            </a>
+            </div>
+            Menulis TK/PAUD
+          </a>
 
           {#if user?.role === "teacher"}
             <a
@@ -1088,45 +1137,92 @@
 
         <!-- User & Logout (Mobile) -->
         <div class="p-4 border-t border-slate-200 bg-slate-100 relative">
-          <button 
-            onclick={(e) => { e.stopPropagation(); showMobileUserDropdown = !showMobileUserDropdown; }}
+          <button
+            onclick={(e) => {
+              e.stopPropagation();
+              showMobileUserDropdown = !showMobileUserDropdown;
+            }}
             class="w-full group flex items-center justify-between gap-3 px-2 py-2 rounded-xl hover:bg-white/50 transition-colors cursor-pointer border border-transparent"
           >
             <div class="flex items-center gap-3 min-w-0">
-              <div class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm shrink-0">
+              <div
+                class="w-10 h-10 rounded-full bg-white flex items-center justify-center text-blue-600 font-bold border border-slate-200 shadow-sm shrink-0"
+              >
                 {user.username ? user.username.charAt(0).toUpperCase() : "U"}
               </div>
               <div class="flex-1 min-w-0 text-left">
                 <p class="text-sm font-bold text-slate-900 truncate m-0">
                   {user.username}
                 </p>
-                <p class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5">
+                <p
+                  class="text-xs font-medium text-slate-600 truncate capitalize m-0 mt-0.5"
+                >
                   {user.role}
                 </p>
               </div>
             </div>
-            <svg class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-transform {showMobileUserDropdown ? 'rotate-180' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 15l7-7 7 7"></path></svg>
+            <svg
+              class="w-5 h-5 text-slate-400 group-hover:text-slate-600 transition-transform {showMobileUserDropdown
+                ? 'rotate-180'
+                : ''}"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M5 15l7-7 7 7"
+              ></path></svg
+            >
           </button>
 
           {#if showMobileUserDropdown}
             <!-- svelte-ignore a11y_click_events_have_key_events -->
             <!-- svelte-ignore a11y_no_static_element_interactions -->
-            <div 
+            <div
               class="absolute bottom-[calc(100%-1rem)] left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200 z-50"
               onclick={(e) => e.stopPropagation()}
             >
               <button
-                onclick={() => { showMobileUserDropdown = false; showPasswordModal = true; resetPasswordForm(); isMobileMenuOpen = false; }}
+                onclick={() => {
+                  showMobileUserDropdown = false;
+                  showPasswordModal = true;
+                  resetPasswordForm();
+                  isMobileMenuOpen = false;
+                }}
                 class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer text-left border-b border-slate-100"
               >
-                <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                <svg
+                  class="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                  ></path></svg
+                >
                 Ganti Password
               </button>
               <button
                 onclick={handleLogout}
                 class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors cursor-pointer text-left"
               >
-                <svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                <svg
+                  class="w-4 h-4 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                  ></path></svg
+                >
                 Keluar Akun
               </button>
             </div>
@@ -1151,71 +1247,220 @@
 
   <!-- Password Modal -->
   {#if showPasswordModal}
-    <div class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-      <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+    <div
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4"
+    >
+      <div
+        class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200"
+      >
         <div class="p-6">
           <h3 class="text-xl font-bold text-slate-900 mb-1">Ganti Password</h3>
-          <p class="text-sm text-slate-500 mb-6">Masukkan password lama dan password baru Anda.</p>
-          
+          <p class="text-sm text-slate-500 mb-6">
+            Masukkan password lama dan password baru Anda.
+          </p>
+
           {#if passwordError}
-            <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            <div
+              class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200"
+            >
               {passwordError}
             </div>
           {/if}
           {#if passwordSuccess}
-            <div class="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded-lg border border-green-200">
+            <div
+              class="mb-4 p-3 bg-green-100 text-green-700 text-sm rounded-lg border border-green-200"
+            >
               {passwordSuccess}
             </div>
           {/if}
 
           <form onsubmit={handlePasswordChange} class="space-y-4">
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">Password Lama</label>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >Password Lama</label
+              >
               <div class="relative">
-                <input type={showOldPassword ? "text" : "password"} bind:value={oldPassword} class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10" />
-                <button type="button" aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" onclick={() => showOldPassword = !showOldPassword}>
+                <input
+                  type={showOldPassword ? "text" : "password"}
+                  bind:value={oldPassword}
+                  class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label="Toggle password visibility"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  onclick={() => (showOldPassword = !showOldPassword)}
+                >
                   {#if showOldPassword}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path></svg
+                    >
                   {:else}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      ></path></svg
+                    >
                   {/if}
                 </button>
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">Password Baru</label>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >Password Baru</label
+              >
               <div class="relative">
-                <input type={showNewPassword ? "text" : "password"} bind:value={newPassword} class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10" />
-                <button type="button" aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" onclick={() => showNewPassword = !showNewPassword}>
+                <input
+                  type={showNewPassword ? "text" : "password"}
+                  bind:value={newPassword}
+                  class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label="Toggle password visibility"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  onclick={() => (showNewPassword = !showNewPassword)}
+                >
                   {#if showNewPassword}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path></svg
+                    >
                   {:else}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      ></path></svg
+                    >
                   {/if}
                 </button>
               </div>
             </div>
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1">Konfirmasi Password Baru</label>
+              <label class="block text-sm font-medium text-slate-700 mb-1"
+                >Konfirmasi Password Baru</label
+              >
               <div class="relative">
-                <input type={showConfirmPassword ? "text" : "password"} bind:value={confirmPassword} class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10" />
-                <button type="button" aria-label="Toggle password visibility" class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer" onclick={() => showConfirmPassword = !showConfirmPassword}>
+                <input
+                  type={showConfirmPassword ? "text" : "password"}
+                  bind:value={confirmPassword}
+                  class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors pr-10"
+                />
+                <button
+                  type="button"
+                  aria-label="Toggle password visibility"
+                  class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-slate-600 cursor-pointer"
+                  onclick={() => (showConfirmPassword = !showConfirmPassword)}
+                >
                   {#if showConfirmPassword}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                      ></path><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                      ></path></svg
+                    >
                   {:else}
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"></path></svg>
+                    <svg
+                      class="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                      ></path></svg
+                    >
                   {/if}
                 </button>
               </div>
             </div>
 
             <div class="pt-4 flex gap-3">
-              <button type="button" onclick={() => showPasswordModal = false} class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 font-medium transition-colors cursor-pointer">
+              <button
+                type="button"
+                onclick={() => (showPasswordModal = false)}
+                class="flex-1 px-4 py-2 border border-slate-300 text-slate-700 rounded-xl hover:bg-slate-50 font-medium transition-colors cursor-pointer"
+              >
                 Batal
               </button>
-              <button type="submit" disabled={isSubmittingPassword} class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 flex justify-center items-center cursor-pointer">
+              <button
+                type="submit"
+                disabled={isSubmittingPassword}
+                class="flex-1 px-4 py-2 bg-blue-600 text-white rounded-xl hover:bg-blue-700 font-medium transition-colors disabled:opacity-50 flex justify-center items-center cursor-pointer"
+              >
                 {#if isSubmittingPassword}
-                  <svg class="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+                  <svg
+                    class="animate-spin h-5 w-5 text-white"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    ><circle
+                      class="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      stroke-width="4"
+                    ></circle><path
+                      class="opacity-75"
+                      fill="currentColor"
+                      d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                    ></path></svg
+                  >
                 {:else}
                   Simpan
                 {/if}
