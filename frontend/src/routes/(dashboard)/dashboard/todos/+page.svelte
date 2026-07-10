@@ -32,7 +32,7 @@
   let editListStudentUsername = $state("");
   let openMenuId = $state<number | null>(null);
   let userRole = $state("");
-  let students = $state<{id: number, username: string, role: string}[]>([]);
+  let students = $state<{ id: number; username: string; role: string }[]>([]);
 
   // Paginasi state
   let currentPage = $state(1);
@@ -73,7 +73,10 @@
     isLoading = true;
     errorMsg = "";
     try {
-      const res = await fetch(`/api/todolists?page=${currentPage}&limit=${itemsPerPage}`, { credentials: "include" });
+      const res = await fetch(
+        `/api/todolists?page=${currentPage}&limit=${itemsPerPage}`,
+        { credentials: "include" },
+      );
       if (!res.ok) {
         if (res.status === 403) {
           throw new Error("Akses ditolak. Anda bukan Guru.");
@@ -108,9 +111,9 @@
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           title: newListTitle.trim(),
-          student_username: newListStudentUsername.trim()
+          student_username: newListStudentUsername.trim(),
         }),
       });
       if (res.ok) {
@@ -184,14 +187,16 @@
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           title: editListTitle.trim(),
-          student_username: editListStudentUsername.trim()
+          student_username: editListStudentUsername.trim(),
         }),
       });
       if (res.ok) {
         const updatedList = await res.json();
-        lists = lists.map((l) => (l.id === updatedList.id ? { ...updatedList, items: l.items } : l));
+        lists = lists.map((l) =>
+          l.id === updatedList.id ? { ...updatedList, items: l.items } : l,
+        );
         showEditListModal = false;
         listToEdit = null;
       } else {
@@ -205,7 +210,7 @@
   }
 </script>
 
-<svelte:window onclick={() => openMenuId = null} />
+<svelte:window onclick={() => (openMenuId = null)} />
 
 <svelte:head>
   <title>Todolist - Les App</title>
@@ -232,7 +237,18 @@
         onclick={() => (showCreateListModal = true)}
         class="text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 font-bold px-4 md:px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer w-max justify-center"
       >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          ></path></svg
+        >
         <span>Buat Todolist</span>
       </button>
     {/if}
@@ -286,32 +302,105 @@
   {:else}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       {#each lists as list (list.id)}
-        <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === list.id ? 'z-50' : 'z-0'}">
-          <div class="flex justify-between items-start mb-2">
-            <div>
-              <span class="text-xs font-bold text-slate-400">#{list.id}</span>
-              <h3 class="text-lg font-bold text-slate-900 mt-1 leading-tight">{list.title}</h3>
+        <div
+          class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId ===
+          list.id
+            ? 'z-50'
+            : 'z-0'}"
+        >
+          <div class="mb-3">
+            <h3 class="text-lg font-bold text-slate-900 leading-tight">
+              {list.title}
+            </h3>
+          </div>
+
+          <div class="flex flex-wrap items-center gap-2 mb-4">
+            {#if list.items && list.items.length > 0 && list.items.every((i) => i.completed)}
+              <span
+                class="px-2 py-1 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100 flex items-center gap-1 w-max uppercase tracking-wide shrink-0"
+              >
+                <svg
+                  class="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2.5"
+                    d="M5 13l4 4L19 7"
+                  ></path></svg
+                >
+                Selesai
+              </span>
+            {:else if list.items && list.items.length > 0}
+              <span
+                class="px-2 py-1 text-[10px] font-bold bg-amber-50 text-amber-600 rounded-md border border-amber-100 flex items-center gap-1 w-max uppercase tracking-wide shrink-0"
+              >
+                <svg
+                  class="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path></svg
+                >
+                Proses
+              </span>
+            {:else}
+              <span
+                class="px-2 py-1 text-[10px] font-bold bg-slate-100 text-slate-500 rounded-md border border-slate-200 flex items-center gap-1 w-max uppercase tracking-wide shrink-0"
+              >
+                Kosong
+              </span>
+            {/if}
+
+            <div
+              class="flex items-center text-[10px] font-bold text-slate-500 bg-slate-50 w-max px-2 py-1 rounded-md border border-slate-200 tracking-wide uppercase shrink-0"
+            >
+              <svg
+                class="w-3 h-3 mr-1.5 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                ></path></svg
+              >
+              {new Date(list.created_at).toLocaleDateString("id-ID", {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+              })}
             </div>
+
             {#if list.student_username}
-              <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 whitespace-nowrap uppercase tracking-wide">
-                @{list.student_username}
+              <span
+                class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 w-max uppercase tracking-wide shrink-0 flex items-center"
+              >
+                <svg
+                  class="w-3 h-3 mr-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  ></path></svg
+                >
+                {list.student_username}
               </span>
             {/if}
           </div>
-          
-          <div class="flex items-center text-xs font-medium text-slate-500 mb-4 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
-            <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            {new Date(list.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
-          </div>
-
-          {#if list.items && list.items.length > 0 && list.items.every(i => i.completed)}
-            <div class="mb-4">
-              <span class="px-2 py-1 text-xs font-bold bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100 flex items-center gap-1.5 w-max">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-                Selesai
-              </span>
-            </div>
-          {/if}
 
           <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
             <a
@@ -319,10 +408,21 @@
               class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-blue-700 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors no-underline"
               title="Buka Todo"
             >
-              <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+              <svg
+                class="w-4 h-4 mr-1.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"
+                ></path></svg
+              >
               Buka
             </a>
-            
+
             {#if userRole === "teacher"}
               <div class="relative shrink-0">
                 <button
@@ -354,7 +454,18 @@
                     class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all cursor-pointer"
                     title="Edit List"
                   >
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                    <svg
+                      class="w-5 h-5 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      ></path></svg
+                    >
                     <span class="text-sm font-medium pr-2">Edit</span>
                   </button>
 
@@ -366,7 +477,18 @@
                     class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 hover:bg-red-50 rounded-xl transition-all cursor-pointer"
                     title="Hapus List"
                   >
-                    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    <svg
+                      class="w-5 h-5 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path></svg
+                    >
                     <span class="text-sm font-medium pr-2">Hapus</span>
                   </button>
                 </div>
@@ -379,40 +501,78 @@
 
     <!-- Paginasi (Biasa) -->
     {#if totalPages > 1}
-      <div class="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm mt-4 mb-4">
-        <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
+      <div
+        class="flex items-center justify-between px-4 py-3 bg-white border border-slate-200 rounded-2xl shadow-sm mt-4 mb-4"
+      >
+        <div
+          class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between"
+        >
           <div>
             <p class="text-sm text-slate-700 m-0">
-              Menampilkan <span class="font-medium">{totalItems === 0 ? 0 : (currentPage - 1) * itemsPerPage + 1}</span> 
-              hingga <span class="font-medium">{Math.min(currentPage * itemsPerPage, totalItems)}</span> 
+              Menampilkan <span class="font-medium"
+                >{totalItems === 0
+                  ? 0
+                  : (currentPage - 1) * itemsPerPage + 1}</span
+              >
+              hingga
+              <span class="font-medium"
+                >{Math.min(currentPage * itemsPerPage, totalItems)}</span
+              >
               dari <span class="font-medium">{totalItems}</span> todolist
             </p>
           </div>
           <div>
-            <nav class="isolate inline-flex -space-x-px rounded-md shadow-sm" aria-label="Pagination">
+            <nav
+              class="isolate inline-flex -space-x-px rounded-md shadow-sm"
+              aria-label="Pagination"
+            >
               <button
-                onclick={() => currentPage = Math.max(1, currentPage - 1)}
+                onclick={() => (currentPage = Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
                 class="relative inline-flex items-center rounded-l-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <span class="sr-only">Previous</span>
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+                <svg
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  ><path
+                    fill-rule="evenodd"
+                    d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                    clip-rule="evenodd"
+                  /></svg
+                >
               </button>
               {#each Array(totalPages) as _, i}
                 <button
-                  onclick={() => currentPage = i + 1}
-                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold {currentPage === i + 1 ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0'} cursor-pointer"
+                  onclick={() => (currentPage = i + 1)}
+                  class="relative inline-flex items-center px-4 py-2 text-sm font-semibold {currentPage ===
+                  i + 1
+                    ? 'z-10 bg-blue-600 text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600'
+                    : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0'} cursor-pointer"
                 >
                   {i + 1}
                 </button>
               {/each}
               <button
-                onclick={() => currentPage = Math.min(totalPages, currentPage + 1)}
+                onclick={() =>
+                  (currentPage = Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
                 class="relative inline-flex items-center rounded-r-md px-2 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <span class="sr-only">Next</span>
-                <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+                <svg
+                  class="h-5 w-5"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  aria-hidden="true"
+                  ><path
+                    fill-rule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clip-rule="evenodd"
+                  /></svg
+                >
               </button>
             </nav>
           </div>
@@ -420,23 +580,45 @@
         <!-- Mobile pagination view -->
         <div class="flex flex-1 justify-center gap-4 sm:hidden">
           <button
-            onclick={() => currentPage = Math.max(1, currentPage - 1)}
+            onclick={() => (currentPage = Math.max(1, currentPage - 1))}
             disabled={currentPage === 1}
             class="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm cursor-pointer"
           >
             <span class="sr-only">Previous</span>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z" clip-rule="evenodd" /></svg>
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M12.79 5.23a.75.75 0 01-.02 1.06L8.832 10l3.938 3.71a.75.75 0 11-1.04 1.08l-4.5-4.25a.75.75 0 010-1.08l4.5-4.25a.75.75 0 011.06.02z"
+                clip-rule="evenodd"
+              /></svg
+            >
           </button>
           <span class="flex items-center text-sm font-semibold text-slate-700">
-            {currentPage} <span class="text-slate-400 mx-1.5">/</span> {totalPages}
+            {currentPage} <span class="text-slate-400 mx-1.5">/</span>
+            {totalPages}
           </span>
           <button
-            onclick={() => currentPage = Math.min(totalPages, currentPage + 1)}
+            onclick={() =>
+              (currentPage = Math.min(totalPages, currentPage + 1))}
             disabled={currentPage === totalPages}
             class="relative inline-flex items-center justify-center w-10 h-10 rounded-full bg-white border border-slate-200 text-slate-500 hover:bg-slate-50 hover:text-blue-600 disabled:opacity-50 disabled:pointer-events-none transition-colors shadow-sm cursor-pointer"
           >
             <span class="sr-only">Next</span>
-            <svg class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z" clip-rule="evenodd" /></svg>
+            <svg
+              class="h-5 w-5"
+              viewBox="0 0 20 20"
+              fill="currentColor"
+              aria-hidden="true"
+              ><path
+                fill-rule="evenodd"
+                d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                clip-rule="evenodd"
+              /></svg
+            >
           </button>
         </div>
       </div>
@@ -535,9 +717,12 @@
       transition:scale={{ duration: 150, start: 0.95 }}
     >
       <h3 class="text-xl font-bold text-slate-900 mb-4">Buat Todolist Baru</h3>
-      
+
       <div class="mb-4">
-        <label class="block text-sm font-medium text-slate-700 mb-1" for="new_title">Nama Todolist</label>
+        <label
+          class="block text-sm font-medium text-slate-700 mb-1"
+          for="new_title">Nama Todolist</label
+        >
         <input
           id="new_title"
           type="text"
@@ -549,7 +734,10 @@
       </div>
 
       <div class="mb-6">
-        <label class="block text-sm font-medium text-slate-700 mb-1" for="new_student">Pilih Murid (Opsional)</label>
+        <label
+          class="block text-sm font-medium text-slate-700 mb-1"
+          for="new_student">Pilih Murid (Opsional)</label
+        >
         <select
           id="new_student"
           bind:value={newListStudentUsername}
