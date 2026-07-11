@@ -230,4 +230,16 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		settingsAdmin.PUT("/:key", controllers.UpdateSetting)
 	}
+
+	// Chat API routes
+	chat := r.Group("/api/chat")
+	chat.Use(middleware.AuthMiddleware())
+	{
+		chat.GET("/contacts", controllers.GetContacts)
+		chat.GET("/history/:userId", controllers.GetChatHistory)
+		chat.GET("/unread-count", controllers.GetUnreadCount)
+		chat.DELETE("/messages/:id", controllers.DeleteMessage)
+	}
+	r.GET("/ws/chat", middleware.AuthMiddleware(), controllers.HandleChatWebSocket)
 }
+
