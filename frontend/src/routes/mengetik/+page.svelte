@@ -5,6 +5,21 @@
 
 <svelte:head>
   <title>Ketik 10 Jari - Belajar Mengetik Seru!</title>
+  <meta name="description" content="Belajar mengetik 10 jari dengan cara yang menyenangkan di Les Balongarut. Latihan interaktif dari level dasar hingga mahir, cocok untuk semua usia." />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/mengetik" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/mengetik" />
+  <meta property="og:title" content="Ketik 10 Jari - Belajar Mengetik Seru!" />
+  <meta property="og:description" content="Latihan mengetik 10 jari dari level dasar hingga mahir. Interaktif dan menyenangkan!" />
+  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Ketik 10 Jari - Belajar Mengetik Seru!" />
+  <meta name="twitter:description" content="Belajar mengetik 10 jari dengan cara yang menyenangkan di Les Balongarut." />
 </svelte:head>
 
 <div

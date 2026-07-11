@@ -154,6 +154,21 @@
 
 <svelte:head>
   <title>Compress Image - Les App</title>
+  <meta name="description" content="Kecilkan ukuran gambar secara gratis langsung di browser. 100% aman dan privat — gambar tidak pernah diunggah ke server manapun." />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/compress-image" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/compress-image" />
+  <meta property="og:title" content="Compress Image Online - Gratis & Privat" />
+  <meta property="og:description" content="Kecilkan ukuran gambar secara gratis, cepat, dan privat langsung di browser tanpa upload ke server." />
+  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Compress Image Online - Gratis & Privat" />
+  <meta name="twitter:description" content="Kecilkan ukuran gambar secara gratis dan privat langsung di browser." />
 </svelte:head>
 
 <div class="min-h-screen bg-slate-50 pt-24 pb-12">

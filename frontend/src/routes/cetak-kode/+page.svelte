@@ -74,7 +74,22 @@
 </script>
 
 <svelte:head>
-  <title>Cetak Kode Programming</title>
+  <title>Cetak Kode Programming - Les Balongarut</title>
+  <meta name="description" content="Cetak kode pemrograman dengan tampilan yang rapi dan indah langsung dari browser. Gratis dan mudah digunakan." />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/cetak-kode" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/cetak-kode" />
+  <meta property="og:title" content="Cetak Kode Programming - Les Balongarut" />
+  <meta property="og:description" content="Cetak kode pemrograman dengan tampilan rapi dan indah langsung dari browser, gratis." />
+  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Cetak Kode Programming - Les Balongarut" />
+  <meta name="twitter:description" content="Cetak kode pemrograman dengan tampilan rapi langsung dari browser." />
 </svelte:head>
 
 <div

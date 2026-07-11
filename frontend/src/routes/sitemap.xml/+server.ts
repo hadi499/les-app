@@ -2,10 +2,11 @@ export async function GET({ url }) {
   const pages = [
     '',
     '/panduan',
-    '/login',
     '/quiz',
     '/compress-image',
-    '/berhitung' // Add more public routes here
+    '/berhitung',
+    '/mengetik',
+    '/cetak-kode',
   ];
 
   const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>

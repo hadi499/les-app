@@ -29,13 +29,15 @@
         return;
       }
       user = data.user;
-      
+
       // Setup chat
       if (user.id) {
         chatStore.setMyUserId(user.id);
       }
       try {
-        const unreadRes = await fetch("/api/chat/unread-count", { credentials: "include" });
+        const unreadRes = await fetch("/api/chat/unread-count", {
+          credentials: "include",
+        });
         if (unreadRes.ok) {
           const unreadData = await unreadRes.json();
           chatStore.setUnreadCount(unreadData.count || 0);
@@ -44,7 +46,6 @@
         console.error("Failed to fetch unread count", e);
       }
       chatStore.connect();
-      
     } catch (e) {
       goto("/login");
     } finally {
@@ -160,6 +161,10 @@
   }
 </script>
 
+<svelte:head>
+  <meta name="robots" content="noindex, nofollow" />
+</svelte:head>
+
 <svelte:window
   onclick={() => {
     showUserDropdown = false;
@@ -249,11 +254,24 @@
               ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
               : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
           >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+              ></path></svg
+            >
           </div>
           <span class="flex-1">Pesan</span>
           {#if $chatStore.unreadCount > 0}
-            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+            <span
+              class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center"
+            >
               {$chatStore.unreadCount}
             </span>
           {/if}
@@ -478,7 +496,6 @@
           </div>
           Kuis & Nilai
         </a>
-
 
         <a
           href="/dashboard/absen"
@@ -789,7 +806,7 @@
           <button
             aria-label="Tutup menu"
             onclick={() => (isMobileMenuOpen = false)}
-            class="text-slate-400 hover:text-white border-none bg-transparent cursor-pointer"
+            class="text-slate-400 hover:text-red-500 border-none bg-transparent cursor-pointer"
             ><svg
               class="w-6 h-6"
               fill="none"
@@ -851,11 +868,24 @@
                 ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
                 : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
             >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+                ></path></svg
+              >
             </div>
             <span class="flex-1">Pesan</span>
             {#if $chatStore.unreadCount > 0}
-              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+              <span
+                class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center"
+              >
                 {$chatStore.unreadCount}
               </span>
             {/if}
@@ -1087,7 +1117,6 @@
             </div>
             Kuis & Nilai
           </a>
-
 
           <a
             href="/dashboard/absen"

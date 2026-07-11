@@ -65,6 +65,7 @@
 <svelte:head>
   <title>Masuk — Portal Les</title>
   <meta name="description" content="Masuk ke portal belajar Anda." />
+  <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <!-- Page wrapper -->

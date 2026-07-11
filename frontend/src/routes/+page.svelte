@@ -53,6 +53,20 @@
     content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
   />
   <meta name="keywords" content="Les Balongarut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel" />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/" />
+  <meta property="og:title" content="Les Balongarut | Bimbingan Belajar Terbaik" />
+  <meta property="og:description" content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!" />
+  <meta property="og:locale" content="id_ID" />
+  <meta property="og:site_name" content="Les Balongarut" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Les Balongarut | Bimbingan Belajar Terbaik" />
+  <meta name="twitter:description" content="Bimbingan belajar Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional." />
 </svelte:head>
 
 <div

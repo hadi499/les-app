@@ -1,5 +1,20 @@
 <svelte:head>
   <title>Game Berhitung Seru - Les Balongarut</title>
+  <meta name="description" content="Latih kemampuan berhitung dengan game matematika seru dari Les Balongarut. Tersedia level mudah, sedang, dan sulit untuk semua usia." />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/berhitung" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/berhitung" />
+  <meta property="og:title" content="Game Berhitung Seru - Les Balongarut" />
+  <meta property="og:description" content="Latih kemampuan berhitung dengan game matematika seru. Level mudah, sedang, dan sulit." />
+  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Game Berhitung Seru - Les Balongarut" />
+  <meta name="twitter:description" content="Latih kemampuan berhitung dengan game matematika seru dari Les Balongarut." />
 </svelte:head>
 
 <div
