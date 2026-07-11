@@ -8,7 +8,7 @@
   let { children }: { children: Snippet } = $props();
 
   // Data dinamis dari backend
-  type User = { username: string; role: string };
+  type User = { id?: number; username: string; role: string };
   let user: User = $state({ username: "Loading...", role: "..." });
   let isMobileMenuOpen = $state(false);
   let isDesktopSidebarOpen = $state(true);
