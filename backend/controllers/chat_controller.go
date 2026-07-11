@@ -21,12 +21,12 @@ var upgrader = websocket.Upgrader{
 
 // Hub untuk menyimpan koneksi aktif
 type ClientManager struct {
-	clients map[uint]*websocket.Conn
+	clients map[uint]map[*websocket.Conn]bool
 	mu      sync.Mutex
 }
 
 var manager = ClientManager{
-	clients: make(map[uint]*websocket.Conn),
+	clients: make(map[uint]map[*websocket.Conn]bool),
 }
 
 // WS struct untuk parsing JSON dari client
@@ -53,12 +53,20 @@ func HandleChatWebSocket(c *gin.Context) {
 
 	// Daftarkan client
 	manager.mu.Lock()
-	manager.clients[userID] = conn
+	if manager.clients[userID] == nil {
+		manager.clients[userID] = make(map[*websocket.Conn]bool)
+	}
+	manager.clients[userID][conn] = true
 	manager.mu.Unlock()
 
 	defer func() {
 		manager.mu.Lock()
-		delete(manager.clients, userID)
+		if manager.clients[userID] != nil {
+			delete(manager.clients[userID], conn)
+			if len(manager.clients[userID]) == 0 {
+				delete(manager.clients, userID)
+			}
+		}
 		manager.mu.Unlock()
 	}()
 
@@ -87,22 +95,29 @@ func HandleChatWebSocket(c *gin.Context) {
 
 		// Kirim ke penerima jika online
 		manager.mu.Lock()
-		receiverConn, ok := manager.clients[msg.ReceiverID]
-		manager.mu.Unlock()
-
+		receiverConns, ok := manager.clients[msg.ReceiverID]
 		if ok {
-			err = receiverConn.WriteJSON(chatMsg)
-			if err != nil {
-				log.Println("Write error:", err)
-				manager.mu.Lock()
-				receiverConn.Close()
+			for rc := range receiverConns {
+				err = rc.WriteJSON(chatMsg)
+				if err != nil {
+					log.Println("Write error:", err)
+					rc.Close()
+					delete(manager.clients[msg.ReceiverID], rc)
+				}
+			}
+			if len(manager.clients[msg.ReceiverID]) == 0 {
 				delete(manager.clients, msg.ReceiverID)
-				manager.mu.Unlock()
 			}
 		}
-		
-		// Kirim balik ke pengirim sebagai echo (untuk konfirmasi sukses)
-		conn.WriteJSON(chatMsg)
+
+		// Kirim balik ke SEMUA perangkat pengirim sebagai echo
+		senderConns, okSender := manager.clients[userID]
+		if okSender {
+			for sc := range senderConns {
+				sc.WriteJSON(chatMsg)
+			}
+		}
+		manager.mu.Unlock()
 	}
 }
 
@@ -208,19 +223,27 @@ func DeleteMessage(c *gin.Context) {
 
 	// Notify receiver via WebSocket if they are online
 	manager.mu.Lock()
-	receiverConn, ok := manager.clients[message.ReceiverID]
-	manager.mu.Unlock()
-
-	if ok {
-		// Send a payload with IsDeleted = true
-		deletedMsgPayload := models.ChatMessage{
-			ID:         message.ID,
-			SenderID:   message.SenderID,
-			ReceiverID: message.ReceiverID,
-			IsDeleted:  true,
-		}
-		receiverConn.WriteJSON(deletedMsgPayload)
+	deletedMsgPayload := models.ChatMessage{
+		ID:         message.ID,
+		SenderID:   message.SenderID,
+		ReceiverID: message.ReceiverID,
+		IsDeleted:  true,
 	}
+
+	receiverConns, ok := manager.clients[message.ReceiverID]
+	if ok {
+		for rc := range receiverConns {
+			rc.WriteJSON(deletedMsgPayload)
+		}
+	}
+	
+	senderConns, okSender := manager.clients[userID]
+	if okSender {
+		for sc := range senderConns {
+			sc.WriteJSON(deletedMsgPayload)
+		}
+	}
+	manager.mu.Unlock()
 
 	c.JSON(http.StatusOK, gin.H{"message": "Message deleted successfully"})
 }

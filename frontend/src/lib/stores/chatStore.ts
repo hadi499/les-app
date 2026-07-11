@@ -61,22 +61,25 @@ function createChatStore() {
 						return { ...s, messages: s.messages.filter(m => m.id !== message.id) };
 					}
 
+					let newUnreadCount = s.unreadCount;
 					// Check if message is addressed to the current logged in user (and not from me)
 					if (s.myUserId && message.receiver_id === s.myUserId) {
 						if (s.activeUserId !== message.sender_id) {
 							// Increment unread count if we're not actively chatting with them
-							s.unreadCount += 1;
+							newUnreadCount += 1;
 						}
 					}
 
+					let newMessages = s.messages;
 					// Add message if it's from/to the active user
 					if (s.activeUserId === message.sender_id || s.activeUserId === message.receiver_id) {
 						// avoid duplicates
-						if (message.id && s.messages.some(m => m.id === message.id)) return s;
-						
-						return { ...s, messages: [...s.messages, message] };
+						if (!message.id || !s.messages.some(m => m.id === message.id)) {
+							newMessages = [...s.messages, message];
+						}
 					}
-					return s;
+					
+					return { ...s, unreadCount: newUnreadCount, messages: newMessages };
 				});
 			};
 
