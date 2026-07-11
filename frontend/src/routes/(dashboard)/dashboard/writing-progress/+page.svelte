@@ -23,6 +23,7 @@
   function switchTab(tab: "card" | "table") {
     if (activeTab === tab) return;
     activeTab = tab;
+    localStorage.setItem("writingProgressTab", tab);
     currentPage = 1;
     fetchProgresses();
   }
@@ -173,6 +174,10 @@
   }
 
   onMount(() => {
+    const savedTab = localStorage.getItem("writingProgressTab");
+    if (savedTab === "table" || savedTab === "card") {
+      activeTab = savedTab;
+    }
     loadData();
   });
 
