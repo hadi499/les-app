@@ -233,6 +233,31 @@
         </a>
 
         <a
+          href="/dashboard/chat"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            '/chat',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/chat',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+          </div>
+          <span class="flex-1">Pesan</span>
+          {#if $chatStore.unreadCount > 0}
+            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+              {$chatStore.unreadCount}
+            </span>
+          {/if}
+        </a>
+
+        <a
           href="/dashboard/todos"
           class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
             '/todos',
@@ -452,30 +477,6 @@
           Kuis & Nilai
         </a>
 
-        <a
-          href="/dashboard/chat"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
-            '/chat',
-          )
-            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-        >
-          <div
-            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-              '/chat',
-            )
-              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
-          >
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-          </div>
-          <span class="flex-1">Pesan</span>
-          {#if $chatStore.unreadCount > 0}
-            <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
-              {$chatStore.unreadCount}
-            </span>
-          {/if}
-        </a>
 
         <a
           href="/dashboard/absen"
@@ -833,6 +834,32 @@
           </a>
 
           <a
+            href="/dashboard/chat"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              '/chat',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/chat',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
+            </div>
+            <span class="flex-1">Pesan</span>
+            {#if $chatStore.unreadCount > 0}
+              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
+                {$chatStore.unreadCount}
+              </span>
+            {/if}
+          </a>
+
+          <a
             href="/dashboard/todos"
             onclick={() => (isMobileMenuOpen = false)}
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
@@ -1059,31 +1086,6 @@
             Kuis & Nilai
           </a>
 
-          <a
-            href="/dashboard/chat"
-            onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
-              '/chat',
-            )
-              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
-              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-          >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                '/chat',
-              )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
-            >
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path></svg>
-            </div>
-            <span class="flex-1">Pesan</span>
-            {#if $chatStore.unreadCount > 0}
-              <span class="bg-red-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full min-w-[20px] text-center">
-                {$chatStore.unreadCount}
-              </span>
-            {/if}
-          </a>
 
           <a
             href="/dashboard/absen"
