@@ -31,7 +31,9 @@
       user = data.user;
       
       // Setup chat
-      chatStore.setMyUserId(user.id);
+      if (user.id) {
+        chatStore.setMyUserId(user.id);
+      }
       try {
         const unreadRes = await fetch("/api/chat/unread-count", { credentials: "include" });
         if (unreadRes.ok) {
@@ -182,7 +184,7 @@
   >
     <!-- Sidebar (Desktop) -->
     <aside
-      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden md:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 z-30 {isDesktopSidebarOpen
+      class="bg-slate-400/10 backdrop-blur-md border-r border-slate-300 hidden lg:flex flex-col shrink-0 sticky top-0 h-screen print:hidden shadow-lg shadow-slate-800/5 transition-all duration-300 z-30 {isDesktopSidebarOpen
         ? 'w-64 opacity-100'
         : 'w-0 opacity-0 overflow-hidden border-transparent'}"
     >
@@ -205,7 +207,7 @@
       <nav class="flex-1 overflow-y-auto py-6 px-4 space-y-1">
         <a
           href="/dashboard"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page
             .url.pathname === '/dashboard'
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
             : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
@@ -234,7 +236,7 @@
 
         <a
           href="/dashboard/chat"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/chat',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -259,7 +261,7 @@
 
         <a
           href="/dashboard/todos"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/todos',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -290,7 +292,7 @@
 
         <a
           href="/dashboard/writing-progress"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/writing-progress',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -322,7 +324,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/notes"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/notes',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -352,7 +354,7 @@
           </a>
           <a
             href="/dashboard/card-memory"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/card-memory',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -384,7 +386,7 @@
 
         <a
           href="/dashboard/exams"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/exams',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -416,7 +418,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/subjects"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/subjects',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -448,7 +450,7 @@
 
         <a
           href="/dashboard/quizzes"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/quizzes',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -480,7 +482,7 @@
 
         <a
           href="/dashboard/absen"
-          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
             '/absen',
           )
             ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -512,7 +514,7 @@
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/typing-monitoring"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/typing-monitoring',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -542,7 +544,7 @@
           </a>
           <a
             href="/dashboard/users"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/users',
             )
               ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
@@ -575,7 +577,7 @@
         <div class="pt-4 mt-2 border-t border-slate-200">
           <a
             href="/"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline whitespace-nowrap"
           >
             <div
               class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700"
@@ -695,7 +697,7 @@
     <!-- Desktop Sidebar Toggle Button -->
     <button
       onclick={() => (isDesktopSidebarOpen = !isDesktopSidebarOpen)}
-      class="hidden md:flex fixed top-4 z-50 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer"
+      class="hidden lg:flex fixed top-4 z-50 p-1.5 bg-white border border-slate-200 shadow-sm rounded-lg text-slate-500 hover:bg-slate-50 hover:text-blue-600 transition-all duration-300 cursor-pointer"
       style="left: {isDesktopSidebarOpen ? '15.25rem' : '1rem'};"
       title={isDesktopSidebarOpen ? "Sembunyikan Sidebar" : "Tampilkan Sidebar"}
     >
@@ -725,7 +727,7 @@
 
     <!-- Mobile Header -->
     <div
-      class="md:hidden fixed top-0 inset-x-0 h-16 bg-slate-400/10 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
+      class="lg:hidden fixed top-0 inset-x-0 h-16 bg-slate-400/10 backdrop-blur-md border-b border-slate-200 z-50 flex items-center justify-between px-4 shadow-sm print:hidden"
     >
       <div class="flex items-center gap-2">
         <div
@@ -762,7 +764,7 @@
 
     {#if isMobileMenuOpen}
       <div
-        class="md:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
+        class="lg:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm"
         role="button"
         tabindex="-1"
         aria-label="Tutup menu"
@@ -772,7 +774,7 @@
         }}
       ></div>
       <aside
-        class="md:hidden fixed inset-y-0 left-0 w-64 bg-slate-100 border-r border-slate-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
+        class="lg:hidden fixed inset-y-0 left-0 w-64 bg-slate-100 border-r border-slate-200 shadow-2xl z-50 flex flex-col transform transition-transform {isMobileMenuOpen
           ? 'translate-x-0'
           : '-translate-x-full'} print:hidden"
       >
@@ -806,7 +808,7 @@
           <a
             href="/dashboard"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page
               .url.pathname === '/dashboard'
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
               : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
@@ -836,7 +838,7 @@
           <a
             href="/dashboard/chat"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/chat',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -862,7 +864,7 @@
           <a
             href="/dashboard/todos"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/todos',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -894,7 +896,7 @@
           <a
             href="/dashboard/writing-progress"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/writing-progress',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -927,7 +929,7 @@
             <a
               href="/dashboard/notes"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
                 '/notes',
               )
                 ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -958,7 +960,7 @@
             <a
               href="/dashboard/card-memory"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
                 '/card-memory',
               )
                 ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -991,7 +993,7 @@
           <a
             href="/dashboard/exams"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/exams',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1024,7 +1026,7 @@
             <a
               href="/dashboard/subjects"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
                 '/subjects',
               )
                 ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1057,7 +1059,7 @@
           <a
             href="/dashboard/quizzes"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/quizzes',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1090,7 +1092,7 @@
           <a
             href="/dashboard/absen"
             onclick={() => (isMobileMenuOpen = false)}
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
               '/absen',
             )
               ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1123,7 +1125,7 @@
             <a
               href="/dashboard/typing-monitoring"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
                 '/typing-monitoring',
               )
                 ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1154,7 +1156,7 @@
             <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline {page.url.pathname.includes(
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
                 '/users',
               )
                 ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
@@ -1188,7 +1190,7 @@
             <a
               href="/"
               onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline"
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors text-slate-700 hover:bg-white/50 hover:text-slate-900 no-underline whitespace-nowrap"
             >
               <svg
                 class="w-5 h-5 text-slate-400"
@@ -1305,12 +1307,12 @@
 
     <!-- Main Content Area -->
     <main
-      class="flex-1 flex flex-col min-w-0 md:pt-0 pt-16 h-[100dvh] overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent"
+      class="flex-1 flex flex-col min-w-0 lg:pt-0 pt-16 h-[100dvh] overflow-y-auto print:pt-0 print:h-auto print:overflow-visible print:block bg-transparent"
     >
       <div
-        class="flex-1 p-6 md:p-8 {isDesktopSidebarOpen
+        class="flex-1 p-6 lg:p-8 {isDesktopSidebarOpen
           ? ''
-          : 'md:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0"
+          : 'lg:pl-16'} max-w-6xl mx-auto w-full print:p-0 print:m-0"
       >
         {@render children()}
       </div>

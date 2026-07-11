@@ -247,7 +247,7 @@
           </button>
         </div>
         <div class="p-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Memory -->
             <div class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-200">
               <div class="flex items-center gap-3 mb-3">

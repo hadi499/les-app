@@ -85,7 +85,7 @@
           >Les Balongarut</a
         >
       </div>
-      <div class="hidden sm:ml-6 sm:flex sm:space-x-8 items-center">
+      <div class="hidden lg:ml-6 lg:flex lg:space-x-8 items-center">
         <a
           href="/"
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath ===
@@ -214,7 +214,7 @@
       </div>
 
       <!-- Mobile menu button -->
-      <div class="flex items-center sm:hidden gap-4">
+      <div class="flex items-center lg:hidden gap-4">
 
         <button
           onclick={toggleMobileMenu}
@@ -261,11 +261,11 @@
     <!-- svelte-ignore a11y_click_events_have_key_events -->
     <!-- svelte-ignore a11y_no_static_element_interactions -->
     <div
-      class="sm:hidden absolute inset-0 top-16 bg-black/10 z-40 animate-in fade-in duration-200"
+      class="lg:hidden absolute inset-0 top-16 bg-black/10 z-40 animate-in fade-in duration-200"
       onclick={closeMobileMenu}
     ></div>
     <div
-      class="sm:hidden relative z-50 bg-white/95 shadow-lg border-t border-slate-100 animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto"
+      class="lg:hidden relative z-50 bg-white/95 shadow-lg border-t border-slate-100 animate-in slide-in-from-top-2 duration-200 max-h-[calc(100vh-4rem)] overflow-y-auto"
     >
       {#if isAuthenticated}
         <div class="pt-4 pb-3 border-b border-slate-200">
