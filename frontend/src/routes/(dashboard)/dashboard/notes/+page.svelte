@@ -589,7 +589,7 @@
       </div>
       <div
         class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap text-justify wrap-break-word sm:text-(length:--base-size) print:text-(length:--base-size)"
-        style="--base-size: {printFontSize}px;"
+        style="--base-size: {printFontSize}px; tab-size: 4;"
       >
         {@html renderMathContent(viewingNote.content)}
       </div>

@@ -10,7 +10,7 @@
     addKeyboardShortcuts() {
       return {
         Tab: ({ editor }) => {
-          editor.commands.insertContent("\u00a0\u00a0\u00a0\u00a0");
+          editor.commands.insertContent("\t");
           return true;
         },
       };
@@ -73,6 +73,9 @@
         TabHandler,
       ],
       content: value || "",
+      parseOptions: {
+        preserveWhitespace: "full",
+      },
       editorProps: {
         attributes: {
           class: `prose ${textSize} max-w-none focus:outline-none ${minHeight}`,
@@ -91,7 +94,7 @@
   }
 
   function setHTML(html: string) {
-    editor?.commands.setContent(html || "");
+    editor?.commands.setContent(html || "", { parseOptions: { preserveWhitespace: "full" } });
   }
 
   let showMathModal = $state(false);
@@ -317,6 +320,8 @@
 <style>
   :global(.ProseMirror) {
     height: 100%;
+    white-space: pre-wrap;
+    tab-size: 4;
   }
 </style>
 
