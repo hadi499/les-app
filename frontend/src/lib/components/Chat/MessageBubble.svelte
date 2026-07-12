@@ -1,9 +1,10 @@
 <script lang="ts">
-	let { id = 0, isMine = false, content = "", time = "", onDelete } = $props<{
+	let { id = 0, isMine = false, content = "", time = "", isRead = false, onDelete } = $props<{
 		id?: number;
 		isMine?: boolean;
 		content?: string;
 		time?: string;
+		isRead?: boolean;
 		onDelete?: (id: number) => void;
 	}>();
 
@@ -47,8 +48,22 @@
 	<div class={`max-w-[85%] md:max-w-[75%] rounded-2xl px-4 py-2 text-sm shadow-sm transition-transform active:scale-[0.98] ${isMine ? 'bg-blue-600 text-white rounded-br-none' : 'bg-white text-gray-800 border border-gray-100 rounded-bl-none'}`}>
 		<p class="whitespace-pre-wrap break-words">{content}</p>
 		{#if time}
-			<span class={`text-[10px] mt-1 block text-right ${isMine ? 'text-blue-100' : 'text-gray-400'}`}>
+			<span class={`text-[10px] mt-1 flex items-center justify-end gap-1 ${isMine ? 'text-blue-100' : 'text-gray-400'}`}>
 				{time}
+				{#if isMine}
+					{#if isRead}
+						<!-- Double checkmark for read -->
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-green-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="15 7 6 16 2 12"></polyline>
+							<polyline points="22 7 13 16 11 14"></polyline>
+						</svg>
+					{:else}
+						<!-- Single checkmark for sent -->
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 text-blue-200" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<polyline points="18 7 9 16 4 11"></polyline>
+						</svg>
+					{/if}
+				{/if}
 			</span>
 		{/if}
 	</div>

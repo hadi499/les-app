@@ -251,7 +251,11 @@
 
 	<!-- Main Chat Area -->
 	<div class={`flex-1 flex flex-col min-h-0 bg-gray-50/30 ${!activeUser ? 'hidden md:flex' : 'flex'}`}>
-		{#if !activeUser}
+		{#if loadingContacts}
+			<div class="flex-1 flex items-center justify-center text-gray-400">
+				<span class="loading loading-spinner loading-lg text-blue-500"></span>
+			</div>
+		{:else if !activeUser}
 			<div class="flex-1 flex flex-col items-center justify-center text-gray-400" transition:fade>
 				<div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-blue-500">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
@@ -312,6 +316,7 @@
 							isMine={msg.sender_id === myUserId} 
 							content={msg.content} 
 							time={formatJustTime(msgDateStr)}
+							isRead={msg.is_read}
 							onDelete={confirmDeleteMessage}
 						/>
 					{/each}

@@ -154,7 +154,22 @@ func GetChatHistory(c *gin.Context) {
 	}
 
 	if page == 1 {
-		database.DB.Model(&models.ChatMessage{}).Where("receiver_id = ? AND sender_id = ? AND is_read = ?", userID, otherUserID, false).Update("is_read", true)
+		result := database.DB.Model(&models.ChatMessage{}).Where("receiver_id = ? AND sender_id = ? AND is_read = ?", userID, otherUserID, false).Update("is_read", true)
+		
+		if result.RowsAffected > 0 {
+			manager.mu.Lock()
+			senderConns, ok := manager.clients[uint(otherUserID)]
+			if ok {
+				readReceipt := map[string]interface{}{
+					"type":      "READ_RECEIPT",
+					"reader_id": userID,
+				}
+				for sc := range senderConns {
+					sc.WriteJSON(readReceipt)
+				}
+			}
+			manager.mu.Unlock()
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{

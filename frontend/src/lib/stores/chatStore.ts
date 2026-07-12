@@ -54,11 +54,20 @@ function createChatStore() {
 			};
 
 			socket.onmessage = (event) => {
-				const message = JSON.parse(event.data) as ChatMessage;
+				const message = JSON.parse(event.data) as any;
 				update(s => {
 					// Check if it's a delete signal
 					if (message.is_deleted) {
 						return { ...s, messages: s.messages.filter(m => m.id !== message.id) };
+					}
+					
+					if (message.type === "READ_RECEIPT") {
+						return {
+							...s,
+							messages: s.messages.map(m => 
+								m.receiver_id === message.reader_id ? { ...m, is_read: true } : m
+							)
+						};
 					}
 
 					let newUnreadCount = s.unreadCount;
