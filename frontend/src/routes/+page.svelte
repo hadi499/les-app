@@ -3,7 +3,7 @@
 
   let isAuthenticated = $state(false);
   let authChecked = $state(false);
-  
+
   // Mengambil status dari server
   let isClassOpenPaud = $state(true);
   let isClassOpenSd = $state(true);
@@ -47,26 +47,41 @@
 </script>
 
 <svelte:head>
-  <title>Les Balongarut | Bimbingan Belajar Terbaik</title>
+  <title>Les Balonggarut | Bimbingan Belajar Terbaik</title>
   <meta
     name="description"
     content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
   />
-  <meta name="keywords" content="Les Balongarut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel" />
+  <meta
+    name="keywords"
+    content="Les Balongarut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel"
+  />
   <link rel="canonical" href="https://lesbalonggarut.my.id/" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://lesbalonggarut.my.id/" />
-  <meta property="og:title" content="Les Balongarut | Bimbingan Belajar Terbaik" />
-  <meta property="og:description" content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!" />
+  <meta
+    property="og:title"
+    content="Les Balonggarut | Bimbingan Belajar Terbaik"
+  />
+  <meta
+    property="og:description"
+    content="Les Balonggarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
+  />
   <meta property="og:locale" content="id_ID" />
-  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:site_name" content="Les Balonggarut" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Les Balongarut | Bimbingan Belajar Terbaik" />
-  <meta name="twitter:description" content="Bimbingan belajar Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional." />
+  <meta
+    name="twitter:title"
+    content="Les Balonggarut | Bimbingan Belajar Terbaik"
+  />
+  <meta
+    name="twitter:description"
+    content="Bimbingan belajar Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional."
+  />
 </svelte:head>
 
 <div
@@ -80,7 +95,6 @@
     <div
       class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-slate-200/60 rounded-full blur-[120px]"
     ></div>
-
   </div>
 
   <!-- Hero Section -->
@@ -89,23 +103,39 @@
   >
     <!-- Text -->
     <div class="flex flex-col items-center gap-8">
-
-
       {#if isSettingsLoaded}
         <div class="flex flex-col sm:flex-row gap-3 mt-4">
           <!-- Status PAUD/TK -->
           {#if isClassOpenPaud}
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10"
+            >
               <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"
+                ></span>
               </span>
               PAUD/TK: Buka
             </div>
           {:else}
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               PAUD/TK: Libur
             </div>
@@ -113,17 +143,35 @@
 
           <!-- Status SD/SMP -->
           {#if isClassOpenSd}
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10">
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10"
+            >
               <span class="relative flex h-2.5 w-2.5">
-                <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                <span
+                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                ></span>
+                <span
+                  class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"
+                ></span>
               </span>
               SD/SMP: Buka
             </div>
           {:else}
-            <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10">
-              <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <div
+              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
               SD/SMP: Libur
             </div>
@@ -136,9 +184,9 @@
 
       <div class="flex flex-col gap-4 items-center mt-2">
         <h1
-          class="text-4xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] text-slate-900 uppercase leading-tight text-center drop-shadow-sm"
+          class="text-3xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] text-slate-900 uppercase leading-tight text-center drop-shadow-sm"
         >
-          Les Balongarut
+          Les Balonggarut
         </h1>
         <div
           class="text-xs sm:text-sm tracking-[0.2em] text-slate-600 uppercase flex flex-col items-center gap-3 font-medium"
@@ -148,6 +196,27 @@
           <span>Bahasa Inggris</span>
           <span>TKA</span>
         </div>
+        <div class="flex items-center gap-4 w-full max-w-xs opacity-40 mt-1">
+          <div class="flex-1 h-px bg-slate-400"></div>
+          <svg
+            class="w-3 h-3 text-slate-400 shrink-0"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <circle cx="12" cy="12" r="3" />
+          </svg>
+          <div class="flex-1 h-px bg-slate-400"></div>
+        </div>
+        <p
+          class="text-sm sm:text-md text-slate-600 font-light sm:tracking-wider leading-relaxed sm:leading-7 text-center italic sm:whitespace-nowrap max-w-[18rem] sm:max-w-none"
+        >
+          Belajar efektif lewat metode <span
+            class="not-italic font-medium text-slate-600">Card Memory</span
+          >
+          dan
+          <span class="not-italic font-medium text-slate-600">latihan soal</span
+          >.
+        </p>
       </div>
 
       <div class="pt-6 flex flex-col items-center gap-6">

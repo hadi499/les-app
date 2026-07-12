@@ -28,21 +28,36 @@
 
 <svelte:head>
   <title>Panduan & Metode Belajar - Les Balongarut</title>
-  <meta name="description" content="Pelajari metode dan panduan belajar Les Balongarut — Komputer, Matematika, Bahasa Inggris, dan TKA. Temukan cara belajar yang efektif untuk siswa PAUD hingga SMP." />
+  <meta
+    name="description"
+    content="Pelajari metode dan panduan belajar Les Balongarut — Komputer, Matematika, Bahasa Inggris, dan TKA. Temukan cara belajar yang efektif untuk siswa PAUD hingga SMP."
+  />
   <link rel="canonical" href="https://lesbalonggarut.my.id/panduan" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://lesbalonggarut.my.id/panduan" />
-  <meta property="og:title" content="Panduan & Metode Belajar - Les Balongarut" />
-  <meta property="og:description" content="Pelajari metode dan panduan belajar Les Balongarut — Komputer, Matematika, Bahasa Inggris, dan TKA." />
+  <meta
+    property="og:title"
+    content="Panduan & Metode Belajar - Les Balongarut"
+  />
+  <meta
+    property="og:description"
+    content="Pelajari metode dan panduan belajar Les Balongarut — Komputer, Matematika, Bahasa Inggris, dan TKA."
+  />
   <meta property="og:site_name" content="Les Balongarut" />
   <meta property="og:locale" content="id_ID" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
-  <meta name="twitter:title" content="Panduan & Metode Belajar - Les Balongarut" />
-  <meta name="twitter:description" content="Metode belajar efektif untuk siswa PAUD hingga SMP di Les Balongarut." />
+  <meta
+    name="twitter:title"
+    content="Panduan & Metode Belajar - Les Balongarut"
+  />
+  <meta
+    name="twitter:description"
+    content="Metode belajar efektif untuk siswa PAUD hingga SMP di Les Balongarut."
+  />
 </svelte:head>
 
 <div class="min-h-screen bg-slate-50 pt-24 pb-16 font-sans">
@@ -54,7 +69,7 @@
       <h1
         class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight"
       >
-        Panduan Les <span class="text-blue-600">Balongarut</span>
+        Panduan Les <span class="text-blue-600">Balonggarut</span>
       </h1>
       <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
         Tempat belajar modern dengan metode <span

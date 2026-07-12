@@ -69,7 +69,9 @@
 />
 
 <nav
-  class="bg-white/80 backdrop-blur-md shadow-md border-b border-slate-100 fixed top-0 w-full z-50 subpixel-antialiased {isMobileMenuOpen ? 'bottom-0' : ''}"
+  class="bg-white/80 backdrop-blur-md shadow-md border-b border-slate-100 fixed top-0 w-full z-50 subpixel-antialiased {isMobileMenuOpen
+    ? 'bottom-0'
+    : ''}"
 >
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
@@ -82,7 +84,7 @@
         <a
           href="/"
           class="font-extrabold text-xl text-slate-900 tracking-tight no-underline hover:text-blue-600 transition-colors"
-          >Les Balongarut</a
+          >Les Balonggarut</a
         >
       </div>
       <div class="hidden lg:ml-6 lg:flex lg:space-x-8 items-center">
@@ -215,7 +217,6 @@
 
       <!-- Mobile menu button -->
       <div class="flex items-center lg:hidden gap-4">
-
         <button
           onclick={toggleMobileMenu}
           class="inline-flex items-center justify-center p-2 rounded-md text-slate-800 hover:text-blue-600 hover:bg-blue-50 focus:outline-none border-none bg-transparent cursor-pointer transition-colors"
