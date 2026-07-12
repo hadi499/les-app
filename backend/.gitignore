@@ -2,3 +2,7 @@
 tmp/
 
 uploads/
+
+# Google Drive Secrets
+credentials.json
+token.json

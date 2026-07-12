@@ -151,6 +151,7 @@ func SetupRoutes(r *gin.Engine) {
 		teacherWritingProgress.Use(middleware.RoleMiddleware("teacher"))
 		{
 			teacherWritingProgress.POST("", controllers.CreateWritingProgress)
+			teacherWritingProgress.POST("/backup", controllers.BackupToDrive)
 			teacherWritingProgress.PUT("/:id", controllers.UpdateWritingProgress)
 			teacherWritingProgress.DELETE("/:id", controllers.DeleteWritingProgress)
 		}

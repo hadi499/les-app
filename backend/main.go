@@ -7,6 +7,8 @@ import (
 	"backend/database"
 	"backend/models"
 	"backend/routes"
+	"backend/services"
+
 
 	"os"
 	"strings"
@@ -28,6 +30,15 @@ func main() {
 
 	// 3. Koneksi ke Database
 	database.Connect()
+
+	// 4. Inisialisasi Google Drive Service (Opsional jika credentials ada)
+	if os.Getenv("DRIVE_CREDENTIALS_FILE") != "" {
+		if err := services.InitDriveService(os.Getenv("DRIVE_CREDENTIALS_FILE")); err != nil {
+			log.Printf("Gagal inisialisasi Google Drive API: %v\n", err)
+		} else {
+			log.Println("Google Drive API berhasil diinisialisasi")
+		}
+	}
 
 	// Migrasi otomatis untuk memastikan tabel ada
 	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{}, &models.WritingProgress{}, &models.ChatMessage{})

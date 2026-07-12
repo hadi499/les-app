@@ -275,6 +275,34 @@
     }
   }
 
+  let isBackingUp = $state(false);
+
+  async function backupToDrive() {
+    isBackingUp = true;
+    try {
+      const res = await fetch("/api/writing-progress/backup", {
+        method: "POST",
+        credentials: "include",
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || "Gagal melakukan backup");
+      }
+      
+      let msg = data.message || "Backup berhasil!";
+      if (data.error_details && data.error_details.length > 0) {
+        console.error("Detail Error Backup Google Drive:\n", data.error_details.join("\n"));
+        msg += "\n\n(Cek Inspect Element -> Console untuk melihat pesan error lengkap yang bisa di-copy)";
+      }
+      alert(msg);
+      fetchProgresses(); // refresh list to update status if needed
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    } finally {
+      isBackingUp = false;
+    }
+  }
+
   function openDeleteModal(id: number) {
     progressToDelete = id;
     showDeleteModal = true;
@@ -334,24 +362,34 @@
       </p>
     </div>
     {#if isTeacher}
-      <button
-        onclick={openAddModal}
-        class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
-      >
-        <svg
-          class="w-5 h-5"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-          ><path
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            stroke-width="2"
-            d="M12 4v16m8-8H4"
-          ></path></svg
+      <div class="flex flex-wrap items-center gap-3">
+        <button
+          onclick={backupToDrive}
+          disabled={isBackingUp}
+          class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
         >
-        Tambah Data
-      </button>
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
+          {isBackingUp ? 'Memproses...' : 'Backup ke Google Drive'}
+        </button>
+        <button
+          onclick={openAddModal}
+          class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
+        >
+          <svg
+            class="w-5 h-5"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            ><path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M12 4v16m8-8H4"
+            ></path></svg
+          >
+          Tambah Data
+        </button>
+      </div>
     {/if}
   </div>
 
