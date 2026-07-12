@@ -129,16 +129,38 @@ func GetChatHistory(c *gin.Context) {
 	otherUserIDStr := c.Param("userId")
 	otherUserID, _ := strconv.Atoi(otherUserIDStr)
 
+	pageStr := c.Query("page")
+	page, err := strconv.Atoi(pageStr)
+	if err != nil || page < 1 {
+		page = 1
+	}
+	limit := 50
+	offset := (page - 1) * limit
+
 	var messages []models.ChatMessage
 	database.DB.Where(
 		"(sender_id = ? AND receiver_id = ?) OR (sender_id = ? AND receiver_id = ?)",
 		userID, otherUserID, otherUserID, userID,
-	).Order("created_at asc").Find(&messages)
+	).Order("created_at desc").Limit(limit + 1).Offset(offset).Find(&messages)
 
-	// Tandai pesan sudah dibaca
-	database.DB.Model(&models.ChatMessage{}).Where("receiver_id = ? AND sender_id = ? AND is_read = ?", userID, otherUserID, false).Update("is_read", true)
+	hasMore := false
+	if len(messages) > limit {
+		hasMore = true
+		messages = messages[:limit]
+	}
 
-	c.JSON(http.StatusOK, messages)
+	for i, j := 0, len(messages)-1; i < j; i, j = i+1, j-1 {
+		messages[i], messages[j] = messages[j], messages[i]
+	}
+
+	if page == 1 {
+		database.DB.Model(&models.ChatMessage{}).Where("receiver_id = ? AND sender_id = ? AND is_read = ?", userID, otherUserID, false).Update("is_read", true)
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"messages": messages,
+		"has_more": hasMore,
+	})
 }
 
 // Get Contacts

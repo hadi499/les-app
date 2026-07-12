@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount, onDestroy } from 'svelte';
+	import { onMount, onDestroy, tick } from 'svelte';
 	import { chatStore } from '$lib/stores/chatStore';
 	import ContactList from '$lib/components/Chat/ContactList.svelte';
 	import MessageBubble from '$lib/components/Chat/MessageBubble.svelte';
@@ -15,6 +15,11 @@
 	
 	let showDeleteModal = $state(false);
 	let messageToDelete: number | null = $state(null);
+	
+	let currentPage = $state(1);
+	let hasMore = $state(false);
+	let loadingMore = $state(false);
+	let isPrepending = false;
 	
 	let previousUnreadCount = 0;
 	$effect(() => {
@@ -76,10 +81,12 @@
 
 		// Fetch history and mark as read
 		try {
-			const res = await fetch(`/api/chat/history/${user.id}`, { credentials: "include" });
+			currentPage = 1;
+			const res = await fetch(`/api/chat/history/${user.id}?page=1`, { credentials: "include" });
 			if (res.ok) {
-				const history = await res.json();
-				chatStore.setMessages(history || []);
+				const data = await res.json();
+				chatStore.setMessages(data.messages || []);
+				hasMore = data.has_more || false;
 				scrollToBottom();
 				
 				// Reset unread count since we just opened this chat
@@ -115,10 +122,42 @@
 
 	// Reactive statement to scroll when messages change
 	$effect(() => {
-		if ($chatStore.messages) {
+		if ($chatStore.messages && !isPrepending) {
 			scrollToBottom();
 		}
 	});
+
+	async function handleScroll() {
+		if (!chatContainer || loadingMore || !hasMore || !activeUser) return;
+		if (chatContainer.scrollTop < 50) {
+			loadingMore = true;
+			const oldScrollHeight = chatContainer.scrollHeight;
+			const oldScrollTop = chatContainer.scrollTop;
+			
+			currentPage += 1;
+			try {
+				const res = await fetch(`/api/chat/history/${activeUser.id}?page=${currentPage}`, { credentials: "include" });
+				if (res.ok) {
+					const data = await res.json();
+					if (data.messages && data.messages.length > 0) {
+						isPrepending = true;
+						chatStore.prependMessages(data.messages);
+					}
+					hasMore = data.has_more || false;
+					
+					await tick();
+					if (chatContainer) {
+						chatContainer.scrollTop = chatContainer.scrollHeight - oldScrollHeight + oldScrollTop;
+					}
+					setTimeout(() => { isPrepending = false; }, 50);
+				}
+			} catch(e) {
+				console.error(e);
+			} finally {
+				loadingMore = false;
+			}
+		}
+	}
 
 	function scrollToBottom() {
 		setTimeout(() => {
@@ -128,10 +167,30 @@
 		}, 50);
 	}
 	
-	function formatTime(dateString: string) {
+	function formatJustTime(dateString: string) {
 		if (!dateString) return '';
 		const date = new Date(dateString);
 		return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+	}
+
+	function getDateLabel(dateString: string) {
+		if (!dateString) return '';
+		const date = new Date(dateString);
+		const now = new Date();
+		
+		const isToday = date.getDate() === now.getDate() && date.getMonth() === now.getMonth() && date.getFullYear() === now.getFullYear();
+		
+		const yesterday = new Date(now);
+		yesterday.setDate(now.getDate() - 1);
+		const isYesterday = date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear();
+
+		if (isToday) {
+			return 'Hari Ini';
+		} else if (isYesterday) {
+			return 'Kemarin';
+		} else {
+			return date.toLocaleDateString('id-ID', { day: '2-digit', month: 'long', year: 'numeric' });
+		}
 	}
 
 	function confirmDeleteMessage(id: number) {
@@ -224,18 +283,35 @@
 			</div>
 
 			<!-- Messages -->
-			<div class="flex-1 overflow-y-auto min-h-0 p-4 md:p-6" bind:this={chatContainer}>
+			<div class="flex-1 overflow-y-auto min-h-0 p-4 md:p-6" bind:this={chatContainer} onscroll={handleScroll}>
 				{#if loadingHistory}
 					<div class="flex justify-center p-4">
 						<span class="loading loading-dots loading-md text-blue-500"></span>
 					</div>
 				{:else}
-					{#each $chatStore.messages as msg}
+					{#if loadingMore}
+						<div class="flex justify-center p-2 mb-2">
+							<span class="loading loading-spinner loading-xs text-blue-500"></span>
+						</div>
+					{/if}
+					{#each $chatStore.messages as msg, i (msg.id)}
+						{@const msgDateStr = msg.created_at || new Date().toISOString()}
+						{@const currentDateLabel = getDateLabel(msgDateStr)}
+						{@const prevMsgDateStr = i > 0 ? ($chatStore.messages[i - 1].created_at || new Date().toISOString()) : null}
+						{@const prevDateLabel = prevMsgDateStr ? getDateLabel(prevMsgDateStr) : null}
+						
+						{#if currentDateLabel !== prevDateLabel}
+							<div class="flex justify-center my-4">
+								<span class="bg-gray-200/60 text-gray-600 text-[11px] px-3 py-1 rounded-md font-medium shadow-sm backdrop-blur-sm">
+									{currentDateLabel}
+								</span>
+							</div>
+						{/if}
 						<MessageBubble 
 							id={msg.id}
 							isMine={msg.sender_id === myUserId} 
 							content={msg.content} 
-							time={formatTime(msg.created_at || new Date().toISOString())}
+							time={formatJustTime(msgDateStr)}
 							onDelete={confirmDeleteMessage}
 						/>
 					{/each}

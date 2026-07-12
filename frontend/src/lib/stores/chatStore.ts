@@ -101,6 +101,7 @@ function createChatStore() {
 			}
 		},
 		setMessages: (messages: ChatMessage[]) => update(s => ({ ...s, messages })),
+		prependMessages: (messages: ChatMessage[]) => update(s => ({ ...s, messages: [...messages, ...s.messages] })),
 		removeMessage: (messageId: number) => update(s => ({ ...s, messages: s.messages.filter(m => m.id !== messageId) })),
 		setActiveUser: (userId: number | null) => update(s => ({ ...s, activeUserId: userId })),
 		sendMessage: (receiverId: number, content: string) => {
