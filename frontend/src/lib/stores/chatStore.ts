@@ -83,8 +83,13 @@ function createChatStore() {
 					// Add message if it's from/to the active user
 					if (s.activeUserId === message.sender_id || s.activeUserId === message.receiver_id) {
 						// avoid duplicates
-						if (!message.id || !s.messages.some(m => m.id === message.id)) {
-							newMessages = [...s.messages, message];
+						if (!newMessages.find(m => m.id === message.id)) {
+							newMessages = [...newMessages, message];
+							
+							// If we received this from the active user, tell the server we read it
+							if (s.activeUserId === message.sender_id) {
+								fetch(`/api/chat/history/${message.sender_id}?page=1`, { credentials: "include" }).catch(() => {});
+							}
 						}
 					}
 					

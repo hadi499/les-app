@@ -21,12 +21,12 @@
 	let loadingMore = $state(false);
 	let isPrepending = false;
 	
-	let previousUnreadCount = 0;
 	$effect(() => {
-		if ($chatStore.unreadCount > previousUnreadCount) {
-			fetchContacts();
-		}
-		previousUnreadCount = $chatStore.unreadCount;
+		// Svelte 5 tracks this dependency automatically.
+		// Whenever unreadCount changes (goes up or down), refresh the contact list
+		// to ensure the unread badges are perfectly in sync with the server.
+		const currentCount = $chatStore.unreadCount;
+		fetchContacts();
 	});
 
 	async function fetchContacts() {
@@ -65,6 +65,10 @@
 		} finally {
 			loadingContacts = false;
 		}
+	});
+
+	onDestroy(() => {
+		chatStore.setActiveUser(null);
 	});
 
 	async function selectContact(user: any) {
