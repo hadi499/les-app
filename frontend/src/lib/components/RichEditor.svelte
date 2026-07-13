@@ -125,6 +125,39 @@
     openMathModal("display");
   }
 
+  function handleAlignLeft() {
+    if (!editor) return;
+    const { state } = editor;
+    const { tr, selection } = state;
+
+    const deletions: {from: number, to: number}[] = [];
+
+    state.doc.nodesBetween(selection.from, selection.to, (node, pos) => {
+      if (node.isBlock) {
+        const firstChild = node.firstChild;
+        if (firstChild && firstChild.isText && firstChild.text) {
+          const match = firstChild.text.match(/^[\s\t]+/);
+          if (match) {
+            deletions.push({
+              from: pos + 1,
+              to: pos + 1 + match[0].length
+            });
+          }
+        }
+      }
+    });
+
+    for (let i = deletions.length - 1; i >= 0; i--) {
+      tr.delete(deletions[i].from, deletions[i].to);
+    }
+
+    if (deletions.length > 0) {
+      editor.view.dispatch(tr);
+    }
+    
+    editor.chain().focus().setTextAlign("left").run();
+  }
+
   export { getHTML, setHTML };
 </script>
 
@@ -193,7 +226,7 @@
     <span class="w-px bg-gray-300 mx-0.5"></span>
     <button
       type="button"
-      onclick={() => editor?.chain().focus().setTextAlign("left").run()}
+      onclick={handleAlignLeft}
       class="px-1.5 py-1 text-xs rounded cursor-pointer {active.alignLeft
         ? 'bg-indigo-100 text-indigo-700'
         : 'text-gray-600 hover:bg-gray-100'}"

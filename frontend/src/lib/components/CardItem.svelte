@@ -293,7 +293,7 @@
       <div class="flex-1 px-6 py-2 text-black leading-relaxed overflow-hidden">
         <div
           class="rich-content prose prose-sm max-w-none"
-          style="display: -webkit-box; -webkit-line-clamp: {contentClamp}; -webkit-box-orient: vertical; overflow: hidden; font-size: {contentFont};"
+          style="white-space: pre-wrap; tab-size: 4; display: -webkit-box; -webkit-line-clamp: {contentClamp}; -webkit-box-orient: vertical; overflow: hidden; font-size: {contentFont};"
         >
           {@html renderedContent || "Konten ringkasan..."}
         </div>
