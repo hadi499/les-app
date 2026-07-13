@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount } from "svelte";
   import type { Card } from "$lib/types";
 
   let {
@@ -16,83 +17,195 @@
   } = $props();
 
   let openMenuId = $state<string | null>(null);
+  let layoutMode = $state<'grid' | 'list'>('grid');
+
+  onMount(() => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("folderLayoutMode");
+      if (saved === "grid" || saved === "list") {
+        layoutMode = saved;
+      }
+    }
+  });
+
+  function setLayout(mode: 'grid' | 'list') {
+    layoutMode = mode;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("folderLayoutMode", mode);
+    }
+  }
 </script>
 
 <svelte:window onclick={() => openMenuId = null} />
 
-<div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4">
-  {#each Object.entries(groupedCards) as [category, categoryCards] (category)}
-    <div
-      role="button"
-      tabindex="0"
-      onclick={() => onSelectCategory(category)}
-      onkeydown={(e) => e.key === "Enter" && onSelectCategory(category)}
-      class="bg-white/80 border border-slate-200 rounded-2xl p-3 md:p-5 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openMenuId === category ? 'z-50' : 'z-0'}"
-    >
-      <div class="relative">
-        <svg
-          class="w-12 h-12 md:w-16 md:h-16 text-blue-400 group-hover:text-blue-500 transition-colors"
-          viewBox="0 0 24 24"
-          fill="currentColor"
-        >
-          <path
-            d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z"
-          />
-        </svg>
-        <div class="absolute inset-0 flex items-center justify-center mt-2">
-          <span
-            class="bg-white/90 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm"
-          >
-            {categoryCards.length}
-          </span>
-        </div>
-      </div>
-      <div class="text-center w-full">
-        <h3 class="font-semibold text-slate-700 text-xs md:text-sm break-words leading-tight w-full px-1">
-          {category}
-        </h3>
-      </div>
-      {#if isTeacher && category !== 'Tidak Berkategori'}
-        <div class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10">
-          <button
-            onclick={(e) => {
-              e.stopPropagation();
-              openMenuId = openMenuId === category ? null : category;
-            }}
-            class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-xl transition-all cursor-pointer {openMenuId === category ? 'bg-slate-100' : ''}"
-            aria-label="Menu folder"
-          >
-            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
-          </button>
+<!-- View Toggle -->
+{#if Object.keys(groupedCards).length > 0}
+  <div class="flex items-center justify-end mb-4">
+    <div class="flex items-center bg-white/80 border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+      <button
+        onclick={() => setLayout('grid')}
+        class="p-2 transition-colors {layoutMode === 'grid' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50 cursor-pointer'}"
+        title="Tampilan Grid"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+      </button>
+      <div class="w-px h-6 bg-slate-200"></div>
+      <button
+        onclick={() => setLayout('list')}
+        class="p-2 transition-colors {layoutMode === 'list' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50 cursor-pointer'}"
+        title="Tampilan List"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+      </button>
+    </div>
+  </div>
+{/if}
 
-          <div class="absolute right-0 top-10 {openMenuId === category ? 'flex flex-col' : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all z-50 w-max">
-            <button
-              onclick={(e) => {
-                e.stopPropagation();
-                openMenuId = null;
-                onEditFolder(category);
-              }}
-              class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50 transition-colors"
-              title="Edit folder"
+<div class="{layoutMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4' : 'flex flex-col gap-2'}">
+  {#each Object.entries(groupedCards) as [category, categoryCards] (category)}
+    {#if layoutMode === 'grid'}
+      <div
+        role="button"
+        tabindex="0"
+        onclick={() => onSelectCategory(category)}
+        onkeydown={(e) => e.key === "Enter" && onSelectCategory(category)}
+        class="bg-white/80 border border-slate-200 rounded-2xl p-3 md:p-5 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openMenuId === category ? 'z-50' : 'z-0'}"
+      >
+        <div class="relative">
+          <svg
+            class="w-12 h-12 md:w-16 md:h-16 text-blue-400 group-hover:text-blue-500 transition-colors"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z"
+            />
+          </svg>
+          <div class="absolute inset-0 flex items-center justify-center mt-2">
+            <span
+              class="bg-white/90 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm"
             >
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-              <span class="text-sm font-medium pr-2">Edit</span>
-            </button>
-            <button
-              onclick={(e) => {
-                e.stopPropagation();
-                openMenuId = null;
-                onDeleteFolder(category);
-              }}
-              class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 cursor-pointer rounded-lg hover:bg-red-50 transition-colors"
-              title="Hapus folder"
-            >
-              <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-              <span class="text-sm font-medium pr-2">Hapus</span>
-            </button>
+              {categoryCards.length}
+            </span>
           </div>
         </div>
-      {/if}
-    </div>
+        <div class="text-center w-full">
+          <h3 class="font-semibold text-slate-700 text-xs md:text-sm break-words leading-tight w-full px-1">
+            {category}
+          </h3>
+        </div>
+        {#if isTeacher && category !== 'Tidak Berkategori'}
+          <div class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10">
+            <button
+              onclick={(e) => {
+                e.stopPropagation();
+                openMenuId = openMenuId === category ? null : category;
+              }}
+              class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-xl transition-all cursor-pointer {openMenuId === category ? 'bg-slate-100' : ''}"
+              aria-label="Menu folder"
+            >
+              <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+            </button>
+
+            <div class="absolute right-0 top-10 {openMenuId === category ? 'flex flex-col' : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all z-50 w-max">
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  openMenuId = null;
+                  onEditFolder(category);
+                }}
+                class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50 transition-colors"
+                title="Edit folder"
+              >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                <span class="text-sm font-medium pr-2">Edit</span>
+              </button>
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  openMenuId = null;
+                  onDeleteFolder(category);
+                }}
+                class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 cursor-pointer rounded-lg hover:bg-red-50 transition-colors"
+                title="Hapus folder"
+              >
+                <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                <span class="text-sm font-medium pr-2">Hapus</span>
+              </button>
+            </div>
+          </div>
+        {/if}
+      </div>
+    {:else}
+      <div
+        role="button"
+        tabindex="0"
+        onclick={() => onSelectCategory(category)}
+        onkeydown={(e) => e.key === "Enter" && onSelectCategory(category)}
+        class="bg-white/80 border border-slate-200 rounded-xl p-3 md:px-5 md:py-3 flex items-center justify-between gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openMenuId === category ? 'z-50' : 'z-0'}"
+      >
+        <div class="flex items-center gap-3 md:gap-4">
+          <svg
+            class="w-8 h-8 md:w-10 md:h-10 text-blue-400 group-hover:text-blue-500 transition-colors shrink-0"
+            viewBox="0 0 24 24"
+            fill="currentColor"
+          >
+            <path
+              d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z"
+            />
+          </svg>
+          <span class="font-semibold text-slate-700 text-sm md:text-base break-words leading-tight">
+            {category}
+          </span>
+        </div>
+        
+        <div class="flex items-center gap-3 md:gap-4">
+          <span class="text-xs md:text-sm font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">
+            {categoryCards.length} Kartu
+          </span>
+          {#if isTeacher && category !== 'Tidak Berkategori'}
+            <div class="relative flex items-center transition-all z-10">
+              <button
+                onclick={(e) => {
+                  e.stopPropagation();
+                  openMenuId = openMenuId === category ? null : category;
+                }}
+                class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-xl transition-all cursor-pointer {openMenuId === category ? 'bg-slate-100' : ''}"
+                aria-label="Menu folder"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"/></svg>
+              </button>
+
+              <div class="absolute right-0 top-10 {openMenuId === category ? 'flex flex-col' : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all z-50 w-max">
+                <button
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    openMenuId = null;
+                    onEditFolder(category);
+                  }}
+                  class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50 transition-colors"
+                  title="Edit folder"
+                >
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                  <span class="text-sm font-medium pr-2">Edit</span>
+                </button>
+                <button
+                  onclick={(e) => {
+                    e.stopPropagation();
+                    openMenuId = null;
+                    onDeleteFolder(category);
+                  }}
+                  class="w-full flex items-center gap-2 p-2 text-red-600 hover:text-red-500 cursor-pointer rounded-lg hover:bg-red-50 transition-colors"
+                  title="Hapus folder"
+                >
+                  <svg class="w-4 h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  <span class="text-sm font-medium pr-2">Hapus</span>
+                </button>
+              </div>
+            </div>
+          {/if}
+        </div>
+      </div>
+    {/if}
   {/each}
 </div>

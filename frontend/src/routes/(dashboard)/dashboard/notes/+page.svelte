@@ -34,6 +34,12 @@
   let folderToDelete = $state<Folder | null>(null);
 
   onMount(async () => {
+    if (typeof window !== "undefined") {
+      const saved = localStorage.getItem("notesFolderLayoutMode");
+      if (saved === "grid" || saved === "list") {
+        foldersLayoutMode = saved;
+      }
+    }
     try {
       // Fetch Folders
       const resFolders = await fetch("/api/folders", {
@@ -139,6 +145,14 @@
   let editorRef = $state<RichEditorRef>();
   let openMenuId = $state<number | null>(null);
   let openFolderMenuId = $state<number | null>(null);
+  let foldersLayoutMode = $state<'grid' | 'list'>('grid');
+
+  function setFoldersLayout(mode: 'grid' | 'list') {
+    foldersLayoutMode = mode;
+    if (typeof window !== "undefined") {
+      localStorage.setItem("notesFolderLayoutMode", mode);
+    }
+  }
 
   function openNewFolder() {
     editingFolder = null;
@@ -736,119 +750,255 @@
     <!-- Content Grid -->
     {#if !currentFolder && !searchQuery}
       <!-- FOLDERS VIEW -->
-      <h2
-        class="text-sm font-bold text-slate-400 uppercase tracking-wider mb-2 mt-8"
-      >
-        Folder Kategori
-      </h2>
+      <div class="flex items-center justify-between mb-2 mt-8">
+        <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider">
+          Folder Kategori
+        </h2>
+        
+        {#if folders.length > 0}
+          <div class="flex items-center bg-white border border-slate-200 rounded-lg overflow-hidden shadow-sm">
+            <button
+              onclick={() => setFoldersLayout('grid')}
+              class="p-1.5 transition-colors {foldersLayoutMode === 'grid' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50 cursor-pointer'}"
+              title="Tampilan Grid"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zm10 0a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
+            </button>
+            <div class="w-px h-5 bg-slate-200"></div>
+            <button
+              onclick={() => setFoldersLayout('list')}
+              class="p-1.5 transition-colors {foldersLayoutMode === 'list' ? 'bg-slate-100 text-blue-600' : 'text-slate-500 hover:bg-slate-50 cursor-pointer'}"
+              title="Tampilan List"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+          </div>
+        {/if}
+      </div>
+      
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"
+        class="{foldersLayoutMode === 'grid' ? 'grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4' : 'flex flex-col gap-2'}"
       >
         {#each folders as folder}
-          <div
-            class="group relative bg-white rounded-2xl border border-slate-200 p-4 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center gap-4 {openFolderMenuId ===
-            folder.id
-              ? 'z-50'
-              : 'z-0'}"
-            onclick={() => openFolder(folder)}
-            role="button"
-            tabindex="0"
-            onkeydown={(e) => e.key === "Enter" && openFolder(folder)}
-          >
+          {#if foldersLayoutMode === 'grid'}
             <div
-              class="w-12 h-12 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 transition-colors"
+              class="bg-white/80 border border-slate-200 rounded-2xl p-3 md:p-5 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openFolderMenuId ===
+              folder.id
+                ? 'z-50'
+                : 'z-0'}"
+              onclick={() => openFolder(folder)}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => e.key === "Enter" && openFolder(folder)}
             >
-              <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 20 20"
-                ><path
-                  d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
-                ></path></svg
-              >
-            </div>
-            <div class="flex-1 min-w-0">
-              <h3 class="font-bold text-slate-800 truncate">{folder.name}</h3>
-              <p class="text-xs text-slate-500">
-                {notes.filter((n) => n.folder_id === folder.id).length} catatan
-              </p>
-            </div>
-            <div
-              class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10"
-            >
-              <!-- 3-dots button -->
-              <button
-                onclick={(e) => {
-                  e.stopPropagation();
-                  openFolderMenuId =
-                    openFolderMenuId === folder.id ? null : folder.id;
-                }}
-                class="p-2 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
-              >
-                <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"
-                  ><path
-                    d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
-                  /></svg
+              <div class="relative">
+                <svg
+                  class="w-12 h-12 md:w-16 md:h-16 text-blue-400 group-hover:text-blue-500 transition-colors"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
                 >
-              </button>
-              
-              {#if openFolderMenuId === folder.id}
-                <!-- svelte-ignore a11y_click_events_have_key_events -->
-                <!-- svelte-ignore a11y_no_static_element_interactions -->
-                <div class="fixed inset-0 z-40" onclick={(e) => { e.stopPropagation(); openFolderMenuId = null; }}></div>
-              {/if}
-
+                  <path
+                    d="M4 4c-1.11 0-2 .89-2 2v12c0 1.11.89 2 2 2h16c1.11 0 2-.89 2-2V8c0-1.11-.89-2-2-2h-8l-2-2H4z"
+                  />
+                </svg>
+                <div class="absolute inset-0 flex items-center justify-center mt-2">
+                  <span
+                    class="bg-white/90 text-blue-700 text-[10px] font-bold px-1.5 py-0.5 rounded-md shadow-sm"
+                  >
+                    {notes.filter((n) => n.folder_id === folder.id).length}
+                  </span>
+                </div>
+              </div>
+              <div class="text-center w-full">
+                <h3 class="font-semibold text-slate-700 text-xs md:text-sm wrap-break-word leading-tight w-full px-1">
+                  {folder.name}
+                </h3>
+              </div>
               <div
-                class="absolute right-0 top-10 {openFolderMenuId === folder.id
-                  ? 'flex flex-col'
-                  : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all w-max z-50"
+                class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10"
               >
+                <!-- 3-dots button -->
                 <button
                   onclick={(e) => {
                     e.stopPropagation();
-                    openFolderMenuId = null;
-                    openEditFolder(folder);
+                    openFolderMenuId =
+                      openFolderMenuId === folder.id ? null : folder.id;
                   }}
-                  class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
-                  title="Edit folder"
+                  class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer {openFolderMenuId === folder.id ? 'bg-slate-100' : ''}"
                 >
-                  <svg
-                    class="w-4 h-4 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
                     ><path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                    ></path></svg
+                      d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
+                    /></svg
                   >
-                  <span class="text-sm font-medium pr-2">Edit</span>
                 </button>
-                <button
-                  onclick={(e) => {
-                    e.stopPropagation();
-                    openFolderMenuId = null;
-                    deleteFolder(folder);
-                  }}
-                  class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
-                  title="Hapus folder"
+                
+                {#if openFolderMenuId === folder.id}
+                  <!-- svelte-ignore a11y_click_events_have_key_events -->
+                  <!-- svelte-ignore a11y_no_static_element_interactions -->
+                  <div class="fixed inset-0 z-40" onclick={(e) => { e.stopPropagation(); openFolderMenuId = null; }}></div>
+                {/if}
+
+                <div
+                  class="absolute right-0 top-10 {openFolderMenuId === folder.id
+                    ? 'flex flex-col'
+                    : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all w-max z-50"
                 >
-                  <svg
-                    class="w-4 h-4 shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    ><path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    ></path></svg
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openFolderMenuId = null;
+                      openEditFolder(folder);
+                    }}
+                    class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
+                    title="Edit folder"
                   >
-                  <span class="text-sm font-medium pr-2">Hapus</span>
-                </button>
+                    <svg
+                      class="w-4 h-4 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      ></path></svg
+                    >
+                    <span class="text-sm font-medium pr-2">Edit</span>
+                  </button>
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openFolderMenuId = null;
+                      deleteFolder(folder);
+                    }}
+                    class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
+                    title="Hapus folder"
+                  >
+                    <svg
+                      class="w-4 h-4 shrink-0"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      ></path></svg
+                    >
+                    <span class="text-sm font-medium pr-2">Hapus</span>
+                  </button>
+                </div>
               </div>
             </div>
-          </div>
+          {:else}
+            <div
+              class="group relative bg-white rounded-xl border border-slate-200 p-3 md:px-5 md:py-3 shadow-sm hover:shadow-md hover:border-blue-300 transition-all cursor-pointer flex items-center justify-between gap-3 {openFolderMenuId ===
+              folder.id
+                ? 'z-50'
+                : 'z-0'}"
+              onclick={() => openFolder(folder)}
+              role="button"
+              tabindex="0"
+              onkeydown={(e) => e.key === "Enter" && openFolder(folder)}
+            >
+              <div class="flex items-center gap-3 md:gap-4 flex-1 min-w-0">
+                <div
+                  class="w-10 h-10 rounded-xl bg-blue-50 text-blue-500 flex items-center justify-center shrink-0 transition-colors"
+                >
+                  <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"
+                    ><path
+                      d="M2 6a2 2 0 012-2h5l2 2h5a2 2 0 012 2v6a2 2 0 01-2 2H4a2 2 0 01-2-2V6z"
+                    ></path></svg
+                  >
+                </div>
+                <h3 class="font-bold text-slate-800 text-sm md:text-base truncate">{folder.name}</h3>
+              </div>
+              <div class="flex items-center gap-3 md:gap-4">
+                <span class="text-xs md:text-sm text-slate-500 bg-slate-50 px-2 py-1 rounded-md border border-slate-100 whitespace-nowrap">
+                  {notes.filter((n) => n.folder_id === folder.id).length} catatan
+                </span>
+                
+                <div class="relative flex items-center z-10">
+                  <button
+                    onclick={(e) => {
+                      e.stopPropagation();
+                      openFolderMenuId =
+                        openFolderMenuId === folder.id ? null : folder.id;
+                    }}
+                    class="p-1.5 text-slate-400 hover:bg-slate-100 rounded-xl transition-colors cursor-pointer"
+                  >
+                    <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
+                      ><path
+                        d="M12 8a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4zm0 6a2 2 0 110-4 2 2 0 010 4z"
+                      /></svg
+                    >
+                  </button>
+                  
+                  {#if openFolderMenuId === folder.id}
+                    <!-- svelte-ignore a11y_click_events_have_key_events -->
+                    <!-- svelte-ignore a11y_no_static_element_interactions -->
+                    <div class="fixed inset-0 z-40" onclick={(e) => { e.stopPropagation(); openFolderMenuId = null; }}></div>
+                  {/if}
+
+                  <div
+                    class="absolute right-0 top-10 {openFolderMenuId === folder.id
+                      ? 'flex flex-col'
+                      : 'hidden'} p-2 bg-white border border-slate-100 shadow-xl rounded-xl items-center gap-1 transition-all w-max z-50"
+                  >
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openFolderMenuId = null;
+                        openEditFolder(folder);
+                      }}
+                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-blue-600 cursor-pointer rounded-lg hover:bg-blue-50"
+                      title="Edit folder"
+                    >
+                      <svg
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        ></path></svg
+                      >
+                      <span class="text-sm font-medium pr-2">Edit</span>
+                    </button>
+                    <button
+                      onclick={(e) => {
+                        e.stopPropagation();
+                        openFolderMenuId = null;
+                        deleteFolder(folder);
+                      }}
+                      class="w-full flex items-center gap-2 p-2 text-slate-600 hover:text-red-600 cursor-pointer rounded-lg hover:bg-red-50"
+                      title="Hapus folder"
+                    >
+                      <svg
+                        class="w-4 h-4 shrink-0"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path></svg
+                      >
+                      <span class="text-sm font-medium pr-2">Hapus</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {/if}
         {/each}
       </div>
     {:else}
