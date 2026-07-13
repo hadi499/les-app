@@ -68,7 +68,11 @@
     editor = new Editor({
       element: editorEl,
       extensions: [
-        StarterKit.configure({ heading: { levels: [2] } }),
+        StarterKit.configure({
+          heading: { levels: [2] },
+          code: false,
+          codeBlock: false,
+        }),
         TextAlign.configure({ types: ["heading", "paragraph"] }),
         TabHandler,
       ],
