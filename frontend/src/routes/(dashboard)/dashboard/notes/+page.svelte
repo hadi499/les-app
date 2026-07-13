@@ -750,7 +750,7 @@
     <!-- Content Grid -->
     {#if !currentFolder && !searchQuery}
       <!-- FOLDERS VIEW -->
-      <div class="flex items-center justify-between mb-2 mt-8">
+      <div class="flex items-center justify-between mb-6 mt-8">
         <h2 class="text-sm font-bold text-slate-400 uppercase tracking-wider">
           Folder Kategori
         </h2>
