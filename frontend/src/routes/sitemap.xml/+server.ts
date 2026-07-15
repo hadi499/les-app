@@ -1,4 +1,6 @@
-export async function GET({ url }) {
+export const prerender = true;
+
+export async function GET() {
   const pages = [
     '',
     '/panduan',
@@ -9,9 +11,11 @@ export async function GET({ url }) {
     '/cetak-kode',
   ];
 
+  const website = 'https://lesbalonggarut.my.id';
+
   const sitemap = `<?xml version="1.0" encoding="UTF-8" ?>
 <urlset
-  xmlns="https://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
   xmlns:xhtml="https://www.w3.org/1999/xhtml"
   xmlns:mobile="https://www.google.com/schemas/sitemap-mobile/1.0"
   xmlns:news="https://www.google.com/schemas/sitemap-news/0.9"
@@ -21,7 +25,7 @@ export async function GET({ url }) {
   ${pages
       .map(
         (page) => `  <url>
-    <loc>${new URL(page, url.origin).href}</loc>
+    <loc>${website}${page}</loc>
     <changefreq>daily</changefreq>
     <priority>${page === '' ? '1.0' : '0.7'}</priority>
   </url>`
