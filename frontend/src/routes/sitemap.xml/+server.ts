@@ -1,6 +1,7 @@
 export const prerender = true;
 
 export async function GET() {
+  console.log('SITEMAP GET FUNCTION CALLED!');
   const pages = [
     '',
     '/panduan',
