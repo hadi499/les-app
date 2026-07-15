@@ -93,6 +93,7 @@ func SetupRoutes(r *gin.Engine) {
 		teacherExams.Use(middleware.RoleMiddleware("teacher"))
 		{
 			teacherExams.POST("", controllers.CreateExam)
+			teacherExams.POST("/bulk-delete", controllers.BulkDeleteExams)
 			teacherExams.PUT("/:id", controllers.UpdateExam)
 			teacherExams.DELETE("/:id", controllers.DeleteExam)
 		}
@@ -152,6 +153,7 @@ func SetupRoutes(r *gin.Engine) {
 		{
 			teacherWritingProgress.POST("", controllers.CreateWritingProgress)
 			teacherWritingProgress.POST("/backup", controllers.BackupToDrive)
+			teacherWritingProgress.POST("/bulk-delete", controllers.BulkDeleteWritingProgress)
 			teacherWritingProgress.PUT("/:id", controllers.UpdateWritingProgress)
 			teacherWritingProgress.DELETE("/:id", controllers.DeleteWritingProgress)
 		}

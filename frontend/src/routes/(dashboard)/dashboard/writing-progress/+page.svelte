@@ -76,6 +76,7 @@
 
   let showDeleteModal = $state(false);
   let progressToDelete: number | null = $state(null);
+  let isBulkDelete = $state(false);
 
   // Form State
   let formUserId: number | string = $state("");
@@ -276,13 +277,16 @@
   }
 
   let isBackingUp = $state(false);
+  let backupAbortController: AbortController | null = null;
 
   async function backupToDrive() {
     isBackingUp = true;
+    backupAbortController = new AbortController();
     try {
       const res = await fetch("/api/writing-progress/backup", {
         method: "POST",
         credentials: "include",
+        signal: backupAbortController.signal,
       });
       const data = await res.json();
       if (!res.ok) {
@@ -296,38 +300,61 @@
       }
       alert(msg);
       fetchProgresses(); // refresh list to update status if needed
-    } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
+    } catch (err: any) {
+      if (err.name === 'AbortError') {
+        // do nothing on abort
+      } else {
+        alert(err instanceof Error ? err.message : String(err));
+      }
     } finally {
       isBackingUp = false;
+      backupAbortController = null;
+    }
+  }
+
+  function cancelBackup() {
+    if (backupAbortController) {
+      backupAbortController.abort();
     }
   }
 
   function openDeleteModal(id: number) {
+    isBulkDelete = false;
     progressToDelete = id;
+    showDeleteModal = true;
+  }
+
+  function openBulkDeleteModal() {
+    isBulkDelete = true;
     showDeleteModal = true;
   }
 
   function closeDeleteModal() {
     showDeleteModal = false;
     progressToDelete = null;
+    isBulkDelete = false;
   }
 
   async function executeDelete() {
-    if (progressToDelete === null) return;
-
-    try {
-      const res = await fetch(`/api/writing-progress/${progressToDelete}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Gagal menghapus data");
-      await fetchProgresses();
+    if (isBulkDelete) {
+      await executeBulkDelete();
       closeDeleteModal();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
-      closeDeleteModal();
+    } else {
+      if (progressToDelete === null) return;
+
+      try {
+        const res = await fetch(`/api/writing-progress/${progressToDelete}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Gagal menghapus data");
+        await fetchProgresses();
+        closeDeleteModal();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : String(err));
+        closeDeleteModal();
+      }
     }
   }
 
@@ -338,6 +365,50 @@
       month: "long",
       day: "numeric",
     });
+  }
+
+  // Bulk Delete State
+  let selectedProgresses = $state<Set<number>>(new Set());
+  let allSelectedOnPage = $derived(
+    progresses.length > 0 && progresses.every(p => selectedProgresses.has(p.id))
+  );
+
+  function toggleAllOnPage() {
+    const newSet = new Set(selectedProgresses);
+    if (allSelectedOnPage) {
+      progresses.forEach(p => newSet.delete(p.id));
+    } else {
+      progresses.forEach(p => newSet.add(p.id));
+    }
+    selectedProgresses = newSet;
+  }
+
+  function toggleSelection(id: number) {
+    const newSet = new Set(selectedProgresses);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    selectedProgresses = newSet;
+  }
+
+  async function executeBulkDelete() {
+    if (selectedProgresses.size === 0) return;
+    try {
+      const res = await fetch(`/api/writing-progress/bulk-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selectedProgresses) }),
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Gagal menghapus data secara massal");
+      selectedProgresses = new Set();
+      await fetchProgresses();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    }
   }
 </script>
 
@@ -362,15 +433,23 @@
       </p>
     </div>
     {#if isTeacher}
-      <div class="flex flex-wrap items-center gap-3">
-        <button
-          onclick={backupToDrive}
-          disabled={isBackingUp}
-          class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all shadow-sm cursor-pointer disabled:opacity-50"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path></svg>
-          {isBackingUp ? 'Memproses...' : 'Backup ke Google Drive'}
-        </button>
+      <div class="flex flex-wrap items-center gap-6">
+          <button
+            onclick={backupToDrive}
+            title="Backup ke Google Drive"
+            aria-label="Backup ke Google Drive"
+            class="inline-flex items-center justify-center p-2.5 text-teal-700 bg-teal-50 hover:bg-teal-100 border border-teal-200 rounded-xl transition-all shadow-sm cursor-pointer"
+            disabled={isBackingUp}
+          >
+            <svg class="w-5 h-5 {isBackingUp ? 'opacity-50' : ''}" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+              <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+              <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+              <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+              <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+              <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+              <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+            </svg>
+          </button>
         <button
           onclick={openAddModal}
           class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
@@ -466,6 +545,18 @@
       {/if}
 
       {#if activeTab === "table" && isTeacher}
+        {#if selectedProgresses.size > 0}
+          <div class="mb-4 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
+            <span class="text-sm font-semibold text-indigo-800">{selectedProgresses.size} data terpilih</span>
+            <button
+              onclick={openBulkDeleteModal}
+              class="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors shadow-sm cursor-pointer inline-flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Hapus Terpilih
+            </button>
+          </div>
+        {/if}
         <div
           class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
         >
@@ -476,6 +567,15 @@
                 class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-sm"
               >
                 {#if isTeacher}
+                  <th class="px-6 py-4 w-12 text-center">
+                    <input
+                      type="checkbox"
+                      class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                      checked={allSelectedOnPage}
+                      onchange={toggleAllOnPage}
+                      aria-label="Pilih Semua"
+                    />
+                  </th>
                   <th class="px-6 py-4 font-semibold">Siswa</th>
                 {/if}
                 <th class="px-6 py-4 font-semibold">Tanggal</th>
@@ -489,6 +589,15 @@
               {#each progresses as progress}
                 <tr class="hover:bg-slate-50/50 transition-colors group">
                   {#if isTeacher}
+                    <td class="px-6 py-4 text-center">
+                      <input
+                        type="checkbox"
+                        class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        checked={selectedProgresses.has(progress.id)}
+                        onchange={() => toggleSelection(progress.id)}
+                        aria-label="Pilih Data"
+                      />
+                    </td>
                     <td class="px-6 py-4">
                       <div class="flex items-center">
                         <span class="font-bold text-slate-800">
@@ -868,8 +977,12 @@
         >
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-2">Hapus Data?</h3>
-      <p class="text-slate-600 mb-6 font-medium">
-        Tindakan ini tidak dapat dibatalkan.
+      <p class="text-sm text-slate-600 mb-6">
+        {#if isBulkDelete}
+          Apakah Anda yakin ingin menghapus {selectedProgresses.size} data yang terpilih? Data yang dihapus tidak dapat dikembalikan.
+        {:else}
+          Apakah Anda yakin ingin menghapus data ini? Data yang dihapus tidak dapat dikembalikan.
+        {/if}
       </p>
       <div class="flex justify-center gap-3">
         <button
@@ -885,6 +998,35 @@
           Ya, Hapus
         </button>
       </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Backup Progress Modal -->
+{#if isBackingUp}
+  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4">
+    <div class="absolute inset-0 bg-black/60 backdrop-blur-sm"></div>
+    <div class="relative bg-white border border-slate-100 rounded-3xl shadow-2xl w-full max-w-sm overflow-hidden animate-in zoom-in-95 duration-300 p-8 text-center flex flex-col items-center">
+      <div class="relative w-20 h-20 mb-6 flex items-center justify-center">
+        <div class="absolute inset-0 border-4 border-slate-100 rounded-full"></div>
+        <div class="absolute inset-0 border-4 border-teal-500 rounded-full border-t-transparent animate-spin"></div>
+        <svg class="w-8 h-8 relative z-10" viewBox="0 0 87.3 78" xmlns="http://www.w3.org/2000/svg">
+          <path d="m6.6 66.85 3.85 6.65c.8 1.4 1.95 2.5 3.3 3.3l13.75-23.8h-27.5c0 1.55.4 3.1 1.2 4.5z" fill="#0066da"/>
+          <path d="m43.65 25-13.75-23.8c-1.35.8-2.5 1.9-3.3 3.3l-25.4 44a9.06 9.06 0 0 0 -1.2 4.5h27.5z" fill="#00ac47"/>
+          <path d="m73.55 76.8c1.35-.8 2.5-1.9 3.3-3.3l1.6-2.75 7.65-13.25c.8-1.4 1.2-2.95 1.2-4.5h-27.502l5.852 11.5z" fill="#ea4335"/>
+          <path d="m43.65 25 13.75-23.8c-1.35-.8-2.9-1.2-4.5-1.2h-18.5c-1.6 0-3.15.45-4.5 1.2z" fill="#00832d"/>
+          <path d="m59.8 53h-32.3l-13.75 23.8c1.35.8 2.9 1.2 4.5 1.2h50.8c1.6 0 3.15-.45 4.5-1.2z" fill="#2684fc"/>
+          <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
+        </svg>
+      </div>
+      <h3 class="text-xl font-bold text-slate-900 mb-2">Membackup Data...</h3>
+      <p class="text-sm text-slate-500 mb-8">Mohon tunggu, proses sinkronisasi ke Google Drive sedang berjalan.</p>
+      <button
+        onclick={cancelBackup}
+        class="w-full py-3 px-4 bg-red-50 text-red-600 font-bold rounded-xl hover:bg-red-100 border border-red-100 transition-colors shadow-sm cursor-pointer"
+      >
+        Batalkan Backup
+      </button>
     </div>
   </div>
 {/if}

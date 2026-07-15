@@ -44,6 +44,7 @@
     if (activeTab === tab) return;
     activeTab = tab;
     currentPage = 1;
+    localStorage.setItem("examsActiveTab", tab);
   }
 
   function infiniteScroll(node: HTMLElement) {
@@ -90,6 +91,7 @@
 
   let showDeleteModal = $state(false);
   let examToDelete: number | null = $state(null);
+  let isBulkDelete = $state(false);
 
   // Form State
   let formUserId: number | string = $state("");
@@ -203,6 +205,10 @@
   }
 
   onMount(() => {
+    const savedTab = localStorage.getItem("examsActiveTab");
+    if (savedTab === "card" || savedTab === "table") {
+      activeTab = savedTab;
+    }
     loadData();
   });
 
@@ -279,30 +285,42 @@
   }
 
   function openDeleteModal(id: number) {
+    isBulkDelete = false;
     examToDelete = id;
+    showDeleteModal = true;
+  }
+
+  function openBulkDeleteModal() {
+    isBulkDelete = true;
     showDeleteModal = true;
   }
 
   function closeDeleteModal() {
     showDeleteModal = false;
     examToDelete = null;
+    isBulkDelete = false;
   }
 
   async function executeDelete() {
-    if (examToDelete === null) return;
-
-    try {
-      const res = await fetch(`/api/exams/${examToDelete}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-
-      if (!res.ok) throw new Error("Gagal menghapus data");
-      await fetchExams();
+    if (isBulkDelete) {
+      await executeBulkDelete();
       closeDeleteModal();
-    } catch (err) {
-      alert(err instanceof Error ? err.message : String(err));
-      closeDeleteModal();
+    } else {
+      if (examToDelete === null) return;
+
+      try {
+        const res = await fetch(`/api/exams/${examToDelete}`, {
+          method: "DELETE",
+          credentials: "include",
+        });
+
+        if (!res.ok) throw new Error("Gagal menghapus data");
+        await fetchExams();
+        closeDeleteModal();
+      } catch (err) {
+        alert(err instanceof Error ? err.message : String(err));
+        closeDeleteModal();
+      }
     }
   }
 
@@ -313,6 +331,51 @@
       month: "long",
       day: "numeric",
     });
+  }
+
+  // Bulk Delete State
+  let selectedExams = $state<Set<number>>(new Set());
+  let allSelectedOnPage = $derived(
+    paginatedExams.length > 0 && paginatedExams.every(e => selectedExams.has(e.id))
+  );
+
+  function toggleAllOnPage() {
+    const newSet = new Set(selectedExams);
+    if (allSelectedOnPage) {
+      paginatedExams.forEach(e => newSet.delete(e.id));
+    } else {
+      paginatedExams.forEach(e => newSet.add(e.id));
+    }
+    selectedExams = newSet;
+  }
+
+  function toggleExamSelection(id: number) {
+    const newSet = new Set(selectedExams);
+    if (newSet.has(id)) {
+      newSet.delete(id);
+    } else {
+      newSet.add(id);
+    }
+    selectedExams = newSet;
+  }
+
+  async function executeBulkDelete() {
+    if (selectedExams.size === 0) return;
+
+    try {
+      const res = await fetch(`/api/exams/bulk-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids: Array.from(selectedExams) }),
+        credentials: "include",
+      });
+
+      if (!res.ok) throw new Error("Gagal menghapus data secara massal");
+      selectedExams = new Set();
+      await fetchExams();
+    } catch (err) {
+      alert(err instanceof Error ? err.message : String(err));
+    }
   }
 </script>
 
@@ -435,6 +498,18 @@
       {/if}
 
       {#if activeTab === "table" && isTeacher}
+        {#if selectedExams.size > 0}
+          <div class="mb-4 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
+            <span class="text-sm font-semibold text-indigo-800">{selectedExams.size} data terpilih</span>
+            <button
+              onclick={openBulkDeleteModal}
+              class="px-4 py-2 bg-red-600 text-white text-sm font-bold rounded-lg hover:bg-red-700 transition-colors shadow-sm cursor-pointer inline-flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+              Hapus Terpilih
+            </button>
+          </div>
+        {/if}
         <div
           class="bg-white/80 backdrop-blur-md rounded-2xl shadow-sm border border-slate-200 overflow-hidden"
         >
@@ -445,6 +520,15 @@
                   class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-sm"
                 >
                   {#if isTeacher}
+                    <th class="px-6 py-4 w-12 text-center">
+                      <input
+                        type="checkbox"
+                        class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                        checked={allSelectedOnPage}
+                        onchange={toggleAllOnPage}
+                        aria-label="Pilih Semua"
+                      />
+                    </th>
                     <th class="px-6 py-4 font-semibold">Murid</th>
                   {/if}
                   <th class="px-6 py-4 font-semibold">Tanggal</th>
@@ -465,6 +549,15 @@
                 {#each paginatedExams as exam}
                   <tr class="hover:bg-slate-50/50 transition-colors group">
                     {#if isTeacher}
+                      <td class="px-6 py-4 text-center">
+                        <input
+                          type="checkbox"
+                          class="w-4 h-4 rounded border-slate-300 text-indigo-600 focus:ring-indigo-500 cursor-pointer"
+                          checked={selectedExams.has(exam.id)}
+                          onchange={() => toggleExamSelection(exam.id)}
+                          aria-label="Pilih Data"
+                        />
+                      </td>
                       <td class="px-6 py-4">
                         <span class="font-bold text-slate-800"
                           >{exam.user?.username || "Unknown"}</span
@@ -940,8 +1033,11 @@
       </div>
       <h3 class="text-xl font-bold text-slate-900 mb-2">Hapus Nilai Ujian?</h3>
       <p class="text-sm text-slate-600 mb-6">
-        Apakah Anda yakin ingin menghapus nilai ini? Data yang dihapus tidak
-        dapat dikembalikan.
+        {#if isBulkDelete}
+          Apakah Anda yakin ingin menghapus {selectedExams.size} data yang terpilih? Data yang dihapus tidak dapat dikembalikan.
+        {:else}
+          Apakah Anda yakin ingin menghapus nilai ini? Data yang dihapus tidak dapat dikembalikan.
+        {/if}
       </p>
       <div class="flex justify-center gap-3">
         <button

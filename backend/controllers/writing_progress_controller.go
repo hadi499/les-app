@@ -224,6 +224,14 @@ func BackupToDrive(c *gin.Context) {
 	var errorDetails []string
 	
 	for _, wp := range progresses {
+		// Cek apakah request dibatalkan oleh client
+		select {
+		case <-c.Request.Context().Done():
+			fmt.Println("Backup dibatalkan oleh client")
+			return
+		default:
+		}
+
 		localPath := strings.TrimPrefix(wp.Image, "/")
 		if _, err := os.Stat(localPath); os.IsNotExist(err) {
 			errorDetails = append(errorDetails, fmt.Sprintf("File lokal tidak ditemukan: %s", localPath))
@@ -255,4 +263,41 @@ func BackupToDrive(c *gin.Context) {
 	} else {
 		c.JSON(http.StatusOK, gin.H{"message": msg})
 	}
+}
+
+// BulkDeleteWritingProgress deletes multiple writing progress records
+func BulkDeleteWritingProgress(c *gin.Context) {
+	var input struct {
+		IDs []int `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if len(input.IDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No IDs provided"})
+		return
+	}
+
+	var progresses []models.WritingProgress
+	if err := database.DB.Where("id IN ?", input.IDs).Find(&progresses).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch writing progress to delete"})
+		return
+	}
+
+	if err := database.DB.Where("id IN ?", input.IDs).Delete(&models.WritingProgress{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete writing progress data"})
+		return
+	}
+
+	for _, wp := range progresses {
+		if wp.Image != "" {
+			filePath := strings.TrimPrefix(wp.Image, "/")
+			_ = os.Remove(filePath)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Writing progress deleted successfully"})
 }

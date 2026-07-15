@@ -181,3 +181,40 @@ func DeleteExam(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Exam score deleted successfully"})
 }
+
+// BulkDeleteExams deletes multiple exam score records
+func BulkDeleteExams(c *gin.Context) {
+	var input struct {
+		IDs []int `json:"ids" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request body"})
+		return
+	}
+
+	if len(input.IDs) == 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No IDs provided"})
+		return
+	}
+
+	var exams []models.Exam
+	if err := database.DB.Where("id IN ?", input.IDs).Find(&exams).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch exams to delete"})
+		return
+	}
+
+	if err := database.DB.Where("id IN ?", input.IDs).Delete(&models.Exam{}).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete exam scores"})
+		return
+	}
+
+	for _, exam := range exams {
+		if exam.Image != "" {
+			filePath := strings.TrimPrefix(exam.Image, "/")
+			_ = os.Remove(filePath)
+		}
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Exam scores deleted successfully"})
+}
