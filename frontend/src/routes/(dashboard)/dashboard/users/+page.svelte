@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  type User = { id: number; username: string; role: string };
+  type User = { id: number; username: string; role: string; last_active_at?: string };
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -191,6 +191,7 @@
                 >Username</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Aksi</th
               >
@@ -210,6 +211,19 @@
                   >
                     {u.role}
                   </span>
+                </td>
+                <td class="py-4 px-6 text-sm">
+                  {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300">
+                      <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                      Online
+                    </span>
+                  {:else}
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300">
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                      Offline
+                    </span>
+                  {/if}
                 </td>
                 <td class="py-4 px-6 text-center">
                   <button
@@ -236,7 +250,7 @@
             {#if users.length === 0}
               <tr>
                 <td
-                  colspan="4"
+                  colspan="5"
                   class="py-8 text-center text-slate-500 font-light"
                   >Tidak ada user ditemukan.</td
                 >

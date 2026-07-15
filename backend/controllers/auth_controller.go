@@ -287,6 +287,9 @@ func Logout(c *gin.Context) {
 			CreatedAt: time.Now(),
 		}
 		database.DB.Create(&userLog)
+
+		// Hapus waktu aktif agar langsung terlihat Offline
+		database.DB.Model(&models.User{}).Where("id = ?", userID).Update("last_active_at", nil)
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})

@@ -7,6 +7,7 @@ import (
 	"crypto/sha256"
 	"encoding/hex"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
@@ -57,6 +58,12 @@ func AuthMiddleware() gin.HandlerFunc {
 		var user models.User
 		if err := database.DB.Where("id = ?", claims.UserID).First(&user).Error; err == nil {
 			role = user.Role
+
+			// Catat waktu aktif terakhir
+			now := time.Now()
+			if user.LastActiveAt == nil || now.Sub(*user.LastActiveAt) > time.Minute {
+				database.DB.Model(&user).Update("last_active_at", now)
+			}
 		}
 
 		// simpan ke context

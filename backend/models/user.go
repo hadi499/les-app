@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 type User struct {
 	ID               uint             `json:"id" gorm:"primaryKey"`
 	Username         string           `json:"username" gorm:"unique;not null"`
@@ -14,4 +16,5 @@ type User struct {
 	Folders          []Folder         `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	Absences         []Absence        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	UserLogs         []UserLog        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
+	LastActiveAt     *time.Time       `json:"last_active_at" gorm:"type:timestamp"`
 }

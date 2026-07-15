@@ -188,17 +188,18 @@ func GetContacts(c *gin.Context) {
 	var users []models.User
 	if role == "student" {
 		// Student can see teachers
-		database.DB.Select("id, username, role").Where("role = ? OR role = ?", "teacher", "admin").Find(&users)
+		database.DB.Select("id, username, role, last_active_at").Where("role = ? OR role = ?", "teacher", "admin").Find(&users)
 	} else {
 		// Tutor/Admin can see everyone except themselves
-		database.DB.Select("id, username, role").Where("id != ?", userID).Find(&users)
+		database.DB.Select("id, username, role, last_active_at").Where("id != ?", userID).Find(&users)
 	}
 
 	type ContactResponse struct {
-		ID          uint   `json:"id"`
-		Username    string `json:"username"`
-		Role        string `json:"role"`
-		UnreadCount int64  `json:"unread_count"`
+		ID           uint       `json:"id"`
+		Username     string     `json:"username"`
+		Role         string     `json:"role"`
+		UnreadCount  int64      `json:"unread_count"`
+		LastActiveAt *time.Time `json:"last_active_at"`
 	}
 
 	var contacts []ContactResponse
@@ -207,10 +208,11 @@ func GetContacts(c *gin.Context) {
 		database.DB.Model(&models.ChatMessage{}).Where("sender_id = ? AND receiver_id = ? AND is_read = ?", u.ID, userID, false).Count(&count)
 		
 		contacts = append(contacts, ContactResponse{
-			ID:          u.ID,
-			Username:    u.Username,
-			Role:        u.Role,
-			UnreadCount: count,
+			ID:           u.ID,
+			Username:     u.Username,
+			Role:         u.Role,
+			UnreadCount:  count,
+			LastActiveAt: u.LastActiveAt,
 		})
 	}
 
