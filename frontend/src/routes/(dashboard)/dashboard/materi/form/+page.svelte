@@ -27,8 +27,10 @@
   let editingId = $state<number | null>(null);
   let formTitle = $state("");
   let formSubjectId = $state<number | "">("");
-  let formUserId = $state<number | "">("");
+  let formUserIds = $state<number[]>([]);
   let editorRef = $state<RichEditorRef>();
+
+  let availableStudents = $derived(users.filter(u => u.role !== 'teacher' && !formUserIds.includes(u.id)));
 
   onMount(async () => {
     try {
@@ -60,7 +62,7 @@
           const materiData = await resMateri.json();
           formTitle = materiData.title;
           formSubjectId = materiData.subject_id;
-          formUserId = materiData.user_id;
+          formUserIds = materiData.users?.map((u: any) => u.id) || [];
           
           await tick();
           if (editorRef) {
@@ -77,7 +79,7 @@
   async function saveMateri(e: Event) {
     e.preventDefault();
     const html = editorRef?.getHTML() ?? "";
-    if (!formTitle.trim() || !formSubjectId || !formUserId || !(html.trim() || html.includes("<img"))) {
+    if (!formTitle.trim() || !formSubjectId || formUserIds.length === 0 || !(html.trim() || html.includes("<img"))) {
       toast.error("Harap isi semua bidang");
       return;
     }
@@ -85,7 +87,7 @@
     const payload = {
       title: formTitle,
       subject_id: Number(formSubjectId),
-      user_id: Number(formUserId),
+      user_ids: formUserIds,
       content: html,
     };
 
@@ -164,12 +166,46 @@
 
       <div class="space-y-2">
         <label for="user" class="text-sm font-semibold text-slate-700">Tugaskan ke Siswa</label>
-        <div class="relative">
-          <select id="user" bind:value={formUserId} class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-white text-slate-800 appearance-none cursor-pointer" required>
-            <option value="">Pilih Siswa</option>
-            {#each users.filter(u => u.role !== 'teacher') as u}
-              <option value={u.id}>{u.username}</option>
+        
+        {#if formUserIds.length > 0}
+          <div class="flex flex-wrap gap-2 mb-3">
+            {#each formUserIds as id}
+              {@const user = users.find(u => u.id === id)}
+              {#if user}
+                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-200 shadow-sm">
+                  {user.username}
+                  <button type="button" onclick={() => formUserIds = formUserIds.filter(uid => uid !== id)} class="hover:text-blue-900 cursor-pointer p-0.5 rounded-full hover:bg-blue-200 transition-colors" title="Hapus">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+                </div>
+              {/if}
             {/each}
+          </div>
+        {/if}
+
+        <div class="relative">
+          <select id="user" onchange={(e) => {
+            const val = e.currentTarget.value;
+            if (val === "all") {
+              const allStudents = users.filter(u => u.role !== 'teacher');
+              formUserIds = allStudents.map(u => u.id);
+            } else {
+              const numVal = Number(val);
+              if (numVal && !formUserIds.includes(numVal)) {
+                formUserIds = [...formUserIds, numVal];
+              }
+            }
+            e.currentTarget.value = "";
+          }} class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-white text-slate-800 appearance-none cursor-pointer font-medium" required={formUserIds.length === 0}>
+            <option value="" disabled selected>+ Tambah Siswa</option>
+            {#if availableStudents.length > 0}
+              {#if availableStudents.length > 1}
+                <option value="all" class="font-bold text-blue-600 bg-blue-50">-- Pilih Semua Siswa --</option>
+              {/if}
+              {#each availableStudents as u}
+                <option value={u.id}>{u.username}</option>
+              {/each}
+            {/if}
           </select>
           <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
             <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>

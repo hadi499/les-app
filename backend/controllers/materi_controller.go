@@ -43,10 +43,10 @@ func GetMateris(c *gin.Context) {
 	role, _ := c.Get("role")
 
 	var materis []models.Materi
-	query := database.DB.Preload("Subject").Preload("User")
+	query := database.DB.Preload("Subject").Preload("Users")
 
 	if role != "teacher" {
-		query = query.Where("user_id = ?", userID)
+		query = query.Joins("JOIN materi_users ON materi_users.materi_id = materis.id").Where("materi_users.user_id = ?", userID)
 	}
 
 	if err := query.Order("created_at desc").Find(&materis).Error; err != nil {
@@ -65,10 +65,10 @@ func GetMateriByID(c *gin.Context) {
 	materiID := c.Param("id")
 
 	var materi models.Materi
-	query := database.DB.Preload("Subject").Preload("User").Where("id = ?", materiID)
+	query := database.DB.Preload("Subject").Preload("Users").Where("materis.id = ?", materiID)
 
 	if role != "teacher" {
-		query = query.Where("user_id = ?", userID)
+		query = query.Joins("JOIN materi_users ON materi_users.materi_id = materis.id").Where("materi_users.user_id = ?", userID)
 	}
 
 	if err := query.First(&materi).Error; err != nil {
@@ -84,7 +84,7 @@ func CreateMateri(c *gin.Context) {
 	var input struct {
 		Title     string `json:"title" binding:"required"`
 		SubjectID uint   `json:"subject_id" binding:"required"`
-		UserID    uint   `json:"user_id" binding:"required"`
+		UserIDs   []uint `json:"user_ids"` // Bisa kosong jika ditujukan untuk semua atau opsional
 		Content   string `json:"content" binding:"required"`
 	}
 
@@ -96,7 +96,6 @@ func CreateMateri(c *gin.Context) {
 	materi := models.Materi{
 		Title:     input.Title,
 		SubjectID: input.SubjectID,
-		UserID:    input.UserID,
 		Content:   input.Content,
 	}
 
@@ -105,7 +104,14 @@ func CreateMateri(c *gin.Context) {
 		return
 	}
 
-	database.DB.Preload("Subject").Preload("User").First(&materi, materi.ID)
+	// Tambahkan relasi ke users jika ada
+	if len(input.UserIDs) > 0 {
+		var users []models.User
+		database.DB.Where("id IN ?", input.UserIDs).Find(&users)
+		database.DB.Model(&materi).Association("Users").Append(users)
+	}
+
+	database.DB.Preload("Subject").Preload("Users").First(&materi, materi.ID)
 	c.JSON(http.StatusCreated, materi)
 }
 
@@ -122,7 +128,7 @@ func UpdateMateri(c *gin.Context) {
 	var input struct {
 		Title     string `json:"title" binding:"required"`
 		SubjectID uint   `json:"subject_id" binding:"required"`
-		UserID    uint   `json:"user_id" binding:"required"`
+		UserIDs   []uint `json:"user_ids"`
 		Content   string `json:"content" binding:"required"`
 	}
 
@@ -134,7 +140,6 @@ func UpdateMateri(c *gin.Context) {
 	oldContent := materi.Content
 	materi.Title = input.Title
 	materi.SubjectID = input.SubjectID
-	materi.UserID = input.UserID
 	materi.Content = input.Content
 
 	if err := database.DB.Save(&materi).Error; err != nil {
@@ -158,7 +163,14 @@ func UpdateMateri(c *gin.Context) {
 	}
 	deleteMateriImages(pathsToDelete)
 
-	database.DB.Preload("Subject").Preload("User").First(&materi, materi.ID)
+	// Update relasi users
+	var users []models.User
+	if len(input.UserIDs) > 0 {
+		database.DB.Where("id IN ?", input.UserIDs).Find(&users)
+	}
+	database.DB.Model(&materi).Association("Users").Replace(users)
+
+	database.DB.Preload("Subject").Preload("Users").First(&materi, materi.ID)
 	c.JSON(http.StatusOK, materi)
 }
 

@@ -23,8 +23,7 @@
     title: string;
     subject_id: number;
     subject: Subject;
-    user_id: number;
-    user: User;
+    users: User[];
     content: string;
     created_at: string;
   };
@@ -88,7 +87,7 @@
           m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
           (m.subject && m.subject.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          (m.user && m.user.username.toLowerCase().includes(searchQuery.toLowerCase()))
+          (m.users && m.users.some(u => u.username.toLowerCase().includes(searchQuery.toLowerCase())))
         );
       }
       return true;
@@ -220,9 +219,9 @@
           {viewingMateri.subject?.name || "Mata Pelajaran"}
         </span>
         {#if currentUser?.role === "teacher"}
-          <span class="flex items-center gap-1.5 text-slate-700 font-medium">
-            <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            Siswa: {viewingMateri.user?.username || "Unknown"}
+          <span class="flex items-center gap-1.5 text-slate-700 font-medium max-w-[200px] sm:max-w-[300px] truncate" title={viewingMateri.users?.map(u => u.username).join(', ') || "Unknown"}>
+            <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+            <span class="truncate">Siswa: {viewingMateri.users?.map(u => u.username).join(', ') || "Unknown"}</span>
           </span>
         {/if}
         <span class="flex items-center gap-1.5">
@@ -278,9 +277,9 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">#{materi.id}</span>
               {#if currentUser?.role === "teacher"}
-                <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-bold border border-indigo-100 whitespace-nowrap uppercase tracking-wide flex items-center gap-1">
-                  <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                  {materi.user?.username || "Siswa"}
+                <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-bold border border-indigo-100 whitespace-nowrap uppercase tracking-wide flex items-center gap-1 max-w-[120px] sm:max-w-[150px] truncate" title={materi.users?.map(u => u.username).join(', ') || "Siswa"}>
+                  <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                  <span class="truncate">{materi.users?.length ? (materi.users.length > 2 ? `${materi.users[0].username}, ${materi.users[1].username} +${materi.users.length - 2}` : materi.users.map(u => u.username).join(', ')) : "Siswa"}</span>
                 </span>
               {/if}
             </div>

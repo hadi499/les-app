@@ -1,4 +1,4 @@
-<script module>
+<script module lang="ts">
   // Cache sederhana agar tidak ada kedipan (flicker) saat kembali ke halaman ini
   let cachedRecentCards: any[] = [];
   let cachedRecentTotal = 0;
