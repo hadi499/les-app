@@ -225,6 +225,13 @@ func SetupRoutes(r *gin.Engine) {
 		system.GET("/info", controllers.GetSystemInfo)
 	}
 
+	// Logs API routes (Teacher only)
+	logsAPI := r.Group("/api/logs")
+	logsAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		logsAPI.GET("", controllers.GetLogs)
+	}
+
 	// Settings API routes
 	r.GET("/api/settings", controllers.GetSettings) // Publik
 	

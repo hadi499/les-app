@@ -237,6 +237,16 @@ func Login(c *gin.Context) {
 		true,  // HttpOnly
 	)
 
+	// Catat aktivitas login
+	userLog := models.UserLog{
+		UserID:    user.ID,
+		Action:    "login",
+		IPAddress: c.ClientIP(),
+		UserAgent: c.Request.UserAgent(),
+		CreatedAt: time.Now(),
+	}
+	database.DB.Create(&userLog)
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login berhasil",
 		"user": gin.H{
@@ -265,6 +275,19 @@ func Logout(c *gin.Context) {
 	// Hapus cookie dengan SameSiteLaxMode
 	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie("auth_token", "", -1, "/", "", false, true)
+
+	// Catat aktivitas logout
+	userID, exists := c.Get("user_id")
+	if exists {
+		userLog := models.UserLog{
+			UserID:    userID.(uint),
+			Action:    "logout",
+			IPAddress: c.ClientIP(),
+			UserAgent: c.Request.UserAgent(),
+			CreatedAt: time.Now(),
+		}
+		database.DB.Create(&userLog)
+	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Logout berhasil"})
 }
