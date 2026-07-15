@@ -1,4 +1,5 @@
 <script lang="ts">
+  import "katex/dist/katex.min.css";
   import Modal from "$lib/components/Modal.svelte";
   import { onMount } from "svelte";
   import { goto } from "$app/navigation";
