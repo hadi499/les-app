@@ -21,7 +21,7 @@ func GetUsers(c *gin.Context) {
 	}
 
 	var users []models.User
-	if err := database.DB.Find(&users).Error; err != nil {
+	if err := database.DB.Order("id asc").Find(&users).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
