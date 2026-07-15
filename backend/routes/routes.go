@@ -179,6 +179,22 @@ func SetupRoutes(r *gin.Engine) {
 		notes.DELETE("/:id", controllers.DeleteNote)
 	}
 
+	// Materi API routes
+	materis := r.Group("/api/materis")
+	materis.Use(middleware.AuthMiddleware())
+	{
+		materis.GET("", controllers.GetMateris)
+		materis.GET("/:id", controllers.GetMateriByID)
+
+		teacherMateris := materis.Group("")
+		teacherMateris.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherMateris.POST("", controllers.CreateMateri)
+			teacherMateris.PUT("/:id", controllers.UpdateMateri)
+			teacherMateris.DELETE("/:id", controllers.DeleteMateri)
+		}
+	}
+
 	// Absences API routes
 	absences := r.Group("/api/absences")
 	absences.Use(middleware.AuthMiddleware())

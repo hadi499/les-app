@@ -238,6 +238,8 @@ func UploadImage(c *gin.Context) {
 		subfolder = "exams"
 	} else if uploadType == "writing_progress" {
 		subfolder = "writing_progress"
+	} else if uploadType == "materi" {
+		subfolder = "materis"
 	}
 
 	// Buat folder jika belum ada

@@ -28,12 +28,14 @@
 		"@tiptap/core": "^3.26.0",
 		"@tiptap/extension-hard-break": "^3.26.0",
 		"@tiptap/extension-history": "^3.26.0",
+		"@tiptap/extension-image": "^3.26.0",
 		"@tiptap/extension-text-align": "^3.26.0",
 		"@tiptap/extension-underline": "^3.26.0",
 		"@tiptap/starter-kit": "^3.26.0",
 		"chart.js": "^4.5.1",
 		"highlight.js": "^11.11.1",
 		"katex": "^0.17.0",
-		"tailwindcss": "^4.3.0"
+		"tailwindcss": "^4.3.0",
+		"tiptap-extension-resize-image": "^1.4.4"
 	}
 }

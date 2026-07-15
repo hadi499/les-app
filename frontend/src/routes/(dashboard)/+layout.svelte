@@ -433,6 +433,37 @@
           Nilai Harian
         </a>
 
+        <a
+          href="/dashboard/materi"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+            '/materi',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/materi',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+              ></path></svg
+            >
+          </div>
+          Materi Pelajaran
+        </a>
+
         {#if user?.role === "teacher"}
           <a
             href="/dashboard/subjects"
@@ -1080,6 +1111,38 @@
               >
             </div>
             Nilai Harian
+          </a>
+
+          <a
+            href="/dashboard/materi"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/materi',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/materi',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                ></path></svg
+              >
+            </div>
+            Materi Pelajaran
           </a>
 
           {#if user?.role === "teacher"}
