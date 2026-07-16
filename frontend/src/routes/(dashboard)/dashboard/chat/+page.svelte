@@ -260,7 +260,7 @@
 				<span class="loading loading-spinner loading-lg text-blue-500"></span>
 			</div>
 		{:else if !activeUser}
-			<div class="flex-1 flex flex-col items-center justify-center text-gray-400" transition:fade>
+			<div class="flex-1 flex flex-col items-center justify-center text-gray-400">
 				<div class="w-24 h-24 bg-blue-50 rounded-full flex items-center justify-center mb-4 text-blue-500">
 					<svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
 				</div>
@@ -281,20 +281,32 @@
 				<div class="h-10 w-10 rounded-full bg-gradient-to-tr from-blue-400 to-indigo-500 flex items-center justify-center text-white font-bold flex-shrink-0">
 					{activeUser.username.charAt(0).toUpperCase()}
 				</div>
-				<div>
+				<div class="flex-1">
 					<h3 class="font-bold text-gray-800">{activeUser.username}</h3>
 					<p class="text-xs text-green-500 capitalize flex items-center gap-1">
 						<span class="w-2 h-2 rounded-full bg-green-500 inline-block"></span>
 						{activeUser.role}
 					</p>
 				</div>
+				<button 
+					class="text-gray-400 hover:text-gray-600 hover:bg-gray-100 p-2 rounded-full transition-colors cursor-pointer" 
+					title="Tutup Pesan"
+					onclick={() => {
+						activeUser = null;
+						localStorage.removeItem('lastActiveChatUserId');
+					}}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				</button>
 			</div>
 
 			<!-- Messages -->
 			<div class="flex-1 overflow-y-auto min-h-0 p-4 md:p-6" bind:this={chatContainer} onscroll={handleScroll}>
 				{#if loadingHistory}
-					<div class="flex justify-center p-4">
-						<span class="loading loading-dots loading-md text-blue-500"></span>
+					<div class="flex h-full items-center justify-center p-4">
+						<span class="loading loading-spinner loading-lg text-blue-500"></span>
 					</div>
 				{:else}
 					{#if loadingMore}
