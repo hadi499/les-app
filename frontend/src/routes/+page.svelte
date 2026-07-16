@@ -50,11 +50,11 @@
   <title>Les Balonggarut | Bimbingan Belajar Terbaik</title>
   <meta
     name="description"
-    content="Les Balongarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
+    content="Les  Matematika, Bahasa Inggris, TKA dan Komputer  di Balong Garut"
   />
   <meta
     name="keywords"
-    content="Les Balongarut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel"
+    content="Les Balong Garut, Balong Garut Sidoarjo, les SDN Balong Garut,  les TK Balong Garut, les privat, bimbingan belajar, les matematika, les komputer, les bahasa inggris, bimbel"
   />
   <link rel="canonical" href="https://lesbalonggarut.my.id/" />
 
@@ -63,24 +63,24 @@
   <meta property="og:url" content="https://lesbalonggarut.my.id/" />
   <meta
     property="og:title"
-    content="Les Balonggarut | Bimbingan Belajar Terbaik"
+    content="Les Balong Garut | Bimbingan Belajar Terbaik"
   />
   <meta
     property="og:description"
-    content="Les Balonggarut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional. Tingkatkan prestasimu sekarang!"
+    content="Les Balong Garut menyediakan bimbingan belajar untuk Komputer, Matematika, Bahasa Inggris, dan TKA. Tingkatkan prestasimu sekarang!"
   />
   <meta property="og:locale" content="id_ID" />
-  <meta property="og:site_name" content="Les Balonggarut" />
+  <meta property="og:site_name" content="Les Balong Garut" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
   <meta
     name="twitter:title"
-    content="Les Balonggarut | Bimbingan Belajar Terbaik"
+    content="Les Balong Garut | Bimbingan Belajar Terbaik"
   />
   <meta
     name="twitter:description"
-    content="Bimbingan belajar Komputer, Matematika, Bahasa Inggris, dan TKA dengan pengajar profesional."
+    content="Bimbingan belajar Komputer, Matematika, Bahasa Inggris, dan TKA."
   />
 </svelte:head>
 
