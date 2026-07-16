@@ -257,9 +257,9 @@
           {viewingMateri.subject?.name || "Mata Pelajaran"}
         </span>
         {#if currentUser?.role === "teacher"}
-          <span class="flex items-center gap-1.5 text-slate-700 font-medium max-w-[200px] sm:max-w-[300px] truncate" title={viewingMateri.users?.map(u => u.username).join(', ') || "Unknown"}>
+          <span class="flex items-center gap-1.5 text-slate-700 font-medium max-w-[200px] sm:max-w-[300px] truncate" title={viewingMateri.users?.map(u => `${u.username}${u.role === 'teacher' ? ' (Guru)' : ''}`).join(', ') || "Tidak ada penerima"}>
             <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-            <span class="truncate">Siswa: {viewingMateri.users?.map(u => u.username).join(', ') || "Unknown"}</span>
+            <span class="truncate">Penerima: {viewingMateri.users?.map(u => `${u.username}${u.role === 'teacher' ? ' (Guru)' : ''}`).join(', ') || "Tidak ada penerima"}</span>
           </span>
         {/if}
         <span class="flex items-center gap-1.5">
@@ -333,9 +333,12 @@
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">#{materi.id}</span>
               {#if currentUser?.role === "teacher"}
-                <span class="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-md text-[10px] font-bold border border-indigo-100 whitespace-nowrap uppercase tracking-wide flex items-center gap-1 max-w-[120px] sm:max-w-[150px] truncate" title={materi.users?.map(u => u.username).join(', ') || "Siswa"}>
+                {@const hasTeacher = materi.users?.some(u => u.role === 'teacher')}
+                {@const hasStudent = materi.users?.some(u => u.role === 'student')}
+                {@const badgeColor = (hasTeacher && !hasStudent) ? "bg-emerald-50 text-emerald-700 border-emerald-100" : (hasTeacher && hasStudent) ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-blue-50 text-blue-700 border-blue-100"}
+                <span class="px-2 py-1 {badgeColor} rounded-md text-[10px] font-bold border whitespace-nowrap uppercase tracking-wide flex items-center gap-1 max-w-[120px] sm:max-w-[150px] truncate" title={materi.users?.map(u => `${u.username}${u.role === 'teacher' ? ' (Guru)' : ''}`).join(', ') || "Tidak ada penerima"}>
                   <svg class="w-3 h-3 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                  <span class="truncate">{materi.users?.length ? (materi.users.length > 2 ? `${materi.users[0].username}, ${materi.users[1].username} +${materi.users.length - 2}` : materi.users.map(u => u.username).join(', ')) : "Siswa"}</span>
+                  <span class="truncate">{materi.users?.length ? (materi.users.length > 2 ? `${materi.users[0].username}, ${materi.users[1].username} +${materi.users.length - 2}` : materi.users.map(u => u.username).join(', ')) : "Penerima"}</span>
                 </span>
               {/if}
             </div>

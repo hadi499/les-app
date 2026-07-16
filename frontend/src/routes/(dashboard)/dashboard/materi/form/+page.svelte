@@ -31,6 +31,7 @@
   let editorRef = $state<RichEditorRef>();
 
   let availableStudents = $derived(users.filter(u => u.role !== 'teacher' && !formUserIds.includes(u.id)));
+  let availableTeachers = $derived(users.filter(u => u.role === 'teacher' && !formUserIds.includes(u.id)));
 
   onMount(async () => {
     try {
@@ -165,16 +166,16 @@
       </div>
 
       <div class="space-y-2">
-        <label for="user" class="text-sm font-semibold text-slate-700">Tugaskan ke Siswa</label>
+        <label for="user" class="text-sm font-semibold text-slate-700">Tugaskan ke</label>
         
         {#if formUserIds.length > 0}
           <div class="flex flex-wrap gap-2 mb-3">
             {#each formUserIds as id}
               {@const user = users.find(u => u.id === id)}
               {#if user}
-                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-sm font-semibold border border-blue-200 shadow-sm">
-                  {user.username}
-                  <button type="button" onclick={() => formUserIds = formUserIds.filter(uid => uid !== id)} class="hover:text-blue-900 cursor-pointer p-0.5 rounded-full hover:bg-blue-200 transition-colors" title="Hapus">
+                <div class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl {user.role === 'teacher' ? 'bg-emerald-50 text-emerald-700 border-emerald-200' : 'bg-blue-50 text-blue-700 border-blue-200'} text-sm font-semibold border shadow-sm">
+                  {user.username} {user.role === 'teacher' ? '(Guru)' : ''}
+                  <button type="button" onclick={() => formUserIds = formUserIds.filter(uid => uid !== id)} class="{user.role === 'teacher' ? 'hover:text-emerald-900 hover:bg-emerald-200' : 'hover:text-blue-900 hover:bg-blue-200'} cursor-pointer p-0.5 rounded-full transition-colors" title="Hapus">
                     <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
                   </button>
                 </div>
@@ -186,9 +187,12 @@
         <div class="relative">
           <select id="user" onchange={(e) => {
             const val = e.currentTarget.value;
-            if (val === "all") {
+            if (val === "all_students") {
               const allStudents = users.filter(u => u.role !== 'teacher');
-              formUserIds = allStudents.map(u => u.id);
+              formUserIds = [...new Set([...formUserIds, ...allStudents.map(u => u.id)])];
+            } else if (val === "all_teachers") {
+              const allTeachers = users.filter(u => u.role === 'teacher');
+              formUserIds = [...new Set([...formUserIds, ...allTeachers.map(u => u.id)])];
             } else {
               const numVal = Number(val);
               if (numVal && !formUserIds.includes(numVal)) {
@@ -197,14 +201,31 @@
             }
             e.currentTarget.value = "";
           }} class="w-full pl-4 pr-10 py-3 rounded-xl border border-slate-300 focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 transition-all bg-white text-slate-800 appearance-none cursor-pointer font-medium" required={formUserIds.length === 0}>
-            <option value="" disabled selected>+ Tambah Siswa</option>
-            {#if availableStudents.length > 0}
-              {#if availableStudents.length > 1}
-                <option value="all" class="font-bold text-blue-600 bg-blue-50">-- Pilih Semua Siswa --</option>
+            <option value="" disabled selected>+ Tambah Penerima</option>
+            
+            <optgroup label="Aksi Cepat">
+              {#if availableStudents.length > 0}
+                <option value="all_students" class="font-bold text-blue-600 bg-blue-50">-- Pilih Semua Siswa --</option>
               {/if}
-              {#each availableStudents as u}
-                <option value={u.id}>{u.username}</option>
-              {/each}
+              {#if availableTeachers.length > 0}
+                <option value="all_teachers" class="font-bold text-emerald-600 bg-emerald-50">-- Pilih Semua Guru --</option>
+              {/if}
+            </optgroup>
+
+            {#if availableTeachers.length > 0}
+              <optgroup label="Guru">
+                {#each availableTeachers as u}
+                  <option value={u.id}>{u.username}</option>
+                {/each}
+              </optgroup>
+            {/if}
+
+            {#if availableStudents.length > 0}
+              <optgroup label="Siswa">
+                {#each availableStudents as u}
+                  <option value={u.id}>{u.username}</option>
+                {/each}
+              </optgroup>
             {/if}
           </select>
           <div class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">

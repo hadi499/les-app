@@ -1037,7 +1037,7 @@
           <p class="mt-1 text-sm text-slate-500">Belum ada catatan di sini.</p>
         </div>
       {:else}
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
           {#each filteredNotes as note (note.id)}
             <div
               class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === note.id ? 'z-50' : 'z-0'}"
