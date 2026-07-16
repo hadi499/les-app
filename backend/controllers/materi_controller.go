@@ -3,9 +3,11 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"math"
 	"net/http"
 	"os"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -35,26 +37,57 @@ func deleteMateriImages(paths []string) {
 	}
 }
 
-// GetMateris mengambil materi
-// Jika role adalah student, hanya materi miliknya.
-// Jika teacher, semua materi (bisa ditambahkan paginasi jika perlu).
+// GetMateris mengambil materi dengan paginasi
 func GetMateris(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 	role, _ := c.Get("role")
 
 	var materis []models.Materi
-	query := database.DB.Preload("Subject").Preload("Users")
+	query := database.DB.Model(&models.Materi{}).Preload("Subject").Preload("Users")
 
 	if role != "teacher" {
 		query = query.Joins("JOIN materi_users ON materi_users.materi_id = materis.id").Where("materi_users.user_id = ?", userID)
 	}
 
-	if err := query.Order("created_at desc").Find(&materis).Error; err != nil {
+	search := c.Query("search")
+	if search != "" {
+		query = query.Where("LOWER(materis.title) LIKE LOWER(?) OR LOWER(materis.content) LIKE LOWER(?)", "%"+search+"%", "%"+search+"%")
+	}
+
+	subjectID := c.Query("subject_id")
+	if subjectID != "" && subjectID != "all" {
+		query = query.Where("materis.subject_id = ?", subjectID)
+	}
+
+	var total int64
+	query.Count(&total)
+
+	pageStr := c.DefaultQuery("page", "1")
+	limitStr := c.DefaultQuery("limit", "12")
+	page, _ := strconv.Atoi(pageStr)
+	limit, _ := strconv.Atoi(limitStr)
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 12
+	}
+	offset := (page - 1) * limit
+
+	if err := query.Order("created_at desc").Offset(offset).Limit(limit).Find(&materis).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil materi"})
 		return
 	}
 
-	c.JSON(http.StatusOK, materis)
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":        materis,
+		"total":       total,
+		"page":        page,
+		"limit":       limit,
+		"total_pages": totalPages,
+	})
 }
 
 // GetMateriByID

@@ -35,6 +35,60 @@
   let viewingMateri = $state<Materi | null>(null);
   let currentUser = $state<User | null>(null);
 
+  let currentPage = $state(1);
+  let limit = $state(12);
+  let totalPages = $state(1);
+  let totalItems = $state(0);
+  let selectedSubjectId = $state<number | "all">("all");
+  let subjectsList = $state<Subject[]>([]);
+  let searchTimeout: any;
+
+  async function fetchMateris() {
+    try {
+      const url = new URL("/api/materis", window.location.origin);
+      url.searchParams.set("page", currentPage.toString());
+      url.searchParams.set("limit", limit.toString());
+      if (searchQuery.trim()) url.searchParams.set("search", searchQuery.trim());
+      if (selectedSubjectId !== "all") url.searchParams.set("subject_id", selectedSubjectId.toString());
+
+      const resMateris = await fetch(url.toString(), { credentials: "include" });
+      if (resMateris.ok) {
+        const json = await resMateris.json();
+        if (json.data) {
+          materis = json.data;
+          currentPage = json.page;
+          totalPages = json.total_pages;
+          totalItems = json.total;
+        } else {
+          materis = json;
+          totalPages = 1;
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }
+
+  function handleSearchInput() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      currentPage = 1;
+      fetchMateris();
+    }, 400);
+  }
+
+  function handleSubjectChange() {
+    currentPage = 1;
+    fetchMateris();
+  }
+
+  function changePage(pageStr: number) {
+    if (pageStr >= 1 && pageStr <= totalPages) {
+      currentPage = pageStr;
+      fetchMateris();
+    }
+  }
+
   onMount(async () => {
     try {
       const resMe = await fetch("/me", { credentials: "include" });
@@ -43,14 +97,12 @@
         currentUser = data.user;
       }
 
-      const resMateris = await fetch("/api/materis", { credentials: "include" });
-      if (resMateris.ok) {
-        materis = await resMateris.json();
+      const resSubjects = await fetch("/api/subjects", { credentials: "include" });
+      if (resSubjects.ok) {
+        subjectsList = await resSubjects.json();
       }
 
-      if (currentUser?.role === "teacher") {
-        // Teacher has permission to create/edit, no need to fetch subjects/users here anymore
-      }
+      await fetchMateris();
     } catch (e) {
       console.error(e);
     }
@@ -79,20 +131,6 @@
     url.searchParams.delete("id");
     goto(url, { keepFocus: true, noScroll: true });
   }
-
-  let filteredMateris = $derived(
-    materis.filter((m) => {
-      if (searchQuery.trim() !== "") {
-        return (
-          m.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          m.content.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          (m.subject && m.subject.name.toLowerCase().includes(searchQuery.toLowerCase())) ||
-          (m.users && m.users.some(u => u.username.toLowerCase().includes(searchQuery.toLowerCase())))
-        );
-      }
-      return true;
-    })
-  );
 
   // Modals state
   let showDeleteModal = $state(false);
@@ -254,22 +292,40 @@
       </div>
     </div>
 
-    <!-- Search Bar -->
-    <div class="relative max-w-xl">
-      <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
-        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+    <!-- Search Bar & Filter -->
+    <div class="flex flex-col sm:flex-row gap-3 max-w-2xl">
+      <div class="relative flex-1">
+        <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+        </div>
+        <input type="text" bind:value={searchQuery} oninput={handleSearchInput} placeholder="Cari materi..." class="block w-full pl-14 pr-12 py-2.5 border border-slate-200 rounded-full bg-white/60 focus:bg-white text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all" />
+        {#if searchQuery}
+          <button onclick={() => { searchQuery = ""; handleSearchInput(); }} class="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer" title="Clear">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        {/if}
       </div>
-      <input type="text" bind:value={searchQuery} placeholder="Cari materi..." class="block w-full pl-14 pr-12 py-2.5 border border-slate-200 rounded-full bg-white/60 focus:bg-white text-sm text-slate-800 placeholder-slate-400 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all" />
-      {#if searchQuery}
-        <button onclick={() => (searchQuery = "")} class="absolute right-4 top-1/2 -translate-y-1/2 p-1 text-slate-400 hover:text-slate-600 rounded-full hover:bg-slate-100 transition-colors cursor-pointer">
-          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
-        </button>
-      {/if}
+      
+      <div class="relative shrink-0 sm:w-56">
+        <select 
+          bind:value={selectedSubjectId}
+          onchange={handleSubjectChange}
+          class="block w-full pl-4 pr-10 py-2.5 border border-slate-200 rounded-full bg-white/60 focus:bg-white text-sm text-slate-800 focus:outline-none focus:border-slate-300 focus:ring-4 focus:ring-slate-100 transition-all appearance-none cursor-pointer truncate"
+        >
+          <option value="all">Semua Mata Pelajaran</option>
+          {#each subjectsList as subject}
+            <option value={subject.id}>{subject.name}</option>
+          {/each}
+        </select>
+        <div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+          <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+        </div>
+      </div>
     </div>
 
     <!-- Content Grid -->
     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-      {#each filteredMateris as materi}
+      {#each materis as materi}
         <div
           class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === materi.id ? 'z-50' : 'z-0'}"
         >
@@ -360,5 +416,35 @@
         </div>
       {/each}
     </div>
+
+    <!-- Pagination Controls -->
+    {#if totalPages > 1}
+      <div class="flex items-center justify-center gap-2 mt-8 mb-4">
+        <button 
+          onclick={() => changePage(currentPage - 1)}
+          disabled={currentPage === 1}
+          class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm"
+          title="Sebelumnya"
+        >
+          <svg class="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"></path></svg>
+          <span class="hidden md:inline">Sebelumnya</span>
+        </button>
+        
+        <div class="flex items-center text-sm font-medium text-slate-700 px-4 h-10 bg-slate-50 border border-slate-100 rounded-xl">
+          <span class="md:hidden">{currentPage} <span class="text-slate-400 mx-1">/</span> {totalPages}</span>
+          <span class="hidden md:inline">Halaman {currentPage} dari {totalPages}</span>
+        </div>
+        
+        <button 
+          onclick={() => changePage(currentPage + 1)}
+          disabled={currentPage === totalPages}
+          class="flex items-center justify-center w-10 h-10 md:w-auto md:px-4 md:py-2 border border-slate-200 rounded-xl text-sm font-medium text-slate-600 bg-white hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer shadow-sm"
+          title="Selanjutnya"
+        >
+          <svg class="w-5 h-5 md:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path></svg>
+          <span class="hidden md:inline">Selanjutnya</span>
+        </button>
+      </div>
+    {/if}
   </div>
 {/if}
