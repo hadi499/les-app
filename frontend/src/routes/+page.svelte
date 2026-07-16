@@ -50,7 +50,7 @@
   <title>Les Balonggarut | Bimbingan Belajar Terbaik</title>
   <meta
     name="description"
-    content="Les  Matematika, Bahasa Inggris, TKA dan Komputer  di Balong Garut"
+    content="Les  Matematika, Bahasa Inggris, TKA dan Komputer  di Balong Garut Sidoarjo"
   />
   <meta
     name="keywords"
