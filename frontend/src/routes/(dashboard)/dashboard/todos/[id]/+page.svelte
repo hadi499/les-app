@@ -189,9 +189,11 @@
       <div
         class="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 md:gap-4 mb-6 md:mb-8 pb-4 md:pb-6 border-b border-slate-200"
       >
-        <div class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 flex-1 min-w-0 w-full">
+        <div
+          class="flex flex-col md:flex-row items-start md:items-center gap-2 md:gap-3 flex-1 min-w-0 w-full"
+        >
           <h1
-            class="text-xl md:text-2xl font-semibold text-slate-900 leading-tight truncate w-full"
+            class="text-xl md:text-2xl font-semibold text-slate-900 py-2 leading-tight truncate w-full"
           >
             {list.title}
           </h1>
