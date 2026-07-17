@@ -724,13 +724,13 @@
             <button
               onclick={loadMore}
               disabled={isLoadingMore}
-              class="px-6 py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+              class="flex items-center justify-center gap-2 w-full sm:w-auto px-8 py-3.5 bg-indigo-50 text-indigo-600 font-semibold text-sm rounded-2xl border border-indigo-100 active:scale-[0.97] active:bg-indigo-100 transition-all duration-200 disabled:opacity-70 disabled:cursor-not-allowed cursor-pointer"
             >
               {#if isLoadingMore}
-                <div class="w-5 h-5 border-2 border-slate-300 border-t-indigo-600 rounded-full animate-spin"></div>
-                Memuat...
+                <div class="w-5 h-5 border-[2.5px] border-indigo-200 border-t-indigo-600 rounded-full animate-spin"></div>
+                <span>Sedang Memuat...</span>
               {:else}
-                Muat Lebih Banyak
+                <span>Tampilkan Lebih Banyak</span>
               {/if}
             </button>
           </div>
