@@ -42,7 +42,7 @@
           <CardItem {card} index={pageIdx * perPage + idx} {oncopy} {onremove} {onedit} {ondelete} {ontoggleprint} showqueue={showqueue?.(card.id)} {selectable} selected={selectedIds?.has(card.id)} {onselect} {contentOnly} {isPrint} />
         {/each}
         {#each Array(perPage - page.length) as _}
-          <div class="border border-dashed border-gray-200"></div>
+          <div class="{isPrint ? '' : 'border border-dashed border-gray-200'}"></div>
         {/each}
       </div>
     </div>
@@ -101,7 +101,7 @@
   }
 
   .card-page-grid.no-gap {
-    gap: 0;
+    gap: 2px;
   }
 
   /* Print styles */
