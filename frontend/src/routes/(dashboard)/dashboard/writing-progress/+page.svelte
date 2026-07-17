@@ -28,20 +28,12 @@
     fetchProgresses();
   }
 
-  function infiniteScroll(node: HTMLElement) {
-    const observer = new IntersectionObserver((entries) => {
-      if (entries[0].isIntersecting && activeTab === 'card' && currentPage < totalPages && !isLoadingMore && !isLoading) {
-        isLoadingMore = true;
-        currentPage++;
-        fetchProgresses().finally(() => { isLoadingMore = false; });
-      }
-    });
-    observer.observe(node);
-    return {
-      destroy() {
-        observer.disconnect();
-      }
-    };
+  async function loadMore() {
+    if (isLoadingMore || currentPage >= totalPages) return;
+    isLoadingMore = true;
+    currentPage++;
+    await fetchProgresses();
+    isLoadingMore = false;
   }
 
   // Pagination State
@@ -178,7 +170,7 @@
     if (window.innerWidth < 768) {
       itemsPerPage = 10;
     } else {
-      itemsPerPage = 20;
+      itemsPerPage = 16;
     }
     
     const savedTab = localStorage.getItem("writingProgressTab");
@@ -728,8 +720,19 @@
           {/each}
         </div>
         {#if activeTab === "card" && currentPage < totalPages}
-          <div use:infiniteScroll class="flex justify-center p-6">
-            <div class="w-8 h-8 border-4 border-slate-200 border-t-indigo-500 rounded-full animate-spin"></div>
+          <div class="flex justify-center p-6">
+            <button
+              onclick={loadMore}
+              disabled={isLoadingMore}
+              class="px-6 py-2.5 bg-white border border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-colors shadow-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
+            >
+              {#if isLoadingMore}
+                <div class="w-5 h-5 border-2 border-slate-300 border-t-indigo-600 rounded-full animate-spin"></div>
+                Memuat...
+              {:else}
+                Muat Lebih Banyak
+              {/if}
+            </button>
           </div>
         {/if}
       {/if}
