@@ -72,15 +72,6 @@
 <div
   class="relative min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-blue-200 selection:text-blue-900"
 >
-  <!-- Background Ambient -->
-  <div class="absolute inset-0 z-0 pointer-events-none fixed">
-    <div
-      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
-    ></div>
-    <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
-    ></div>
-  </div>
 
   <!-- Content wrapper -->
   <main class="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
@@ -117,7 +108,7 @@
 
     <!-- Card -->
     <div
-      class="w-full bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 shadow-lg p-8"
+      class="w-full bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8"
     >
       <form onsubmit={handleLogin} novalidate class="flex flex-col gap-4">
         <!-- Error -->
@@ -186,7 +177,7 @@
             required
             bind:value={username}
             placeholder="Masukkan username Anda"
-            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-white/80 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
           />
         </div>
 
@@ -207,7 +198,7 @@
               bind:value={password}
               placeholder="••••••••"
               autocomplete="current-password"
-              class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-white/80 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+              class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
             />
             <button
               type="button"
@@ -299,11 +290,7 @@
     </a>
   </main>
 
-  <!-- Noise Overlay for texture -->
-  <div
-    class="absolute inset-0 opacity-[0.02] pointer-events-none mix-blend-screen"
-    style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
-  ></div>
+
 </div>
 
 <style>
