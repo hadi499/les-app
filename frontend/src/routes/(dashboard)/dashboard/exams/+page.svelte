@@ -27,24 +27,16 @@
 
   // Pagination State
   let currentPage = $state(1);
-  const itemsPerPage = 24;
-
-  let totalPages = $derived(Math.ceil(exams.length / itemsPerPage) || 1);
-
-  let paginatedExams = $derived(
-    activeTab === "card"
-      ? exams.slice(0, currentPage * itemsPerPage)
-      : exams.slice(
-          (currentPage - 1) * itemsPerPage,
-          currentPage * itemsPerPage,
-        ),
-  );
+  let itemsPerPage = $state(20);
+  let totalPages = $state(1);
+  let totalRecords = $state(0);
 
   function switchTab(tab: "card" | "table") {
     if (activeTab === tab) return;
     activeTab = tab;
     currentPage = 1;
     localStorage.setItem("examsActiveTab", tab);
+    fetchExams();
   }
 
   function infiniteScroll(node: HTMLElement) {
@@ -57,11 +49,8 @@
         !isLoading
       ) {
         isLoadingMore = true;
-        // Simulate a small network delay for smooth UX like real fetching
-        setTimeout(() => {
-          currentPage++;
-          isLoadingMore = false;
-        }, 300);
+        currentPage++;
+        fetchExams().finally(() => { isLoadingMore = false; });
       }
     });
     observer.observe(node);
@@ -73,15 +62,22 @@
   }
 
   function nextPage() {
-    if (currentPage < totalPages) currentPage++;
+    if (currentPage < totalPages) {
+      currentPage++;
+      fetchExams();
+    }
   }
 
   function prevPage() {
-    if (currentPage > 1) currentPage--;
+    if (currentPage > 1) {
+      currentPage--;
+      fetchExams();
+    }
   }
 
   function goToPage(page: number) {
     currentPage = page;
+    fetchExams();
   }
 
   // Modal State
@@ -143,11 +139,20 @@
 
   async function fetchExams() {
     try {
-      const res = await fetch(`/api/exams`, {
+      const res = await fetch(`/api/exams?page=${currentPage}&limit=${itemsPerPage}`, {
         credentials: "include",
       });
       if (!res.ok) throw new Error("Gagal mengambil data ujian");
-      exams = (await res.json()) || [];
+      const data = await res.json();
+      
+      if (activeTab === "card" && currentPage > 1) {
+        exams = [...exams, ...(data.data || [])];
+      } else {
+        exams = data.data || [];
+      }
+      
+      totalPages = data.total_pages || 1;
+      totalRecords = data.total || 0;
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : String(e);
     }
@@ -205,6 +210,12 @@
   }
 
   onMount(() => {
+    if (window.innerWidth < 768) {
+      itemsPerPage = 10;
+    } else {
+      itemsPerPage = 20;
+    }
+
     const savedTab = localStorage.getItem("examsActiveTab");
     if (savedTab === "card" || savedTab === "table") {
       activeTab = savedTab;
@@ -336,15 +347,15 @@
   // Bulk Delete State
   let selectedExams = $state<Set<number>>(new Set());
   let allSelectedOnPage = $derived(
-    paginatedExams.length > 0 && paginatedExams.every(e => selectedExams.has(e.id))
+    exams.length > 0 && exams.every(e => selectedExams.has(e.id))
   );
 
   function toggleAllOnPage() {
     const newSet = new Set(selectedExams);
     if (allSelectedOnPage) {
-      paginatedExams.forEach(e => newSet.delete(e.id));
+      exams.forEach(e => newSet.delete(e.id));
     } else {
-      paginatedExams.forEach(e => newSet.add(e.id));
+      exams.forEach(e => newSet.add(e.id));
     }
     selectedExams = newSet;
   }
@@ -546,7 +557,7 @@
                 </tr>
               </thead>
               <tbody class="divide-y divide-slate-100">
-                {#each paginatedExams as exam}
+                {#each exams as exam}
                   <tr class="hover:bg-slate-50/50 transition-colors group">
                     {#if isTeacher}
                       <td class="px-6 py-4 text-center">
@@ -657,7 +668,7 @@
         </div>
       {:else}
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {#each paginatedExams as exam}
+          {#each exams as exam}
             <a
               href={`/dashboard/exams/${exam.id}`}
               class="group bg-white/80 backdrop-blur-md border border-slate-200 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all flex flex-col cursor-pointer"
@@ -739,10 +750,10 @@
       >
         <div class="text-sm text-slate-600 text-left">
           <span class="font-medium text-slate-900"
-            >{Math.min(currentPage * itemsPerPage, exams.length)}</span
+            >{Math.min(currentPage * itemsPerPage, totalRecords)}</span
           >
           dari
-          <span class="font-medium text-slate-900">{exams.length}</span> data
+          <span class="font-medium text-slate-900">{totalRecords}</span> data
         </div>
         <div class="flex gap-2">
           <button

@@ -46,7 +46,7 @@
 
   // Pagination State
   let currentPage = $state(1);
-  const itemsPerPage = 24;
+  let itemsPerPage = $state(20);
   let totalPages = $state(1);
   let totalRecords = $state(0);
 
@@ -175,6 +175,12 @@
   }
 
   onMount(() => {
+    if (window.innerWidth < 768) {
+      itemsPerPage = 10;
+    } else {
+      itemsPerPage = 20;
+    }
+    
     const savedTab = localStorage.getItem("writingProgressTab");
     if (savedTab === "table" || savedTab === "card") {
       activeTab = savedTab;

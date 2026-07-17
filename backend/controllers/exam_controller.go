@@ -3,6 +3,7 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"math"
 	"net/http"
 	"os"
 	"strconv"
@@ -14,20 +15,50 @@ import (
 
 func GetExams(c *gin.Context) {
 	var exams []models.Exam
+	var total int64
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	if page < 1 {
+		page = 1
+	}
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "50"))
+	if limit < 1 {
+		limit = 50
+	}
+	offset := (page - 1) * limit
 	
 	role, _ := c.Get("role")
 	userID, _ := c.Get("user_id")
 
-	query := database.DB.Preload("User").Preload("Subject").Order("exam_date desc")
+	query := database.DB.Model(&models.Exam{})
 	if role != "teacher" && role != "admin" {
 		query = query.Where("user_id = ?", userID)
 	}
+
+	if err := query.Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count exams"})
+		return
+	}
+
+	query = query.Preload("User").Preload("Subject").Order("exam_date desc").Limit(limit).Offset(offset)
 
 	if err := query.Find(&exams).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch exams"})
 		return
 	}
-	c.JSON(http.StatusOK, exams)
+
+	totalPages := int(math.Ceil(float64(total) / float64(limit)))
+	if totalPages == 0 {
+		totalPages = 1
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"data":        exams,
+		"total":       total,
+		"page":        page,
+		"limit":       limit,
+		"total_pages": totalPages,
+	})
 }
 
 // GetExamByID fetches a single exam by its ID
