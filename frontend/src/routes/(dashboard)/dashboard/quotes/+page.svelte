@@ -204,21 +204,21 @@
       {errorMsg}
     </div>
   {:else}
-    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       {#each quotes as quote}
         <div
           class="bg-white/60 backdrop-blur-md rounded-2xl border border-slate-200 p-5 shadow-lg shadow-slate-800/5 flex flex-col justify-between hover:border-slate-300 transition-colors gap-4"
         >
           <div>
             <div class="flex justify-between items-start mb-2 gap-2">
-              <p class="text-slate-900 font-semibold text-sm leading-relaxed italic line-clamp-3">"{quote.quote}"</p>
+              <p class="text-slate-900 font-semibold text-base leading-relaxed italic">"{quote.quote}"</p>
               {#if quote.is_published}
                 <span class="inline-flex shrink-0 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-green-100 text-green-700">Publik</span>
               {:else}
                 <span class="inline-flex shrink-0 items-center px-2 py-0.5 rounded text-[10px] font-bold bg-slate-100 text-slate-500">Draft</span>
               {/if}
             </div>
-            <p class="text-slate-500 text-xs leading-relaxed line-clamp-2 border-t border-slate-200 pt-2 mb-2">{quote.arti}</p>
+            <p class="text-slate-500 text-sm leading-relaxed border-t border-slate-200 pt-3 mt-1 mb-2">{quote.arti}</p>
             <div class="flex items-center gap-2">
               <div class="w-4 h-0.5 rounded-full bg-indigo-400"></div>
               <p class="text-slate-700 font-bold text-xs tracking-wider uppercase">{quote.author}</p>
