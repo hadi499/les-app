@@ -71,11 +71,6 @@
       >
         Panduan Les <span class="text-blue-600">Balonggarut</span>
       </h1>
-      <p class="text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
-        Tempat belajar modern dengan metode <span
-          class="font-semibold text-blue-600">Card Memory</span
-        > dan latihan soal terstruktur untuk hasil yang optimal.
-      </p>
     </section>
 
     <!-- Aturan Dasar Section -->
