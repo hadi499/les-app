@@ -12,6 +12,7 @@
   let questions: { question: string; options: string[]; answer: number }[] = $state([]);
 
   let isLoading = $state(true);
+  let showLoadingSpinner = $state(false);
   let isSubmitting = $state(false);
 
   async function fetchQuiz() {
@@ -111,11 +112,11 @@
   </div>
 </div>
 
-{#if isLoading}
-  <div class="flex justify-center p-12">
-    <div class="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-  </div>
-{:else}
+  {#if isLoading}
+    <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300">
+      <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin shadow-sm"></div>
+    </div>
+  {:else}
   <form onsubmit={handleSubmit} class="space-y-8 pb-12">
     <!-- Detail Kuis -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200 flex flex-col gap-5">

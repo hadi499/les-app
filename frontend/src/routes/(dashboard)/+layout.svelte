@@ -173,13 +173,43 @@
 />
 
 {#if isLoading}
-  <!-- Layar Loading Sederhana -->
-  <div class="min-h-screen bg-slate-100 flex items-center justify-center">
-    <div class="flex flex-col items-center gap-4">
-      <div
-        class="w-12 h-12 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
-      ></div>
-      <p class="text-slate-600 font-semibold">Memuat portal...</p>
+  <!-- Layar Loading Premium -->
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center relative overflow-hidden">
+    <!-- Ambient Background Orbs -->
+    <div class="absolute top-[-10%] left-[-10%] w-[80vw] sm:w-[40vw] h-[80vw] sm:h-[40vw] rounded-full bg-indigo-200/60 blur-[80px] sm:blur-[100px] animate-pulse" style="animation-duration: 4s;"></div>
+    <div class="absolute bottom-[-10%] right-[-10%] w-[80vw] sm:w-[40vw] h-[80vw] sm:h-[40vw] rounded-full bg-blue-200/60 blur-[80px] sm:blur-[100px] animate-pulse" style="animation-duration: 5s; animation-delay: 1s;"></div>
+    
+    <!-- Glassmorphism Card -->
+    <div class="relative z-10 flex flex-col items-center gap-8 sm:gap-10 bg-white/50 sm:bg-white/40 backdrop-blur-2xl px-8 sm:px-16 py-10 sm:py-12 mx-4 sm:mx-0 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-white/60 text-center">
+      
+      <!-- Premium Multi-ring Spinner -->
+      <div class="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center">
+        <!-- Outer Ring -->
+        <div class="absolute inset-0 rounded-full border-[3px] border-indigo-100/50"></div>
+        <div class="absolute inset-0 rounded-full border-[3px] border-indigo-600 border-t-transparent animate-spin" style="animation-duration: 1.5s;"></div>
+        
+        <!-- Inner Ring -->
+        <div class="absolute inset-2.5 sm:inset-3 rounded-full border-[3px] border-blue-100/50"></div>
+        <div class="absolute inset-2.5 sm:inset-3 rounded-full border-[3px] border-blue-500 border-b-transparent animate-spin" style="animation-direction: reverse; animation-duration: 2s;"></div>
+        
+        <!-- Center Core -->
+        <div class="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-full animate-pulse shadow-lg shadow-indigo-500/50"></div>
+      </div>
+
+      <!-- Text Loading -->
+      <div class="flex flex-col items-center gap-2 sm:gap-3">
+        <h2 class="text-2xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-600">
+          Portal Les Balongarut
+        </h2>
+        <div class="flex items-center justify-center gap-1.5 sm:gap-2 text-indigo-600/80 font-bold tracking-widest text-xs sm:text-sm uppercase">
+          <span>Memuat Sistem</span>
+          <div class="flex gap-1 mt-0.5">
+            <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 0ms;"></div>
+            <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 150ms;"></div>
+            <div class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce" style="animation-delay: 300ms;"></div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 {:else}

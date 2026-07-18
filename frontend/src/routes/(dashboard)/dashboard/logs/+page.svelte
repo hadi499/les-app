@@ -15,6 +15,7 @@
 
   let logs: UserLog[] = $state([]);
   let isLoading = $state(true);
+  let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
   let isTeacher = $state(false);
 
@@ -46,6 +47,8 @@
   async function fetchLogs(page = 1) {
     if (!isTeacher) return;
     isLoading = true;
+    showLoadingSpinner = false;
+    setTimeout(() => { showLoadingSpinner = true; }, 150);
     errorMsg = "";
     try {
       const res = await fetch(`/api/logs?page=${page}&limit=${limit}`, {
@@ -112,11 +115,11 @@
   </div>
 </div>
 
-{#if isLoading}
-  <div class="flex items-center justify-center p-12">
-    <div class="h-12 w-12 animate-spin rounded-full border-4 border-indigo-600 border-t-transparent"></div>
-  </div>
-{:else if errorMsg}
+  {#if isLoading}
+    <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300">
+      <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin shadow-sm"></div>
+    </div>
+  {:else if errorMsg}
   <div class="rounded-xl border border-red-200 bg-red-50 p-6 text-center dark:border-red-900/50 dark:bg-red-900/20">
     <p class="font-medium text-red-600 dark:text-red-400">{errorMsg}</p>
   </div>

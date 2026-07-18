@@ -20,6 +20,7 @@
   let users: User[] = $state([]);
   let subjects: Subject[] = $state([]);
   let isLoading = $state(true);
+  let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
   let isTeacher = $state(false);
   let activeTab: "card" | "table" = $state("card");
@@ -185,6 +186,8 @@
 
   async function loadData() {
     isLoading = true;
+    showLoadingSpinner = false;
+    const timer = setTimeout(() => { showLoadingSpinner = true; }, 150);
     errorMsg = "";
     await checkRole();
     const promises: Promise<any>[] = [fetchExams(), fetchSubjects()];
@@ -192,7 +195,9 @@
       promises.push(fetchUsers());
     }
     await Promise.all(promises);
+    clearTimeout(timer);
     isLoading = false;
+    showLoadingSpinner = false;
   }
 
   onMount(() => {
@@ -419,9 +424,9 @@
   </div>
 
   {#if isLoading}
-    <div class="flex justify-center p-12">
+    <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300">
       <div
-        class="w-10 h-10 border-4 border-slate-200 border-t-blue-500 rounded-full animate-spin"
+        class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin shadow-sm"
       ></div>
     </div>
   {:else if errorMsg}
