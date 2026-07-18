@@ -9,7 +9,22 @@
   let isClassOpenSd = $state(true);
   let isSettingsLoaded = $state(false);
 
+  type Quote = { id: number; quote: string; arti: string; author: string; created_at: string; updated_at: string };
+  let quotes = $state<Quote[]>([]);
+  let quotesLoaded = $state(false);
+
   onMount(async () => {
+    // Fetch Quotes
+    try {
+      const resQuotes = await fetch("/api/quotes");
+      if (resQuotes.ok) {
+        quotes = await resQuotes.json();
+      }
+    } catch (e) {
+      console.error("Gagal memuat quotes", e);
+    } finally {
+      quotesLoaded = true;
+    }
     // Fetch Pengaturan Sistem
     try {
       const resSettings = await fetch("/api/settings");
@@ -90,21 +105,21 @@
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
     <div
-      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-blue-100/60 rounded-full blur-[120px]"
+      class="absolute top-1/4 left-1/4 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-blue-100/60 rounded-full blur-[80px] sm:blur-[120px]"
     ></div>
     <div
-      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-slate-200/60 rounded-full blur-[120px]"
+      class="absolute bottom-1/4 right-1/4 w-[200px] h-[200px] sm:w-[400px] sm:h-[400px] bg-slate-200/60 rounded-full blur-[80px] sm:blur-[120px]"
     ></div>
   </div>
 
   <!-- Hero Section -->
   <section
-    class="relative z-10 w-full max-w-4xl mx-auto px-6 py-20 lg:py-32 flex flex-col items-center text-center gap-16"
+    class="relative z-10 w-full max-w-4xl mx-auto px-6 pt-28 pb-12 lg:pt-36 lg:pb-32 flex flex-col items-center text-center gap-16"
   >
     <!-- Text -->
     <div class="flex flex-col items-center gap-8">
       {#if isSettingsLoaded}
-        <div class="flex flex-col sm:flex-row gap-3 mt-4">
+        <div class="flex flex-row flex-wrap justify-center gap-2 mt-4">
           <!-- Status PAUD/TK -->
           {#if isClassOpenPaud}
             <div
@@ -182,131 +197,176 @@
         <div class="h-9 sm:h-9 mt-4 opacity-0"></div>
       {/if}
 
-      <div class="flex flex-col gap-4 items-center mt-2">
+      <div class="flex flex-col gap-6 items-center mt-2">
+
         <h1
           class="text-3xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] text-slate-900 uppercase leading-tight text-center drop-shadow-sm"
         >
           Les Balonggarut
         </h1>
-        <div
-          class="text-xs sm:text-sm tracking-[0.2em] text-slate-600 uppercase flex flex-col items-center gap-3 font-medium"
-        >
-          <span>Komputer</span>
-          <span>Matematika</span>
-          <span>Bahasa Inggris</span>
-          <span>TKA</span>
+
+        <!-- Subject Badges -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1 w-full max-w-xs sm:max-w-none">
+          <!-- Komputer -->
+          <span class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-xs font-semibold tracking-wide">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect x="2" y="3" width="20" height="14" rx="2"/>
+              <path d="M8 21h8M12 17v4"/>
+            </svg>
+            Komputer
+          </span>
+          <!-- Matematika -->
+          <span class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-violet-50 border border-violet-200 text-violet-700 text-xs font-semibold tracking-wide">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 2v20M2 12h20"/>
+            </svg>
+            Matematika
+          </span>
+          <!-- Bahasa Inggris -->
+          <span class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold tracking-wide">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
+            </svg>
+            Bahasa Inggris
+          </span>
+          <!-- TKA -->
+          <span class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold tracking-wide">
+            <svg class="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M9 11l3 3L22 4"/>
+              <path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/>
+            </svg>
+            TKA
+          </span>
         </div>
-        <div class="flex items-center gap-4 w-full max-w-xs opacity-40 mt-1">
+
+        <div class="flex items-center gap-4 w-full max-w-xs opacity-30 mt-1">
           <div class="flex-1 h-px bg-slate-400"></div>
-          <svg
-            class="w-3 h-3 text-slate-400 shrink-0"
-            viewBox="0 0 24 24"
-            fill="currentColor"
-          >
+          <svg class="w-3 h-3 text-slate-400 shrink-0" viewBox="0 0 24 24" fill="currentColor">
             <circle cx="12" cy="12" r="3" />
           </svg>
           <div class="flex-1 h-px bg-slate-400"></div>
         </div>
-        <p
-          class="text-sm sm:text-md text-slate-600 font-light sm:tracking-wider leading-relaxed sm:leading-7 text-center italic sm:whitespace-nowrap max-w-[18rem] sm:max-w-none"
-        >
-          Belajar efektif lewat metode <span
-            class="not-italic font-medium text-slate-600">Card Memory</span
-          >
-          dan
-          <span class="not-italic font-medium text-slate-600">latihan soal</span
-          >.
+        <p class="text-sm sm:text-base text-slate-500 font-light tracking-wide leading-7 text-center max-w-sm sm:max-w-md">
+          Tempat belajar modern dengan metode
+          <span class="font-semibold text-slate-700">Card Memory</span>
+          <span class="whitespace-nowrap">dan <span class="font-semibold text-slate-700">latihan soal</span></span>
+          terstruktur untuk hasil yang optimal.
         </p>
       </div>
 
-      <div class="pt-6 flex flex-col items-center gap-6">
-        <a
-          href="/panduan"
-          class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-slate-800 border border-slate-300 hover:text-slate-950 hover:border-blue-500 transition-all duration-700 bg-white/60 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-sm hover:shadow-md hover:shadow-blue-500/10"
-        >
-          <span class="relative z-10 flex items-center gap-3">
-            Panduan
-            <svg
-              class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-blue-600"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              ></path>
-            </svg>
-          </span>
-          <div
-            class="absolute inset-0 -translate-x-full bg-blue-100/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
-          ></div>
-        </a>
-
+      <div class="pt-6 flex flex-row items-center justify-center gap-3 flex-wrap">
         {#if authChecked}
           {#if !isAuthenticated}
+            <!-- Primary: Masuk Portal -->
             <a
               href="/login"
-              class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg"
+              class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
             >
-              <span class="relative z-10 flex items-center gap-3">
-                Masuk Portal
-                <svg
-                  class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                  ></path>
-                </svg>
-              </span>
-              <div
-                class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
-              ></div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"/>
+              </svg>
+              Masuk Portal
             </a>
           {:else}
+            <!-- Primary: Dashboard -->
             <a
               href="/dashboard"
-              class="w-64 group relative inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white border border-blue-600 hover:border-blue-700 transition-all duration-700 bg-blue-600 hover:bg-blue-700 overflow-hidden cursor-pointer backdrop-blur-md no-underline shadow-md hover:shadow-lg"
+              class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
             >
-              <span class="relative z-10 flex items-center gap-3">
-                Dashboard
-                <svg
-                  class="w-3.5 h-3.5 transition-transform duration-500 group-hover:translate-x-1 text-white"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                  ></path>
-                </svg>
-              </span>
-              <div
-                class="absolute inset-0 -translate-x-full bg-blue-700/50 group-hover:translate-x-0 transition-transform duration-700 ease-out z-0"
-              ></div>
+              <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
+              </svg>
+              Dashboard
             </a>
           {/if}
         {/if}
+
+        <!-- Secondary: Panduan -->
+        <a
+          href="/panduan"
+          class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
+        >
+          Panduan
+          <svg class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+          </svg>
+        </a>
       </div>
     </div>
   </section>
 
-  <!-- Spacer to push footer elements if any -->
-  <div class="flex-1"></div>
+  <!-- Quotes Section -->
+  {#if quotesLoaded && quotes.length > 0}
+  <section class="relative z-10 w-full max-w-5xl mx-auto px-6 pb-24 flex flex-col items-center gap-8 mt-4">
+    <!-- Section Label -->
+    <div class="flex items-center gap-3 text-slate-400">
+      <div class="h-px w-8 bg-slate-300"></div>
+      <span class="text-xs tracking-[0.25em] uppercase font-medium">Inspirasi</span>
+      <div class="h-px w-8 bg-slate-300"></div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
+      {#each quotes as q, i}
+        <div class="{
+          i % 3 === 0 ? 'bg-blue-50/80 border-l-blue-500' :
+          i % 3 === 1 ? 'bg-violet-50/80 border-l-violet-500' :
+                        'bg-emerald-50/80 border-l-emerald-500'
+        } backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/50 border-l-4 flex flex-col justify-between hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group">
+          <div>
+            <!-- Big quote icon -->
+            <svg class="w-9 h-9 opacity-25 mb-4 group-hover:opacity-40 transition-opacity duration-300 {
+              i % 3 === 0 ? 'text-blue-600' :
+              i % 3 === 1 ? 'text-violet-600' :
+                            'text-emerald-600'
+            }" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+            </svg>
+            <!-- English quote -->
+            <p class="text-slate-900 font-semibold text-sm leading-relaxed mb-3 italic">&ldquo;{q.quote}&rdquo;</p>
+            <!-- Indonesian translation -->
+            <p class="text-slate-500 text-xs leading-relaxed mb-6 border-t border-slate-200/70 pt-3">{q.arti}</p>
+          </div>
+          <!-- Author -->
+          <div class="flex items-center gap-2">
+            <div class="w-5 h-0.5 rounded-full {
+              i % 3 === 0 ? 'bg-blue-500' :
+              i % 3 === 1 ? 'bg-violet-500' :
+                            'bg-emerald-500'
+            }"></div>
+            <p class="text-slate-700 font-bold text-xs tracking-wider uppercase">{q.author}</p>
+          </div>
+        </div>
+      {/each}
+    </div>
+  </section>
+  {/if}
+
+  <!-- Footer -->
+  <footer class="relative z-10 w-full border-t border-slate-200/70 bg-white/40 backdrop-blur-sm">
+    <div class="max-w-5xl mx-auto px-6 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <!-- Brand -->
+      <div class="flex flex-col items-center sm:items-start gap-1">
+        <span class="text-sm font-bold tracking-[0.15em] uppercase text-slate-800">Les Balonggarut</span>
+        <span class="text-xs text-slate-500 flex items-center gap-1.5">
+          <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+            <circle cx="12" cy="10" r="3"/>
+          </svg>
+          Balong Garut, Krembung, Sidoarjo
+        </span>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="flex items-center gap-5 text-xs text-slate-500 font-medium">
+        <a href="/panduan" class="hover:text-slate-800 transition-colors duration-200 no-underline">Panduan</a>
+        <a href="/quiz" class="hover:text-slate-800 transition-colors duration-200 no-underline">Kuis</a>
+        <a href="/login" class="hover:text-slate-800 transition-colors duration-200 no-underline">Masuk</a>
+      </nav>
+
+      <!-- Copyright -->
+      <span class="text-xs text-slate-400">&copy; {new Date().getFullYear()} Les Balonggarut</span>
+    </div>
+  </footer>
 
   <!-- Noise Overlay for texture -->
   <div

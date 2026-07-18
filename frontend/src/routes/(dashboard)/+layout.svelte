@@ -66,6 +66,7 @@
         "/dashboard/subjects",
         "/dashboard/typing-monitoring",
         "/dashboard/users",
+        "/dashboard/quotes",
       ];
       if (teacherOnlyRoutes.some((r) => path.startsWith(r))) {
         goto("/dashboard", { replaceState: true });
@@ -368,6 +369,36 @@
               >
             </div>
             Mata Pelajaran
+          </a>
+          <a
+            href="/dashboard/quotes"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/quotes',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/quotes',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+                ></path></svg
+              >
+            </div>
+            Quotes Inspirasi
           </a>
         {/if}
 
@@ -1047,6 +1078,37 @@
                 >
               </div>
               Mata Pelajaran
+            </a>
+            <a
+              href="/dashboard/quotes"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+                '/quotes',
+              )
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/quotes',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+                  ></path></svg
+                >
+              </div>
+              Quotes Inspirasi
             </a>
           {/if}
 

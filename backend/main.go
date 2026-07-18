@@ -41,7 +41,7 @@ func main() {
 	}
 
 	// Migrasi otomatis untuk memastikan tabel ada
-	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{}, &models.WritingProgress{}, &models.ChatMessage{}, &models.UserLog{}, &models.Materi{})
+	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{}, &models.WritingProgress{}, &models.ChatMessage{}, &models.UserLog{}, &models.Materi{}, &models.Quote{})
 
 	// Seeding pengaturan awal
 	var settingPaud models.SystemSetting
@@ -52,6 +52,30 @@ func main() {
 	var settingSd models.SystemSetting
 	if err := database.DB.Where("key = ?", "is_class_open_sd").First(&settingSd).Error; err != nil {
 		database.DB.Create(&models.SystemSetting{Key: "is_class_open_sd", Value: "true"})
+	}
+
+	// Seeding quotes awal
+	var countQuotes int64
+	database.DB.Model(&models.Quote{}).Count(&countQuotes)
+	if countQuotes == 0 {
+		initialQuotes := []models.Quote{
+			{
+				Quote:  "The beautiful thing about learning is that no one can take it away from you.",
+				Arti:   "Hal yang indah tentang belajar adalah tidak ada yang bisa mengambilnya darimu.",
+				Author: "B.B. King",
+			},
+			{
+				Quote:  "Education is the most powerful weapon which you can use to change the world.",
+				Arti:   "Pendidikan adalah senjata paling ampuh yang bisa Anda gunakan untuk mengubah dunia.",
+				Author: "Nelson Mandela",
+			},
+			{
+				Quote:  "Success is no accident. It is hard work, perseverance, learning, studying, sacrifice and most of all, love of what you are doing or learning to do.",
+				Arti:   "Kesuksesan bukanlah sebuah kebetulan. Ia adalah kerja keras, ketekunan, pembelajaran, pengorbanan, dan yang terpenting, cinta akan apa yang Anda lakukan atau pelajari.",
+				Author: "Pelé",
+			},
+		}
+		database.DB.Create(&initialQuotes)
 	}
 
 	// Background job untuk membersihkan token blacklist yang kedaluwarsa setiap 1 jam

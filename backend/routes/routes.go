@@ -248,6 +248,21 @@ func SetupRoutes(r *gin.Engine) {
 		logsAPI.GET("", controllers.GetLogs)
 	}
 
+	// Quotes API routes
+	quotes := r.Group("/api/quotes")
+	{
+		quotes.GET("", controllers.GetPublicQuotes) // public
+		
+		adminQuotes := quotes.Group("")
+		adminQuotes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+		{
+			adminQuotes.GET("/all", controllers.GetAllQuotes)
+			adminQuotes.POST("", controllers.CreateQuote)
+			adminQuotes.PUT("/:id", controllers.UpdateQuote)
+			adminQuotes.DELETE("/:id", controllers.DeleteQuote)
+		}
+	}
+
 	// Settings API routes
 	r.GET("/api/settings", controllers.GetSettings) // Publik
 	
