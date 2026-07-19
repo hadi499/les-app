@@ -42,7 +42,7 @@ func CreateQuote(c *gin.Context) {
 		return
 	}
 
-	isPublished := true
+	isPublished := false
 	if input.IsPublished != nil {
 		isPublished = *input.IsPublished
 	}
@@ -66,6 +66,13 @@ func CreateQuote(c *gin.Context) {
 	if err := database.DB.Create(&quote).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create quote"})
 		return
+	}
+
+	// Workaround: GORM mengabaikan nilai 'false' saat Create jika ada tag default:true
+	// Jadi kita paksa set ke false setelah dibuat jika isPublished adalah false menggunakan raw SQL
+	if !isPublished {
+		database.DB.Exec("UPDATE quotes SET is_published = false WHERE id = ?", quote.ID)
+		quote.IsPublished = false // Pastikan response ke frontend juga false
 	}
 
 	c.JSON(http.StatusCreated, quote)

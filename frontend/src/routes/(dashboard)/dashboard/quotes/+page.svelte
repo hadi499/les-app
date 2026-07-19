@@ -53,7 +53,7 @@
     formQuote = "";
     formArti = "";
     formAuthor = "";
-    formIsPublished = publishedCount < 3;
+    formIsPublished = false;
     showModal = true;
   }
 
@@ -345,7 +345,7 @@
             </label>
           </div>
           {#if (!isEditing && publishedCount >= 3) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 3)}
-            <p class="text-xs text-red-500 mt-1">Maksimal 3 quote sudah dipublish. Ubah quote lain menjadi draft terlebih dahulu.</p>
+            <p class="text-xs text-amber-600 mt-1">Batas maksimal 3 quote publish telah tercapai. Quote ini akan disimpan sebagai Draft.</p>
           {/if}
 
           <div class="pt-4 flex justify-end gap-3">

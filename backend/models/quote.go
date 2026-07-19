@@ -9,7 +9,7 @@ type Quote struct {
 	Quote       string    `gorm:"type:text;not null" json:"quote"`
 	Arti        string    `gorm:"type:text;not null" json:"arti"`
 	Author      string    `gorm:"type:varchar(100);not null" json:"author"`
-	IsPublished bool      `gorm:"default:true" json:"is_published"`
+	IsPublished bool      `gorm:"default:false" json:"is_published"`
 	CreatedAt   time.Time `json:"created_at"`
 	UpdatedAt   time.Time `json:"updated_at"`
 }
