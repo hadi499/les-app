@@ -6,6 +6,7 @@
     title: string;
     category: string;
     timeLimit: number;
+    is_published?: boolean;
   };
 
   let quizzes: Quiz[] = $state([]);
@@ -28,7 +29,9 @@
       });
       if (res.ok) {
         const json = await res.json();
-        quizzes = json.data || [];
+        const allQuizzes = json.data || [];
+        // Saring kuis, hanya tampilkan yang sudah di-publish
+        quizzes = allQuizzes.filter((q: Quiz) => q.is_published);
       } else {
         console.error("Gagal memuat kuis:", res.status);
       }
