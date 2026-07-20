@@ -4,6 +4,8 @@
   import { page } from "$app/state";
   import { goto, beforeNavigate } from "$app/navigation";
   import Modal from "$lib/components/Modal.svelte";
+  import katex from "katex";
+  import "katex/dist/katex.min.css";
 
   let quizId = $derived(page.params.id);
 
@@ -42,6 +44,8 @@
   let showLeaveModal = $state(false);
   let targetUrl = $state<string | null>(null);
   let hasConfirmedLeave = $state(false);
+  let pointsEarned = $state(0);
+  let pointsAlreadyClaimed = $state(false);
 
   const currentQuestion = $derived(
     quiz && quiz.questions ? quiz.questions[currentQuestionIndex] : null,
@@ -202,6 +206,9 @@
         console.error("Gagal submit score, status:", res.status, errorText);
         alert(`Gagal submit score: ${res.status} - ${errorText}`);
       } else {
+        const json = await res.json();
+        pointsEarned = json.points_earned || 0;
+        pointsAlreadyClaimed = json.points_already_claimed || false;
         console.log("Berhasil submit score!");
       }
     } catch (e) {
@@ -219,7 +226,33 @@
     currentQuestionIndex = 0;
     userAnswers = [];
     isFinished = false;
+    pointsEarned = 0;
+    pointsAlreadyClaimed = false;
     startTimer();
+  }
+
+  function renderText(text: string | null) {
+    if (!text) return "";
+    
+    // Replace block math $$...$$
+    let rendered = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+      try {
+        return katex.renderToString(math, { displayMode: true, throwOnError: false });
+      } catch (e) {
+        return match;
+      }
+    });
+
+    // Replace inline math $...$
+    rendered = rendered.replace(/\$([^$]*?)\$/g, (match, math) => {
+      try {
+        return katex.renderToString(math, { displayMode: false, throwOnError: false });
+      } catch (e) {
+        return match;
+      }
+    });
+    
+    return rendered;
   }
 </script>
 
@@ -314,7 +347,7 @@
           <h2
             class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
           >
-            {currentQuestion.question}
+            {@html renderText(currentQuestion.question)}
           </h2>
 
           <div class="flex flex-col gap-3">
@@ -328,7 +361,7 @@
                 >
                   {String.fromCharCode(65 + optIndex)}
                 </span>
-                <span>{option}</span>
+                <span>{@html renderText(option)}</span>
               </button>
             {/each}
           </div>
@@ -357,8 +390,24 @@
               Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quiz
                 .questions.length} Soal
             </p>
+            {#if pointsEarned > 0}
+              <div class="mt-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-yellow-200 shadow-sm animate-in zoom-in duration-300">
+                <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
+                  <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
+                </svg>
+                Selamat! Anda mendapatkan {pointsEarned} poin tambahan!
+              </div>
+            {/if}
+            {#if pointsAlreadyClaimed}
+              <div class="mt-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-slate-200 shadow-sm animate-in zoom-in duration-300">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                Poin kuis ini sudah pernah diambil sebelumnya.
+              </div>
+            {/if}
             {#if isSubmitting}
-              <p class="text-xs text-blue-500 font-medium animate-pulse">
+              <p class="text-xs text-blue-500 font-medium animate-pulse mt-2">
                 Menyimpan skor...
               </p>
             {/if}
@@ -381,7 +430,7 @@
                 >
                   <div class="flex justify-between items-start gap-4">
                     <p class="font-semibold text-slate-800 text-sm m-0">
-                      {index + 1}. {ans.question}
+                      {index + 1}. {@html renderText(ans.question)}
                     </p>
                     {#if ans.isCorrect}
                       <span
@@ -406,7 +455,7 @@
                           ? "text-green-700 font-semibold"
                           : "text-red-600 font-semibold"}
                       >
-                        {ans.answer === null ? "Tidak Menjawab" : ans.answer}
+                        {@html renderText(ans.answer === null ? "Tidak Menjawab" : ans.answer)}
                       </span>
                     </div>
                     {#if !ans.isCorrect}
@@ -415,7 +464,7 @@
                           >Jawaban Benar:</span
                         >
                         <span class="text-green-700 font-semibold"
-                          >{ans.correct}</span
+                          >{@html renderText(ans.correct)}</span
                         >
                       </div>
                     {/if}

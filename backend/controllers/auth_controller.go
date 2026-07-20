@@ -253,6 +253,7 @@ func Login(c *gin.Context) {
 			"id":       user.ID,
 			"username": user.Username,
 			"role":     user.Role,
+			"points":   user.Points,
 		},
 	})
 }
@@ -334,6 +335,7 @@ func Me(c *gin.Context) {
 			"id":       user.ID,
 			"username": user.Username,
 			"role":     user.Role,
+			"points":   user.Points,
 		},
 	})
 }

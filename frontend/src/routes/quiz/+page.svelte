@@ -42,21 +42,30 @@
 
 <svelte:head>
   <title>Kuis Tersedia | Les Balongarut</title>
-  <meta name="description" content="Uji kemampuanmu lewat kuis interaktif Les Balongarut — Matematika, Komputer, Bahasa Inggris, dan TKA. Pilih kuis dan mulai belajar sekarang!" />
+  <meta
+    name="description"
+    content="Uji kemampuanmu lewat kuis interaktif Les Balongarut — Matematika, Komputer, Bahasa Inggris, dan TKA. Pilih kuis dan mulai belajar sekarang!"
+  />
   <link rel="canonical" href="https://lesbalonggarut.my.id/quiz" />
 
   <!-- Open Graph -->
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://lesbalonggarut.my.id/quiz" />
   <meta property="og:title" content="Kuis Tersedia | Les Balongarut" />
-  <meta property="og:description" content="Uji kemampuanmu lewat kuis interaktif — Matematika, Komputer, Bahasa Inggris, dan TKA." />
+  <meta
+    property="og:description"
+    content="Uji kemampuanmu lewat kuis interaktif — Matematika, Komputer, Bahasa Inggris, dan TKA."
+  />
   <meta property="og:site_name" content="Les Balongarut" />
   <meta property="og:locale" content="id_ID" />
 
   <!-- Twitter Card -->
   <meta name="twitter:card" content="summary" />
   <meta name="twitter:title" content="Kuis Tersedia | Les Balongarut" />
-  <meta name="twitter:description" content="Uji kemampuanmu lewat kuis interaktif di Les Balongarut." />
+  <meta
+    name="twitter:description"
+    content="Uji kemampuanmu lewat kuis interaktif di Les Balongarut."
+  />
 </svelte:head>
 
 <div
@@ -70,7 +79,6 @@
     <div
       class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
     ></div>
-
   </div>
 
   <div class="relative z-10 w-full max-w-4xl mx-auto pb-12">
@@ -115,7 +123,7 @@
                 {quiz.category}
               </span>
               <h2
-                class="text-xl font-bold text-slate-900 line-clamp-2 leading-tight"
+                class="text-xl font-bold text-slate-900 line-clamp-2 leading-tight py-2"
               >
                 {quiz.title}
               </h2>

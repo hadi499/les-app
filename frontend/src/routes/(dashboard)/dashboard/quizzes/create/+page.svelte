@@ -4,6 +4,7 @@
   let title = $state("");
   let category = $state("");
   let timeLimit = $state(15);
+  let isPublished = $state(true);
   
   let questions: { question: string; options: string[]; answer: number }[] = $state([]);
 
@@ -17,8 +18,8 @@
     questions = questions.filter((_, i) => i !== index);
   }
 
-  async function handleSubmit(e: Event) {
-    e.preventDefault();
+  async function handleSubmit(e?: Event) {
+    if (e) e.preventDefault();
     isSubmitting = true;
 
     try {
@@ -30,6 +31,7 @@
           title,
           category,
           timeLimit: Number(timeLimit),
+          is_published: isPublished,
           questions: questions.map(q => ({
             question: q.question,
             options: q.options,
@@ -57,18 +59,41 @@
   <title>Tambah Kuis | Les Balongarut</title>
 </svelte:head>
 
-<div class="mb-8 flex items-center gap-4">
-  <a
-    href="/dashboard/quizzes"
-    class="p-2 text-slate-600 bg-white/50 hover:bg-white rounded-xl border border-slate-200 shadow-sm transition-all"
-  >
-    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-    </svg>
-  </a>
-  <div>
-    <h1 class="text-3xl font-bold text-slate-900 mb-1">Tambah Kuis Baru</h1>
-    <p class="text-slate-600 m-0">Buat set kuis dan daftar pertanyaannya.</p>
+<div class="sticky top-0 z-40 bg-slate-50/95 backdrop-blur-md py-3 sm:py-4 mb-6 sm:mb-8 border-b border-slate-200/60 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 -mx-4 px-4 sm:-mx-8 sm:px-8">
+  <div class="flex items-center gap-4">
+    <a
+      href="/dashboard/quizzes"
+      class="p-2 text-slate-600 bg-white/50 hover:bg-white rounded-xl border border-slate-200 shadow-sm transition-all"
+    >
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+    </a>
+    <div>
+      <h1 class="text-2xl sm:text-3xl font-bold text-slate-900 mb-1">Tambah Kuis Baru</h1>
+      <p class="text-sm text-slate-600 m-0 hidden sm:block">Buat set kuis dan daftar pertanyaannya.</p>
+    </div>
+  </div>
+
+  <div class="flex items-center gap-3 w-full sm:w-auto">
+    <button
+      type="button"
+      onclick={addQuestion}
+      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+    >
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>
+      Tambah Soal
+    </button>
+    <button
+      type="button"
+      onclick={handleSubmit}
+      disabled={isSubmitting}
+      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer whitespace-nowrap"
+    >
+      {isSubmitting ? 'Menyimpan...' : 'Simpan Kuis'}
+    </button>
   </div>
 </div>
 
@@ -112,6 +137,22 @@
           required
           class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none transition-all w-full md:w-1/3"
         />
+
+        <div class="flex items-center justify-between p-4 bg-slate-50 border border-slate-200 rounded-xl">
+          <div>
+            <h3 class="text-sm font-bold text-slate-900">Publikasikan Kuis</h3>
+            <p class="text-xs text-slate-500 mt-0.5">Jika dimatikan, kuis akan disimpan sebagai Draf dan tidak bisa diakses murid.</p>
+          </div>
+          <button 
+            type="button"
+            role="switch"
+            aria-checked={isPublished}
+            onclick={() => isPublished = !isPublished}
+            class="relative inline-flex h-6 w-11 shrink-0 cursor-pointer rounded-full border-2 border-transparent transition-colors duration-200 ease-in-out focus:outline-none focus:ring-2 focus:ring-blue-600 focus:ring-offset-2 {isPublished ? 'bg-blue-600' : 'bg-slate-300'}"
+          >
+            <span class="pointer-events-none inline-block h-5 w-5 transform rounded-full bg-white shadow ring-0 transition duration-200 ease-in-out {isPublished ? 'translate-x-5' : 'translate-x-0'}"></span>
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -120,16 +161,6 @@
   <div class="space-y-4">
     <div class="flex justify-between items-center">
       <h2 class="text-xl font-bold text-slate-800">Daftar Pertanyaan</h2>
-      <button
-        type="button"
-        onclick={addQuestion}
-        class="inline-flex items-center gap-2 px-4 py-2 bg-white text-blue-600 border border-slate-300 rounded-lg font-medium hover:bg-slate-50 transition-colors shadow-sm cursor-pointer"
-      >
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-        </svg>
-        Tambah Soal
-      </button>
     </div>
 
     {#each questions as q, index}
@@ -188,13 +219,5 @@
     {/each}
   </div>
 
-  <div class="flex justify-end pt-6 border-t border-slate-200">
-    <button
-      type="submit"
-      disabled={isSubmitting}
-      class="px-8 py-3 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-slate-500 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer"
-    >
-      {isSubmitting ? 'Menyimpan...' : 'Simpan Kuis'}
-    </button>
-  </div>
+    <!-- Tombol aksi telah dipindah ke sticky header di atas -->
 </form>

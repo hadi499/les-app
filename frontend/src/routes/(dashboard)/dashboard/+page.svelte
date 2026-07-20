@@ -12,12 +12,13 @@
 
   let systemInfo: any = $state(null);
   let isRefreshing = $state(false);
-  
+
   let isClassOpenPaud = $state(true);
   let isClassOpenSd = $state(true);
   let isLoadingTogglePaud = $state(false);
   let isLoadingToggleSd = $state(false);
   let userRole = $state("");
+  let userData = $state<any>(null);
   let isSettingsLoaded = $state(false);
   let isRoleLoaded = $state(false);
 
@@ -44,7 +45,7 @@
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ value: newValue ? "true" : "false" })
+        body: JSON.stringify({ value: newValue ? "true" : "false" }),
       });
       if (res.ok) {
         isClassOpenPaud = newValue;
@@ -67,7 +68,7 @@
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ value: newValue ? "true" : "false" })
+        body: JSON.stringify({ value: newValue ? "true" : "false" }),
       });
       if (res.ok) {
         isClassOpenSd = newValue;
@@ -89,9 +90,12 @@
       if (meRes.ok) {
         const meData = await meRes.json();
         if (meData.authenticated) {
+          userData = meData.user;
           userRole = meData.user.role;
           if (userRole === "teacher") {
-            const res = await fetch("/api/system/info", { credentials: "include" });
+            const res = await fetch("/api/system/info", {
+              credentials: "include",
+            });
             if (res.ok) {
               const json = await res.json();
               systemInfo = json.data;
@@ -148,83 +152,172 @@
   <!-- Main Content -->
   <div class="max-w-4xl mx-auto space-y-6">
     <!-- Control Panel -->
-    <div class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden">
-      <div class="p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div>
+    <div
+      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
+    >
+      <div class="p-6 flex flex-col gap-4">
+        <div
+          class="flex flex-col md:flex-row md:items-center justify-between gap-4"
+        >
           <h4 class="font-bold text-slate-800 m-0">Status Kelas Hari Ini</h4>
-        </div>
-        
-        <div class="flex flex-col sm:flex-row items-center gap-4">
-          <!-- PAUD/TK -->
-          <div class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-            <span class="text-sm font-semibold text-slate-700">PAUD/TK:</span>
-            {#if !isSettingsLoaded || !isRoleLoaded}
-              <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
-            {:else if userRole === 'teacher'}
-              <span class="text-sm font-bold {isClassOpenPaud ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpenPaud ? 'BUKA' : 'LIBUR'}</span>
-              <button
-                onclick={toggleClassOpenPaud}
-                disabled={isLoadingTogglePaud}
-                class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenPaud ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
-              >
-                <span class="sr-only">Toggle Kelas PAUD</span>
-                <span
-                  class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenPaud ? 'translate-x-7' : 'translate-x-1'}"
-                ></span>
-              </button>
-            {:else}
-              <div class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenPaud ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
-                {#if isClassOpenPaud}
-                  <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  BUKA
-                {:else}
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  LIBUR
-                {/if}
-              </div>
-            {/if}
-          </div>
 
-          <!-- SD/SMP -->
-          <div class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100">
-            <span class="text-sm font-semibold text-slate-700">SD/SMP:</span>
-            {#if !isSettingsLoaded || !isRoleLoaded}
-              <div class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"></div>
-            {:else if userRole === 'teacher'}
-              <span class="text-sm font-bold {isClassOpenSd ? 'text-emerald-600' : 'text-rose-600'}">{isClassOpenSd ? 'BUKA' : 'LIBUR'}</span>
-              <button
-                onclick={toggleClassOpenSd}
-                disabled={isLoadingToggleSd}
-                class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenSd ? 'bg-emerald-500' : 'bg-rose-500'} border-none cursor-pointer"
-              >
-                <span class="sr-only">Toggle Kelas SD</span>
+          <div class="flex flex-col sm:flex-row items-center gap-4">
+            <!-- PAUD/TK -->
+            <div
+              class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100"
+            >
+              <span class="text-sm font-semibold text-slate-700">PAUD/TK:</span>
+              {#if !isSettingsLoaded || !isRoleLoaded}
+                <div
+                  class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"
+                ></div>
+              {:else if userRole === "teacher"}
                 <span
-                  class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenSd ? 'translate-x-7' : 'translate-x-1'}"
-                ></span>
-              </button>
-            {:else}
-              <div class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenSd ? 'bg-emerald-100 text-emerald-700 border border-emerald-200' : 'bg-rose-100 text-rose-700 border border-rose-200'}">
-                {#if isClassOpenSd}
-                  <span class="relative flex h-2 w-2">
-                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                  </span>
-                  BUKA
-                {:else}
-                  <svg class="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                  LIBUR
-                {/if}
-              </div>
-            {/if}
+                  class="text-sm font-bold {isClassOpenPaud
+                    ? 'text-emerald-600'
+                    : 'text-rose-600'}"
+                  >{isClassOpenPaud ? "BUKA" : "LIBUR"}</span
+                >
+                <button
+                  onclick={toggleClassOpenPaud}
+                  disabled={isLoadingTogglePaud}
+                  class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenPaud
+                    ? 'bg-emerald-500'
+                    : 'bg-rose-500'} border-none cursor-pointer"
+                >
+                  <span class="sr-only">Toggle Kelas PAUD</span>
+                  <span
+                    class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenPaud
+                      ? 'translate-x-7'
+                      : 'translate-x-1'}"
+                  ></span>
+                </button>
+              {:else}
+                <div
+                  class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenPaud
+                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                    : 'bg-rose-100 text-rose-700 border border-rose-200'}"
+                >
+                  {#if isClassOpenPaud}
+                    <span class="relative flex h-2 w-2">
+                      <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                      ></span>
+                      <span
+                        class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+                      ></span>
+                    </span>
+                    BUKA
+                  {:else}
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    LIBUR
+                  {/if}
+                </div>
+              {/if}
+            </div>
+
+            <!-- SD/SMP -->
+            <div
+              class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100"
+            >
+              <span class="text-sm font-semibold text-slate-700">SD/SMP:</span>
+              {#if !isSettingsLoaded || !isRoleLoaded}
+                <div
+                  class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"
+                ></div>
+              {:else if userRole === "teacher"}
+                <span
+                  class="text-sm font-bold {isClassOpenSd
+                    ? 'text-emerald-600'
+                    : 'text-rose-600'}">{isClassOpenSd ? "BUKA" : "LIBUR"}</span
+                >
+                <button
+                  onclick={toggleClassOpenSd}
+                  disabled={isLoadingToggleSd}
+                  class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isClassOpenSd
+                    ? 'bg-emerald-500'
+                    : 'bg-rose-500'} border-none cursor-pointer"
+                >
+                  <span class="sr-only">Toggle Kelas SD</span>
+                  <span
+                    class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isClassOpenSd
+                      ? 'translate-x-7'
+                      : 'translate-x-1'}"
+                  ></span>
+                </button>
+              {:else}
+                <div
+                  class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isClassOpenSd
+                    ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
+                    : 'bg-rose-100 text-rose-700 border border-rose-200'}"
+                >
+                  {#if isClassOpenSd}
+                    <span class="relative flex h-2 w-2">
+                      <span
+                        class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
+                      ></span>
+                      <span
+                        class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
+                      ></span>
+                    </span>
+                    BUKA
+                  {:else}
+                    <svg
+                      class="w-3 h-3"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    LIBUR
+                  {/if}
+                </div>
+              {/if}
+            </div>
           </div>
         </div>
+
+        {#if userData}
+          <div
+            class="pt-4 border-t border-slate-200 flex items-center justify-between gap-4"
+          >
+            <div class="text-base font-semibold text-slate-700">
+              Total Poin Quiz:
+            </div>
+            <div
+              class="inline-flex items-center gap-2 bg-blue-50 text-blue-700 px-4 py-2 rounded-xl text-sm font-bold border border-blue-100 shadow-sm"
+            >
+              <svg
+                class="w-5 h-5 text-blue-500"
+                fill="currentColor"
+                viewBox="0 0 20 20"
+              >
+                <path
+                  d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                />
+              </svg>
+              {userData.points || 0}
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
 
@@ -233,51 +326,93 @@
       <div
         class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-xl shadow-slate-800/10 overflow-hidden"
       >
-        <div class="px-6 py-5 border-b border-slate-200 bg-white/40 flex justify-between items-center">
-          <h3 class="text-lg font-bold text-slate-900 drop-shadow-sm m-0 flex items-center gap-2">
+        <div
+          class="px-6 py-5 border-b border-slate-200 bg-white/40 flex justify-between items-center"
+        >
+          <h3
+            class="text-lg font-bold text-slate-900 drop-shadow-sm m-0 flex items-center gap-2"
+          >
             <span>🖥️</span> Status Server (VPS)
           </h3>
-          <button 
+          <button
             onclick={fetchSystemInfo}
             disabled={isRefreshing}
             class="text-sm font-medium text-slate-600 hover:text-slate-900 bg-white/50 border border-slate-300 hover:bg-white/80 px-3 py-1.5 rounded-lg transition-colors flex items-center gap-2 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            <span class={isRefreshing ? "animate-spin inline-block" : "inline-block"}>🔄</span>
+            <span
+              class={isRefreshing
+                ? "animate-spin inline-block"
+                : "inline-block"}>🔄</span
+            >
             {isRefreshing ? "Memperbarui..." : "Perbarui"}
           </button>
         </div>
         <div class="p-6">
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             <!-- Memory -->
-            <div class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-200">
+            <div
+              class="bg-indigo-50/50 rounded-2xl p-5 border border-indigo-200"
+            >
               <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600">🧠</div>
+                <div
+                  class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600"
+                >
+                  🧠
+                </div>
                 <h4 class="font-bold text-slate-800 m-0">Memori (RAM)</h4>
               </div>
               <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-slate-600">Terpakai</span>
-                  <span class="font-bold text-slate-900">{formatBytes(systemInfo.memory.used)} / {formatBytes(systemInfo.memory.total)}</span>
+                  <span class="font-bold text-slate-900"
+                    >{formatBytes(systemInfo.memory.used)} / {formatBytes(
+                      systemInfo.memory.total,
+                    )}</span
+                  >
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                  <div class="bg-indigo-500 h-2.5 rounded-full" style="width: {(systemInfo.memory.used / systemInfo.memory.total) * 100}%"></div>
+                <div
+                  class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden"
+                >
+                  <div
+                    class="bg-indigo-500 h-2.5 rounded-full"
+                    style="width: {(systemInfo.memory.used /
+                      systemInfo.memory.total) *
+                      100}%"
+                  ></div>
                 </div>
               </div>
             </div>
 
             <!-- Storage -->
-            <div class="bg-fuchsia-50/50 rounded-2xl p-5 border border-fuchsia-200">
+            <div
+              class="bg-fuchsia-50/50 rounded-2xl p-5 border border-fuchsia-200"
+            >
               <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 rounded-full bg-fuchsia-100 flex items-center justify-center text-fuchsia-600">💾</div>
+                <div
+                  class="w-8 h-8 rounded-full bg-fuchsia-100 flex items-center justify-center text-fuchsia-600"
+                >
+                  💾
+                </div>
                 <h4 class="font-bold text-slate-800 m-0">Penyimpanan (Disk)</h4>
               </div>
               <div class="space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-slate-600">Terpakai</span>
-                  <span class="font-bold text-slate-900">{formatBytes(systemInfo.storage.used)} / {formatBytes(systemInfo.storage.total)}</span>
+                  <span class="font-bold text-slate-900"
+                    >{formatBytes(systemInfo.storage.used)} / {formatBytes(
+                      systemInfo.storage.total,
+                    )}</span
+                  >
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
-                  <div class="bg-fuchsia-500 h-2.5 rounded-full" style="width: {(systemInfo.storage.used / systemInfo.storage.total) * 100}%"></div>
+                <div
+                  class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden"
+                >
+                  <div
+                    class="bg-fuchsia-500 h-2.5 rounded-full"
+                    style="width: {(systemInfo.storage.used /
+                      systemInfo.storage.total) *
+                      100}%"
+                  ></div>
                 </div>
               </div>
             </div>
@@ -285,19 +420,33 @@
             <!-- Uploads Folder -->
             <div class="bg-amber-50/50 rounded-2xl p-5 border border-amber-200">
               <div class="flex items-center gap-3 mb-3">
-                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600">📁</div>
+                <div
+                  class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600"
+                >
+                  📁
+                </div>
                 <h4 class="font-bold text-slate-800 m-0">Folder Uploads</h4>
               </div>
               <div class="space-y-2">
                 <div class="flex justify-between text-sm mt-6">
                   <span class="text-slate-600">Total Ukuran</span>
                   {#if systemInfo.uploads && systemInfo.uploads.error}
-                    <span class="font-bold text-red-600 cursor-help" title={systemInfo.uploads.error}>Error (Arahkan Mouse)</span>
+                    <span
+                      class="font-bold text-red-600 cursor-help"
+                      title={systemInfo.uploads.error}
+                      >Error (Arahkan Mouse)</span
+                    >
                   {:else}
-                    <span class="font-bold text-slate-900">{systemInfo.uploads ? formatBytes(systemInfo.uploads.size) : '0 B'}</span>
+                    <span class="font-bold text-slate-900"
+                      >{systemInfo.uploads
+                        ? formatBytes(systemInfo.uploads.size)
+                        : "0 B"}</span
+                    >
                   {/if}
                 </div>
-                <div class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden">
+                <div
+                  class="w-full bg-slate-200 rounded-full h-2.5 overflow-hidden"
+                >
                   <div class="bg-amber-500 h-2.5 rounded-full w-full"></div>
                 </div>
               </div>
@@ -325,13 +474,19 @@
       </div>
 
       <div class="p-6">
-        <h4 class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 m-0">Statistik Pelajaran</h4>
+        <h4
+          class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 m-0"
+        >
+          Statistik Pelajaran
+        </h4>
         <div class="grid grid-cols-2 gap-4 mb-8">
           <div
             class="bg-sky-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-sky-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-sky-900/10 transition-all"
           >
             <span class="text-3xl mb-2 drop-shadow-sm">⭐</span>
-            <span class="text-2xl font-bold text-sky-600 drop-shadow-sm">{totalStars}</span>
+            <span class="text-2xl font-bold text-sky-600 drop-shadow-sm"
+              >{totalStars}</span
+            >
             <span
               class="text-xs font-medium text-sky-800 uppercase tracking-wide mt-1"
               >Total Bintang</span
@@ -361,7 +516,11 @@
           </a>
         </div>
 
-        <h4 class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 mt-8 m-0">High Score Game Mengetik</h4>
+        <h4
+          class="text-sm font-medium text-slate-600 uppercase tracking-wider mb-4 mt-8 m-0"
+        >
+          High Score Game Mengetik
+        </h4>
         <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
           <div
             class="bg-rose-100/50 rounded-2xl p-4 flex flex-col items-center justify-center border border-rose-300 hover:-translate-y-1 hover:shadow-lg hover:shadow-rose-900/10 transition-all"
@@ -445,7 +604,10 @@
         {:else}
           {@const allHistory = [
             ...$gameHistoryStore.map((h) => ({ type: "game" as const, ...h })),
-            ...$lessonHistoryStore.map((h) => ({ type: "lesson" as const, ...h })),
+            ...$lessonHistoryStore.map((h) => ({
+              type: "lesson" as const,
+              ...h,
+            })),
           ]
             .sort(
               (a, b) =>
@@ -491,7 +653,8 @@
                       class="text-xs font-bold px-2 py-0.5 rounded-md bg-emerald-100 text-emerald-700 border border-emerald-300"
                       >{item.wpm} WPM</span
                     >
-                    <span class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-wider"
+                    <span
+                      class="text-[0.65rem] font-medium text-slate-600 uppercase tracking-wider"
                       >Akurasi {item.accuracy}%</span
                     >
                   </div>

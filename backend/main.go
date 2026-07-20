@@ -134,6 +134,30 @@ func main() {
 		}
 	}()
 
+	// Background job untuk mereset poin semua user setiap awal bulan
+	go func() {
+		for {
+			now := time.Now()
+			currentMonth := now.Format("2006-01") // Format YYYY-MM
+			
+			var setting models.SystemSetting
+			err := database.DB.Where("key = ?", "last_point_reset").First(&setting).Error
+			
+			if err != nil {
+				// Belum pernah diset, set ke bulan ini agar tidak mereset bulan berjalan saat fitur ini pertama kali dirilis
+				database.DB.Create(&models.SystemSetting{Key: "last_point_reset", Value: currentMonth})
+			} else if setting.Value != currentMonth {
+				// Bulan sudah berganti, reset semua poin ke 0
+				database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0)
+				// Update bulan terakhir reset
+				database.DB.Model(&setting).Update("value", currentMonth)
+			}
+
+			// Cek setiap 24 jam sekali
+			time.Sleep(24 * time.Hour)
+		}
+	}()
+
 	r := gin.Default()
 
 	r.Use(cors.New(cors.Config{

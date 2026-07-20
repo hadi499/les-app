@@ -17,4 +17,5 @@ type User struct {
 	Absences         []Absence        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	UserLogs         []UserLog        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	LastActiveAt     *time.Time       `json:"last_active_at" gorm:"type:timestamp"`
+	Points           int              `json:"points" gorm:"default:0"`
 }

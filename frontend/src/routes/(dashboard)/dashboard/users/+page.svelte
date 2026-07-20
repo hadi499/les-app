@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  type User = { id: number; username: string; role: string; last_active_at?: string };
+  type User = { id: number; username: string; role: string; last_active_at?: string; points?: number };
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -192,6 +192,7 @@
                 >Username</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Aksi</th
@@ -212,6 +213,9 @@
                   >
                     {u.role}
                   </span>
+                </td>
+                <td class="py-4 px-6 text-sm font-semibold text-blue-600">
+                  {u.points || 0}
                 </td>
                 <td class="py-4 px-6 text-sm">
                   {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}

@@ -29,6 +29,11 @@ func GetQuizzes(c *gin.Context) {
 
 	query := database.DB.Model(&models.Quiz{})
 
+	role, _ := c.Get("role")
+	if role != "teacher" && role != "admin" {
+		query = query.Where("is_published = ?", true)
+	}
+
 	if err := query.Count(&totalItems).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung data kuis"})
 		return
@@ -68,10 +73,11 @@ func GetQuizByID(c *gin.Context) {
 // CreateQuiz - Membuat kuis baru beserta soal
 func CreateQuiz(c *gin.Context) {
 	var input struct {
-		Title     string            `json:"title" binding:"required"`
-		Category  string            `json:"category" binding:"required"`
-		TimeLimit int               `json:"timeLimit" binding:"required"`
-		Questions []models.Question `json:"questions"`
+		Title       string            `json:"title" binding:"required"`
+		Category    string            `json:"category" binding:"required"`
+		TimeLimit   int               `json:"timeLimit" binding:"required"`
+		IsPublished *bool             `json:"is_published"` // Use pointer to distinguish true/false vs null
+		Questions   []models.Question `json:"questions"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -79,11 +85,17 @@ func CreateQuiz(c *gin.Context) {
 		return
 	}
 
+	isPublished := true
+	if input.IsPublished != nil {
+		isPublished = *input.IsPublished
+	}
+
 	quiz := models.Quiz{
-		Title:     input.Title,
-		Category:  input.Category,
-		TimeLimit: input.TimeLimit,
-		Questions: input.Questions,
+		Title:       input.Title,
+		Category:    input.Category,
+		TimeLimit:   input.TimeLimit,
+		IsPublished: isPublished,
+		Questions:   input.Questions,
 	}
 
 	if err := database.DB.Create(&quiz).Error; err != nil {
@@ -105,10 +117,11 @@ func UpdateQuiz(c *gin.Context) {
 	}
 
 	var input struct {
-		Title     string            `json:"title" binding:"required"`
-		Category  string            `json:"category" binding:"required"`
-		TimeLimit int               `json:"timeLimit" binding:"required"`
-		Questions []models.Question `json:"questions"`
+		Title       string            `json:"title" binding:"required"`
+		Category    string            `json:"category" binding:"required"`
+		TimeLimit   int               `json:"timeLimit" binding:"required"`
+		IsPublished *bool             `json:"is_published"`
+		Questions   []models.Question `json:"questions"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -119,11 +132,18 @@ func UpdateQuiz(c *gin.Context) {
 	// Memulai transaction untuk menghindari data korup
 	tx := database.DB.Begin()
 
+	// Menentukan nilai IsPublished
+	isPublished := true
+	if input.IsPublished != nil {
+		isPublished = *input.IsPublished
+	}
+
 	// Update detail kuis
-	if err := tx.Model(&quiz).Updates(models.Quiz{
-		Title:     input.Title,
-		Category:  input.Category,
-		TimeLimit: input.TimeLimit,
+	if err := tx.Model(&quiz).Updates(map[string]interface{}{
+		"title":        input.Title,
+		"category":     input.Category,
+		"time_limit":   input.TimeLimit,
+		"is_published": isPublished,
 	}).Error; err != nil {
 		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal memperbarui kuis"})
@@ -166,12 +186,70 @@ func DeleteQuiz(c *gin.Context) {
 		return
 	}
 
-	if err := database.DB.Delete(&quiz).Error; err != nil {
+	tx := database.DB.Begin()
+
+	// Hapus soal yang terkait dengan kuis ini
+	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.Question{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus soal kuis"})
+		return
+	}
+
+	// Hapus skor yang terkait dengan kuis ini
+	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.ScoreQuiz{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus skor kuis"})
+		return
+	}
+
+	if err := tx.Delete(&quiz).Error; err != nil {
+		tx.Rollback()
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus kuis"})
 		return
 	}
 
+	tx.Commit()
+
 	c.JSON(http.StatusOK, gin.H{"message": "Kuis berhasil dihapus"})
+}
+
+// ResetQuizScores - Menghapus semua riwayat nilai pada kuis tertentu
+func ResetQuizScores(c *gin.Context) {
+	id := c.Param("id")
+	var quiz models.Quiz
+
+	// Verifikasi kuis ada
+	if err := database.DB.First(&quiz, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
+		return
+	}
+
+	// Cek apakah sudah direset bulan ini
+	now := time.Now()
+	if quiz.LastResetAt != nil && quiz.LastResetAt.Year() == now.Year() && quiz.LastResetAt.Month() == now.Month() {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Kuis sudah direset pada bulan ini"})
+		return
+	}
+
+	tx := database.DB.Begin()
+
+	// Hapus semua skor untuk kuis ini
+	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.ScoreQuiz{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus riwayat nilai kuis"})
+		return
+	}
+
+	// Update LastResetAt
+	if err := tx.Model(&quiz).Update("last_reset_at", now).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengupdate waktu reset"})
+		return
+	}
+
+	tx.Commit()
+
+	c.JSON(http.StatusOK, gin.H{"message": "Riwayat nilai kuis berhasil direset"})
 }
 
 // SubmitQuizScore - Menyimpan hasil kuis pengguna
@@ -193,6 +271,12 @@ func SubmitQuizScore(c *gin.Context) {
 		return
 	}
 
+	var previousPerfectScore int64
+	database.DB.Model(&models.ScoreQuiz{}).Where("username = ? AND quiz_id = ? AND score = 100", usernameStr, input.QuizID).Count(&previousPerfectScore)
+
+	var previousAttempts int64
+	database.DB.Model(&models.ScoreQuiz{}).Where("username = ? AND quiz_id = ?", usernameStr, input.QuizID).Count(&previousAttempts)
+
 	scoreQuiz := models.ScoreQuiz{
 		Username:  usernameStr,
 		QuizID:    input.QuizID,
@@ -205,7 +289,29 @@ func SubmitQuizScore(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusCreated, gin.H{"message": "Skor berhasil disimpan", "data": scoreQuiz})
+	pointsToAdd := 0
+	if input.Score == 100 && previousPerfectScore == 0 {
+		if previousAttempts == 0 {
+			pointsToAdd = 5
+		} else if previousAttempts == 1 {
+			pointsToAdd = 3
+		} else if previousAttempts == 2 {
+			pointsToAdd = 1
+		}
+
+		if pointsToAdd > 0 {
+			database.DB.Model(&models.User{}).Where("username = ?", usernameStr).UpdateColumn("points", gorm.Expr("points + ?", pointsToAdd))
+		}
+	}
+
+	pointsAlreadyClaimed := previousPerfectScore > 0
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Skor berhasil disimpan", 
+		"data": scoreQuiz,
+		"points_earned": pointsToAdd,
+		"points_already_claimed": pointsAlreadyClaimed,
+	})
 }
 
 // GetQuizScores - Mengambil daftar skor (hanya untuk guru/admin)
@@ -224,6 +330,11 @@ func GetQuizScores(c *gin.Context) {
 	var totalItems int64
 
 	query := database.DB.Model(&models.ScoreQuiz{})
+
+	searchUsername := c.Query("username")
+	if searchUsername != "" {
+		query = query.Where("username LIKE ?", "%"+searchUsername+"%")
+	}
 
 	if err := query.Count(&totalItems).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung skor"})

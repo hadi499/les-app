@@ -128,6 +128,7 @@ func SetupRoutes(r *gin.Engine) {
 			teacherQuizzes.PUT("/:id", controllers.UpdateQuiz)
 			teacherQuizzes.DELETE("/:id", controllers.DeleteQuiz)
 			teacherQuizzes.GET("/scores", controllers.GetQuizScores)
+			teacherQuizzes.DELETE("/:id/scores", controllers.ResetQuizScores)
 		}
 	}
 
