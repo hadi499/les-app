@@ -7,6 +7,7 @@
     category: string;
     timeLimit: number;
     is_published: boolean;
+    last_reset_at?: string | null;
   };
 
   type ScoreQuiz = {

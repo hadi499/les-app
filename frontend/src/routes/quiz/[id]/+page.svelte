@@ -96,8 +96,26 @@
     }
   }
 
+  function handlePageHide() {
+    // This event fires reliably when the page is actually unloading (after user confirms they want to leave)
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
+      hasConfirmedLeave = true;
+      fetch(`/api/scores/quizzes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: Number(quizId),
+          score: 0,
+        }),
+        keepalive: true
+      }).catch(console.error);
+    }
+  }
+
   onMount(async () => {
     window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
     try {
       // Cek apakah user sudah login
       const authRes = await fetch(`/me`, { credentials: "include" });
@@ -137,6 +155,7 @@
     clearInterval(timerInterval);
     if (typeof window !== "undefined") {
       window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
     }
   });
 
