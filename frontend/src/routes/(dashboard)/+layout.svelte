@@ -13,19 +13,34 @@
   let isMobileMenuOpen = $state(false);
   let isDesktopSidebarOpen = $state(true);
   let isLoading = $state(true);
+  let isNetworkError = $state(false);
+  let showReloadButton = $state(false);
 
   onMount(async () => {
+    let timeoutTimer = setTimeout(() => {
+      if (isLoading) showReloadButton = true;
+    }, 10000);
+
+    const controller = new AbortController();
+    const fetchTimeout = setTimeout(() => controller.abort(), 15000);
+
     try {
       const res = await fetch(`/me`, {
         credentials: "include",
+        signal: controller.signal
       });
+      clearTimeout(fetchTimeout);
+
       if (!res.ok) {
-        goto("/login");
-        return;
+        if (res.status === 401 || res.status === 403) {
+          window.location.href = "/login";
+          return;
+        }
+        throw new Error("Server error");
       }
       const data = await res.json();
       if (!data.authenticated) {
-        goto("/login");
+        window.location.href = "/login";
         return;
       }
       user = data.user;
@@ -46,9 +61,15 @@
         console.error("Failed to fetch unread count", e);
       }
       chatStore.connect();
-    } catch (e) {
-      goto("/login");
+    } catch (e: any) {
+      console.error("Layout init error:", e);
+      if (e.name === 'AbortError' || !navigator.onLine || e.message === "Server error" || e.message.includes("Failed to fetch")) {
+        isNetworkError = true;
+      } else {
+        window.location.href = "/login";
+      }
     } finally {
+      clearTimeout(timeoutTimer);
       isLoading = false;
     }
   });
@@ -246,7 +267,35 @@
             ></div>
           </div>
         </div>
+        {#if showReloadButton}
+          <div class="mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+            <button
+              onclick={() => window.location.reload()}
+              class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white rounded-full font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 hover:shadow-indigo-500/50 flex items-center gap-2"
+            >
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+              Muat Ulang Aplikasi
+            </button>
+          </div>
+        {/if}
       </div>
+    </div>
+  </div>
+{:else if isNetworkError}
+  <div class="min-h-screen bg-slate-50 flex items-center justify-center relative overflow-hidden px-4">
+    <div class="relative z-10 flex flex-col items-center gap-6 bg-white/60 backdrop-blur-xl p-8 sm:p-12 rounded-[2rem] shadow-xl border border-white max-w-md text-center">
+      <div class="w-20 h-20 bg-rose-100 rounded-full flex items-center justify-center text-rose-500 mb-2">
+        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+      </div>
+      <h2 class="text-2xl font-black text-slate-800">Koneksi Bermasalah</h2>
+      <p class="text-slate-600 text-sm leading-relaxed">Gagal memuat data dari server. Hal ini biasanya terjadi jika koneksi internet terputus atau aplikasi kembali dari background.</p>
+      <button
+        onclick={() => window.location.reload()}
+        class="mt-2 w-full px-6 py-3.5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold text-sm shadow-lg shadow-blue-500/30 transition-all hover:-translate-y-0.5 flex items-center justify-center gap-2"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+        Coba Muat Ulang
+      </button>
     </div>
   </div>
 {:else}
