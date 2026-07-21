@@ -277,18 +277,6 @@ func SubmitQuizScore(c *gin.Context) {
 	var previousAttempts int64
 	database.DB.Model(&models.ScoreQuiz{}).Where("username = ? AND quiz_id = ?", usernameStr, input.QuizID).Count(&previousAttempts)
 
-	scoreQuiz := models.ScoreQuiz{
-		Username:  usernameStr,
-		QuizID:    input.QuizID,
-		Score:     input.Score,
-		CreatedAt: time.Now(),
-	}
-
-	if err := database.DB.Create(&scoreQuiz).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan skor"})
-		return
-	}
-
 	pointsToAdd := 0
 	if input.Score == 100 && previousPerfectScore == 0 {
 		if previousAttempts == 0 {
@@ -298,10 +286,23 @@ func SubmitQuizScore(c *gin.Context) {
 		} else if previousAttempts == 2 {
 			pointsToAdd = 1
 		}
+	}
 
-		if pointsToAdd > 0 {
-			database.DB.Model(&models.User{}).Where("username = ?", usernameStr).UpdateColumn("points", gorm.Expr("points + ?", pointsToAdd))
-		}
+	scoreQuiz := models.ScoreQuiz{
+		Username:     usernameStr,
+		QuizID:       input.QuizID,
+		Score:        input.Score,
+		PointsEarned: pointsToAdd,
+		CreatedAt:    time.Now(),
+	}
+
+	if err := database.DB.Create(&scoreQuiz).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan skor"})
+		return
+	}
+
+	if pointsToAdd > 0 {
+		database.DB.Model(&models.User{}).Where("username = ?", usernameStr).UpdateColumn("points", gorm.Expr("points + ?", pointsToAdd))
 	}
 
 	pointsAlreadyClaimed := previousPerfectScore > 0

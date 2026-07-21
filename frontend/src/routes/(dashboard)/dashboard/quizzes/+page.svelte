@@ -15,6 +15,7 @@
     quiz_id: number;
     quiz?: Quiz;
     score: number;
+    points_earned?: number;
     created_at: string;
   };
 
@@ -518,12 +519,17 @@
                   </div>
                 {/if}
               </div>
-              <div class="shrink-0 text-right mt-0.5">
+              <div class="shrink-0 text-right mt-0.5 flex flex-col items-end gap-1.5">
                 <span
                   class={`inline-block px-3 py-1.5 rounded-xl text-sm font-black border shadow-sm tracking-wide ${s.score >= 80 ? "bg-green-50 text-green-700 border-green-200" : s.score >= 60 ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-red-50 text-red-600 border-red-200"}`}
                 >
                   SKOR {s.score}
                 </span>
+                {#if s.points_earned}
+                  <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 shadow-sm uppercase tracking-wider">
+                    +{s.points_earned} Poin
+                  </span>
+                {/if}
               </div>
             </div>
 
