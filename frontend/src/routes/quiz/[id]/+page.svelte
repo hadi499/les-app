@@ -113,9 +113,18 @@
     }
   }
 
+  function handleVisibilityChange() {
+    // Di perangkat mobile (HP), seringkali browser tidak memicu event 'beforeunload' atau 'pagehide' 
+    // saat user menutup browser/tab. 'visibilitychange' adalah cara paling direkomendasikan.
+    if (document.visibilityState === "hidden") {
+      handlePageHide();
+    }
+  }
+
   onMount(async () => {
     window.addEventListener("beforeunload", handleBeforeUnload);
     window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
     try {
       // Cek apakah user sudah login
       const authRes = await fetch(`/me`, { credentials: "include" });
@@ -156,6 +165,7 @@
     if (typeof window !== "undefined") {
       window.removeEventListener("beforeunload", handleBeforeUnload);
       window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
     }
   });
 
