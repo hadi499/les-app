@@ -149,6 +149,8 @@ func main() {
 			} else if setting.Value != currentMonth {
 				// Bulan sudah berganti, reset semua poin ke 0
 				database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0)
+				// Reset semua riwayat nilai kuis (menghapus semua skor agar bisa dikerjakan ulang dari nol)
+				database.DB.Where("1 = 1").Delete(&models.ScoreQuiz{})
 				// Update bulan terakhir reset
 				database.DB.Model(&setting).Update("value", currentMonth)
 			}
