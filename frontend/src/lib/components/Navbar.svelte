@@ -83,7 +83,7 @@
         </div>
         <a
           href="/"
-          class="font-extrabold text-xl text-slate-900 tracking-tight no-underline hover:text-blue-600 transition-colors"
+          class="font-['Concert_One'] text-2xl bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text tracking-wide no-underline hover:opacity-80 transition-opacity"
           >Les Balonggarut</a
         >
       </div>

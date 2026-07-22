@@ -4,10 +4,6 @@
   let isAuthenticated = $state(false);
   let authChecked = $state(false);
 
-  // Mengambil status dari server
-  let isClassOpenPaud = $state(true);
-  let isClassOpenSd = $state(true);
-  let isSettingsLoaded = $state(false);
 
   type Quote = {
     id: number;
@@ -31,23 +27,6 @@
       console.error("Gagal memuat quotes", e);
     } finally {
       quotesLoaded = true;
-    }
-    // Fetch Pengaturan Sistem
-    try {
-      const resSettings = await fetch("/api/settings");
-      if (resSettings.ok) {
-        const settings = await resSettings.json();
-        if (settings.is_class_open_paud !== undefined) {
-          isClassOpenPaud = settings.is_class_open_paud === "true";
-        }
-        if (settings.is_class_open_sd !== undefined) {
-          isClassOpenSd = settings.is_class_open_sd === "true";
-        }
-      }
-    } catch (e) {
-      console.error("Gagal memuat pengaturan", e);
-    } finally {
-      isSettingsLoaded = true;
     }
 
     try {
@@ -121,92 +100,14 @@
 
   <!-- Hero Section -->
   <section
-    class="relative z-10 w-full max-w-4xl mx-auto px-6 pt-28 pb-12 lg:pt-36 lg:pb-32 flex flex-col items-center text-center gap-16"
+    class="relative z-10 w-full max-w-4xl mx-auto px-6 pt-20 pb-12 lg:pt-28 lg:pb-32 flex flex-col items-center text-center gap-16"
   >
     <!-- Text -->
     <div class="flex flex-col items-center gap-8">
-      {#if isSettingsLoaded}
-        <div class="flex flex-row flex-wrap justify-center gap-2 mt-4">
-          <!-- Status PAUD/TK -->
-          {#if isClassOpenPaud}
-            <div
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10"
-            >
-              <span class="relative flex h-2.5 w-2.5">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-                ></span>
-                <span
-                  class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"
-                ></span>
-              </span>
-              PAUD/TK: Buka
-            </div>
-          {:else}
-            <div
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              PAUD/TK: Libur
-            </div>
-          {/if}
-
-          <!-- Status SD/SMP -->
-          {#if isClassOpenSd}
-            <div
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-emerald-50/80 backdrop-blur-sm border border-emerald-200/50 text-emerald-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-emerald-500/10"
-            >
-              <span class="relative flex h-2.5 w-2.5">
-                <span
-                  class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-                ></span>
-                <span
-                  class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"
-                ></span>
-              </span>
-              SD/SMP: Buka
-            </div>
-          {:else}
-            <div
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-rose-50/80 backdrop-blur-sm border border-rose-200/50 text-rose-700 text-xs sm:text-sm font-bold tracking-widest uppercase animate-in fade-in zoom-in duration-500 shadow-sm shadow-rose-500/10"
-            >
-              <svg
-                class="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                />
-              </svg>
-              SD/SMP: Libur
-            </div>
-          {/if}
-        </div>
-      {:else}
-        <!-- Placeholder agar layout tidak lompat -->
-        <div class="h-9 sm:h-9 mt-4 opacity-0"></div>
-      {/if}
 
       <div class="flex flex-col gap-6 items-center mt-2">
         <h1
-          class="text-3xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] text-slate-900 uppercase leading-tight text-center drop-shadow-sm"
+          class="text-3xl sm:text-5xl lg:text-[4rem] font-bold tracking-[0.1em] bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
         >
           Les Balonggarut
         </h1>
@@ -402,56 +303,27 @@
         <div class="h-px w-8 bg-slate-300"></div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
-        {#each quotes as q, i}
-          <div
-            class="{i % 3 === 0
-              ? 'bg-blue-50/80 border-l-blue-500'
-              : i % 3 === 1
-                ? 'bg-violet-50/80 border-l-violet-500'
-                : 'bg-emerald-50/80 border-l-emerald-500'} backdrop-blur-md p-6 rounded-2xl shadow-sm border border-slate-200/50 border-l-4 flex flex-col justify-between hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 group"
-          >
-            <div>
-              <!-- Big quote icon -->
-              <svg
-                class="w-7 h-7 opacity-25 mb-4 group-hover:opacity-40 transition-opacity duration-300 {i %
-                  3 ===
-                0
-                  ? 'text-blue-600'
-                  : i % 3 === 1
-                    ? 'text-violet-600'
-                    : 'text-emerald-600'}"
-                fill="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
-                />
-              </svg>
-              <!-- English quote -->
-              <p
-                class="text-slate-900 font-semibold text-base leading-relaxed mb-3 italic"
-              >
-                &ldquo;{q.quote}&rdquo;
-              </p>
-              <!-- Indonesian translation -->
-              <p
-                class="text-slate-500 text-sm leading-relaxed mb-6 border-t border-slate-200/70 pt-3"
-              >
-                {q.arti}
-              </p>
-            </div>
+      <div class="grid grid-cols-1 max-w-2xl mx-auto w-full">
+        {#each quotes.slice(0, 1) as q, i}
+          <div class="flex flex-col items-center text-center px-4 py-8 md:py-10">
+
+            <!-- English quote -->
+            <p
+              class="text-slate-800 font-semibold text-lg md:text-xl leading-relaxed mb-4 italic max-w-xl"
+            >
+              &ldquo;{q.quote}&rdquo;
+            </p>
+            <!-- Indonesian translation -->
+            <p
+              class="text-slate-500 text-sm md:text-base leading-relaxed mb-8 max-w-lg"
+            >
+              {q.arti}
+            </p>
             <!-- Author -->
-            <div class="flex items-center gap-2">
-              <div
-                class="w-5 h-0.5 rounded-full {i % 3 === 0
-                  ? 'bg-blue-500'
-                  : i % 3 === 1
-                    ? 'bg-violet-500'
-                    : 'bg-emerald-500'}"
-              ></div>
+            <div class="flex flex-col items-center gap-2">
+              <div class="w-8 h-0.5 rounded-full bg-blue-500/50"></div>
               <p
-                class="text-slate-700 font-bold text-xs tracking-wider uppercase"
+                class="text-slate-700 font-bold text-xs tracking-[0.2em] uppercase mt-2"
               >
                 {q.author}
               </p>

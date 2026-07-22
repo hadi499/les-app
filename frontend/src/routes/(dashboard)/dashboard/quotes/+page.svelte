@@ -337,15 +337,15 @@
               type="checkbox"
               id="isPublished"
               bind:checked={formIsPublished}
-              disabled={(!isEditing && publishedCount >= 3) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 3)}
+              disabled={(!isEditing && publishedCount >= 1) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 1)}
               class="w-4 h-4 text-indigo-600 bg-white border-slate-300 rounded focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             />
-            <label for="isPublished" class="ml-2 text-sm font-medium text-slate-700 {((!isEditing && publishedCount >= 3) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 3)) ? 'opacity-50' : ''}">
+            <label for="isPublished" class="ml-2 text-sm font-medium text-slate-700 {((!isEditing && publishedCount >= 1) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 1)) ? 'opacity-50' : ''}">
               Tampilkan di Beranda (Publish)
             </label>
           </div>
-          {#if (!isEditing && publishedCount >= 3) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 3)}
-            <p class="text-xs text-amber-600 mt-1">Batas maksimal 3 quote publish telah tercapai. Quote ini akan disimpan sebagai Draft.</p>
+          {#if (!isEditing && publishedCount >= 1) || (isEditing && !quotes.find(q => q.id === currentQuoteId)?.is_published && publishedCount >= 1)}
+            <p class="text-xs text-amber-600 mt-1">Batas maksimal 1 quote publish telah tercapai. Quote ini akan disimpan sebagai Draft.</p>
           {/if}
 
           <div class="pt-4 flex justify-end gap-3">
