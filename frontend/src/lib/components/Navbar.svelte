@@ -78,7 +78,7 @@
       <div class="shrink-0 flex items-center gap-3">
         <a
           href="/"
-          class="w-10 h-10 bg-white border border-blue-300 rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-extrabold text-xl no-underline hover:scale-105 transition-transform"
+          class="w-10 h-10 bg-white border border-blue-300 rounded-xl shadow-md shadow-blue-500/20 flex items-center justify-center text-blue-600 font-extrabold text-xl no-underline hover:scale-105 transition-transform"
         >
           LB
         </a>
