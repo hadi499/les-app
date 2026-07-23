@@ -105,16 +105,16 @@
     <!-- Text -->
     <div class="flex flex-col items-center gap-8">
 
-      <div class="flex flex-col gap-6 items-center mt-2">
+      <div class="flex flex-col gap-6 items-center mt-8 sm:mt-2">
         <h1
-          class="text-2xl sm:text-5xl lg:text-[4rem] font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
+          class="text-3xl sm:text-6xl lg:text-[4.5rem] font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
         >
           Les Balonggarut
         </h1>
 
         <!-- Subject Badges -->
         <div
-          class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-1 w-full max-w-xs sm:max-w-none"
+          class="flex flex-col sm:grid sm:grid-cols-4 gap-3 sm:gap-2 mt-1 w-fit min-w-50 sm:w-full sm:max-w-none"
         >
           <!-- Komputer -->
           <span
