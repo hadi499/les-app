@@ -76,14 +76,15 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex justify-between h-16 items-center">
       <div class="shrink-0 flex items-center gap-3">
-        <div
-          class="w-10 h-10 bg-white border border-slate-200 rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-extrabold text-xl"
-        >
-          LB
-        </div>
         <a
           href="/"
-          class="font-['Concert_One'] text-2xl bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text tracking-wide no-underline hover:opacity-80 transition-opacity"
+          class="w-10 h-10 bg-white border border-blue-300 rounded-xl shadow-sm flex items-center justify-center text-blue-600 font-extrabold text-xl no-underline hover:scale-105 transition-transform"
+        >
+          LB
+        </a>
+        <a
+          href="/"
+          class="hidden sm:block font-['Concert_One'] text-2xl bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text tracking-wide no-underline hover:opacity-80 transition-opacity"
           >Les Balonggarut</a
         >
       </div>
