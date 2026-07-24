@@ -217,14 +217,14 @@
       </div>
 
       <div
-        class="pt-6 flex flex-row items-center justify-center gap-3 flex-wrap"
+        class="pt-6 flex flex-row items-center justify-center gap-5 flex-wrap"
       >
         {#if authChecked}
           {#if !isAuthenticated}
             <!-- Primary: Masuk Portal -->
             <a
               href="/login"
-              class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
+              class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
             >
               <svg
                 class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -245,7 +245,7 @@
             <!-- Primary: Dashboard -->
             <a
               href="/dashboard"
-              class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
+              class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 hover:scale-105 transition-all duration-300 no-underline"
             >
               <svg
                 class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -268,7 +268,7 @@
         <!-- Secondary: Panduan -->
         <a
           href="/panduan"
-          class="group inline-flex items-center gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
+          class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-300 hover:border-slate-400 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
         >
           Panduan
           <svg
