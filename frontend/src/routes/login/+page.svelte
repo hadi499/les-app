@@ -1,7 +1,9 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
   import { page } from "$app/state";
+
+  let authState = getContext<{isAuthenticated: boolean, authChecked: boolean}>("authState");
 
   let username = $state("");
   let password = $state("");
@@ -51,6 +53,10 @@
 
       if (!res.ok) {
         throw new Error(data.error || "Login gagal");
+      }
+
+      if (authState) {
+        authState.isAuthenticated = true;
       }
 
       goto("/");

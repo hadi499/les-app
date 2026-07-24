@@ -1,8 +1,9 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
 
-  let isAuthenticated = $state(false);
-  let authChecked = $state(false);
+  let authState = getContext<{isAuthenticated: boolean, authChecked: boolean}>("authState");
+  let isAuthenticated = $derived(authState.isAuthenticated);
+  let authChecked = $derived(authState.authChecked);
 
 
   type Quote = {
@@ -29,21 +30,6 @@
       quotesLoaded = true;
     }
 
-    try {
-      const res = await fetch(`/me`, {
-        credentials: "include",
-      });
-      if (res.ok) {
-        const data = (await res.json()) as { authenticated: boolean };
-        if (data.authenticated) {
-          isAuthenticated = true;
-        }
-      }
-    } catch (e) {
-      // Ignore error if no session
-    } finally {
-      authChecked = true;
-    }
   });
 </script>
 

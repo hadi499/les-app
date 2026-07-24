@@ -5,9 +5,33 @@
   import { page } from "$app/state";
   import Navbar from "$lib/components/Navbar.svelte";
   import Toast from "$lib/components/Toast.svelte";
+  import { onMount, setContext } from "svelte";
   import type { Snippet } from "svelte";
 
   let { children }: { children: Snippet } = $props();
+
+  let authState = $state({
+    isAuthenticated: false,
+    authChecked: false,
+  });
+
+  setContext("authState", authState);
+
+  onMount(async () => {
+    try {
+      const res = await fetch(`/me`, { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        if (data.authenticated) {
+          authState.isAuthenticated = true;
+        }
+      }
+    } catch (e) {
+      // ignore
+    } finally {
+      authState.authChecked = true;
+    }
+  });
 
   const showNavbar = $derived(() => {
     const path = page.url?.pathname || "/";
