@@ -263,6 +263,14 @@
               Dashboard
             </a>
           {/if}
+        {:else}
+          <!-- Placeholder to prevent layout shift while checking auth -->
+          <div
+            class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-sm animate-pulse"
+          >
+            <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
+            <div class="h-3 w-20 bg-indigo-200 rounded"></div>
+          </div>
         {/if}
 
         <!-- Secondary: Panduan -->
