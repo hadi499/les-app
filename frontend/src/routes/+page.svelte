@@ -75,7 +75,7 @@
   class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col relative overflow-x-hidden text-slate-900"
 >
   <!-- Background Ambient -->
-  <div class="absolute inset-0 z-0 pointer-events-none fixed">
+  <div class="absolute inset-0 z-0 pointer-events-none overflow-hidden">
     <div
       class="absolute top-1/4 left-1/4 w-[250px] h-[250px] sm:w-[500px] sm:h-[500px] bg-blue-100/60 rounded-full blur-[80px] sm:blur-[120px]"
     ></div>
@@ -485,9 +485,5 @@
     </div>
   </footer>
 
-  <!-- Noise Overlay for texture -->
-  <div
-    class="absolute inset-0 opacity-[0.03] pointer-events-none mix-blend-screen"
-    style="background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E');"
-  ></div>
+  <!-- Noise Overlay for texture removed for better mobile performance -->
 </div>
