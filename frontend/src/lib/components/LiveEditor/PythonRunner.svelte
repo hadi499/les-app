@@ -1,66 +1,85 @@
 <script lang="ts">
+  import { onMount, onDestroy } from 'svelte';
+  import PyodideWorker from '$lib/workers/pyodide.worker.ts?worker';
+
   let { code = '' } = $props<{ code?: string }>();
 
   let output: string[] = $state([]);
-  let pyodide: any = $state(null);
-  let isLoading = $state(false);
+  let isLoading = $state(true); // Loading on initial mount in background
+  let isExecuting = $state(false); // When code is actually running
   let runError: string | null = $state(null);
 
-  async function initPyodide() {
-    isLoading = true;
-    try {
-      // Load pyodide script dynamically
-      if (!(window as any).loadPyodide) {
-        const script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.js';
-        document.head.appendChild(script);
-        
-        await new Promise((resolve) => {
-          script.onload = resolve;
-        });
-      }
+  let worker: Worker;
+  let messageIdCounter = 0;
+  let resolvePromises: Record<number, { resolve: any, reject: any }> = {};
 
-      // Initialize Pyodide
-      pyodide = await (window as any).loadPyodide();
+  onMount(() => {
+    worker = new PyodideWorker();
+    
+    worker.onmessage = (event) => {
+      const { id, type, msg, error } = event.data;
       
-      // Redirect stdout
-      pyodide.setStdout({
-        batched: (msg: string) => {
-          output = [...output, msg];
+      if (type === 'STDOUT') {
+        output = [...output, msg];
+      } else if (type === 'INIT_DONE') {
+        isLoading = false;
+        if (resolvePromises[id]) {
+          resolvePromises[id].resolve(null);
+          delete resolvePromises[id];
         }
-      });
-    } catch (e) {
-      console.error("Failed to load pyodide", e);
-      runError = "Gagal memuat Python. Coba muat ulang halaman.";
-    } finally {
-      isLoading = false;
-    }
-  }
+      } else if (type === 'RUN_DONE') {
+        isExecuting = false;
+        if (resolvePromises[id]) {
+          resolvePromises[id].resolve(null);
+          delete resolvePromises[id];
+        }
+      } else if (type === 'ERROR') {
+        isLoading = false;
+        isExecuting = false;
+        if (resolvePromises[id]) {
+          resolvePromises[id].reject(new Error(error));
+          delete resolvePromises[id];
+        }
+      }
+    };
+
+    // Preload Pyodide in the background immediately
+    const id = messageIdCounter++;
+    resolvePromises[id] = {
+      resolve: () => {},
+      reject: (err: any) => { runError = "Gagal memuat Python: " + err.message; }
+    };
+    worker.postMessage({ id, type: 'INIT' });
+  });
+
+  onDestroy(() => {
+    if (worker) worker.terminate();
+  });
 
   async function runCode() {
-    if (!pyodide) {
-      await initPyodide();
-    }
-    
-    if (!pyodide) return;
+    if (isLoading || isExecuting) return;
     
     output = [];
     runError = null;
+    isExecuting = true;
+    
+    const id = messageIdCounter++;
+    const runPromise = new Promise((resolve, reject) => {
+      resolvePromises[id] = { resolve, reject };
+    });
+    
+    worker.postMessage({ id, type: 'RUN', code });
     
     try {
-      await pyodide.runPythonAsync(code);
+      await runPromise;
     } catch (e: any) {
-      // Simplify error message for beginners
-      console.error(e);
       let errorMsg = e.message || e.toString();
       
-      // Basic heuristic to simplify python stack trace
       if (errorMsg.includes('SyntaxError')) {
         runError = "Ada kesalahan penulisan kode (SyntaxError). Coba periksa lagi kode yang kamu tulis.";
       } else if (errorMsg.includes('NameError')) {
         runError = "Ada variabel atau perintah yang tidak dikenali (NameError). Coba periksa ejaannya.";
       } else {
-        // Just show the last line of the stack trace which usually contains the actual error
         const lines = errorMsg.split('\n').filter((l: string) => l.trim() !== '');
         runError = "Error: " + lines[lines.length - 1];
       }
@@ -80,10 +99,10 @@
     <span class="text-sm font-semibold">Console (Python)</span>
     <button 
       class="bg-blue-600 hover:bg-blue-700 text-white text-xs py-1 px-3 rounded disabled:opacity-50"
-      disabled={isLoading}
+      disabled={isLoading || isExecuting}
       onclick={runCode}
     >
-      {isLoading ? 'Memuat Python...' : 'Run Code'}
+      {isLoading ? 'Menyiapkan Mesin...' : (isExecuting ? 'Menjalankan...' : 'Run Code')}
     </button>
   </div>
   
@@ -94,7 +113,14 @@
           <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
           <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
         </svg>
-        <span class="text-sm font-medium animate-pulse text-blue-200">Menyiapkan Python... (Tunggu sebentar)</span>
+        <span class="text-sm font-medium animate-pulse text-blue-200">Sedang memuat sistem Python...</span>
+        <span class="text-xs text-blue-300 mt-1">(Tunggu sebentar, tidak akan macet)</span>
+      </div>
+    {/if}
+
+    {#if isExecuting}
+      <div class="absolute inset-0 z-10 flex items-center justify-center bg-gray-900/50 text-white">
+        <span class="animate-pulse">Menjalankan kode...</span>
       </div>
     {/if}
 
