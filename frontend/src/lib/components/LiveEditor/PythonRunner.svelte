@@ -1,14 +1,13 @@
 <script lang="ts">
-  import { onMount } from 'svelte';
-
   let { code = '' } = $props<{ code?: string }>();
 
   let output: string[] = $state([]);
   let pyodide: any = $state(null);
-  let isLoading = $state(true);
+  let isLoading = $state(false);
   let runError: string | null = $state(null);
 
-  onMount(async () => {
+  async function initPyodide() {
+    isLoading = true;
     try {
       // Load pyodide script dynamically
       if (!(window as any).loadPyodide) {
@@ -30,15 +29,19 @@
           output = [...output, msg];
         }
       });
-      isLoading = false;
     } catch (e) {
       console.error("Failed to load pyodide", e);
       runError = "Gagal memuat Python. Coba muat ulang halaman.";
+    } finally {
       isLoading = false;
     }
-  });
+  }
 
   async function runCode() {
+    if (!pyodide) {
+      await initPyodide();
+    }
+    
     if (!pyodide) return;
     
     output = [];
@@ -58,7 +61,7 @@
         runError = "Ada variabel atau perintah yang tidak dikenali (NameError). Coba periksa ejaannya.";
       } else {
         // Just show the last line of the stack trace which usually contains the actual error
-        const lines = errorMsg.split('\\n').filter((l: string) => l.trim() !== '');
+        const lines = errorMsg.split('\n').filter((l: string) => l.trim() !== '');
         runError = "Error: " + lines[lines.length - 1];
       }
     }
@@ -84,7 +87,17 @@
     </button>
   </div>
   
-  <div class="flex-1 p-4 overflow-y-auto text-sm">
+  <div class="flex-1 p-4 overflow-y-auto text-sm relative">
+    {#if isLoading}
+      <div class="absolute inset-0 z-10 flex flex-col items-center justify-center bg-gray-900/90 text-white backdrop-blur-sm">
+        <svg class="animate-spin h-8 w-8 text-blue-500 mb-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span class="text-sm font-medium animate-pulse text-blue-200">Menyiapkan Python... (Tunggu sebentar)</span>
+      </div>
+    {/if}
+
     {#if runError}
       <div class="text-red-400 mb-2 whitespace-pre-wrap">{runError}</div>
     {/if}
