@@ -352,7 +352,7 @@
 
             <!-- Card Compress Image -->
             <a 
-              href="/compress"
+              href="/compress-image"
               class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-orange-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 no-underline overflow-hidden"
             >
               <div class="absolute -right-6 -top-6 w-32 h-32 bg-orange-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
