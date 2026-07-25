@@ -40,7 +40,8 @@
       path.startsWith("/dashboard") ||
       path.startsWith("/login") ||
       path.startsWith("/register") ||
-      path.includes("select-user")
+      path.includes("select-user") ||
+      path.startsWith("/belajar-coding")
     ) {
       return false;
     }

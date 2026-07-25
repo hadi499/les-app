@@ -202,83 +202,135 @@
         </p>
       </div>
 
-      <div
-        class="pt-6 flex flex-row items-center justify-center gap-5 flex-wrap"
-      >
-        {#if authChecked}
-          {#if !isAuthenticated}
-            <!-- Primary: Masuk Portal -->
-            <a
-              href="/login"
-              class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
-            >
-              <svg
-                class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+      <div class="pt-6 flex flex-col items-center justify-center gap-8 w-full">
+        <!-- Main Actions -->
+        <div class="flex flex-row items-center justify-center gap-5 flex-wrap">
+          {#if authChecked}
+            {#if !isAuthenticated}
+              <!-- Primary: Masuk Portal -->
+              <a
+                href="/login"
+                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
               >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
-                />
-              </svg>
-              Masuk Portal
-            </a>
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                  />
+                </svg>
+                Masuk Portal
+              </a>
+            {:else}
+              <!-- Primary: Dashboard -->
+              <a
+                href="/dashboard"
+                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
+              >
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  />
+                </svg>
+                Dashboard
+              </a>
+            {/if}
           {:else}
-            <!-- Primary: Dashboard -->
-            <a
-              href="/dashboard"
-              class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
+            <!-- Placeholder to prevent layout shift while checking auth -->
+            <div
+              class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-sm animate-pulse"
             >
-              <svg
-                class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  stroke-width="2"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
-                />
-              </svg>
-              Dashboard
-            </a>
+              <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
+              <div class="h-3 w-20 bg-indigo-200 rounded"></div>
+            </div>
           {/if}
-        {:else}
-          <!-- Placeholder to prevent layout shift while checking auth -->
-          <div
-            class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-sm animate-pulse"
-          >
-            <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
-            <div class="h-3 w-20 bg-indigo-200 rounded"></div>
-          </div>
-        {/if}
 
-        <!-- Secondary: Panduan -->
-        <a
-          href="/panduan"
-          class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-400 hover:border-slate-500 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
-        >
-          Panduan
-          <svg
-            class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-slate-500"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
+          <!-- Secondary: Panduan -->
+          <a
+            href="/panduan"
+            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-400 hover:border-slate-500 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
           >
-            <path
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              d="M17 8l4 4m0 0l-4 4m4-4H3"
-            />
-          </svg>
-        </a>
+            Panduan
+            <svg
+              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-slate-500"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </a>
+        </div>
+
+        <!-- Featured New Feature: Belajar Coding & Berhitung -->
+        <div class="flex flex-col items-center gap-6 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 delay-150 mt-4">
+          <div class="flex items-center gap-4 w-full max-w-[300px] opacity-60 mb-2">
+            <div class="flex-1 h-px bg-slate-300"></div>
+            <span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold whitespace-nowrap">Fitur Pendukung</span>
+            <div class="flex-1 h-px bg-slate-300"></div>
+          </div>
+          
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl text-left">
+            <!-- Card Belajar Coding -->
+            <a 
+              href="/belajar-coding"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-blue-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 no-underline overflow-hidden"
+            >
+              <div class="absolute -right-6 -top-6 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+              
+              <div class="w-12 h-12 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center mb-5 relative z-10 shadow-sm border border-blue-200/50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+              </div>
+              
+              <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors mb-2 relative z-10">Belajar Coding</h3>
+              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Latih logika komputasional anak hingga remaja dengan merakit blok visual maupun menulis kode secara interaktif.</p>
+              
+              <div class="mt-6 flex items-center text-sm font-bold text-blue-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+                Coba Sekarang
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </div>
+            </a>
+
+            <!-- Card Berhitung -->
+            <a 
+              href="/berhitung"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-pink-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 no-underline overflow-hidden"
+            >
+              <div class="absolute -right-6 -top-6 w-32 h-32 bg-pink-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+              
+              <div class="w-12 h-12 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center mb-5 relative z-10 shadow-sm border border-pink-200/50">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+              </div>
+              
+              <h3 class="text-lg font-bold text-slate-800 group-hover:text-pink-600 transition-colors mb-2 relative z-10">Latihan Berhitung</h3>
+              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Tingkatkan kecepatan dan ketepatan menghitung dengan modul aritmetika yang terstruktur untuk semua level.</p>
+              
+              <div class="mt-6 flex items-center text-sm font-bold text-pink-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+                Mulai Berlatih
+                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+              </div>
+            </a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -369,6 +421,11 @@
           href="/quiz"
           class="hover:text-slate-800 transition-colors duration-200 no-underline"
           >Kuis</a
+        >
+        <a
+          href="/belajar-coding"
+          class="hover:text-slate-800 transition-colors duration-200 no-underline"
+          >Belajar Coding</a
         >
         <a
           href="/login"
