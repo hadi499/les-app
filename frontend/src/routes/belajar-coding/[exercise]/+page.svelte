@@ -116,9 +116,9 @@
 <div class="h-screen w-full flex flex-col bg-gray-50 font-sans">
   <!-- Header -->
   <header
-    class="bg-white border-b border-gray-200 px-4 py-3 flex justify-between items-center shrink-0"
+    class="bg-white border-b border-gray-200 px-4 py-3 flex flex-col sm:flex-row justify-between items-center gap-3 shrink-0"
   >
-    <div>
+    <div class="w-full sm:w-auto text-center sm:text-left">
       <h1 class="text-xl font-bold text-gray-800">
         {#if exercise}
           {exercise.title}
@@ -127,7 +127,7 @@
         {/if}
       </h1>
     </div>
-    <div class="flex items-center gap-3">
+    <div class="flex items-center justify-center gap-3 w-full sm:w-auto">
       <button
         class="px-5 py-2.5 text-sm font-semibold text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors"
         onclick={resetCode}
@@ -157,11 +157,11 @@
 
   <!-- Workspace -->
   {#if exercise}
-    <div class="flex-1 overflow-hidden p-4 flex gap-4 h-full">
+    <div class="flex-1 overflow-y-auto lg:overflow-hidden p-4 flex flex-col lg:flex-row gap-4 h-full">
       {#if exercise.type === "web"}
         <!-- Web Editor Panel -->
         <div
-          class="flex-1 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
+          class="flex-1 min-h-[400px] lg:min-h-0 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
         >
           <div class="flex border-b border-gray-200 shrink-0">
             <button
@@ -204,7 +204,7 @@
 
         <!-- Web Preview Panel -->
         <div
-          class="flex-1 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
+          class="flex-1 min-h-[400px] lg:min-h-0 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
         >
           <div
             class="px-4 py-2 border-b border-gray-200 shrink-0 flex justify-between items-center"
@@ -241,7 +241,7 @@
       {:else if exercise.type === "python"}
         <!-- Python Editor Panel -->
         <div
-          class="flex-[1.5] flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
+          class="flex-[1.5] min-h-[400px] lg:min-h-0 flex flex-col bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden min-w-0"
         >
           <div class="px-4 py-2 border-b border-gray-200 shrink-0">
             <span class="text-sm font-medium text-gray-700">script.py</span>
@@ -253,7 +253,7 @@
 
         <!-- Python Console Panel -->
         <div
-          class="flex-1 flex flex-col rounded-lg shadow-sm overflow-hidden min-w-0"
+          class="flex-1 min-h-[400px] lg:min-h-0 flex flex-col rounded-lg shadow-sm overflow-hidden min-w-0"
         >
           <PythonRunner code={pythonCode} />
         </div>

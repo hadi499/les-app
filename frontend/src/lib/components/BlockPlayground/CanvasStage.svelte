@@ -72,16 +72,16 @@
 
   <!-- Status Overlay -->
   {#if status === 'success'}
-    <div class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-in fade-in duration-300">
-      <div class="text-5xl mb-4">🌟</div>
-      <h3 class="text-2xl font-bold text-green-600">Hebat!</h3>
-      <p class="text-slate-600 font-medium">Kamu berhasil menyelesaikan level ini.</p>
+    <div class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-in fade-in duration-300 text-center px-4">
+      <div class="text-4xl sm:text-5xl mb-3">🌟</div>
+      <h3 class="text-xl sm:text-2xl font-bold text-green-600 mb-1">Hebat!</h3>
+      <p class="text-sm sm:text-base text-slate-600 font-medium leading-tight">Kamu berhasil menyelesaikan level ini.</p>
     </div>
   {:else if status === 'fail'}
-    <div class="absolute inset-0 bg-white/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-in fade-in duration-300">
-      <div class="text-5xl mb-4">😅</div>
-      <h3 class="text-2xl font-bold text-orange-500">Ups, hampir!</h3>
-      <p class="text-slate-600 font-medium">Ayo periksa kodenya dan coba lagi.</p>
+    <div class="absolute inset-0 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center z-50 animate-in fade-in duration-300 text-center px-4">
+      <div class="text-4xl sm:text-5xl mb-3">😅</div>
+      <h3 class="text-xl sm:text-2xl font-bold text-orange-500 mb-1">Ups, hampir!</h3>
+      <p class="text-sm sm:text-base text-slate-600 font-medium leading-tight">Ayo periksa kodenya dan coba lagi.</p>
     </div>
   {/if}
 </div>

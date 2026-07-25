@@ -32,7 +32,12 @@
       }
     });
 
-    workspace.addChangeListener(() => {
+    workspace.addChangeListener((event) => {
+      // Ignore UI events (clicks, scrolling, zooming) and active dragging
+      if (event.isUiEvent || workspace.isDragging()) {
+        return;
+      }
+
       // Extract the sequence of blocks
       const topBlocks = workspace.getTopBlocks(true);
       if (topBlocks.length > 0) {

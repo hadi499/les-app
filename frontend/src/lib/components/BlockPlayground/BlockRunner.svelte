@@ -113,9 +113,9 @@
 
 <div class="flex flex-col h-full bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
   <!-- Controls -->
-  <div class="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
-    <h2 class="font-bold text-slate-800">{level.title}</h2>
-    <div class="flex gap-2">
+  <div class="p-4 border-b border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-3 bg-slate-50/50">
+    <h2 class="font-bold text-slate-800 text-center sm:text-left">{level.title}</h2>
+    <div class="flex gap-2 w-full sm:w-auto justify-center sm:justify-end">
       <button 
         class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 font-semibold rounded-xl transition flex items-center gap-2"
         onclick={reset}
@@ -145,13 +145,13 @@
     />
 
     {#if status === 'success'}
-      <div class="mt-8 animate-in slide-in-from-bottom-4">
+      <div class="mt-8 animate-in slide-in-from-bottom-4 w-full px-4 sm:px-0 sm:w-auto">
         <button 
-          class="px-8 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold text-lg rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2"
+          class="w-full sm:w-auto justify-center px-6 py-3 sm:px-8 bg-blue-600 hover:bg-blue-700 text-white font-bold text-base sm:text-lg rounded-xl shadow-lg shadow-blue-600/30 transition flex items-center gap-2"
           onclick={onNextLevel}
         >
           Lanjut ke Level Berikutnya
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
+          <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
         </button>
       </div>
     {/if}

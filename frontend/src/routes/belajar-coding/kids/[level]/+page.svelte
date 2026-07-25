@@ -29,22 +29,22 @@
 </svelte:head>
 
 <div class="min-h-screen lg:h-screen w-full flex flex-col bg-slate-100 overflow-y-auto lg:overflow-hidden font-sans">
-  <header class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center shrink-0 shadow-sm z-10">
-    <div class="flex items-center gap-4">
-      <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center shadow-inner">
-        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+  <header class="bg-white border-b border-slate-200 px-4 sm:px-6 py-4 flex flex-col sm:flex-row justify-between items-center gap-4 shrink-0 shadow-sm z-10">
+    <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
+      <div class="w-10 h-10 sm:w-12 sm:h-12 shrink-0 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center shadow-inner">
+        <svg class="w-6 h-6 sm:w-7 sm:h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.828 14.828a4 4 0 01-5.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
       </div>
-      <div>
-        <h1 class="text-2xl font-extrabold text-slate-800">
+      <div class="flex-1">
+        <h1 class="text-xl sm:text-2xl font-extrabold text-slate-800 leading-tight">
           Belajar Logika (Anak)
         </h1>
-        <p class="text-slate-500 font-medium">Susun blok untuk mencapai bintang!</p>
+        <p class="text-xs sm:text-sm text-slate-500 font-medium">Susun blok untuk mencapai bintang!</p>
       </div>
     </div>
     
     <a 
       href="/belajar-coding"
-      class="px-5 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition"
+      class="w-full sm:w-auto text-center px-5 py-2.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-xl transition shrink-0"
     >
       Tutup
     </a>
@@ -54,7 +54,7 @@
     <div class="flex-1 p-4 sm:p-6 flex flex-col lg:flex-row gap-6 lg:overflow-hidden">
       
       <!-- Toolbox and Workspace (Left) -->
-      <div class="min-h-[500px] lg:min-h-0 flex-[1.2] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative flex flex-col">
+      <div class="min-h-[350px] lg:min-h-0 flex-[1.2] bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden relative flex flex-col">
         <div class="bg-blue-50 text-blue-800 px-4 py-3 text-sm font-medium border-b border-blue-100 flex items-center gap-2 z-10 shrink-0 shadow-sm">
           <svg class="w-5 h-5 animate-pulse text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 5l7 7-7 7M5 5l7 7-7 7"></path></svg>
           Petunjuk: Seret blok dari kiri ke area putih ini, sambungkan, lalu klik "Jalankan"!
@@ -71,7 +71,7 @@
       </div>
 
       <!-- Execution Canvas (Right) -->
-      <div class="min-h-[500px] lg:min-h-0 flex-1 flex flex-col">
+      <div class="min-h-[350px] lg:min-h-0 flex-1 flex flex-col">
         <!-- Re-key BlockRunner as well to reset cleanly -->
         {#key level.id}
           <BlockRunner 
