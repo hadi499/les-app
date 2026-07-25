@@ -18,7 +18,7 @@ export const exercises: Record<string, Exercise> = {
     id: 'hello-html',
     title: 'HTML, CSS, JS',
     type: 'web',
-    description: 'HTML, CSS, dan JavaScript(JS) adalah tiga pilar utama pembuatan halaman web.',
+    description: 'HTML, CSS, dan JavaScript(JS) adalah tiga pilar utama pembuatan halaman web. Cocok untuk pertama kali belajar coding.',
     starter: {
       html: ``,
       css: ``,
