@@ -18,6 +18,24 @@
   let addErrorMsg = $state("");
   let showPassword = $state(false);
 
+  let showResetModal = $state(false);
+  let userToReset: { id: number; username: string } | null = $state(null);
+  let isResetting = $state(false);
+  let resetPassword = $state("");
+  let resetErrorMsg = $state("");
+  let showResetPassword = $state(false);
+
+  let flashMessage = $state("");
+  let flashType = $state("success"); // "success" | "error"
+
+  function showFlash(msg: string, type: "success" | "error" = "success") {
+    flashMessage = msg;
+    flashType = type;
+    setTimeout(() => {
+      flashMessage = "";
+    }, 3000);
+  }
+
   async function fetchUsers() {
     isLoading = true;
     showLoadingSpinner = false;
@@ -66,16 +84,18 @@
       const data = await res.json();
 
       if (!res.ok) {
-        alert(data.error || "Gagal menghapus user");
+        showFlash(data.error || "Gagal menghapus user", "error");
         return;
       }
 
+      showFlash("User berhasil dihapus", "success");
       showDeleteModal = false;
       userToDelete = null;
       fetchUsers();
     } catch (e) {
-      alert(
+      showFlash(
         "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)),
+        "error"
       );
     } finally {
       isDeleting = false;
@@ -128,13 +148,76 @@
       isAdding = false;
     }
   }
+
+  function promptReset(userId: number, username: string) {
+    userToReset = { id: userId, username };
+    resetPassword = "";
+    resetErrorMsg = "";
+    showResetPassword = false;
+    showResetModal = true;
+  }
+
+  function cancelReset() {
+    showResetModal = false;
+    userToReset = null;
+  }
+
+  async function confirmReset() {
+    if (!userToReset) return;
+    if (!resetPassword) {
+      resetErrorMsg = "Password baru harus diisi.";
+      return;
+    }
+    if (resetPassword.length < 6) {
+      resetErrorMsg = "Password minimal 6 karakter.";
+      return;
+    }
+
+    isResetting = true;
+    resetErrorMsg = "";
+    try {
+      const res = await fetch(`/api/users/${userToReset.id}/reset-password`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ new_password: resetPassword }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        resetErrorMsg = data.error || "Gagal mereset password";
+        return;
+      }
+
+      showFlash("Password berhasil direset!", "success");
+      showResetModal = false;
+      userToReset = null;
+    } catch (e) {
+      resetErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+    } finally {
+      isResetting = false;
+    }
+  }
 </script>
 
 <svelte:head>
   <title>Manajemen Users - Portal Guru</title>
 </svelte:head>
 
-<div class="animate-in fade-in duration-500">
+<div class="animate-in fade-in duration-500 relative">
+  <!-- Flash Message -->
+  {#if flashMessage}
+    <div class="fixed top-6 right-6 z-[110] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl shadow-slate-900/10 border transform transition-all animate-in slide-in-from-right-8 fade-in duration-300 {flashType === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}">
+      {#if flashType === "success"}
+        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+      {:else}
+        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      {/if}
+      <p class="text-sm font-semibold">{flashMessage}</p>
+    </div>
+  {/if}
+
   <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
     <div>
       <h1
@@ -231,24 +314,34 @@
                   {/if}
                 </td>
                 <td class="py-4 px-6 text-center">
-                  <button
-                    onclick={() => promptDelete(u.id, u.username)}
-                    class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                      ></path></svg
+                  <div class="flex items-center justify-center gap-2">
+                    <button
+                      onclick={() => promptReset(u.id, u.username)}
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      title="Reset Password"
                     >
-                    Hapus
-                  </button>
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                      Reset Pass
+                    </button>
+                    <button
+                      onclick={() => promptDelete(u.id, u.username)}
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                        ></path></svg
+                      >
+                      Hapus
+                    </button>
+                  </div>
                 </td>
               </tr>
             {/each}
@@ -384,6 +477,78 @@
               <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             {/if}
             Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Reset Password Modal -->
+  {#if showResetModal && userToReset}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div class="bg-slate-50 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 transform transition-all">
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Reset Password</h3>
+        <p class="text-slate-600 mb-4 text-sm">
+          Masukkan password baru untuk user <span class="font-bold text-slate-900">"{userToReset.username}"</span>.
+        </p>
+        
+        {#if resetErrorMsg}
+          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            {resetErrorMsg}
+          </div>
+        {/if}
+
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="resetPassword">Password Baru</label>
+            <div class="relative">
+              <input
+                id="resetPassword"
+                type={showResetPassword ? "text" : "password"}
+                bind:value={resetPassword}
+                class="w-full pl-4 pr-12 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all bg-white text-slate-900"
+                placeholder="Masukkan password baru"
+              />
+              <button
+                type="button"
+                class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-amber-500 focus:outline-none transition-colors cursor-pointer"
+                onclick={() => (showResetPassword = !showResetPassword)}
+                title={showResetPassword ? "Sembunyikan password" : "Tampilkan password"}
+              >
+                {#if showResetPassword}
+                  <!-- Eye slash icon -->
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                  </svg>
+                {:else}
+                  <!-- Eye icon -->
+                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  </svg>
+                {/if}
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            onclick={cancelReset}
+            disabled={isResetting}
+            class="px-4 py-2 text-sm font-medium text-slate-800 bg-white shadow-md border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button
+            onclick={confirmReset}
+            disabled={isResetting}
+            class="px-4 py-2 text-sm font-medium text-white bg-amber-600 shadow-md hover:bg-amber-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {#if isResetting}
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            {/if}
+            Reset Password
           </button>
         </div>
       </div>

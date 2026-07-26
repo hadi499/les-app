@@ -23,6 +23,7 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		users.GET("", controllers.GetUsers)
 		users.DELETE("/:id", controllers.DeleteUser)
+		users.POST("/:id/reset-password", controllers.ResetUserPassword)
 	}
 
 	// Typing API routes
