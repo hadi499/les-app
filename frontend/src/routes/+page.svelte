@@ -1,10 +1,12 @@
 <script lang="ts">
   import { onMount, getContext } from "svelte";
 
-  let authState = getContext<{isAuthenticated: boolean, authChecked: boolean}>("authState");
+  let authState = getContext<{
+    isAuthenticated: boolean;
+    authChecked: boolean;
+  }>("authState");
   let isAuthenticated = $derived(authState.isAuthenticated);
   let authChecked = $derived(authState.authChecked);
-
 
   type Quote = {
     id: number;
@@ -29,7 +31,6 @@
     } finally {
       quotesLoaded = true;
     }
-
   });
 </script>
 
@@ -90,7 +91,6 @@
   >
     <!-- Text -->
     <div class="flex flex-col items-center gap-8">
-
       <div class="flex flex-col gap-6 items-center mt-8 sm:mt-2">
         <h1
           class="text-3xl sm:text-6xl lg:text-[4.5rem] font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
@@ -282,95 +282,252 @@
         </div>
 
         <!-- Featured New Feature: Belajar Coding & Berhitung -->
-        <div class="flex flex-col items-center gap-6 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 delay-150 mt-4">
-          <div class="flex items-center gap-4 w-full max-w-[300px] opacity-60 mb-2">
+        <div
+          class="flex flex-col items-center gap-6 w-full animate-in fade-in slide-in-from-bottom-2 duration-500 delay-150 mt-4"
+        >
+          <div
+            class="flex items-center gap-4 w-full max-w-[300px] opacity-60 mb-2"
+          >
             <div class="flex-1 h-px bg-slate-300"></div>
-            <span class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold whitespace-nowrap">Fitur Pendukung</span>
+            <span
+              class="text-[10px] uppercase tracking-[0.2em] text-slate-500 font-bold whitespace-nowrap"
+              >Fitur Pendukung</span
+            >
             <div class="flex-1 h-px bg-slate-300"></div>
           </div>
-          
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl text-left">
+
+          <div
+            class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl text-left"
+          >
             <!-- Card Belajar Coding -->
-            <a 
+            <a
               href="/belajar-coding"
-              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-blue-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 no-underline overflow-hidden"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-blue-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 no-underline overflow-hidden"
             >
-              <div class="absolute -right-6 -top-6 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-              
+              <div
+                class="absolute -right-6 -top-6 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              ></div>
+
               <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
-                <div class="w-12 h-12 shrink-0 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm border border-blue-200/50">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4" /></svg>
+                <div
+                  class="w-12 h-12 shrink-0 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm border border-blue-200/50"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"
+                    /></svg
+                  >
                 </div>
-                <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Belajar Coding</h3>
+                <h3
+                  class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors"
+                >
+                  Belajar Coding
+                </h3>
               </div>
-              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Latih logika komputasional anak hingga remaja dengan merakit blok visual maupun menulis kode secara interaktif.</p>
-              
-              <div class="mt-6 flex items-center text-sm font-bold text-blue-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+              <p
+                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
+              >
+                Latih logika komputasional anak hingga remaja dengan merakit
+                blok visual maupun menulis kode secara interaktif.
+              </p>
+
+              <div
+                class="mt-6 flex items-center text-sm font-bold text-blue-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
+              >
                 Coba Sekarang
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  ></path></svg
+                >
               </div>
             </a>
 
             <!-- Card Berhitung -->
-            <a 
+            <a
               href="/berhitung"
-              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-pink-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 no-underline overflow-hidden"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-pink-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 no-underline overflow-hidden"
             >
-              <div class="absolute -right-6 -top-6 w-32 h-32 bg-pink-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-              
+              <div
+                class="absolute -right-6 -top-6 w-32 h-32 bg-pink-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              ></div>
+
               <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
-                <div class="w-12 h-12 shrink-0 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm border border-pink-200/50">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>
+                <div
+                  class="w-12 h-12 shrink-0 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm border border-pink-200/50"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
+                    /></svg
+                  >
                 </div>
-                <h3 class="text-lg font-bold text-slate-800 group-hover:text-pink-600 transition-colors">Latihan Berhitung</h3>
+                <h3
+                  class="text-lg font-bold text-slate-800 group-hover:text-pink-600 transition-colors"
+                >
+                  Latihan Berhitung
+                </h3>
               </div>
-              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Tingkatkan kecepatan dan ketepatan menghitung dengan modul aritmetika yang terstruktur untuk semua level.</p>
-              
-              <div class="mt-6 flex items-center text-sm font-bold text-pink-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+              <p
+                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
+              >
+                Tingkatkan kecepatan dan ketepatan menghitung dengan modul
+                aritmetika yang terstruktur untuk semua level.
+              </p>
+
+              <div
+                class="mt-6 flex items-center text-sm font-bold text-pink-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
+              >
                 Mulai Berlatih
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  ></path></svg
+                >
               </div>
             </a>
 
             <!-- Card Ketik 10 Jari -->
-            <a 
+            <a
               href="/mengetik"
-              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-teal-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 no-underline overflow-hidden"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-teal-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 no-underline overflow-hidden"
             >
-              <div class="absolute -right-6 -top-6 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-              
+              <div
+                class="absolute -right-6 -top-6 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              ></div>
+
               <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
-                <div class="w-12 h-12 shrink-0 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-sm border border-teal-200/50">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"></path></svg>
+                <div
+                  class="w-12 h-12 shrink-0 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-sm border border-teal-200/50"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z"
+                    ></path></svg
+                  >
                 </div>
-                <h3 class="text-lg font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Ketik 10 Jari</h3>
+                <h3
+                  class="text-lg font-bold text-slate-800 group-hover:text-teal-600 transition-colors"
+                >
+                  Ketik 10 Jari
+                </h3>
               </div>
-              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Latih kecepatan dan akurasi mengetik dengan metode 10 jari yang efisien dan interaktif.</p>
-              
-              <div class="mt-6 flex items-center text-sm font-bold text-teal-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+              <p
+                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
+              >
+                Latih kecepatan dan akurasi mengetik dengan metode 10 jari yang
+                efisien dan interaktif.
+              </p>
+
+              <div
+                class="mt-6 flex items-center text-sm font-bold text-teal-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
+              >
                 Mulai Berlatih
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  ></path></svg
+                >
               </div>
             </a>
 
             <!-- Card Compress Image -->
-            <a 
+            <a
               href="/compress-image"
-              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-200 hover:border-orange-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 no-underline overflow-hidden"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-orange-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 no-underline overflow-hidden"
             >
-              <div class="absolute -right-6 -top-6 w-32 h-32 bg-orange-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
-              
+              <div
+                class="absolute -right-6 -top-6 w-32 h-32 bg-orange-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              ></div>
+
               <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
-                <div class="w-12 h-12 shrink-0 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-sm border border-orange-200/50">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                <div
+                  class="w-12 h-12 shrink-0 rounded-2xl bg-orange-100 text-orange-600 flex items-center justify-center shadow-sm border border-orange-200/50"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                    ></path></svg
+                  >
                 </div>
-                <h3 class="text-lg font-bold text-slate-800 group-hover:text-orange-600 transition-colors">Compress Image</h3>
+                <h3
+                  class="text-lg font-bold text-slate-800 group-hover:text-orange-600 transition-colors"
+                >
+                  Compress Image
+                </h3>
               </div>
-              <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Perkecil ukuran foto atau gambar Anda dengan cepat tanpa mengurangi kualitas secara drastis.</p>
-              
-              <div class="mt-6 flex items-center text-sm font-bold text-orange-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+              <p
+                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
+              >
+                Perkecil ukuran foto atau gambar Anda dengan cepat tanpa
+                mengurangi kualitas secara drastis.
+              </p>
+
+              <div
+                class="mt-6 flex items-center text-sm font-bold text-orange-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
+              >
                 Buka Alat
-                <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  ></path></svg
+                >
               </div>
             </a>
           </div>
@@ -395,8 +552,9 @@
 
       <div class="grid grid-cols-1 max-w-2xl mx-auto w-full">
         {#each quotes.slice(0, 1) as q, i}
-          <div class="flex flex-col items-center text-center px-4 py-8 md:py-10">
-
+          <div
+            class="flex flex-col items-center text-center px-4 py-8 md:py-10"
+          >
             <!-- English quote -->
             <p
               class="text-slate-800 font-semibold text-lg md:text-xl leading-relaxed mb-4 italic max-w-xl"

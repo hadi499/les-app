@@ -10,6 +10,7 @@ self.onmessage = async (event) => {
       if (!pyodide) {
         // Module workers (like Vite's default) don't support importScripts.
         // We must use dynamic import to load Pyodide's ESM version.
+        // @ts-expect-error - TypeScript cannot resolve URL imports
         const pyodideModule = await import('https://cdn.jsdelivr.net/pyodide/v0.25.0/full/pyodide.mjs');
         pyodide = await pyodideModule.loadPyodide();
         
