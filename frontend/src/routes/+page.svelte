@@ -93,7 +93,7 @@
     <div class="flex flex-col items-center gap-8">
       <div class="flex flex-col gap-6 items-center mt-8 sm:mt-2">
         <h1
-          class="text-3xl sm:text-6xl lg:text-[4.5rem] font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
+          class="text-3xl font-['Concert_One'] sm:text-5xl lg:text-[4.5rem] font-bold tracking-normal sm:tracking-[0.1em] whitespace-nowrap bg-gradient-to-r from-blue-600 to-slate-900 text-transparent bg-clip-text uppercase leading-tight text-center drop-shadow-sm"
         >
           Les Balonggarut
         </h1>
