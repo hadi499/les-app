@@ -11,15 +11,8 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-// GetUsers returns all users. Only accessible by teachers.
+// GetUsers returns all users. Accessible by all authenticated users for the leaderboard.
 func GetUsers(c *gin.Context) {
-	// Dapatkan role dari context yang di-set oleh AuthMiddleware
-	roleInter, exists := c.Get("role")
-	roleStr, _ := roleInter.(string)
-	if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can access this."})
-		return
-	}
 
 	var users []models.User
 	if err := database.DB.Order("id asc").Find(&users).Error; err != nil {

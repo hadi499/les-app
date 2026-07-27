@@ -209,76 +209,28 @@
       style="animation-duration: 5s; animation-delay: 1s;"
     ></div>
 
-    <!-- Glassmorphism Card -->
+    <!-- Animation Container -->
     <div
-      class="relative z-10 flex flex-col items-center gap-8 sm:gap-10 bg-white/50 sm:bg-white/40 backdrop-blur-2xl px-8 sm:px-16 py-10 sm:py-12 mx-4 sm:mx-0 rounded-[2rem] sm:rounded-[2.5rem] shadow-[0_8px_40px_rgb(0,0,0,0.06)] border border-white/60 text-center"
+      class="relative z-10 flex flex-col items-center gap-8 text-center"
     >
-      <!-- Premium Multi-ring Spinner -->
-      <div
-        class="relative w-20 h-20 sm:w-24 sm:h-24 flex items-center justify-center"
-      >
-        <!-- Outer Ring -->
-        <div
-          class="absolute inset-0 rounded-full border-[3px] border-indigo-100/50"
-        ></div>
-        <div
-          class="absolute inset-0 rounded-full border-[3px] border-indigo-600 border-t-transparent animate-spin"
-          style="animation-duration: 1.5s;"
-        ></div>
-
-        <!-- Inner Ring -->
-        <div
-          class="absolute inset-2.5 sm:inset-3 rounded-full border-[3px] border-blue-100/50"
-        ></div>
-        <div
-          class="absolute inset-2.5 sm:inset-3 rounded-full border-[3px] border-blue-500 border-b-transparent animate-spin"
-          style="animation-direction: reverse; animation-duration: 2s;"
-        ></div>
-
-        <!-- Center Core -->
-        <div
-          class="w-5 h-5 sm:w-6 sm:h-6 bg-gradient-to-tr from-indigo-600 to-blue-500 rounded-full animate-pulse shadow-lg shadow-indigo-500/50"
-        ></div>
+      <!-- 3 Bouncing/Floating Circles -->
+      <div class="flex items-center justify-center gap-3 sm:gap-4 h-20 sm:h-24">
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-indigo-500 animate-bounce shadow-lg shadow-indigo-500/40" style="animation-delay: 0s;"></div>
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500 animate-bounce shadow-lg shadow-rose-500/40" style="animation-delay: 0.15s;"></div>
+        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 animate-bounce shadow-lg shadow-amber-500/40" style="animation-delay: 0.3s;"></div>
       </div>
 
-      <!-- Text Loading -->
-      <div class="flex flex-col items-center gap-2 sm:gap-3">
-        <h2
-          class="text-2xl sm:text-3xl font-black tracking-tight text-transparent bg-clip-text bg-gradient-to-br from-slate-800 to-slate-600"
-        >
-          Portal Les Balongarut
-        </h2>
-        <div
-          class="flex items-center justify-center gap-1.5 sm:gap-2 text-indigo-600/80 font-bold tracking-widest text-xs sm:text-sm uppercase"
-        >
-          <span>Memuat Sistem</span>
-          <div class="flex gap-1 mt-0.5">
-            <div
-              class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce"
-              style="animation-delay: 0ms;"
-            ></div>
-            <div
-              class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce"
-              style="animation-delay: 150ms;"
-            ></div>
-            <div
-              class="w-1 h-1 sm:w-1.5 sm:h-1.5 rounded-full bg-indigo-500 animate-bounce"
-              style="animation-delay: 300ms;"
-            ></div>
-          </div>
+      {#if showReloadButton}
+        <div class="mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
+          <button
+            onclick={() => window.location.reload()}
+            class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white rounded-full font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 hover:shadow-indigo-500/50 flex items-center gap-2"
+          >
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+            Muat Ulang Aplikasi
+          </button>
         </div>
-        {#if showReloadButton}
-          <div class="mt-4 animate-in fade-in slide-in-from-bottom-2 duration-500">
-            <button
-              onclick={() => window.location.reload()}
-              class="px-6 py-2.5 bg-gradient-to-r from-indigo-500 to-blue-600 hover:from-indigo-600 hover:to-blue-700 text-white rounded-full font-bold text-sm shadow-lg shadow-indigo-500/30 transition-all hover:scale-105 hover:shadow-indigo-500/50 flex items-center gap-2"
-            >
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-              Muat Ulang Aplikasi
-            </button>
-          </div>
-        {/if}
-      </div>
+      {/if}
     </div>
   </div>
 {:else if isNetworkError}
@@ -729,6 +681,38 @@
             </div>
             Pantau Mengetik
           </a>
+        {/if}
+        <a
+          href="/dashboard/points"
+          class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+            '/points',
+          )
+            ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+            : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+        >
+          <div
+            class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+              '/points',
+            )
+              ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+              : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+          >
+            <svg
+              class="w-5 h-5"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+              ><path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              ></path></svg
+            >
+          </div>
+          Poin Users
+        </a>
+        {#if user?.role === "teacher"}
           <a
             href="/dashboard/users"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -1438,6 +1422,39 @@
               </div>
               Pantau Mengetik
             </a>
+          {/if}
+          <a
+            href="/dashboard/points"
+            onclick={() => (isMobileMenuOpen = false)}
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/points',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+              : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/points',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path></svg
+              >
+            </div>
+            Poin Users
+          </a>
+          {#if user?.role === "teacher"}
             <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
