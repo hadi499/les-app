@@ -75,6 +75,7 @@ func SetupRoutes(r *gin.Engine) {
 	uploads.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
 	{
 		uploads.POST("", controllers.UploadImage)
+		uploads.DELETE("", controllers.DeleteUploadedImage)
 	}
 
 	imagesAPI := r.Group("/api/images")

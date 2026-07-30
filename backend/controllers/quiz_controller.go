@@ -3,14 +3,31 @@ package controllers
 import (
 	"backend/database"
 	"backend/models"
+	"log"
 	"math"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
 )
+
+func deleteQuizImage(imageURL string) {
+	if imageURL == "" {
+		return
+	}
+	filePath := strings.TrimPrefix(imageURL, "/")
+	if filePath == "." || filePath == "" || strings.Contains(filePath, "..") || strings.HasPrefix(filepath.Base(filePath), "?") {
+		return
+	}
+	if err := os.Remove(filePath); err != nil {
+		log.Printf("Failed to delete quiz image %s: %v", filePath, err)
+	}
+}
 
 // GetQuizzes - Mendapatkan daftar semua kuis
 func GetQuizzes(c *gin.Context) {
@@ -150,6 +167,23 @@ func UpdateQuiz(c *gin.Context) {
 		return
 	}
 
+	// Hapus gambar lama yang tidak dipakai lagi
+	var oldQuestions []models.Question
+	database.DB.Where("quiz_id = ?", quiz.ID).Find(&oldQuestions)
+
+	newImages := make(map[string]bool)
+	for _, q := range input.Questions {
+		if q.Image != "" {
+			newImages[q.Image] = true
+		}
+	}
+
+	for _, oldQ := range oldQuestions {
+		if oldQ.Image != "" && !newImages[oldQ.Image] {
+			deleteQuizImage(oldQ.Image)
+		}
+	}
+
 	// Hapus soal lama dan buat yang baru
 	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.Question{}).Error; err != nil {
 		tx.Rollback()
@@ -187,6 +221,15 @@ func DeleteQuiz(c *gin.Context) {
 	}
 
 	tx := database.DB.Begin()
+
+	// Hapus gambar dari soal yang terkait
+	var oldQuestions []models.Question
+	database.DB.Where("quiz_id = ?", quiz.ID).Find(&oldQuestions)
+	for _, oldQ := range oldQuestions {
+		if oldQ.Image != "" {
+			deleteQuizImage(oldQ.Image)
+		}
+	}
 
 	// Hapus soal yang terkait dengan kuis ini
 	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.Question{}).Error; err != nil {

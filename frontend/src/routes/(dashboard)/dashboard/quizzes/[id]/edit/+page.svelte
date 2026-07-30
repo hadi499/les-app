@@ -1,7 +1,8 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { page } from "$app/state";
-  import { onMount } from "svelte";
+  import { onMount, onDestroy } from "svelte";
+  import { compressImageFile } from "$lib/utils";
 
   let quizId = $derived(page.params.id);
 
@@ -10,7 +11,8 @@
   let timeLimit = $state(15);
   let isPublished = $state(true);
   
-  let questions: { question: string; options: string[]; answer: number }[] = $state([]);
+  let questions: { question: string; image?: string; options: string[]; answer: number }[] = $state([]);
+  let isUploadingImage: Record<number, boolean> = $state({});
   let lastResetAt = $state<string | null>(null);
   let isResetThisMonth = $derived.by(() => {
     if (!lastResetAt) return false;
@@ -21,6 +23,27 @@
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
   let isSubmitting = $state(false);
+  let isSuccess = false;
+
+  let newlyUploadedImages: string[] = [];
+
+  onDestroy(() => {
+    if (!isSuccess && newlyUploadedImages.length > 0) {
+      newlyUploadedImages.forEach((url) => deleteImageFromServer(url));
+    }
+  });
+
+  async function deleteImageFromServer(url?: string) {
+    if (!url) return;
+    try {
+      await fetch(`/api/upload?url=${encodeURIComponent(url)}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+    } catch (err) {
+      console.error("Gagal menghapus gambar:", err);
+    }
+  }
 
   let showResetModal = $state(false);
   let isResetting = $state(false);
@@ -67,6 +90,7 @@
         if (data.questions && data.questions.length > 0) {
           questions = data.questions.map((q: any) => ({
             question: q.question,
+            image: q.image || "",
             options: q.options || ["", "", "", ""],
             answer: q.answer || 0
           }));
@@ -88,11 +112,50 @@
   });
 
   function addQuestion() {
-    questions = [...questions, { question: "", options: ["", "", "", ""], answer: 0 }];
+    questions = [...questions, { question: "", image: "", options: ["", "", "", ""], answer: 0 }];
   }
 
   function removeQuestion(index: number) {
+    if (questions[index].image && newlyUploadedImages.includes(questions[index].image)) {
+      deleteImageFromServer(questions[index].image);
+    }
     questions = questions.filter((_, i) => i !== index);
+  }
+
+  async function handleImageUpload(e: Event, index: number) {
+    const target = e.target as HTMLInputElement;
+    if (!target.files || target.files.length === 0) return;
+
+    isUploadingImage[index] = true;
+    try {
+      let file = target.files[0];
+      file = await compressImageFile(file);
+
+      if (file.size > 1 * 1024 * 1024) {
+        alert("Ukuran file setelah kompresi masih lebih dari 1MB. Silakan pilih gambar lain.");
+        return;
+      }
+
+      const formData = new FormData();
+      formData.append("image", file);
+
+      const res = await fetch("/api/upload?type=quiz", {
+        method: "POST",
+        body: formData,
+        credentials: "include",
+      });
+      if (!res.ok) {
+        const err = await res.json();
+        throw new Error(err.error || "Gagal mengunggah gambar");
+      }
+      const data = await res.json();
+      questions[index].image = data.url;
+      newlyUploadedImages.push(data.url);
+    } catch (err: any) {
+      alert(err.message || "Terjadi kesalahan");
+    } finally {
+      isUploadingImage[index] = false;
+    }
   }
 
   async function handleSubmit(e?: Event) {
@@ -111,6 +174,7 @@
           is_published: isPublished,
           questions: questions.map(q => ({
             question: q.question,
+            image: q.image,
             options: q.options,
             answer: Number(q.answer)
           }))
@@ -118,6 +182,7 @@
       });
 
       if (res.ok) {
+        isSuccess = true;
         goto("/dashboard/quizzes");
       } else {
         const err = await res.json();
@@ -278,14 +343,46 @@
               </svg>
             </button>
 
-          <div class="flex items-center gap-3 mb-4">
-            <div class="w-8 h-8 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm">
-              {index + 1}
+        <div class="flex flex-col gap-4">
+          <div class="flex flex-col gap-2">
+            <label class="text-sm font-semibold text-slate-800">Gambar Pendukung (Opsional)</label>
+            <div class="flex items-start gap-4">
+              {#if q.image}
+                <div class="relative w-32 h-32 rounded-lg border border-slate-200 overflow-hidden bg-slate-50 shrink-0">
+                  <img src={q.image} alt="Preview" class="w-full h-full object-cover" />
+                  <button
+                    type="button"
+                    onclick={() => {
+                      if (newlyUploadedImages.includes(questions[index].image as string)) {
+                        deleteImageFromServer(questions[index].image);
+                      }
+                      questions[index].image = "";
+                    }}
+                    class="absolute top-1 right-1 p-1 bg-white/90 rounded-md text-red-500 hover:text-red-700 hover:bg-white shadow-sm border border-slate-200 cursor-pointer"
+                  >
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                  </button>
+                </div>
+              {/if}
+              <div class="flex-1">
+                <input
+                  type="file"
+                  accept="image/*"
+                  onchange={(e) => handleImageUpload(e, index)}
+                  disabled={isUploadingImage[index]}
+                  class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 disabled:opacity-50"
+                />
+                {#if isUploadingImage[index]}
+                  <p class="text-xs text-blue-600 mt-2 animate-pulse">Mengunggah gambar...</p>
+                {/if}
+              </div>
             </div>
-            <h3 class="font-semibold text-slate-900 m-0">Pertanyaan</h3>
           </div>
 
-          <div class="flex flex-col gap-4 pl-11">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 shrink-0 rounded-full bg-slate-100 text-slate-600 font-bold flex items-center justify-center text-sm">
+              {index + 1}
+            </div>
             <input
               type="text"
               bind:value={q.question}
@@ -293,7 +390,9 @@
               placeholder="Tulis pertanyaan di sini..."
               class="px-4 py-2.5 rounded-xl border border-slate-200 bg-slate-50 focus:bg-white focus:ring-2 focus:ring-slate-400 focus:border-slate-400 outline-none w-full"
             />
+          </div>
 
+          <div class="pl-11 w-full">
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
               {#each [0, 1, 2, 3] as optIndex}
                 <div class="flex items-center gap-3">
@@ -315,7 +414,9 @@
                 </div>
               {/each}
             </div>
+            <p class="text-xs text-blue-600/70 italic m-0 mt-3">* Pilih radio button pada jawaban yang benar</p>
           </div>
+        </div>
         </div>
       {/each}
     </div>

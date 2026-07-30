@@ -12,6 +12,7 @@
   type Question = {
     id: number;
     question: string;
+    image?: string;
     options: string[];
     answer: number;
   };
@@ -32,6 +33,7 @@
   let userAnswers = $state<
     {
       question: string;
+      image?: string;
       answer: string | null;
       correct: string;
       isCorrect: boolean;
@@ -198,6 +200,7 @@
       ...userAnswers,
       {
         question: currentQuestion.question,
+        image: currentQuestion.image,
         answer: answerText,
         correct: currentQuestion.options[currentQuestion.answer],
         isCorrect: answerIndex === currentQuestion.answer,
@@ -290,7 +293,7 @@
 </svelte:head>
 
 <div
-  class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col items-center py-12 px-4 relative overflow-x-hidden pt-24"
+  class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col items-center py-12 px-4 relative overflow-clip pt-24"
 >
   <!-- Background Ambient -->
   <div class="absolute inset-0 z-0 pointer-events-none fixed">
@@ -312,31 +315,10 @@
       </div>
     {:else if quiz && currentQuestion}
       {#if !isFinished}
-        <div class="flex justify-between items-center mb-2">
-          <a
-            href="/quiz"
-            class="text-sm font-bold tracking-[0.1em] text-slate-600 hover:text-slate-900 uppercase no-underline flex items-center gap-1"
-          >
-            <svg
-              class="w-4 h-4"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
-            Kembali
-          </a>
-        </div>
 
         <!-- Header Info: Soal ke & Timer -->
         <div
-          class="flex justify-between items-center bg-white/60 backdrop-blur-md rounded-2xl p-4 shadow-sm border border-slate-200"
+          class="sticky top-24 z-50 flex justify-between items-center py-4 bg-transparent"
         >
           <div
             class="text-sm font-bold tracking-[0.1em] text-slate-800 uppercase flex flex-col"
@@ -373,6 +355,16 @@
           in:fade={{ duration: 300 }}
           class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-slate-200 flex flex-col gap-8"
         >
+          {#if currentQuestion.image}
+            <div class="w-[85%] md:w-[50%] lg:w-[40%] mx-auto flex justify-center mb-2">
+              <img
+                src={currentQuestion.image}
+                alt="Gambar Pertanyaan"
+                class="max-w-full h-auto rounded-xl shadow-sm object-contain max-h-[300px] md:max-h-[250px]"
+              />
+            </div>
+          {/if}
+
           <h2
             class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
           >
@@ -458,9 +450,14 @@
                   class="p-4 rounded-xl border border-slate-200 bg-white/50 space-y-2"
                 >
                   <div class="flex justify-between items-start gap-4">
-                    <p class="font-semibold text-slate-800 text-sm m-0">
-                      {index + 1}. {@html renderText(ans.question)}
-                    </p>
+                    <div class="flex flex-col gap-2">
+                      {#if ans.image}
+                        <img src={ans.image} alt="Gambar Pertanyaan" class="w-full max-w-50 md:max-w-48 rounded-lg border border-slate-200 mb-1" />
+                      {/if}
+                      <p class="font-semibold text-slate-800 text-sm m-0">
+                        {index + 1}. {@html renderText(ans.question)}
+                      </p>
+                    </div>
                     {#if ans.isCorrect}
                       <span
                         class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700"

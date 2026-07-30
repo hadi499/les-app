@@ -6,6 +6,7 @@ type Question struct {
 	ID       uint           `json:"id" gorm:"primaryKey"`
 	QuizID   uint           `json:"quiz_id"` // Relasi ke Quiz
 	Question string         `json:"question"`
+	Image    string         `json:"image"`
 	Options  pq.StringArray `json:"options" gorm:"type:text[]"`
 	Answer   int            `json:"answer"`
 }

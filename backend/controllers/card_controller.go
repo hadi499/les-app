@@ -240,6 +240,8 @@ func UploadImage(c *gin.Context) {
 		subfolder = "writing_progress"
 	} else if uploadType == "materi" {
 		subfolder = "materis"
+	} else if uploadType == "quiz" {
+		subfolder = "quiz"
 	}
 
 	// Buat folder jika belum ada
@@ -270,6 +272,28 @@ func UploadImage(c *gin.Context) {
 	url := fmt.Sprintf("/%s/%s", urlPath, filename)
 	
 	c.JSON(http.StatusOK, gin.H{"url": url})
+}
+
+func DeleteUploadedImage(c *gin.Context) {
+	url := c.Query("url")
+	if url == "" {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "url is required"})
+		return
+	}
+
+	filePath := strings.TrimPrefix(url, "/")
+	// Validasi path traversal
+	if filePath == "." || filePath == "" || strings.Contains(filePath, "..") || strings.HasPrefix(filepath.Base(filePath), "?") {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid url"})
+		return
+	}
+
+	if err := os.Remove(filePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "failed to delete image"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "image deleted"})
 }
 
 func ListImages(c *gin.Context) {
