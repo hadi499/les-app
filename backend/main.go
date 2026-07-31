@@ -115,8 +115,13 @@ func main() {
 	go func() {
 		for {
 			var progresses []models.WritingProgress
-			// Batas waktu penghapusan: 30 hari yang lalu
-			batasWaktu := time.Now().AddDate(0, -1, 0)
+			
+			loc, errLoc := time.LoadLocation("Asia/Jakarta")
+			if errLoc != nil {
+				loc = time.FixedZone("WIB", 7*3600)
+			}
+			// Batas waktu penghapusan: 30 hari yang lalu (berdasarkan WIB)
+			batasWaktu := time.Now().In(loc).AddDate(0, -1, 0)
 			
 			// Cari semua data perkembangan menulis yang diupdate sebelum batas waktu
 			database.DB.Where("updated_at < ?", batasWaktu).Find(&progresses)
@@ -129,15 +134,19 @@ func main() {
 				// Hapus record dari database
 				database.DB.Delete(&wp)
 			}
-			// Cek setiap 24 jam sekali
-			time.Sleep(24 * time.Hour)
+			// Cek setiap 1 jam sekali
+			time.Sleep(1 * time.Hour)
 		}
 	}()
 
 	// Background job untuk mereset poin semua user setiap awal bulan
 	go func() {
 		for {
-			now := time.Now()
+			loc, errLoc := time.LoadLocation("Asia/Jakarta")
+			if errLoc != nil {
+				loc = time.FixedZone("WIB", 7*3600)
+			}
+			now := time.Now().In(loc)
 			currentMonth := now.Format("2006-01") // Format YYYY-MM
 			
 			var setting models.SystemSetting
@@ -155,8 +164,8 @@ func main() {
 				database.DB.Model(&setting).Update("value", currentMonth)
 			}
 
-			// Cek setiap 24 jam sekali
-			time.Sleep(24 * time.Hour)
+			// Cek setiap 1 jam sekali agar reset dilakukan tidak lama setelah pergantian bulan
+			time.Sleep(1 * time.Hour)
 		}
 	}()
 
