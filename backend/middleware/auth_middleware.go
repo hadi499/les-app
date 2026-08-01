@@ -64,6 +64,11 @@ func AuthMiddleware() gin.HandlerFunc {
 			if user.LastActiveAt == nil || now.Sub(*user.LastActiveAt) > time.Minute {
 				database.DB.Model(&user).Update("last_active_at", now)
 			}
+		} else {
+			// Jika user tidak ditemukan di database (karena sudah dihapus)
+			c.JSON(http.StatusUnauthorized, gin.H{"error": "User account no longer exists"})
+			c.Abort()
+			return
 		}
 
 		// simpan ke context

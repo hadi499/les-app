@@ -233,6 +233,13 @@
         }),
       });
       console.log("Response status:", res.status);
+
+      if (res.status === 401) {
+        alert("Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.");
+        goto("/login");
+        return;
+      }
+
       if (!res.ok) {
         const errorText = await res.text();
         console.error("Gagal submit score, status:", res.status, errorText);
