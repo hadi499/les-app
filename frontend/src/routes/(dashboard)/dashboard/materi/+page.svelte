@@ -267,7 +267,7 @@
           {new Date(viewingMateri.created_at).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })}
         </span>
       </div>
-      <div class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap text-justify wrap-break-word text-lg sm:text-(length:--base-size) print:text-(length:--base-size)" style="--base-size: {printFontSize}px; tab-size: 4;">
+      <div class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap sm:text-justify wrap-break-word text-lg sm:text-(length:--base-size) print:text-(length:--base-size)" style="--base-size: {printFontSize}px; tab-size: 4;">
         {@html renderMathContent(viewingMateri.content)}
       </div>
     </div>
