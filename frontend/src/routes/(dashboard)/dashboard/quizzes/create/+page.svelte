@@ -6,7 +6,7 @@
   let title = $state("");
   let category = $state("");
   let timeLimit = $state(15);
-  let isPublished = $state(true);
+  let isPublished = $state(false);
   
   let questions: { question: string; image?: string; options: string[]; answer: number }[] = $state([]);
   let isUploadingImage: Record<number, boolean> = $state({});

@@ -102,7 +102,7 @@ func CreateQuiz(c *gin.Context) {
 		return
 	}
 
-	isPublished := true
+	isPublished := false
 	if input.IsPublished != nil {
 		isPublished = *input.IsPublished
 	}
@@ -118,6 +118,12 @@ func CreateQuiz(c *gin.Context) {
 	if err := database.DB.Create(&quiz).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal membuat kuis"})
 		return
+	}
+
+	// Workaround: GORM mengabaikan nilai 'false' saat Create jika ada tag default:true
+	if !isPublished {
+		database.DB.Exec("UPDATE quizzes SET is_published = false WHERE id = ?", quiz.ID)
+		quiz.IsPublished = false
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Kuis berhasil dibuat", "data": quiz})
