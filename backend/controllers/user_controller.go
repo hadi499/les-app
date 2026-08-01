@@ -85,6 +85,23 @@ func DeleteUser(c *gin.Context) {
 		return
 	}
 
+	// Hapus ScoreQuiz (berdasarkan username)
+	if err := tx.Where("username = ?", user.Username).Delete(&models.ScoreQuiz{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete score quiz"})
+		return
+	}
+
+	// Hapus data lainnya untuk mencegah foreign key constraint error
+	tx.Where("user_id = ?", userId).Delete(&models.TodoList{})
+	tx.Where("user_id = ?", userId).Delete(&models.WritingProgress{})
+	tx.Where("user_id = ?", userId).Delete(&models.Exam{})
+	tx.Where("user_id = ?", userId).Delete(&models.Note{})
+	tx.Where("user_id = ?", userId).Delete(&models.Folder{})
+	tx.Where("user_id = ?", userId).Delete(&models.Absence{})
+	tx.Where("user_id = ?", userId).Delete(&models.UserLog{})
+	tx.Where("sender_id = ? OR receiver_id = ?", userId, userId).Delete(&models.ChatMessage{})
+
 	// 5. Hapus User
 	if err := tx.Delete(&user).Error; err != nil {
 		tx.Rollback()

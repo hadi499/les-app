@@ -320,20 +320,17 @@ func SubmitQuizScore(c *gin.Context) {
 		return
 	}
 
-	var previousPerfectScore int64
-	database.DB.Model(&models.ScoreQuiz{}).Where("username = ? AND quiz_id = ? AND score = 100", usernameStr, input.QuizID).Count(&previousPerfectScore)
-
 	var previousAttempts int64
 	database.DB.Model(&models.ScoreQuiz{}).Where("username = ? AND quiz_id = ?", usernameStr, input.QuizID).Count(&previousAttempts)
 
 	pointsToAdd := 0
-	if input.Score == 100 && previousPerfectScore == 0 {
-		if previousAttempts == 0 {
+	if previousAttempts == 0 {
+		if input.Score >= 100 {
 			pointsToAdd = 5
-		} else if previousAttempts == 1 {
+		} else if input.Score >= 90 {
+			pointsToAdd = 4
+		} else if input.Score >= 80 {
 			pointsToAdd = 3
-		} else if previousAttempts == 2 {
-			pointsToAdd = 1
 		}
 	}
 
@@ -354,7 +351,7 @@ func SubmitQuizScore(c *gin.Context) {
 		database.DB.Model(&models.User{}).Where("username = ?", usernameStr).UpdateColumn("points", gorm.Expr("points + ?", pointsToAdd))
 	}
 
-	pointsAlreadyClaimed := previousPerfectScore > 0
+	pointsAlreadyClaimed := previousAttempts > 0
 
 	c.JSON(http.StatusCreated, gin.H{
 		"message": "Skor berhasil disimpan", 
