@@ -58,7 +58,7 @@ func GetQuizzes(c *gin.Context) {
 
 	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
 
-	if err := query.Order("id desc").Limit(limit).Offset(offset).Find(&quizzes).Error; err != nil {
+	if err := query.Order("is_published desc, id desc").Limit(limit).Offset(offset).Find(&quizzes).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data kuis"})
 		return
 	}
