@@ -13,13 +13,7 @@
   
   let questions: { question: string; image?: string; options: string[]; answer: number }[] = $state([]);
   let isUploadingImage: Record<number, boolean> = $state({});
-  let lastResetAt = $state<string | null>(null);
-  let isResetThisMonth = $derived.by(() => {
-    if (!lastResetAt) return false;
-    const resetDate = new Date(lastResetAt);
-    const now = new Date();
-    return resetDate.getFullYear() === now.getFullYear() && resetDate.getMonth() === now.getMonth();
-  });
+
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
   let isSubmitting = $state(false);
@@ -45,30 +39,7 @@
     }
   }
 
-  let showResetModal = $state(false);
-  let isResetting = $state(false);
 
-  async function resetScores() {
-    isResetting = true;
-    try {
-      const res = await fetch(`/api/quizzes/${quizId}/scores`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      if (res.ok) {
-        alert("Riwayat nilai berhasil direset!");
-        lastResetAt = new Date().toISOString();
-        showResetModal = false;
-      } else {
-        const err = await res.json();
-        alert("Gagal mereset nilai: " + (err.error || ""));
-      }
-    } catch (e) {
-      alert("Terjadi kesalahan jaringan saat mereset nilai.");
-    } finally {
-      isResetting = false;
-    }
-  }
 
   async function fetchQuiz() {
     try {
@@ -84,9 +55,7 @@
         if (data.is_published !== undefined) {
           isPublished = data.is_published;
         }
-        if (data.last_reset_at) {
-          lastResetAt = data.last_reset_at;
-        }
+
         if (data.questions && data.questions.length > 0) {
           questions = data.questions.map((q: any) => ({
             question: q.question,
@@ -301,26 +270,7 @@
           </button>
         </div>
 
-        <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 p-4 bg-red-50/50 border border-red-200 rounded-xl md:col-span-2">
-          <div>
-            <h3 class="text-sm font-bold text-red-900">Pertandingkan Ulang (Reset Riwayat)</h3>
-            <p class="text-xs text-red-700 mt-0.5">Hapus seluruh data nilai murid di kuis ini secara permanen agar mereka bisa mendapat poin lagi.</p>
-          </div>
-          <button
-            type="button"
-            onclick={() => showResetModal = true}
-            disabled={isResetThisMonth}
-            class="px-4 py-2 bg-white text-red-600 font-bold rounded-lg shadow-sm hover:bg-red-50 transition-colors border border-red-200 cursor-pointer text-sm whitespace-nowrap flex items-center gap-2 shrink-0 disabled:opacity-75 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-500 disabled:border-slate-300"
-          >
-            {#if isResetThisMonth}
-              <svg class="w-4 h-4 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
-              Sudah Direset Bulan Ini
-            {:else}
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
-              Reset Nilai
-            {/if}
-          </button>
-        </div>
+
       </div>
     </div>
 
@@ -426,37 +376,4 @@
 {/if}
 
 <!-- Reset Scores Modal -->
-{#if showResetModal}
-  <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-0">
-    <div class="absolute inset-0 bg-slate-900/40 backdrop-blur-sm" onclick={() => showResetModal = false}></div>
-    <div class="relative bg-white rounded-2xl shadow-xl w-full max-w-sm p-6 overflow-hidden animate-in zoom-in-95 duration-200">
-      <div class="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center mb-4 text-red-600">
-        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
-      </div>
-      <h3 class="text-lg font-bold text-slate-900 mb-2">Pertandingkan Ulang?</h3>
-      <p class="text-sm text-slate-500 mb-6 leading-relaxed">
-        Apakah Anda yakin ingin mereset riwayat kuis ini? Semua data nilai dan status klaim poin murid di kuis ini akan <strong>dihapus permanen</strong>, sehingga mereka bisa mengerjakannya dan mendapat poin lagi dari awal.
-      </p>
-      <div class="flex flex-col sm:flex-row gap-3">
-        <button
-          onclick={() => showResetModal = false}
-          class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-sm rounded-xl transition-colors text-center cursor-pointer"
-        >
-          Batal
-        </button>
-        <button
-          onclick={resetScores}
-          disabled={isResetting}
-          class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold text-sm rounded-xl transition-colors text-center flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {#if isResetting}
-            <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-            Mereset...
-          {:else}
-            Ya, Reset
-          {/if}
-        </button>
-      </div>
-    </div>
-  </div>
-{/if}
+

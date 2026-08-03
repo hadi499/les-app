@@ -3,6 +3,7 @@ package controllers
 import (
 	"net/http"
 	"strconv"
+	"time"
 
 	"backend/database"
 	"backend/models"
@@ -155,4 +156,43 @@ func ResetUserPassword(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
+}
+
+// ResetAllPoints resets all user points to 0 and clears quiz scores. Only accessible by teachers.
+func ResetAllPoints(c *gin.Context) {
+// Dapatkan role dari context (walaupun sudah ada middleware, sebagai double check)
+roleInter, exists := c.Get("role")
+roleStr, _ := roleInter.(string)
+if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
+c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can perform this action."})
+return
+}
+
+// Reset semua poin ke 0
+if err := database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0).Error; err != nil {
+c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset points"})
+return
+}
+
+// Reset semua riwayat nilai kuis (menghapus semua skor agar bisa dikerjakan ulang dari nol)
+if err := database.DB.Where("1 = 1").Delete(&models.ScoreQuiz{}).Error; err != nil {
+c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset quiz scores"})
+return
+}
+
+// Update bulan terakhir reset
+var setting models.SystemSetting
+loc, errLoc := time.LoadLocation("Asia/Jakarta")
+if errLoc != nil {
+loc = time.FixedZone("WIB", 7*3600)
+}
+currentMonth := time.Now().In(loc).Format("2006-01")
+
+if err := database.DB.Where("key = ?", "last_point_reset").First(&setting).Error; err != nil {
+database.DB.Create(&models.SystemSetting{Key: "last_point_reset", Value: currentMonth})
+} else {
+database.DB.Model(&setting).Update("value", currentMonth)
+}
+
+c.JSON(http.StatusOK, gin.H{"message": "All points and quiz scores have been reset successfully"})
 }

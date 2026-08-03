@@ -1,12 +1,55 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { toast } from "$lib/stores/toast.svelte";
 
   type User = { id: number; username: string; role: string; points?: number };
 
   let users: User[] = $state([]);
-  let isLoading = $state(true);
-  let showLoadingSpinner = $state(false);
-  let errorMsg = $state("");
+	let isLoading = $state(true);
+	let showLoadingSpinner = $state(false);
+	let errorMsg = $state("");
+	let isTeacher = $state(false);
+	let isResetting = $state(false);
+	let showConfirmModal = $state(false);
+
+	async function checkRole() {
+		try {
+			const res = await fetch("/me", { credentials: "include" });
+			if (res.ok) {
+				const data = await res.json();
+				if (data.authenticated && data.user && data.user.role === "teacher") {
+					isTeacher = true;
+				}
+			}
+		} catch (e) {
+			console.error("Gagal memeriksa role:", e);
+		}
+	}
+
+	function resetPoints() {
+		showConfirmModal = true;
+	}
+
+	async function executeResetPoints() {
+		isResetting = true;
+		errorMsg = "";
+		try {
+			const res = await fetch("/api/users/reset-points", {
+				method: "POST",
+				credentials: "include",
+			});
+			if (!res.ok) {
+				throw new Error("Gagal mereset poin");
+			}
+			await fetchUsers(); // Refresh the list
+			toast.success("Berhasil mereset semua poin dan riwayat nilai kuis.");
+			showConfirmModal = false;
+		} catch (e) {
+			errorMsg = e instanceof Error ? e.message : String(e);
+		} finally {
+			isResetting = false;
+		}
+	}
 
   async function fetchUsers() {
     isLoading = true;
@@ -37,8 +80,9 @@
     }
   }
 
-  onMount(() => {
-    fetchUsers();
+  onMount(async () => {
+    await checkRole();
+    await fetchUsers();
   });
 </script>
 
@@ -59,6 +103,19 @@
       Lihat peringkat poin dari seluruh pengguna (Leaderboard).
     </p>
   </div>
+
+  {#if isTeacher}
+    <div class="mb-10 flex justify-end">
+      <button
+        onclick={resetPoints}
+        disabled={isResetting || isLoading}
+        class="inline-flex items-center gap-2 text-red-600 hover:text-red-700 bg-red-50 hover:bg-red-100 border border-red-200 hover:border-red-300 font-semibold py-2 px-4 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-rotate-ccw"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg>
+        {isResetting ? 'Mereset...' : 'Reset Semua Poin'}
+      </button>
+    </div>
+  {/if}
 
   {#if isLoading}
     <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300">
@@ -118,3 +175,20 @@
     {/if}
   {/if}
 </div>
+
+{#if showConfirmModal}
+  <div class="fixed inset-0 z-150 flex items-center justify-center bg-slate-900/50 backdrop-blur-sm p-4">
+    <div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+      <div class="p-6">
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi Reset Poin</h3>
+        <p class="text-slate-600 mb-6">Apakah Anda yakin ingin mereset semua poin dan riwayat nilai kuis? Tindakan ini tidak dapat dibatalkan.</p>
+        <div class="flex justify-end gap-3">
+          <button onclick={() => showConfirmModal = false} class="px-4 py-2 font-medium text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl transition-colors cursor-pointer">Batal</button>
+          <button onclick={executeResetPoints} disabled={isResetting} class="px-4 py-2 font-medium text-white bg-red-600 hover:bg-red-700 rounded-xl transition-colors disabled:opacity-50 cursor-pointer">
+            {isResetting ? 'Mereset...' : 'Ya, Reset Poin'}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{/if}

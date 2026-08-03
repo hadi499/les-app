@@ -139,35 +139,7 @@ func main() {
 		}
 	}()
 
-	// Background job untuk mereset poin semua user setiap awal bulan
-	go func() {
-		for {
-			loc, errLoc := time.LoadLocation("Asia/Jakarta")
-			if errLoc != nil {
-				loc = time.FixedZone("WIB", 7*3600)
-			}
-			now := time.Now().In(loc)
-			currentMonth := now.Format("2006-01") // Format YYYY-MM
-			
-			var setting models.SystemSetting
-			err := database.DB.Where("key = ?", "last_point_reset").First(&setting).Error
-			
-			if err != nil {
-				// Belum pernah diset, set ke bulan ini agar tidak mereset bulan berjalan saat fitur ini pertama kali dirilis
-				database.DB.Create(&models.SystemSetting{Key: "last_point_reset", Value: currentMonth})
-			} else if setting.Value != currentMonth {
-				// Bulan sudah berganti, reset semua poin ke 0
-				database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0)
-				// Reset semua riwayat nilai kuis (menghapus semua skor agar bisa dikerjakan ulang dari nol)
-				database.DB.Where("1 = 1").Delete(&models.ScoreQuiz{})
-				// Update bulan terakhir reset
-				database.DB.Model(&setting).Update("value", currentMonth)
-			}
 
-			// Cek setiap 1 jam sekali agar reset dilakukan tidak lama setelah pergantian bulan
-			time.Sleep(1 * time.Hour)
-		}
-	}()
 
 	r := gin.Default()
 

@@ -262,44 +262,6 @@ func DeleteQuiz(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Kuis berhasil dihapus"})
 }
 
-// ResetQuizScores - Menghapus semua riwayat nilai pada kuis tertentu
-func ResetQuizScores(c *gin.Context) {
-	id := c.Param("id")
-	var quiz models.Quiz
-
-	// Verifikasi kuis ada
-	if err := database.DB.First(&quiz, id).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
-		return
-	}
-
-	// Cek apakah sudah direset bulan ini
-	now := time.Now()
-	if quiz.LastResetAt != nil && quiz.LastResetAt.Year() == now.Year() && quiz.LastResetAt.Month() == now.Month() {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Kuis sudah direset pada bulan ini"})
-		return
-	}
-
-	tx := database.DB.Begin()
-
-	// Hapus semua skor untuk kuis ini
-	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.ScoreQuiz{}).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus riwayat nilai kuis"})
-		return
-	}
-
-	// Update LastResetAt
-	if err := tx.Model(&quiz).Update("last_reset_at", now).Error; err != nil {
-		tx.Rollback()
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengupdate waktu reset"})
-		return
-	}
-
-	tx.Commit()
-
-	c.JSON(http.StatusOK, gin.H{"message": "Riwayat nilai kuis berhasil direset"})
-}
 
 // SubmitQuizScore - Menyimpan hasil kuis pengguna
 func SubmitQuizScore(c *gin.Context) {
