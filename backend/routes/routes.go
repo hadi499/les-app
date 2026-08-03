@@ -283,6 +283,7 @@ func SetupRoutes(r *gin.Engine) {
 		chat.GET("/history/:userId", controllers.GetChatHistory)
 		chat.GET("/unread-count", controllers.GetUnreadCount)
 		chat.DELETE("/messages/:id", controllers.DeleteMessage)
+		chat.POST("/broadcast", middleware.RoleMiddleware("teacher"), controllers.BroadcastMessage)
 	}
 	r.GET("/ws/chat", middleware.AuthMiddleware(), controllers.HandleChatWebSocket)
 }

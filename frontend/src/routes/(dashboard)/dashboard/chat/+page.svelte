@@ -10,11 +10,16 @@
 	let messageInput = $state('');
 	let chatContainer: HTMLElement | undefined = $state();
 	let myUserId: number | null = $state(null);
+	let myUserRole: string = $state('');
 	let loadingContacts = $state(true);
 	let loadingHistory = $state(false);
 	
 	let showDeleteModal = $state(false);
 	let messageToDelete: number | null = $state(null);
+	
+	let showBroadcastModal = $state(false);
+	let broadcastMessageInput = $state('');
+	let sendingBroadcast = $state(false);
 	
 	let currentPage = $state(1);
 	let hasMore = $state(false);
@@ -47,6 +52,7 @@
 			if (meRes.ok) {
 				const meData = await meRes.json();
 				myUserId = meData.user?.id;
+				myUserRole = meData.user?.role || '';
 			}
 
 			// Fetch contacts
@@ -227,17 +233,55 @@
 			cancelDelete();
 		}
 	}
+
+	async function executeBroadcast() {
+		if (!broadcastMessageInput.trim()) return;
+		sendingBroadcast = true;
+		
+		try {
+			const res = await fetch('/api/chat/broadcast', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ content: broadcastMessageInput.trim() })
+			});
+			if (res.ok) {
+				showBroadcastModal = false;
+				broadcastMessageInput = '';
+				// Fetch contacts again to update last active chat preview/time if any
+				fetchContacts();
+			} else {
+				const err = await res.json();
+				alert('Gagal mengirim broadcast: ' + (err.error || 'Unknown error'));
+			}
+		} catch (error) {
+			console.error("Error sending broadcast", error);
+			alert('Terjadi kesalahan saat mengirim broadcast');
+		} finally {
+			sendingBroadcast = false;
+		}
+	}
 </script>
 
 <div class="fixed top-16 inset-x-0 bottom-0 z-40 md:relative md:top-auto md:bottom-auto md:inset-x-auto md:z-auto md:h-[calc(100dvh-6rem)] flex flex-col md:flex-row bg-white md:rounded-2xl shadow-sm md:border md:border-gray-100 overflow-hidden">
 	
 	<!-- Sidebar: Contact List -->
 	<div class={`w-full md:w-80 border-r border-gray-100 flex flex-col ${activeUser ? 'hidden md:flex' : 'flex'}`}>
-		<div class="p-4 border-b border-gray-100 bg-gray-50/50">
+		<div class="p-4 border-b border-gray-100 bg-gray-50/50 flex items-center justify-between">
 			<h2 class="text-lg font-bold text-gray-800 flex items-center gap-2">
 				<svg xmlns="http://www.w3.org/2000/svg" class="text-blue-500 w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
 				Pesan
 			</h2>
+			{#if myUserRole === 'teacher' || myUserRole === 'admin'}
+				<button 
+					class="text-xs bg-blue-100 hover:bg-blue-200 text-blue-700 px-2.5 py-1.5 rounded-lg transition-colors flex items-center gap-1.5 cursor-pointer font-medium"
+					title="Broadcast ke semua murid"
+					onclick={() => showBroadcastModal = true}
+				>
+					<svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+					Broadcast
+				</button>
+			{/if}
 		</div>
 		
 		{#if loadingContacts}
@@ -387,6 +431,50 @@
 						onclick={executeDeleteMessage}
 					>
 						Hapus
+					</button>
+				</div>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Broadcast Modal -->
+{#if showBroadcastModal}
+	<div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" transition:fade>
+		<div class="bg-white rounded-2xl shadow-xl w-full max-w-md overflow-hidden" onclick={(e) => e.stopPropagation()}>
+			<div class="p-6">
+				<div class="flex items-center gap-3 mb-4">
+					<div class="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-blue-500">
+						<svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l18-5v12L3 14v-3z"></path><path d="M11.6 16.8a3 3 0 1 1-5.8-1.6"></path></svg>
+					</div>
+					<h3 class="text-xl font-bold text-gray-900">Broadcast Pesan</h3>
+				</div>
+				<p class="text-sm text-gray-500 mb-4">Pesan ini akan dikirim ke semua murid yang terdaftar.</p>
+				
+				<textarea
+					bind:value={broadcastMessageInput}
+					placeholder="Tulis pesan broadcast Anda di sini..."
+					class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all min-h-[120px] resize-none mb-4"
+				></textarea>
+
+				<div class="flex gap-3">
+					<button 
+						class="flex-1 py-2.5 px-4 bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-xl transition-colors cursor-pointer"
+						onclick={() => { showBroadcastModal = false; broadcastMessageInput = ''; }}
+					>
+						Batal
+					</button>
+					<button 
+						class="flex-1 py-2.5 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-colors shadow-sm cursor-pointer disabled:opacity-50 flex items-center justify-center"
+						onclick={executeBroadcast}
+						disabled={!broadcastMessageInput.trim() || sendingBroadcast}
+					>
+						{#if sendingBroadcast}
+							<span class="loading loading-spinner loading-sm mr-2"></span>
+							Mengirim...
+						{:else}
+							Kirim
+						{/if}
 					</button>
 				</div>
 			</div>

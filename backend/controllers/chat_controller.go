@@ -287,3 +287,68 @@ func DeleteMessage(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Message deleted successfully"})
 }
 
+// Broadcast Message
+func BroadcastMessage(c *gin.Context) {
+	userIDVal, _ := c.Get("user_id")
+	userID := userIDVal.(uint)
+
+	var req struct {
+		Content string `json:"content" binding:"required"`
+	}
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var students []models.User
+	if err := database.DB.Where("role = ?", "student").Find(&students).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch students"})
+		return
+	}
+
+	if len(students) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "No students to broadcast to"})
+		return
+	}
+
+	now := time.Now()
+	var messages []models.ChatMessage
+
+	for _, student := range students {
+		chatMsg := models.ChatMessage{
+			SenderID:   userID,
+			ReceiverID: student.ID,
+			Content:    req.Content,
+			CreatedAt:  now,
+			UpdatedAt:  now,
+		}
+		messages = append(messages, chatMsg)
+	}
+
+	if err := database.DB.Create(&messages).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save messages"})
+		return
+	}
+
+	manager.mu.Lock()
+	for _, msg := range messages {
+		// Send to receiver
+		receiverConns, ok := manager.clients[msg.ReceiverID]
+		if ok {
+			for rc := range receiverConns {
+				rc.WriteJSON(msg)
+			}
+		}
+		// Echo to sender
+		senderConns, okSender := manager.clients[userID]
+		if okSender {
+			for sc := range senderConns {
+				sc.WriteJSON(msg)
+			}
+		}
+	}
+	manager.mu.Unlock()
+
+	c.JSON(http.StatusOK, gin.H{"message": "Broadcast sent successfully to " + strconv.Itoa(len(messages)) + " students"})
+}
+
