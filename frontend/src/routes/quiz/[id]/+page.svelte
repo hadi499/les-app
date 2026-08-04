@@ -48,6 +48,15 @@
   let hasConfirmedLeave = $state(false);
   let pointsEarned = $state(0);
   let pointsAlreadyClaimed = $state(false);
+  
+  let showErrorModal = $state(false);
+  let errorMessage = $state("");
+  let errorRedirectTarget = $state("/dashboard/quizzes");
+
+  function closeErrorModal() {
+    showErrorModal = false;
+    goto(errorRedirectTarget);
+  }
 
   const currentQuestion = $derived(
     quiz && quiz.questions ? quiz.questions[currentQuestionIndex] : null,
@@ -116,8 +125,6 @@
   }
 
   function handleVisibilityChange() {
-    // Di perangkat mobile (HP), seringkali browser tidak memicu event 'beforeunload' atau 'pagehide' 
-    // saat user menutup browser/tab. 'visibilitychange' adalah cara paling direkomendasikan.
     if (document.visibilityState === "hidden") {
       handlePageHide();
     }
@@ -146,17 +153,18 @@
           timeLeft = quiz.timeLimit;
           startTimer();
         } else {
-          alert("Kuis tidak memiliki pertanyaan.");
-          goto("/quiz");
+          errorMessage = "Kuis tidak memiliki pertanyaan.";
+          showErrorModal = true;
         }
       } else {
-        alert("Kuis tidak ditemukan.");
-        goto("/quiz");
+        const errorData = await res.json().catch(() => ({}));
+        errorMessage = errorData.error || "Kuis tidak ditemukan.";
+        showErrorModal = true;
       }
     } catch (e) {
       console.error(e);
-      alert("Gagal memuat kuis.");
-      goto("/quiz");
+      errorMessage = "Gagal memuat kuis.";
+      showErrorModal = true;
     } finally {
       isLoading = false;
     }
@@ -235,15 +243,23 @@
       console.log("Response status:", res.status);
 
       if (res.status === 401) {
-        alert("Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.");
-        goto("/login");
+        errorMessage = "Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.";
+        errorRedirectTarget = "/login";
+        showErrorModal = true;
         return;
       }
 
       if (!res.ok) {
-        const errorText = await res.text();
-        console.error("Gagal submit score, status:", res.status, errorText);
-        alert(`Gagal submit score: ${res.status} - ${errorText}`);
+        let errorMsg = `Gagal submit score: ${res.status}`;
+        try {
+          const errorJson = await res.json();
+          errorMsg = errorJson.error || errorMsg;
+        } catch (err) {
+          console.error("Could not parse error JSON");
+        }
+        console.error("Gagal submit score, status:", res.status, errorMsg);
+        errorMessage = errorMsg;
+        showErrorModal = true;
       } else {
         const json = await res.json();
         pointsEarned = json.points_earned || 0;
@@ -252,10 +268,9 @@
       }
     } catch (e) {
       console.error("Fetch error:", e);
-      alert(
-        "Error saat koneksi ke server untuk submit score: " +
-          (e instanceof Error ? e.message : String(e)),
-      );
+      errorMessage = "Error saat koneksi ke server untuk submit score: " +
+          (e instanceof Error ? e.message : String(e));
+      showErrorModal = true;
     } finally {
       isSubmitting = false;
     }
@@ -570,6 +585,42 @@
           class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 cursor-pointer font-medium shadow-sm"
         >
           Ya, Keluar
+        </button>
+      </div>
+    </div>
+  </Modal>
+
+  <Modal show={showErrorModal} onclose={closeErrorModal}>
+    <div class="text-center">
+      <div
+        class="w-12 h-12 rounded-full bg-red-100 mx-auto mb-4 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Akses Ditolak</h3>
+        <p class="text-sm text-slate-600 mt-2">
+          {errorMessage}
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-5">
+        <button
+          onclick={closeErrorModal}
+          class="px-5 py-2.5 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 cursor-pointer font-bold shadow-sm transition-colors"
+        >
+          Kembali ke Daftar Kuis
         </button>
       </div>
     </div>

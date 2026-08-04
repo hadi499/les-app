@@ -188,16 +188,17 @@ func GetContacts(c *gin.Context) {
 	var users []models.User
 	if role == "student" {
 		// Student can see teachers
-		database.DB.Select("id, username, role, last_active_at").Where("role = ? OR role = ?", "teacher", "admin").Find(&users)
+		database.DB.Select("id, username, role, class, last_active_at").Where("role = ? OR role = ?", "teacher", "admin").Find(&users)
 	} else {
 		// Tutor/Admin can see everyone except themselves
-		database.DB.Select("id, username, role, last_active_at").Where("id != ?", userID).Find(&users)
+		database.DB.Select("id, username, role, class, last_active_at").Where("id != ?", userID).Find(&users)
 	}
 
 	type ContactResponse struct {
 		ID           uint       `json:"id"`
 		Username     string     `json:"username"`
 		Role         string     `json:"role"`
+		Class        string     `json:"class"`
 		UnreadCount  int64      `json:"unread_count"`
 		LastActiveAt *time.Time `json:"last_active_at"`
 	}
@@ -211,6 +212,7 @@ func GetContacts(c *gin.Context) {
 			ID:           u.ID,
 			Username:     u.Username,
 			Role:         u.Role,
+			Class:        u.Class,
 			UnreadCount:  count,
 			LastActiveAt: u.LastActiveAt,
 		})
@@ -294,6 +296,7 @@ func BroadcastMessage(c *gin.Context) {
 
 	var req struct {
 		Content string `json:"content" binding:"required"`
+		Class   string `json:"class"`
 	}
 	if err := c.ShouldBindJSON(&req); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -301,7 +304,14 @@ func BroadcastMessage(c *gin.Context) {
 	}
 
 	var students []models.User
-	if err := database.DB.Where("role = ?", "student").Find(&students).Error; err != nil {
+	query := database.DB.Where("role = ?", "student")
+	
+	// Jika req.Class tidak kosong dan bukan "Semua Murid", filter berdasarkan kelas
+	if req.Class != "" && req.Class != "Semua Murid" {
+		query = query.Where("class = ?", req.Class)
+	}
+	
+	if err := query.Find(&students).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch students"})
 		return
 	}

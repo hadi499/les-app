@@ -14,11 +14,22 @@
 	let loadingContacts = $state(true);
 	let loadingHistory = $state(false);
 	
+	let availableClasses = $derived(
+		Array.from(
+			new Set(
+				contacts
+					.filter((c: any) => c.role === 'student' && c.class && c.class.trim() !== '')
+					.map((c: any) => c.class.trim())
+			)
+		).sort()
+	);
+	
 	let showDeleteModal = $state(false);
 	let messageToDelete: number | null = $state(null);
 	
 	let showBroadcastModal = $state(false);
 	let broadcastMessageInput = $state('');
+	let broadcastClassInput = $state('Semua Murid');
 	let sendingBroadcast = $state(false);
 	
 	let currentPage = $state(1);
@@ -243,11 +254,12 @@
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
-				body: JSON.stringify({ content: broadcastMessageInput.trim() })
+				body: JSON.stringify({ content: broadcastMessageInput.trim(), class: broadcastClassInput })
 			});
 			if (res.ok) {
 				showBroadcastModal = false;
 				broadcastMessageInput = '';
+				broadcastClassInput = 'Semua Murid';
 				// Fetch contacts again to update last active chat preview/time if any
 				fetchContacts();
 			} else {
@@ -449,7 +461,21 @@
 					</div>
 					<h3 class="text-xl font-bold text-gray-900">Broadcast Pesan</h3>
 				</div>
-				<p class="text-sm text-gray-500 mb-4">Pesan ini akan dikirim ke semua murid yang terdaftar.</p>
+				<p class="text-sm text-gray-500 mb-4">Pesan ini akan dikirim ke murid yang dipilih.</p>
+				
+				<div class="mb-4">
+					<label class="block text-sm font-medium text-slate-700 mb-1" for="broadcastClass">Pilih Target Kelas</label>
+					<select
+						id="broadcastClass"
+						bind:value={broadcastClassInput}
+						class="w-full bg-gray-50 border border-gray-200 rounded-xl p-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all"
+					>
+						<option value="Semua Murid">Semua Murid</option>
+						{#each availableClasses as cls}
+							<option value={cls}>{cls}</option>
+						{/each}
+					</select>
+				</div>
 				
 				<textarea
 					bind:value={broadcastMessageInput}

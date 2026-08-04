@@ -84,6 +84,13 @@ func GetQuizByID(c *gin.Context) {
 		}
 		return
 	}
+
+	role, _ := c.Get("role")
+	if !quiz.IsPublished && role != "teacher" && role != "admin" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Kuis ini belum dipublikasikan atau sudah ditutup"})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{"data": quiz})
 }
 
@@ -127,6 +134,46 @@ func CreateQuiz(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, gin.H{"message": "Kuis berhasil dibuat", "data": quiz})
+}
+
+// DuplicateQuiz - Menduplikat kuis yang sudah ada
+func DuplicateQuiz(c *gin.Context) {
+	id := c.Param("id")
+	var originalQuiz models.Quiz
+
+	if err := database.DB.Preload("Questions").First(&originalQuiz, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
+		return
+	}
+
+	newQuestions := make([]models.Question, len(originalQuiz.Questions))
+	for i, q := range originalQuiz.Questions {
+		newQuestions[i] = models.Question{
+			Question: q.Question,
+			Image:    q.Image,
+			Options:  q.Options,
+			Answer:   q.Answer,
+		}
+	}
+
+	duplicatedQuiz := models.Quiz{
+		Title:       originalQuiz.Title + " (Salinan)",
+		Category:    originalQuiz.Category,
+		TimeLimit:   originalQuiz.TimeLimit,
+		IsPublished: false,
+		Questions:   newQuestions,
+	}
+
+	if err := database.DB.Create(&duplicatedQuiz).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menduplikat kuis"})
+		return
+	}
+
+	// Workaround: GORM mengabaikan nilai 'false' saat Create jika ada tag default:true
+	database.DB.Exec("UPDATE quizzes SET is_published = false WHERE id = ?", duplicatedQuiz.ID)
+	duplicatedQuiz.IsPublished = false
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Kuis berhasil diduplikat", "data": duplicatedQuiz})
 }
 
 // UpdateQuiz - Mengedit kuis dan soal-soalnya
@@ -263,6 +310,57 @@ func DeleteQuiz(c *gin.Context) {
 }
 
 
+// ResetQuizScores - Menghapus semua riwayat nilai pada kuis tertentu
+func ResetQuizScores(c *gin.Context) {
+	id := c.Param("id")
+	var quiz models.Quiz
+
+	// Verifikasi kuis ada
+	if err := database.DB.First(&quiz, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
+		return
+	}
+
+
+
+	tx := database.DB.Begin()
+
+	// Ambil semua skor untuk kuis ini sebelum dihapus
+	var scoresToRevoke []models.ScoreQuiz
+	if err := tx.Where("quiz_id = ? AND points_earned > 0", quiz.ID).Find(&scoresToRevoke).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data poin yang akan ditarik"})
+		return
+	}
+
+	// Tarik poin dari setiap user yang mendapatkannya dari kuis ini
+	for _, s := range scoresToRevoke {
+		if err := tx.Model(&models.User{}).Where("username = ?", s.Username).UpdateColumn("points", gorm.Expr("CASE WHEN points - ? < 0 THEN 0 ELSE points - ? END", s.PointsEarned, s.PointsEarned)).Error; err != nil {
+			tx.Rollback()
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menarik poin dari pengguna"})
+			return
+		}
+	}
+
+	// Hapus semua skor untuk kuis ini
+	if err := tx.Where("quiz_id = ?", quiz.ID).Delete(&models.ScoreQuiz{}).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus riwayat nilai kuis"})
+		return
+	}
+
+	// Update LastResetAt
+	if err := tx.Model(&quiz).Update("last_reset_at", time.Now()).Error; err != nil {
+		tx.Rollback()
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengupdate waktu reset"})
+		return
+	}
+
+	tx.Commit()
+
+	c.JSON(http.StatusOK, gin.H{"message": "Riwayat nilai kuis berhasil direset"})
+}
+
 // SubmitQuizScore - Menyimpan hasil kuis pengguna
 func SubmitQuizScore(c *gin.Context) {
 	username, exists := c.Get("username")
@@ -279,6 +377,27 @@ func SubmitQuizScore(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var quiz models.Quiz
+	if err := database.DB.First(&quiz, input.QuizID).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
+		return
+	}
+
+	role, _ := c.Get("role")
+	if role == "teacher" || role == "admin" {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Uji coba kuis berhasil. Nilai guru/admin tidak disimpan ke database.",
+			"points_earned": 0,
+			"points_already_claimed": false,
+		})
+		return
+	}
+
+	if !quiz.IsPublished {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Kuis ini belum dipublikasikan atau sudah ditutup"})
 		return
 	}
 

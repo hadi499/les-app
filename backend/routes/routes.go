@@ -22,6 +22,7 @@ func SetupRoutes(r *gin.Engine) {
 	users.Use(middleware.AuthMiddleware())
 	{
 		users.GET("", controllers.GetUsers)
+		users.PUT("/:id", controllers.UpdateUser)
 		users.DELETE("/:id", controllers.DeleteUser)
 		users.POST("/:id/reset-password", controllers.ResetUserPassword)
 		users.POST("/reset-points", middleware.RoleMiddleware("teacher"), controllers.ResetAllPoints)
@@ -131,6 +132,8 @@ func SetupRoutes(r *gin.Engine) {
 			teacherQuizzes.PUT("/:id", controllers.UpdateQuiz)
 			teacherQuizzes.DELETE("/:id", controllers.DeleteQuiz)
 			teacherQuizzes.GET("/scores", controllers.GetQuizScores)
+			teacherQuizzes.DELETE("/:id/scores", controllers.ResetQuizScores)
+			teacherQuizzes.POST("/:id/duplicate", controllers.DuplicateQuiz)
 		}
 	}
 

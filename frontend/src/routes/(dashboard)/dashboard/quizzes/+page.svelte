@@ -1,5 +1,6 @@
 <script lang="ts">
   import { onMount } from "svelte";
+  import { toast } from "$lib/stores/toast.svelte";
 
   type Quiz = {
     id: number;
@@ -133,6 +134,30 @@
   function cancelDelete() {
     showDeleteModal = false;
     quizToDelete = null;
+  }
+
+  let isDuplicating: Record<number, boolean> = $state({});
+
+  async function duplicateQuiz(id: number) {
+    isDuplicating[id] = true;
+    try {
+      const res = await fetch(`/api/quizzes/${id}/duplicate`, {
+        method: "POST",
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast.success("Kuis berhasil diduplikat.");
+        fetchQuizzes(); // Refresh the list
+      } else {
+        const data = await res.json();
+        toast.error(data.error || "Gagal menduplikat kuis");
+      }
+    } catch (e) {
+      console.error(e);
+      toast.error("Terjadi kesalahan jaringan");
+    } finally {
+      isDuplicating[id] = false;
+    }
   }
 
   $effect(() => {
@@ -323,6 +348,19 @@
                 </svg>
                 Edit
               </a>
+              <button
+                onclick={() => duplicateQuiz(quiz.id)}
+                disabled={isDuplicating[quiz.id]}
+                class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100 hover:bg-emerald-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {#if isDuplicating[quiz.id]}
+                  <div class="w-4 h-4 mr-1.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                  Proses...
+                {:else}
+                  <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                  Duplikat
+                {/if}
+              </button>
               <button
                 onclick={() => promptDelete(quiz.id)}
                 class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-red-600 bg-red-50 rounded-xl border border-red-100 hover:bg-red-100 transition-colors cursor-pointer"

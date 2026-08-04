@@ -119,6 +119,7 @@ func Register(c *gin.Context) {
 		Username string `json:"username" binding:"required"`
 		Password string `json:"password" binding:"required"`
 		Role     string `json:"role"`
+		Class    string `json:"class"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -147,6 +148,7 @@ func Register(c *gin.Context) {
 		Username: input.Username,
 		Password: string(hashedPassword),
 		Role:     role,
+		Class:    input.Class,
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -164,6 +166,8 @@ func Register(c *gin.Context) {
 		"user": gin.H{
 			"id":       user.ID,
 			"username": user.Username,
+			"role":     user.Role,
+			"class":    user.Class,
 		},
 	})
 }
@@ -253,6 +257,7 @@ func Login(c *gin.Context) {
 			"id":       user.ID,
 			"username": user.Username,
 			"role":     user.Role,
+			"class":    user.Class,
 			"points":   user.Points,
 		},
 	})
@@ -335,6 +340,7 @@ func Me(c *gin.Context) {
 			"id":       user.ID,
 			"username": user.Username,
 			"role":     user.Role,
+			"class":    user.Class,
 			"points":   user.Points,
 		},
 	})

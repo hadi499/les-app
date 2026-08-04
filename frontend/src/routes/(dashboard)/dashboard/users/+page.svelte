@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  type User = { id: number; username: string; role: string; last_active_at?: string; points?: number };
+  type User = { id: number; username: string; role: string; class?: string; last_active_at?: string; points?: number };
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -14,9 +14,14 @@
 
   let showAddModal = $state(false);
   let isAdding = $state(false);
-  let newUser = $state({ username: "", password: "" });
+  let newUser = $state({ username: "", password: "", role: "student", class: "" });
   let addErrorMsg = $state("");
   let showPassword = $state(false);
+
+  let showEditModal = $state(false);
+  let isEditing = $state(false);
+  let editUser = $state({ id: 0, username: "", role: "student", class: "" });
+  let editErrorMsg = $state("");
 
   let showResetModal = $state(false);
   let userToReset: { id: number; username: string } | null = $state(null);
@@ -108,7 +113,7 @@
   }
 
   function promptAdd() {
-    newUser = { username: "", password: "" };
+    newUser = { username: "", password: "", role: "student", class: "" };
     addErrorMsg = "";
     showPassword = false;
     showAddModal = true;
@@ -146,6 +151,49 @@
       addErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
     } finally {
       isAdding = false;
+    }
+  }
+
+  function promptEdit(u: User) {
+    editUser = { id: u.id, username: u.username, role: u.role, class: u.class || "" };
+    editErrorMsg = "";
+    showEditModal = true;
+  }
+
+  function cancelEdit() {
+    showEditModal = false;
+  }
+
+  async function confirmEdit() {
+    if (!editUser.username) {
+      editErrorMsg = "Username harus diisi.";
+      return;
+    }
+    isEditing = true;
+    editErrorMsg = "";
+    try {
+      const res = await fetch(`/api/users/${editUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          username: editUser.username,
+          role: editUser.role,
+          class: editUser.class
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        editErrorMsg = data.error || "Gagal mengubah user";
+        return;
+      }
+      showFlash("User berhasil diubah", "success");
+      showEditModal = false;
+      fetchUsers();
+    } catch (e) {
+      editErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+    } finally {
+      isEditing = false;
     }
   }
 
@@ -208,7 +256,7 @@
 <div class="animate-in fade-in duration-500 relative">
   <!-- Flash Message -->
   {#if flashMessage}
-    <div class="fixed top-6 right-6 z-[110] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl shadow-slate-900/10 border transform transition-all animate-in slide-in-from-right-8 fade-in duration-300 {flashType === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}">
+    <div class="fixed top-6 right-6 z-[110] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl shadow-slate-900/10 border animate-in slide-in-from-right-8 fade-in duration-300 {flashType === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}">
       {#if flashType === "success"}
         <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
       {:else}
@@ -264,7 +312,7 @@
     </div>
   {:else}
     <div
-      class="bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
+      class="bg-white/60 rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
     >
       <div class="overflow-x-auto">
         <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
@@ -275,6 +323,7 @@
                 >Username</th
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Kelas</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
@@ -297,6 +346,9 @@
                     {u.role}
                   </span>
                 </td>
+                <td class="py-4 px-6 text-sm text-slate-700">
+                  {u.class || '-'}
+                </td>
                 <td class="py-4 px-6 text-sm font-semibold text-blue-600">
                   {u.points || 0}
                 </td>
@@ -315,6 +367,14 @@
                 </td>
                 <td class="py-4 px-6 text-center">
                   <div class="flex items-center justify-center gap-2">
+                    <button
+                      onclick={() => promptEdit(u)}
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      title="Edit User"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                      Edit
+                    </button>
                     <button
                       onclick={() => promptReset(u.id, u.username)}
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
@@ -367,7 +427,7 @@
     >
       <!-- animate-in and fade-in handled here or by external css, but keeping simple inline classes -->
       <div
-        class="bg-slate-50 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 transform transition-all"
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
       >
         <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi Hapus</h3>
         <p class="text-slate-600 mb-6 text-sm">
@@ -407,7 +467,7 @@
   <!-- Add User Modal -->
   {#if showAddModal}
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 transform transition-all">
+      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
         <h3 class="text-xl font-bold text-slate-900 mb-4">Tambah User Baru</h3>
         
         {#if addErrorMsg}
@@ -423,7 +483,7 @@
               id="username"
               type="text"
               bind:value={newUser.username}
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900"
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
               placeholder="Masukkan username"
             />
           </div>
@@ -434,7 +494,7 @@
                 id="password"
                 type={showPassword ? "text" : "password"}
                 bind:value={newUser.password}
-                class="w-full pl-4 pr-12 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900"
+                class="w-full pl-4 pr-12 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
                 placeholder="Masukkan password"
               />
               <button
@@ -458,6 +518,29 @@
               </button>
             </div>
           </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="role">Role</label>
+            <select
+              id="role"
+              bind:value={newUser.role}
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+            >
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
+          </div>
+          {#if newUser.role === 'student'}
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for="userclass">Kelas</label>
+              <input
+                id="userclass"
+                type="text"
+                bind:value={newUser.class}
+                class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+                placeholder="Misal: SD, SMP, PAUD"
+              />
+            </div>
+          {/if}
         </div>
 
         <div class="flex justify-end gap-3">
@@ -483,10 +566,80 @@
     </div>
   {/if}
 
+  <!-- Edit User Modal -->
+  {#if showEditModal}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
+        <h3 class="text-xl font-bold text-slate-900 mb-4">Edit User</h3>
+        
+        {#if editErrorMsg}
+          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+            {editErrorMsg}
+          </div>
+        {/if}
+
+        <div class="space-y-4 mb-6">
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="editUsername">Username</label>
+            <input
+              id="editUsername"
+              type="text"
+              bind:value={editUser.username}
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+            />
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-slate-700 mb-1" for="editRole">Role</label>
+            <select
+              id="editRole"
+              bind:value={editUser.role}
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+            >
+              <option value="student">Student</option>
+              <option value="teacher">Teacher</option>
+            </select>
+          </div>
+          {#if editUser.role === 'student'}
+            <div>
+              <label class="block text-sm font-medium text-slate-700 mb-1" for="editClass">Kelas</label>
+              <input
+                id="editClass"
+                type="text"
+                bind:value={editUser.class}
+                class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+                placeholder="Misal: SD, SMP, PAUD"
+              />
+            </div>
+          {/if}
+        </div>
+
+        <div class="flex justify-end gap-3">
+          <button
+            onclick={cancelEdit}
+            disabled={isEditing}
+            class="px-4 py-2 text-sm font-medium text-slate-800 bg-white shadow-md border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button
+            onclick={confirmEdit}
+            disabled={isEditing}
+            class="px-4 py-2 text-sm font-medium text-white bg-blue-600 shadow-md hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {#if isEditing}
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            {/if}
+            Simpan
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
   <!-- Reset Password Modal -->
   {#if showResetModal && userToReset}
     <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 backdrop-blur-md rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200 transform transition-all">
+      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
         <h3 class="text-xl font-bold text-slate-900 mb-2">Reset Password</h3>
         <p class="text-slate-600 mb-4 text-sm">
           Masukkan password baru untuk user <span class="font-bold text-slate-900">"{userToReset.username}"</span>.
@@ -506,7 +659,7 @@
                 id="resetPassword"
                 type={showResetPassword ? "text" : "password"}
                 bind:value={resetPassword}
-                class="w-full pl-4 pr-12 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-all bg-white text-slate-900"
+                class="w-full pl-4 pr-12 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:border-amber-500 outline-none transition-shadow bg-white text-slate-900"
                 placeholder="Masukkan password baru"
               />
               <button

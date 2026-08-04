@@ -116,6 +116,78 @@ func DeleteUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "User and associated data deleted successfully"})
 }
 
+// UpdateUser updates a user's details (username, role, class, password).
+func UpdateUser(c *gin.Context) {
+	roleInter, exists := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	if !exists || (roleStr != "teacher" && roleStr != "admin" && roleStr != "Teacher" && roleStr != "Admin") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers/admins can perform this action."})
+		return
+	}
+
+	userIdParam := c.Param("id")
+	userId, err := strconv.Atoi(userIdParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID format"})
+		return
+	}
+
+	var req struct {
+		Username string `json:"username"`
+		Role     string `json:"role"`
+		Class    string `json:"class"`
+		Password string `json:"password"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	var user models.User
+	if err := database.DB.First(&user, userId).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
+
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.Role != "" {
+		user.Role = req.Role
+	}
+	if req.Class != "" {
+		user.Class = req.Class
+	}
+	if req.Password != "" {
+		if len(req.Password) < 6 {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Password minimal 6 karakter"})
+			return
+		}
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte(req.Password), bcrypt.DefaultCost)
+		if err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to hash password"})
+			return
+		}
+		user.Password = string(hashedPassword)
+	}
+
+	if err := database.DB.Save(&user).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "User updated successfully",
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+			"role":     user.Role,
+			"class":    user.Class,
+		},
+	})
+}
+
 // ResetUserPassword resets a user's password. Only accessible by teachers.
 func ResetUserPassword(c *gin.Context) {
 	// Dapatkan role dari context
