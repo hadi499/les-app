@@ -1,7 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  type User = { id: number; username: string; role: string; class?: string; last_active_at?: string; points?: number };
+  type User = { id: number; username: string; role: string; class?: string; last_active_at?: string; points?: number; is_suspended?: boolean };
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -29,6 +29,10 @@
   let resetPassword = $state("");
   let resetErrorMsg = $state("");
   let showResetPassword = $state(false);
+
+  let showSuspendModal = $state(false);
+  let userToSuspend: { id: number; username: string; is_suspended: boolean } | null = $state(null);
+  let isSuspending = $state(false);
 
   let flashMessage = $state("");
   let flashType = $state("success"); // "success" | "error"
@@ -247,6 +251,42 @@
       isResetting = false;
     }
   }
+
+  function promptSuspend(u: User) {
+    userToSuspend = { id: u.id, username: u.username, is_suspended: u.is_suspended || false };
+    showSuspendModal = true;
+  }
+
+  function cancelSuspend() {
+    showSuspendModal = false;
+    userToSuspend = null;
+  }
+
+  async function confirmSuspend() {
+    if (!userToSuspend) return;
+    isSuspending = true;
+    try {
+      const res = await fetch(`/api/users/${userToSuspend.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ is_suspended: !userToSuspend.is_suspended }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        showFlash(data.error || "Gagal mengubah status suspend", "error");
+        return;
+      }
+      showFlash(userToSuspend.is_suspended ? "User berhasil diaktifkan kembali" : "User berhasil ditangguhkan", "success");
+      showSuspendModal = false;
+      userToSuspend = null;
+      fetchUsers();
+    } catch (e) {
+      showFlash("Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)), "error");
+    } finally {
+      isSuspending = false;
+    }
+  }
 </script>
 
 <svelte:head>
@@ -352,14 +392,19 @@
                 <td class="py-4 px-6 text-sm font-semibold text-blue-600">
                   {u.points || 0}
                 </td>
-                <td class="py-4 px-6 text-sm">
+                <td class="py-4 px-6 text-sm flex flex-col gap-1 items-start">
+                  {#if u.is_suspended}
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700 border border-red-300">
+                      Suspended
+                    </span>
+                  {/if}
                   {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300 mt-1">
                       <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
                       Online
                     </span>
                   {:else}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300">
+                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300 mt-1">
                       <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
                       Offline
                     </span>
@@ -382,6 +427,19 @@
                     >
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
                       Reset Pass
+                    </button>
+                    <button
+                      onclick={() => promptSuspend(u)}
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium {u.is_suspended ? 'text-green-700 bg-green-50 hover:bg-green-100 border-green-200 focus:ring-green-500/50' : 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200 focus:ring-orange-500/50'} rounded-lg transition-colors border cursor-pointer focus:outline-none focus:ring-2"
+                      title={u.is_suspended ? 'Aktifkan User' : 'Suspend User'}
+                    >
+                      {#if u.is_suspended}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        Aktifkan
+                      {:else}
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                        Suspend
+                      {/if}
                     </button>
                     <button
                       onclick={() => promptDelete(u.id, u.username)}
@@ -702,6 +760,40 @@
               <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
             {/if}
             Reset Password
+          </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Suspend Confirmation Modal -->
+  {#if showSuspendModal && userToSuspend}
+    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
+      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
+        <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi {userToSuspend.is_suspended ? 'Aktivasi' : 'Suspend'}</h3>
+        <p class="text-slate-600 mb-6 text-sm">
+          Apakah Anda yakin ingin {userToSuspend.is_suspended ? 'mengaktifkan kembali' : 'menangguhkan (suspend)'} user <span class="font-bold text-slate-900">"{userToSuspend.username}"</span>?
+          {#if !userToSuspend.is_suspended}
+            <br /><span class="text-orange-600 font-medium block mt-1">User tidak akan bisa login selama ditangguhkan.</span>
+          {/if}
+        </p>
+        <div class="flex justify-end gap-3">
+          <button
+            onclick={cancelSuspend}
+            disabled={isSuspending}
+            class="px-4 py-2 text-sm font-medium text-slate-800 bg-white shadow-md border border-slate-200 hover:bg-slate-100 rounded-xl transition-colors disabled:opacity-50"
+          >
+            Batal
+          </button>
+          <button
+            onclick={confirmSuspend}
+            disabled={isSuspending}
+            class="px-4 py-2 text-sm font-medium text-white {userToSuspend.is_suspended ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'} shadow-md rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+          >
+            {#if isSuspending}
+              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+            {/if}
+            Ya, {userToSuspend.is_suspended ? 'Aktifkan' : 'Suspend'}
           </button>
         </div>
       </div>

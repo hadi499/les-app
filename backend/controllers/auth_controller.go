@@ -208,6 +208,11 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	if user.IsSuspended {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Akun Anda sedang ditangguhkan. Silakan hubungi admin."})
+		return
+	}
+
 	resetAttempts(clientIP)
 
 	claims := &Claims{
@@ -330,6 +335,11 @@ func Me(c *gin.Context) {
 
 	var user models.User
 	if err := database.DB.Where("id = ?", claims.UserID).First(&user).Error; err != nil {
+		c.JSON(http.StatusOK, gin.H{"authenticated": false})
+		return
+	}
+
+	if user.IsSuspended {
 		c.JSON(http.StatusOK, gin.H{"authenticated": false})
 		return
 	}

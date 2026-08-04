@@ -133,10 +133,11 @@ func UpdateUser(c *gin.Context) {
 	}
 
 	var req struct {
-		Username string `json:"username"`
-		Role     string `json:"role"`
-		Class    string `json:"class"`
-		Password string `json:"password"`
+		Username    string `json:"username"`
+		Role        string `json:"role"`
+		Class       string `json:"class"`
+		Password    string `json:"password"`
+		IsSuspended *bool  `json:"is_suspended"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -172,6 +173,10 @@ func UpdateUser(c *gin.Context) {
 		user.Password = string(hashedPassword)
 	}
 
+	if req.IsSuspended != nil {
+		user.IsSuspended = *req.IsSuspended
+	}
+
 	if err := database.DB.Save(&user).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update user"})
 		return
@@ -180,10 +185,11 @@ func UpdateUser(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{
 		"message": "User updated successfully",
 		"user": gin.H{
-			"id":       user.ID,
-			"username": user.Username,
-			"role":     user.Role,
-			"class":    user.Class,
+			"id":           user.ID,
+			"username":     user.Username,
+			"role":         user.Role,
+			"class":        user.Class,
+			"is_suspended": user.IsSuspended,
 		},
 	})
 }

@@ -215,9 +215,9 @@
     >
       <!-- 3 Bouncing/Floating Circles -->
       <div class="flex items-center justify-center gap-3 sm:gap-4 h-20 sm:h-24">
-        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-indigo-500 animate-bounce shadow-lg shadow-indigo-500/40" style="animation-delay: 0s;"></div>
-        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-rose-500 animate-bounce shadow-lg shadow-rose-500/40" style="animation-delay: 0.15s;"></div>
-        <div class="w-5 h-5 sm:w-6 sm:h-6 rounded-full bg-amber-500 animate-bounce shadow-lg shadow-amber-500/40" style="animation-delay: 0.3s;"></div>
+        <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-600 animate-bounce shadow-lg shadow-blue-600/40" style="animation-delay: 0s;"></div>
+        <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-600 animate-bounce shadow-lg shadow-blue-600/40" style="animation-delay: 0.15s;"></div>
+        <div class="w-3 h-3 sm:w-4 sm:h-4 rounded-full bg-blue-600 animate-bounce shadow-lg shadow-blue-600/40" style="animation-delay: 0.3s;"></div>
       </div>
 
       {#if showReloadButton}

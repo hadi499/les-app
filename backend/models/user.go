@@ -19,4 +19,5 @@ type User struct {
 	UserLogs         []UserLog        `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	LastActiveAt     *time.Time       `json:"last_active_at" gorm:"type:timestamp"`
 	Points           int              `json:"points" gorm:"default:0"`
+	IsSuspended      bool             `json:"is_suspended" gorm:"default:false"`
 }
