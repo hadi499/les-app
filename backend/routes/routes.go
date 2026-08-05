@@ -9,6 +9,7 @@ import (
 
 func SetupRoutes(r *gin.Engine) {
 	r.POST("/api/auth/register", middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"), controllers.Register)
+	r.POST("/api/auth/public-register", controllers.PublicRegister)
 	r.POST("/api/auth/login", controllers.Login)
 	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
 	r.PUT("/api/auth/change-password", middleware.AuthMiddleware(), controllers.ChangePassword)

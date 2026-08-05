@@ -1,17 +1,16 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { onMount, getContext } from "svelte";
-  import { page } from "$app/state";
 
   let authState = getContext<{isAuthenticated: boolean, authChecked: boolean}>("authState");
 
   let username = $state("");
   let password = $state("");
+  let kelas = $state("");
   let errorMsg = $state("");
-  let successMsg = $state("");
   let isLoading = $state(false);
   let showPassword = $state(false);
-  let isRegistrationOpen = $state(false);
+  let isRegistrationOpen = $state<boolean | null>(null);
 
   onMount(async () => {
     // Check registration setting
@@ -20,17 +19,12 @@
       if (resSettings.ok) {
         const data = await resSettings.json();
         isRegistrationOpen = data.is_registration_open === "true";
+      } else {
+        isRegistrationOpen = false;
       }
     } catch (e) {
       // Abaikan
-    }
-
-    if (page.url.searchParams.get("registered") === "true") {
-      successMsg = "Pendaftaran berhasil! Silakan masuk.";
-      // Hapus query param dari URL tanpa mereload halaman
-      const url = new URL(window.location.href);
-      url.searchParams.delete("registered");
-      window.history.replaceState({}, "", url);
+      isRegistrationOpen = false;
     }
 
     try {
@@ -44,34 +38,30 @@
         }
       }
     } catch (e) {
-      // Abaikan error jaringan jika tidak bisa mengecek sesi
+      // Abaikan error jaringan
     }
   });
 
-  async function handleLogin(e: SubmitEvent) {
+  async function handleRegister(e: SubmitEvent) {
     e.preventDefault();
     isLoading = true;
     errorMsg = "";
 
     try {
-      const res = await fetch(`/api/auth/login`, {
+      const res = await fetch(`/api/auth/public-register`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-        credentials: "include",
+        body: JSON.stringify({ username, password, class: kelas }),
+        credentials: "omit", // public endpoint doesn't need credentials initially
       });
 
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.error || "Login gagal");
+        throw new Error(data.error || "Pendaftaran gagal");
       }
 
-      if (authState) {
-        authState.isAuthenticated = true;
-      }
-
-      goto("/");
+      goto("/login?registered=true");
     } catch (err) {
       errorMsg = err instanceof Error ? err.message : String(err);
     } finally {
@@ -81,8 +71,8 @@
 </script>
 
 <svelte:head>
-  <title>Masuk — Portal Les</title>
-  <meta name="description" content="Masuk ke portal belajar Anda." />
+  <title>Daftar — Portal Les</title>
+  <meta name="description" content="Daftar akun baru di portal belajar." />
   <meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -109,18 +99,19 @@
           stroke-linecap="round"
           stroke-linejoin="round"
         >
-          <path d="M12 2L2 7l10 5 10-5-10-5z" />
-          <path d="M2 17l10 5 10-5" />
-          <path d="M2 12l10 5 10-5" />
+          <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" />
+          <circle cx="8.5" cy="7" r="4" />
+          <line x1="20" y1="8" x2="20" y2="14" />
+          <line x1="23" y1="11" x2="17" y2="11" />
         </svg>
       </div>
       <h1
         class="text-2xl font-bold tracking-tight text-slate-900 drop-shadow-sm"
       >
-        Selamat datang
+        Daftar Akun Baru
       </h1>
       <p class="text-sm text-slate-600 font-medium">
-        Masuk untuk melanjutkan ke portal belajar
+        Silakan isi data Anda untuk membuat akun
       </p>
     </div>
 
@@ -128,7 +119,23 @@
     <div
       class="w-full bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-8"
     >
-      <form onsubmit={handleLogin} novalidate class="flex flex-col gap-4">
+      {#if isRegistrationOpen === null}
+        <div class="flex flex-col items-center justify-center py-8">
+          <div class="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
+          <p class="mt-4 text-sm text-slate-500 font-medium animate-pulse">Memeriksa status...</p>
+        </div>
+      {:else if isRegistrationOpen === false}
+        <div class="flex flex-col items-center justify-center py-6 text-center">
+          <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+          </div>
+          <h2 class="text-lg font-bold text-slate-800 mb-2">Pendaftaran Ditutup</h2>
+          <p class="text-sm text-slate-600 mb-2">Mohon maaf, pendaftaran lomba saat ini sedang ditutup. Silakan kembali lagi nanti.</p>
+        </div>
+      {:else}
+      <form onsubmit={handleRegister} novalidate class="flex flex-col gap-4">
         <!-- Error -->
         {#if errorMsg}
           <div
@@ -136,7 +143,7 @@
             role="alert"
           >
             <svg
-              class="w-4 h-4 flex-shrink-0 mt-0.5"
+              class="w-4 h-4 shrink-0 mt-0.5"
               fill="none"
               stroke="currentColor"
               stroke-width="2"
@@ -156,30 +163,6 @@
           </div>
         {/if}
 
-        <!-- Success -->
-        {#if successMsg}
-          <div
-            class="flex items-start gap-2.5 bg-emerald-50 border border-emerald-200 text-emerald-800 rounded-xl px-3.5 py-3 text-sm leading-snug"
-            role="status"
-          >
-            <svg
-              class="w-4 h-4 shrink-0 mt-0.5"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-            >
-              <circle cx="12" cy="12" r="10" /><polyline
-                points="9 12 11 14 15 10"
-              />
-            </svg>
-            <span>{successMsg}</span>
-          </div>
-        {/if}
-
         <!-- Username -->
         <div class="flex flex-col gap-1.5">
           <label
@@ -194,7 +177,25 @@
             type="text"
             required
             bind:value={username}
-            placeholder="Masukkan username Anda"
+            placeholder="Pilih username"
+            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+          />
+        </div>
+
+        <!-- Class -->
+        <div class="flex flex-col gap-1.5">
+          <label
+            for="class"
+            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
+          >
+            Kelas
+          </label>
+          <input
+            id="class"
+            name="class"
+            type="text"
+            bind:value={kelas}
+            placeholder="Contoh: 10 IPA 1"
             class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
           />
         </div>
@@ -213,9 +214,9 @@
               name="password"
               type={showPassword ? "text" : "password"}
               required
+              minlength="6"
               bind:value={password}
-              placeholder="••••••••"
-              autocomplete="current-password"
+              placeholder="Minimal 6 karakter"
               class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
             />
             <button
@@ -275,22 +276,21 @@
         >
           {#if isLoading}
             <span
-              class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin flex-shrink-0"
+              class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0"
               aria-hidden="true"
             ></span>
             Memproses...
           {:else}
-            Masuk
+            Daftar
           {/if}
         </button>
 
-        <!-- Register Link -->
-        {#if isRegistrationOpen}
+        <!-- Login Link -->
         <div class="mt-4 text-center text-sm text-slate-600">
-          Belum punya akun? <a href="/register" class="text-blue-600 font-bold hover:underline">Daftar sekarang</a>
+          Sudah punya akun? <a href="/login" class="text-blue-600 font-bold hover:underline">Masuk</a>
         </div>
-        {/if}
       </form>
+      {/if}
     </div>
 
     <!-- Back link -->
@@ -314,8 +314,6 @@
       Kembali ke Beranda
     </a>
   </main>
-
-
 </div>
 
 <style>

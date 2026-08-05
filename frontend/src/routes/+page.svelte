@@ -8,6 +8,8 @@
   let isAuthenticated = $derived(authState.isAuthenticated);
   let authChecked = $derived(authState.authChecked);
 
+  let isRegistrationOpen = $state(false);
+
   type Quote = {
     id: number;
     quote: string;
@@ -30,6 +32,17 @@
       console.error("Gagal memuat quotes", e);
     } finally {
       quotesLoaded = true;
+    }
+
+    // Fetch Settings
+    try {
+      const resSettings = await fetch("/api/settings");
+      if (resSettings.ok) {
+        const json = await resSettings.json();
+        isRegistrationOpen = json.is_registration_open === "true";
+      }
+    } catch (e) {
+      console.error("Gagal memuat pengaturan", e);
     }
   });
 </script>
@@ -207,7 +220,27 @@
         <div class="flex flex-row items-center justify-center gap-5 flex-wrap">
           {#if authChecked}
             {#if !isAuthenticated}
-              <!-- Primary: Masuk Portal -->
+              {#if isRegistrationOpen}
+              <!-- Primary: Daftar Lomba -->
+              <a
+                href="/register"
+                class="group inline-flex items-center justify-center w-52 gap-2.5 px-6 py-3 rounded-full bg-indigo-600 hover:bg-indigo-700 border border-indigo-600 text-white text-xs font-bold tracking-[0.15em] uppercase shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
+              >
+                <svg
+                  class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2" />
+                  <circle cx="8.5" cy="7" r="4" />
+                  <line x1="20" y1="8" x2="20" y2="14" />
+                  <line x1="23" y1="11" x2="17" y2="11" />
+                </svg>
+                Daftar Lomba
+              </a>
+              {/if}
+              <!-- Secondary: Masuk Portal -->
               <a
                 href="/login"
                 class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
@@ -629,6 +662,13 @@
           class="hover:text-slate-800 transition-colors duration-200 no-underline"
           >Belajar Coding</a
         >
+        {#if isRegistrationOpen}
+        <a
+          href="/register"
+          class="hover:text-slate-800 transition-colors duration-200 no-underline"
+          >Daftar</a
+        >
+        {/if}
         <a
           href="/login"
           class="hover:text-slate-800 transition-colors duration-200 no-underline"

@@ -172,6 +172,64 @@ func Register(c *gin.Context) {
 	})
 }
 
+// PublicRegister — mendaftarkan user baru oleh umum (selalu student)
+func PublicRegister(c *gin.Context) {
+	var setting models.SystemSetting
+	if err := database.DB.Where("key = ?", "is_registration_open").First(&setting).Error; err != nil || setting.Value != "true" {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Pendaftaran sedang ditutup."})
+		return
+	}
+
+	var input struct {
+		Username string `json:"username" binding:"required"`
+		Password string `json:"password" binding:"required"`
+		Class    string `json:"class"`
+	}
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if len(input.Password) < 6 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Password minimal 6 karakter"})
+		return
+	}
+
+	// Hash password
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.Password), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal meng-hash password"})
+		return
+	}
+
+	user := models.User{
+		Username: input.Username,
+		Password: string(hashedPassword),
+		Role:     "student", // Paksa role student
+		Class:    input.Class,
+	}
+
+	if err := database.DB.Create(&user).Error; err != nil {
+		// Tangani duplicate unique constraint
+		if strings.Contains(err.Error(), "duplicate") {
+			c.JSON(http.StatusConflict, gin.H{"error": "Username sudah digunakan"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mendaftarkan user"})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{
+		"message": "Pendaftaran berhasil",
+		"user": gin.H{
+			"id":       user.ID,
+			"username": user.Username,
+			"role":     user.Role,
+			"class":    user.Class,
+		},
+	})
+}
+
 // Login — autentikasi user dan set cookie HttpOnly
 func Login(c *gin.Context) {
 	var input struct {
