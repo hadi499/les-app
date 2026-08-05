@@ -2,7 +2,10 @@
   import { goto } from "$app/navigation";
   import { onMount, getContext } from "svelte";
 
-  let authState = getContext<{isAuthenticated: boolean, authChecked: boolean}>("authState");
+  let authState = getContext<{
+    isAuthenticated: boolean;
+    authChecked: boolean;
+  }>("authState");
 
   let username = $state("");
   let password = $state("");
@@ -80,7 +83,6 @@
 <div
   class="relative min-h-screen bg-slate-50 flex items-center justify-center px-4 py-12 overflow-hidden font-sans selection:bg-blue-200 selection:text-blue-900"
 >
-
   <!-- Content wrapper -->
   <main class="relative z-10 w-full max-w-sm flex flex-col items-center gap-6">
     <!-- Header -->
@@ -121,175 +123,199 @@
     >
       {#if isRegistrationOpen === null}
         <div class="flex flex-col items-center justify-center py-8">
-          <div class="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"></div>
-          <p class="mt-4 text-sm text-slate-500 font-medium animate-pulse">Memeriksa status...</p>
+          <div
+            class="w-8 h-8 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"
+          ></div>
+          <p class="mt-4 text-sm text-slate-500 font-medium animate-pulse">
+            Memeriksa status...
+          </p>
         </div>
       {:else if isRegistrationOpen === false}
         <div class="flex flex-col items-center justify-center py-6 text-center">
-          <div class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4">
-            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-            </svg>
-          </div>
-          <h2 class="text-lg font-bold text-slate-800 mb-2">Pendaftaran Ditutup</h2>
-          <p class="text-sm text-slate-600 mb-2">Mohon maaf, pendaftaran lomba saat ini sedang ditutup. Silakan kembali lagi nanti.</p>
-        </div>
-      {:else}
-      <form onsubmit={handleRegister} novalidate class="flex flex-col gap-4">
-        <!-- Error -->
-        {#if errorMsg}
           <div
-            class="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-800 rounded-xl px-3.5 py-3 text-sm leading-snug"
-            role="alert"
+            class="w-16 h-16 bg-rose-100 text-rose-600 rounded-full flex items-center justify-center mb-4"
           >
             <svg
-              class="w-4 h-4 shrink-0 mt-0.5"
+              class="w-8 h-8"
               fill="none"
               stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
               viewBox="0 0 24 24"
-              aria-hidden="true"
             >
-              <circle cx="12" cy="12" r="10" /><line
-                x1="12"
-                y1="8"
-                x2="12"
-                y2="12"
-              /><line x1="12" y1="16" x2="12.01" y2="16" />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+              />
             </svg>
-            <span>{errorMsg}</span>
           </div>
-        {/if}
-
-        <!-- Username -->
-        <div class="flex flex-col gap-1.5">
-          <label
-            for="username"
-            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
-          >
-            Username
-          </label>
-          <input
-            id="username"
-            name="username"
-            type="text"
-            required
-            bind:value={username}
-            placeholder="Pilih username"
-            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
-          />
+          <h2 class="text-lg font-bold text-slate-800 mb-2">
+            Pendaftaran Ditutup
+          </h2>
+          <p class="text-sm text-slate-600 mb-2">
+            Mohon maaf, pendaftaran lomba saat ini sedang ditutup. Silakan
+            kembali lagi nanti.
+          </p>
         </div>
-
-        <!-- Class -->
-        <div class="flex flex-col gap-1.5">
-          <label
-            for="class"
-            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
-          >
-            Kelas
-          </label>
-          <input
-            id="class"
-            name="class"
-            type="text"
-            bind:value={kelas}
-            placeholder="Contoh: 10 IPA 1"
-            class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
-          />
-        </div>
-
-        <!-- Password -->
-        <div class="flex flex-col gap-1.5">
-          <label
-            for="password"
-            class="text-xs font-bold text-slate-600 tracking-wide uppercase"
-          >
-            Password
-          </label>
-          <div class="relative">
-            <input
-              id="password"
-              name="password"
-              type={showPassword ? "text" : "password"}
-              required
-              minlength="6"
-              bind:value={password}
-              placeholder="Minimal 6 karakter"
-              class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
-            />
-            <button
-              type="button"
-              class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
-              onclick={() => (showPassword = !showPassword)}
-              aria-label={showPassword
-                ? "Sembunyikan password"
-                : "Tampilkan password"}
+      {:else}
+        <form onsubmit={handleRegister} novalidate class="flex flex-col gap-4">
+          <!-- Error -->
+          {#if errorMsg}
+            <div
+              class="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-800 rounded-xl px-3.5 py-3 text-sm leading-snug"
+              role="alert"
             >
-              {#if !showPassword}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="icon icon-tabler icons-tabler-outline icon-tabler-eye"
-                  ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                    d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"
-                  /><path
-                    d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
-                  /></svg
-                >
-              {:else}
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="18"
-                  height="18"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  stroke-width="2"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"
-                  ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
-                    d="M10.585 10.587a2 2 0 0 0 2.829 2.828"
-                  /><path
-                    d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87"
-                  /><path d="M3 3l18 18" /></svg
-                >
-              {/if}
-            </button>
-          </div>
-        </div>
-
-        <!-- Submit -->
-        <button
-          type="submit"
-          disabled={isLoading}
-          class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl border border-blue-500 hover:bg-blue-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
-        >
-          {#if isLoading}
-            <span
-              class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0"
-              aria-hidden="true"
-            ></span>
-            Memproses...
-          {:else}
-            Daftar
+              <svg
+                class="w-4 h-4 shrink-0 mt-0.5"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                viewBox="0 0 24 24"
+                aria-hidden="true"
+              >
+                <circle cx="12" cy="12" r="10" /><line
+                  x1="12"
+                  y1="8"
+                  x2="12"
+                  y2="12"
+                /><line x1="12" y1="16" x2="12.01" y2="16" />
+              </svg>
+              <span>{errorMsg}</span>
+            </div>
           {/if}
-        </button>
 
-        <!-- Login Link -->
-        <div class="mt-4 text-center text-sm text-slate-600">
-          Sudah punya akun? <a href="/login" class="text-blue-600 font-bold hover:underline">Masuk</a>
-        </div>
-      </form>
+          <!-- Username -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="username"
+              class="text-xs font-bold text-slate-600 tracking-wide uppercase"
+            >
+              Username
+            </label>
+            <input
+              id="username"
+              name="username"
+              type="text"
+              required
+              bind:value={username}
+              placeholder="Pilih username"
+              class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+            />
+          </div>
+
+          <!-- Class -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="class"
+              class="text-xs font-bold text-slate-600 tracking-wide uppercase"
+            >
+              Kelas
+            </label>
+            <input
+              id="class"
+              name="class"
+              type="text"
+              bind:value={kelas}
+              placeholder="Contoh: 5"
+              class="w-full px-3.5 py-2.5 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+            />
+          </div>
+
+          <!-- Password -->
+          <div class="flex flex-col gap-1.5">
+            <label
+              for="password"
+              class="text-xs font-bold text-slate-600 tracking-wide uppercase"
+            >
+              Password
+            </label>
+            <div class="relative">
+              <input
+                id="password"
+                name="password"
+                type={showPassword ? "text" : "password"}
+                required
+                minlength="6"
+                bind:value={password}
+                placeholder="Minimal 6 karakter"
+                class="w-full px-3.5 py-2.5 pr-10 text-sm text-slate-900 bg-slate-50 border border-slate-200 rounded-xl outline-none placeholder:text-slate-400 focus:border-blue-400 focus:bg-white focus:ring-2 focus:ring-blue-400/50 transition-all"
+              />
+              <button
+                type="button"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 transition-colors"
+                onclick={() => (showPassword = !showPassword)}
+                aria-label={showPassword
+                  ? "Sembunyikan password"
+                  : "Tampilkan password"}
+              >
+                {#if !showPassword}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-eye"
+                    ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+                      d="M10 12a2 2 0 1 0 4 0a2 2 0 0 0 -4 0"
+                    /><path
+                      d="M21 12c-2.4 4 -5.4 6 -9 6c-3.6 0 -6.6 -2 -9 -6c2.4 -4 5.4 -6 9 -6c3.6 0 6.6 2 9 6"
+                    /></svg
+                  >
+                {:else}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    class="icon icon-tabler icons-tabler-outline icon-tabler-eye-off"
+                    ><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path
+                      d="M10.585 10.587a2 2 0 0 0 2.829 2.828"
+                    /><path
+                      d="M16.681 16.673a8.717 8.717 0 0 1 -4.681 1.327c-3.6 0 -6.6 -2 -9 -6c1.272 -2.12 2.712 -3.678 4.32 -4.674m2.86 -1.146a9.055 9.055 0 0 1 1.82 -.18c3.6 0 6.6 2 9 6c-.666 1.11 -1.379 2.067 -2.138 2.87"
+                    /><path d="M3 3l18 18" /></svg
+                  >
+                {/if}
+              </button>
+            </div>
+          </div>
+
+          <!-- Submit -->
+          <button
+            type="submit"
+            disabled={isLoading}
+            class="mt-1 w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-xl border border-blue-500 hover:bg-blue-500 hover:-translate-y-px hover:shadow-lg disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:translate-y-0 disabled:hover:shadow-none transition-all duration-200"
+          >
+            {#if isLoading}
+              <span
+                class="w-3.5 h-3.5 border-2 border-white/30 border-t-white rounded-full animate-spin shrink-0"
+                aria-hidden="true"
+              ></span>
+              Memproses...
+            {:else}
+              Daftar
+            {/if}
+          </button>
+
+          <!-- Login Link -->
+          <div class="mt-4 text-center text-sm text-slate-600">
+            Sudah punya akun? <a
+              href="/login"
+              class="text-blue-600 font-bold hover:underline">Masuk</a
+            >
+          </div>
+        </form>
       {/if}
     </div>
 
