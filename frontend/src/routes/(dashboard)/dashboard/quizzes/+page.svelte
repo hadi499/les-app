@@ -195,7 +195,10 @@
     if (!lastResetAt) return false;
     const resetDate = new Date(lastResetAt);
     const now = new Date();
-    return resetDate.getFullYear() === now.getFullYear() && resetDate.getMonth() === now.getMonth();
+    return (
+      resetDate.getFullYear() === now.getFullYear() &&
+      resetDate.getMonth() === now.getMonth()
+    );
   }
 </script>
 
@@ -286,13 +289,33 @@
                 <span class="text-xs font-bold text-slate-400">#{quiz.id}</span>
                 {#if isTeacher}
                   {#if quiz.is_published}
-                    <span class="px-1.5 py-0.5 rounded bg-green-100 text-green-700 text-[9px] font-black uppercase tracking-wider">Publish</span>
+                    <span
+                      class="px-1.5 py-0.5 rounded bg-green-100 text-green-700 text-[9px] font-black uppercase tracking-wider"
+                      >Publish</span
+                    >
                   {:else}
-                    <span class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[9px] font-black uppercase tracking-wider">Draft</span>
+                    <span
+                      class="px-1.5 py-0.5 rounded bg-slate-200 text-slate-700 text-[9px] font-black uppercase tracking-wider"
+                      >Draft</span
+                    >
                   {/if}
                   {#if isResetThisMonth(quiz.last_reset_at)}
-                    <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5" title="Sudah direset bulan ini">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span
+                      class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-700 text-[9px] font-black uppercase tracking-wider flex items-center gap-0.5"
+                      title="Sudah direset bulan ini"
+                    >
+                      <svg
+                        class="w-3 h-3"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                        ></path></svg
+                      >
                       Direset
                     </span>
                   {/if}
@@ -324,7 +347,7 @@
                 d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
               /></svg
             >
-            {quiz.timeLimit} Detik
+            {quiz.timeLimit} detik / soal
           </div>
 
           <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
@@ -354,10 +377,23 @@
                 class="flex-1 inline-flex items-center justify-center p-2.5 text-sm font-semibold text-emerald-700 bg-emerald-50 rounded-xl border border-emerald-100 hover:bg-emerald-100 transition-colors cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {#if isDuplicating[quiz.id]}
-                  <div class="w-4 h-4 mr-1.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"></div>
+                  <div
+                    class="w-4 h-4 mr-1.5 border-2 border-emerald-500/30 border-t-emerald-500 rounded-full animate-spin"
+                  ></div>
                   Proses...
                 {:else}
-                  <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"></path></svg>
+                  <svg
+                    class="w-4 h-4 mr-1.5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"
+                    ></path></svg
+                  >
                   Duplikat
                 {/if}
               </button>
@@ -558,14 +594,18 @@
                   </div>
                 {/if}
               </div>
-              <div class="shrink-0 text-right mt-0.5 flex flex-col items-end gap-1.5">
+              <div
+                class="shrink-0 text-right mt-0.5 flex flex-col items-end gap-1.5"
+              >
                 <span
                   class={`inline-block px-3 py-1.5 rounded-xl text-sm font-black border shadow-sm tracking-wide ${s.score >= 80 ? "bg-green-50 text-green-700 border-green-200" : s.score >= 60 ? "bg-yellow-50 text-yellow-700 border-yellow-200" : "bg-red-50 text-red-600 border-red-200"}`}
                 >
                   SKOR {s.score}
                 </span>
                 {#if s.points_earned}
-                  <span class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 shadow-sm uppercase tracking-wider">
+                  <span
+                    class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 shadow-sm uppercase tracking-wider"
+                  >
                     +{s.points_earned} Poin
                   </span>
                 {/if}

@@ -150,7 +150,7 @@
                     d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
                   />
                 </svg>
-                {quiz.timeLimit}s / soal
+                {quiz.timeLimit} detik/soal
               </div>
               <a
                 href="/quiz/{quiz.id}"
