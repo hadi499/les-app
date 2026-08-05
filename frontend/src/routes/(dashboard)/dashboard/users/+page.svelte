@@ -1,7 +1,15 @@
 <script lang="ts">
   import { onMount } from "svelte";
 
-  type User = { id: number; username: string; role: string; class?: string; last_active_at?: string; points?: number; is_suspended?: boolean };
+  type User = {
+    id: number;
+    username: string;
+    role: string;
+    class?: string;
+    last_active_at?: string;
+    points?: number;
+    is_suspended?: boolean;
+  };
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -14,7 +22,12 @@
 
   let showAddModal = $state(false);
   let isAdding = $state(false);
-  let newUser = $state({ username: "", password: "", role: "student", class: "" });
+  let newUser = $state({
+    username: "",
+    password: "",
+    role: "student",
+    class: "",
+  });
   let addErrorMsg = $state("");
   let showPassword = $state(false);
 
@@ -31,7 +44,11 @@
   let showResetPassword = $state(false);
 
   let showSuspendModal = $state(false);
-  let userToSuspend: { id: number; username: string; is_suspended: boolean } | null = $state(null);
+  let userToSuspend: {
+    id: number;
+    username: string;
+    is_suspended: boolean;
+  } | null = $state(null);
   let isSuspending = $state(false);
 
   let flashMessage = $state("");
@@ -48,7 +65,9 @@
   async function fetchUsers() {
     isLoading = true;
     showLoadingSpinner = false;
-    setTimeout(() => { showLoadingSpinner = true; }, 150);
+    setTimeout(() => {
+      showLoadingSpinner = true;
+    }, 150);
     errorMsg = "";
     try {
       const res = await fetch(`/api/users`, {
@@ -104,7 +123,7 @@
     } catch (e) {
       showFlash(
         "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)),
-        "error"
+        "error",
       );
     } finally {
       isDeleting = false;
@@ -152,14 +171,20 @@
       showAddModal = false;
       fetchUsers();
     } catch (e) {
-      addErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+      addErrorMsg =
+        "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
     } finally {
       isAdding = false;
     }
   }
 
   function promptEdit(u: User) {
-    editUser = { id: u.id, username: u.username, role: u.role, class: u.class || "" };
+    editUser = {
+      id: u.id,
+      username: u.username,
+      role: u.role,
+      class: u.class || "",
+    };
     editErrorMsg = "";
     showEditModal = true;
   }
@@ -183,7 +208,7 @@
         body: JSON.stringify({
           username: editUser.username,
           role: editUser.role,
-          class: editUser.class
+          class: editUser.class,
         }),
       });
       const data = await res.json();
@@ -195,7 +220,8 @@
       showEditModal = false;
       fetchUsers();
     } catch (e) {
-      editErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+      editErrorMsg =
+        "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
     } finally {
       isEditing = false;
     }
@@ -246,14 +272,19 @@
       showResetModal = false;
       userToReset = null;
     } catch (e) {
-      resetErrorMsg = "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
+      resetErrorMsg =
+        "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
     } finally {
       isResetting = false;
     }
   }
 
   function promptSuspend(u: User) {
-    userToSuspend = { id: u.id, username: u.username, is_suspended: u.is_suspended || false };
+    userToSuspend = {
+      id: u.id,
+      username: u.username,
+      is_suspended: u.is_suspended || false,
+    };
     showSuspendModal = true;
   }
 
@@ -277,12 +308,20 @@
         showFlash(data.error || "Gagal mengubah status suspend", "error");
         return;
       }
-      showFlash(userToSuspend.is_suspended ? "User berhasil diaktifkan kembali" : "User berhasil ditangguhkan", "success");
+      showFlash(
+        userToSuspend.is_suspended
+          ? "User berhasil diaktifkan kembali"
+          : "User berhasil ditangguhkan",
+        "success",
+      );
       showSuspendModal = false;
       userToSuspend = null;
       fetchUsers();
     } catch (e) {
-      showFlash("Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)), "error");
+      showFlash(
+        "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)),
+        "error",
+      );
     } finally {
       isSuspending = false;
     }
@@ -296,17 +335,46 @@
 <div class="animate-in fade-in duration-500 relative">
   <!-- Flash Message -->
   {#if flashMessage}
-    <div class="fixed top-6 right-6 z-[110] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl shadow-slate-900/10 border animate-in slide-in-from-right-8 fade-in duration-300 {flashType === 'success' ? 'bg-green-50 border-green-200 text-green-800' : 'bg-red-50 border-red-200 text-red-800'}">
+    <div
+      class="fixed top-6 right-6 z-[110] flex items-center gap-3 px-5 py-3 rounded-2xl shadow-xl shadow-slate-900/10 border animate-in slide-in-from-right-8 fade-in duration-300 {flashType ===
+      'success'
+        ? 'bg-green-50 border-green-200 text-green-800'
+        : 'bg-red-50 border-red-200 text-red-800'}"
+    >
       {#if flashType === "success"}
-        <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+        <svg
+          class="w-5 h-5 text-green-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M5 13l4 4L19 7"
+          ></path></svg
+        >
       {:else}
-        <svg class="w-5 h-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        <svg
+          class="w-5 h-5 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          ></path></svg
+        >
       {/if}
       <p class="text-sm font-semibold">{flashMessage}</p>
     </div>
   {/if}
 
-  <div class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+  <div
+    class="mb-8 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4"
+  >
     <div>
       <h1
         class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
@@ -323,14 +391,27 @@
       onclick={promptAdd}
       class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
     >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+        ><path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 4v16m8-8H4"
+        ></path></svg
+      >
       Tambah User
     </button>
   </div>
 
-    {#if isLoading}
-    <div class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner ? 'opacity-100' : 'opacity-0'} transition-opacity duration-300">
-      <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin shadow-sm"></div>
+  {#if isLoading}
+    <div
+      class="fixed inset-0 z-[100] flex flex-col items-center justify-center bg-slate-50/50 backdrop-blur-sm {showLoadingSpinner
+        ? 'opacity-100'
+        : 'opacity-0'} transition-opacity duration-300"
+    >
+      <div
+        class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin shadow-sm"
+      ></div>
     </div>
   {:else if errorMsg}
     <div
@@ -355,7 +436,9 @@
       class="bg-white/60 rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
     >
       <div class="overflow-x-auto">
-        <table class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]">
+        <table
+          class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]"
+        >
           <thead>
             <tr class="bg-white/40 border-b border-slate-200">
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">ID</th>
@@ -364,8 +447,8 @@
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Kelas</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
                 >Aksi</th
               >
@@ -387,28 +470,38 @@
                   </span>
                 </td>
                 <td class="py-4 px-6 text-sm text-slate-700">
-                  {u.class || '-'}
+                  {u.class || "-"}
                 </td>
-                <td class="py-4 px-6 text-sm font-semibold text-blue-600">
-                  {u.points || 0}
-                </td>
+
                 <td class="py-4 px-6 text-sm flex flex-col gap-1 items-start">
                   {#if u.is_suspended}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700 border border-red-300">
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700 border border-red-300"
+                    >
                       Suspended
                     </span>
                   {/if}
                   {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300 mt-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300 mt-1"
+                    >
+                      <span
+                        class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"
+                      ></span>
                       Online
                     </span>
                   {:else}
-                    <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300 mt-1">
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                    <span
+                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300 mt-1"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"
+                      ></span>
                       Offline
                     </span>
                   {/if}
+                </td>
+                <td class="py-4 px-6 text-sm font-semibold text-blue-600">
+                  {u.points || 0}
                 </td>
                 <td class="py-4 px-6 text-center">
                   <div class="flex items-center justify-center gap-2">
@@ -417,7 +510,18 @@
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       title="Edit User"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                        ></path></svg
+                      >
                       Edit
                     </button>
                     <button
@@ -425,19 +529,54 @@
                       class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                       title="Reset Password"
                     >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
+                        ></path></svg
+                      >
                       Reset Pass
                     </button>
                     <button
                       onclick={() => promptSuspend(u)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium {u.is_suspended ? 'text-green-700 bg-green-50 hover:bg-green-100 border-green-200 focus:ring-green-500/50' : 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200 focus:ring-orange-500/50'} rounded-lg transition-colors border cursor-pointer focus:outline-none focus:ring-2"
-                      title={u.is_suspended ? 'Aktifkan User' : 'Suspend User'}
+                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium {u.is_suspended
+                        ? 'text-green-700 bg-green-50 hover:bg-green-100 border-green-200 focus:ring-green-500/50'
+                        : 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200 focus:ring-orange-500/50'} rounded-lg transition-colors border cursor-pointer focus:outline-none focus:ring-2"
+                      title={u.is_suspended ? "Aktifkan User" : "Suspend User"}
                     >
                       {#if u.is_suspended}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                          ></path></svg
+                        >
                         Aktifkan
                       {:else}
-                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                          ></path></svg
+                        >
                         Suspend
                       {/if}
                     </button>
@@ -524,19 +663,28 @@
 
   <!-- Add User Modal -->
   {#if showAddModal}
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
+      >
         <h3 class="text-xl font-bold text-slate-900 mb-4">Tambah User Baru</h3>
-        
+
         {#if addErrorMsg}
-          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+          <div
+            class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200"
+          >
             {addErrorMsg}
           </div>
         {/if}
 
         <div class="space-y-4 mb-6">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="username">Username</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="username">Username</label
+            >
             <input
               id="username"
               type="text"
@@ -546,7 +694,10 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="password">Password</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="password">Password</label
+            >
             <div class="relative">
               <input
                 id="password"
@@ -559,25 +710,55 @@
                 type="button"
                 class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-blue-500 focus:outline-none transition-colors cursor-pointer"
                 onclick={() => (showPassword = !showPassword)}
-                title={showPassword ? "Sembunyikan password" : "Tampilkan password"}
+                title={showPassword
+                  ? "Sembunyikan password"
+                  : "Tampilkan password"}
               >
                 {#if showPassword}
                   <!-- Eye slash icon -->
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                  <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
                   </svg>
                 {:else}
                   <!-- Eye icon -->
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
                   </svg>
                 {/if}
               </button>
             </div>
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="role">Role</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="role">Role</label
+            >
             <select
               id="role"
               bind:value={newUser.role}
@@ -587,9 +768,12 @@
               <option value="teacher">Teacher</option>
             </select>
           </div>
-          {#if newUser.role === 'student'}
+          {#if newUser.role === "student"}
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1" for="userclass">Kelas</label>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="userclass">Kelas</label
+              >
               <input
                 id="userclass"
                 type="text"
@@ -615,7 +799,9 @@
             class="px-4 py-2 text-sm font-medium text-white bg-blue-600 shadow-md hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {#if isAdding}
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></div>
             {/if}
             Simpan
           </button>
@@ -626,19 +812,28 @@
 
   <!-- Edit User Modal -->
   {#if showEditModal}
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
+      >
         <h3 class="text-xl font-bold text-slate-900 mb-4">Edit User</h3>
-        
+
         {#if editErrorMsg}
-          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+          <div
+            class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200"
+          >
             {editErrorMsg}
           </div>
         {/if}
 
         <div class="space-y-4 mb-6">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="editUsername">Username</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="editUsername">Username</label
+            >
             <input
               id="editUsername"
               type="text"
@@ -647,7 +842,10 @@
             />
           </div>
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="editRole">Role</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="editRole">Role</label
+            >
             <select
               id="editRole"
               bind:value={editUser.role}
@@ -657,9 +855,12 @@
               <option value="teacher">Teacher</option>
             </select>
           </div>
-          {#if editUser.role === 'student'}
+          {#if editUser.role === "student"}
             <div>
-              <label class="block text-sm font-medium text-slate-700 mb-1" for="editClass">Kelas</label>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="editClass">Kelas</label
+              >
               <input
                 id="editClass"
                 type="text"
@@ -685,7 +886,9 @@
             class="px-4 py-2 text-sm font-medium text-white bg-blue-600 shadow-md hover:bg-blue-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {#if isEditing}
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></div>
             {/if}
             Simpan
           </button>
@@ -696,22 +899,33 @@
 
   <!-- Reset Password Modal -->
   {#if showResetModal && userToReset}
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
+      >
         <h3 class="text-xl font-bold text-slate-900 mb-2">Reset Password</h3>
         <p class="text-slate-600 mb-4 text-sm">
-          Masukkan password baru untuk user <span class="font-bold text-slate-900">"{userToReset.username}"</span>.
+          Masukkan password baru untuk user <span
+            class="font-bold text-slate-900">"{userToReset.username}"</span
+          >.
         </p>
-        
+
         {#if resetErrorMsg}
-          <div class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200">
+          <div
+            class="mb-4 p-3 bg-red-100 text-red-700 text-sm rounded-lg border border-red-200"
+          >
             {resetErrorMsg}
           </div>
         {/if}
 
         <div class="space-y-4 mb-6">
           <div>
-            <label class="block text-sm font-medium text-slate-700 mb-1" for="resetPassword">Password Baru</label>
+            <label
+              class="block text-sm font-medium text-slate-700 mb-1"
+              for="resetPassword">Password Baru</label
+            >
             <div class="relative">
               <input
                 id="resetPassword"
@@ -724,18 +938,45 @@
                 type="button"
                 class="absolute inset-y-0 right-0 px-3 flex items-center text-slate-400 hover:text-amber-500 focus:outline-none transition-colors cursor-pointer"
                 onclick={() => (showResetPassword = !showResetPassword)}
-                title={showResetPassword ? "Sembunyikan password" : "Tampilkan password"}
+                title={showResetPassword
+                  ? "Sembunyikan password"
+                  : "Tampilkan password"}
               >
                 {#if showResetPassword}
                   <!-- Eye slash icon -->
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                  <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21"
+                    />
                   </svg>
                 {:else}
                   <!-- Eye icon -->
-                  <svg class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                  <svg
+                    class="h-5 w-5"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
                   </svg>
                 {/if}
               </button>
@@ -757,7 +998,9 @@
             class="px-4 py-2 text-sm font-medium text-white bg-amber-600 shadow-md hover:bg-amber-700 rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {#if isResetting}
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></div>
             {/if}
             Reset Password
           </button>
@@ -768,13 +1011,26 @@
 
   <!-- Suspend Confirmation Modal -->
   {#if showSuspendModal && userToSuspend}
-    <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm">
-      <div class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200">
-        <h3 class="text-xl font-bold text-slate-900 mb-2">Konfirmasi {userToSuspend.is_suspended ? 'Aktivasi' : 'Suspend'}</h3>
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
+      >
+        <h3 class="text-xl font-bold text-slate-900 mb-2">
+          Konfirmasi {userToSuspend.is_suspended ? "Aktivasi" : "Suspend"}
+        </h3>
         <p class="text-slate-600 mb-6 text-sm">
-          Apakah Anda yakin ingin {userToSuspend.is_suspended ? 'mengaktifkan kembali' : 'menangguhkan (suspend)'} user <span class="font-bold text-slate-900">"{userToSuspend.username}"</span>?
+          Apakah Anda yakin ingin {userToSuspend.is_suspended
+            ? "mengaktifkan kembali"
+            : "menangguhkan (suspend)"} user
+          <span class="font-bold text-slate-900"
+            >"{userToSuspend.username}"</span
+          >?
           {#if !userToSuspend.is_suspended}
-            <br /><span class="text-orange-600 font-medium block mt-1">User tidak akan bisa login selama ditangguhkan.</span>
+            <br /><span class="text-orange-600 font-medium block mt-1"
+              >User tidak akan bisa login selama ditangguhkan.</span
+            >
           {/if}
         </p>
         <div class="flex justify-end gap-3">
@@ -788,12 +1044,16 @@
           <button
             onclick={confirmSuspend}
             disabled={isSuspending}
-            class="px-4 py-2 text-sm font-medium text-white {userToSuspend.is_suspended ? 'bg-green-600 hover:bg-green-700' : 'bg-orange-500 hover:bg-orange-600'} shadow-md rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
+            class="px-4 py-2 text-sm font-medium text-white {userToSuspend.is_suspended
+              ? 'bg-green-600 hover:bg-green-700'
+              : 'bg-orange-500 hover:bg-orange-600'} shadow-md rounded-xl transition-colors flex items-center gap-2 disabled:opacity-50"
           >
             {#if isSuspending}
-              <div class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+              <div
+                class="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"
+              ></div>
             {/if}
-            Ya, {userToSuspend.is_suspended ? 'Aktifkan' : 'Suspend'}
+            Ya, {userToSuspend.is_suspended ? "Aktifkan" : "Suspend"}
           </button>
         </div>
       </div>
