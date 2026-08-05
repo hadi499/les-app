@@ -323,6 +323,7 @@
         </div>
 
         <!-- Pendaftaran Publik -->
+        {#if !isRoleLoaded || userRole === "teacher"}
         <div
           class="pt-4 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
         >
@@ -392,6 +393,7 @@
             {/if}
           </div>
         </div>
+        {/if}
 
         {#if userData}
           <div
