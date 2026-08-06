@@ -14,9 +14,12 @@ import (
 
 // GetUsers returns all users. Accessible by all authenticated users for the leaderboard.
 func GetUsers(c *gin.Context) {
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "25"))
+	offset := (page - 1) * limit
 
 	var users []models.User
-	if err := database.DB.Order("id asc").Find(&users).Error; err != nil {
+	if err := database.DB.Order("id asc").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
@@ -26,11 +29,18 @@ func GetUsers(c *gin.Context) {
 	database.DB.Model(&models.User{}).Where("role = ?", "teacher").Count(&totalTeachers)
 	database.DB.Model(&models.User{}).Where("role = ?", "student").Count(&totalStudents)
 
+	totalPages := 1
+	if limit > 0 {
+		totalPages = int((totalUsers + int64(limit) - 1) / int64(limit))
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"users": users,
+		"users":          users,
 		"total_users":    totalUsers,
 		"total_teachers": totalTeachers,
 		"total_students": totalStudents,
+		"current_page":   page,
+		"total_pages":    totalPages,
 	})
 }
 

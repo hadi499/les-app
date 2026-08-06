@@ -21,15 +21,8 @@
 
   // Paginasi
   let currentPage = $state(1);
-  let itemsPerPage = $state(3);
-  let totalPages = $derived(Math.ceil(users.length / itemsPerPage) || 1);
-  let paginatedUsers = $derived(users.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
-
-  $effect(() => {
-    if (currentPage > totalPages) {
-      currentPage = totalPages;
-    }
-  });
+  let itemsPerPage = $state(25);
+  let totalPages = $state(1);
 
   let showDeleteModal = $state(false);
   let userToDelete: { id: number; username: string } | null = $state(null);
@@ -85,7 +78,7 @@
     }, 150);
     errorMsg = "";
     try {
-      const res = await fetch(`/api/users`, {
+      const res = await fetch(`/api/users?page=${currentPage}&limit=${itemsPerPage}`, {
         credentials: "include",
       });
       if (res.status === 403) {
@@ -100,12 +93,20 @@
         users: User[],
         total_users: number,
         total_teachers: number,
-        total_students: number
+        total_students: number,
+        total_pages: number
       };
       users = data.users || [];
       totalUsers = data.total_users || 0;
       totalTeachers = data.total_teachers || 0;
       totalStudents = data.total_students || 0;
+      totalPages = data.total_pages || 1;
+      
+      // Pastikan halaman tidak melebihi total halaman (misal saat penghapusan data)
+      if (currentPage > totalPages && totalPages > 0) {
+        currentPage = totalPages;
+        fetchUsers();
+      }
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : String(e);
     } finally {
@@ -489,7 +490,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-slate-200">
-            {#each paginatedUsers as u}
+            {#each users as u}
               <tr class="hover:bg-white/40 transition-colors">
                 <td class="py-4 px-6 text-sm text-slate-600">{u.id}</td>
                 <td
@@ -656,7 +657,7 @@
           <div class="flex flex-1 justify-between sm:hidden items-center">
             <button
               disabled={currentPage === 1}
-              onclick={() => currentPage -= 1}
+              onclick={() => { currentPage -= 1; fetchUsers(); }}
               class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
             >
               <span class="sr-only">Sebelumnya</span>
@@ -669,7 +670,7 @@
             </span>
             <button
               disabled={currentPage === totalPages}
-              onclick={() => currentPage += 1}
+              onclick={() => { currentPage += 1; fetchUsers(); }}
               class="relative inline-flex items-center justify-center w-10 h-10 rounded-xl border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all"
             >
               <span class="sr-only">Selanjutnya</span>
@@ -683,14 +684,14 @@
           <div class="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
             <div>
               <p class="text-sm text-slate-600 font-light">
-                Menampilkan <span class="font-semibold text-slate-900">{(currentPage - 1) * itemsPerPage + 1}</span> hingga <span class="font-semibold text-slate-900">{Math.min(currentPage * itemsPerPage, users.length)}</span> dari <span class="font-semibold text-slate-900">{users.length}</span> user
+                Menampilkan <span class="font-semibold text-slate-900">{(currentPage - 1) * itemsPerPage + 1}</span> hingga <span class="font-semibold text-slate-900">{Math.min(currentPage * itemsPerPage, totalUsers)}</span> dari <span class="font-semibold text-slate-900">{totalUsers}</span> user
               </p>
             </div>
             <div>
               <nav class="isolate inline-flex -space-x-px rounded-xl shadow-sm" aria-label="Pagination">
                 <button
                   disabled={currentPage === 1}
-                  onclick={() => currentPage -= 1}
+                  onclick={() => { currentPage -= 1; fetchUsers(); }}
                   class="relative inline-flex items-center rounded-l-xl px-3 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
                 >
                   <span class="sr-only">Sebelumnya</span>
@@ -701,7 +702,7 @@
                 
                 {#each Array.from({ length: totalPages }) as _, i}
                   <button
-                    onclick={() => currentPage = i + 1}
+                    onclick={() => { currentPage = i + 1; fetchUsers(); }}
                     class="relative inline-flex items-center px-4 py-2 text-sm font-semibold {currentPage === i + 1 ? 'z-10 bg-blue-600 text-white ring-blue-600 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600' : 'text-slate-900 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 bg-white'} transition-all"
                   >
                     {i + 1}
@@ -710,7 +711,7 @@
                 
                 <button
                   disabled={currentPage === totalPages}
-                  onclick={() => currentPage += 1}
+                  onclick={() => { currentPage += 1; fetchUsers(); }}
                   class="relative inline-flex items-center rounded-r-xl px-3 py-2 text-slate-400 ring-1 ring-inset ring-slate-300 hover:bg-slate-50 focus:z-20 focus:outline-offset-0 disabled:opacity-50 disabled:cursor-not-allowed transition-all bg-white"
                 >
                   <span class="sr-only">Selanjutnya</span>
