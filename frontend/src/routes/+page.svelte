@@ -21,6 +21,34 @@
   let quotes = $state<Quote[]>([]);
   let quotesLoaded = $state(false);
 
+  let countdown = $state({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+
+  onMount(() => {
+    const targetDate = new Date("2026-08-17T10:00:00+07:00").getTime();
+    
+    const updateCountdown = () => {
+      const now = new Date().getTime();
+      const distance = targetDate - now;
+
+      if (distance < 0) {
+        countdown = { days: 0, hours: 0, minutes: 0, seconds: 0 };
+        return;
+      }
+
+      countdown = {
+        days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+        minutes: Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60)),
+        seconds: Math.floor((distance % (1000 * 60)) / 1000)
+      };
+    };
+
+    updateCountdown();
+    const interval = setInterval(updateCountdown, 1000);
+    
+    return () => clearInterval(interval);
+  });
+
   onMount(async () => {
     // Fetch Quotes
     try {
@@ -312,6 +340,54 @@
               />
             </svg>
           </a>
+        </div>
+
+        <!-- Lomba Countdown Section -->
+        <div class="w-full flex flex-col items-center gap-6 mt-4">
+          <!-- Section Label -->
+          <div class="flex items-center gap-3 text-slate-400">
+            <div class="h-px w-8 bg-slate-300"></div>
+            <span class="text-xs tracking-[0.25em] uppercase font-medium">Lomba 17 Agustus</span>
+            <div class="h-px w-8 bg-slate-300"></div>
+          </div>
+          
+          <div class="bg-white/70 backdrop-blur-sm border border-red-200 p-5 sm:p-8 rounded-3xl shadow-xl shadow-red-500/5 flex flex-col items-center gap-4 sm:gap-6 text-center w-full max-w-2xl mx-auto relative overflow-hidden group hover:border-red-300 transition-colors duration-300">
+            <div class="absolute -left-6 -top-6 w-32 h-32 bg-red-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+            <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-red-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+
+            <div class="relative z-10 flex flex-col items-center gap-2 sm:gap-4">
+              <h2 class="text-xl sm:text-3xl font-bold text-red-600 uppercase tracking-wider">Lomba Dimulai Dalam</h2>
+              <p class="text-slate-500 text-xs sm:text-sm max-w-md">Persiapkan dirimu untuk mengikuti kuis spesial kemerdekaan pada tanggal 17 Agustus 2026 Pukul 10.00 WIB!</p>
+              
+              <div class="flex gap-2 sm:gap-6 mt-2 sm:mt-4 w-full justify-center">
+                <div class="flex flex-col items-center">
+                  <div class="w-12 h-12 sm:w-20 sm:h-20 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-bold border border-red-200 shadow-sm">{String(countdown.days).padStart(2, '0')}</div>
+                  <span class="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Hari</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="text-xl sm:text-3xl font-bold text-red-300 my-auto mb-5 sm:mb-8">:</div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-12 h-12 sm:w-20 sm:h-20 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-bold border border-red-200 shadow-sm">{String(countdown.hours).padStart(2, '0')}</div>
+                  <span class="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Jam</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="text-xl sm:text-3xl font-bold text-red-300 my-auto mb-5 sm:mb-8">:</div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-12 h-12 sm:w-20 sm:h-20 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-bold border border-red-200 shadow-sm">{String(countdown.minutes).padStart(2, '0')}</div>
+                  <span class="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Menit</span>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="text-xl sm:text-3xl font-bold text-red-300 my-auto mb-5 sm:mb-8">:</div>
+                </div>
+                <div class="flex flex-col items-center">
+                  <div class="w-12 h-12 sm:w-20 sm:h-20 bg-red-50 text-red-600 rounded-xl sm:rounded-2xl flex items-center justify-center text-xl sm:text-3xl font-bold border border-red-200 shadow-sm">{String(countdown.seconds).padStart(2, '0')}</div>
+                  <span class="text-[9px] sm:text-xs font-bold uppercase tracking-widest text-slate-400 mt-1 sm:mt-2">Detik</span>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
         <!-- Featured New Feature: Belajar Coding & Berhitung -->
