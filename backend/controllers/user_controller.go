@@ -21,7 +21,17 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"users": users})
+	var totalUsers, totalTeachers, totalStudents int64
+	database.DB.Model(&models.User{}).Count(&totalUsers)
+	database.DB.Model(&models.User{}).Where("role = ?", "teacher").Count(&totalTeachers)
+	database.DB.Model(&models.User{}).Where("role = ?", "student").Count(&totalStudents)
+
+	c.JSON(http.StatusOK, gin.H{
+		"users": users,
+		"total_users":    totalUsers,
+		"total_teachers": totalTeachers,
+		"total_students": totalStudents,
+	})
 }
 
 // DeleteUser deletes a user and all their associated data (cascade manually).
