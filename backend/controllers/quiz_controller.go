@@ -471,7 +471,7 @@ func GetQuizScores(c *gin.Context) {
 
 	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
 
-	if err := query.Preload("Quiz").Order("created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
+	if err := query.Preload("Quiz").Preload("User").Order("created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil daftar skor"})
 		return
 	}

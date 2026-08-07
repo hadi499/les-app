@@ -19,6 +19,9 @@
     score: number;
     points_earned?: number;
     created_at: string;
+    user?: {
+      class: string;
+    };
   };
 
   let isTeacher = $state(false);
@@ -335,18 +338,6 @@
           <div
             class="flex items-center text-xs font-medium text-slate-500 mb-6 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100"
           >
-            <svg
-              class="w-4 h-4 mr-1.5 text-slate-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-              ><path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-              /></svg
-            >
             {quiz.timeLimit} detik / soal
           </div>
 
@@ -575,22 +566,17 @@
                   {s.quiz ? s.quiz.title : `Kuis #${s.quiz_id}`}
                 </h3>
                 {#if isTeacher}
-                  <div
-                    class="flex items-center text-sm text-slate-500 mt-2 font-medium bg-slate-50 px-2.5 py-1 rounded-md w-max border border-slate-100"
-                  >
-                    <svg
-                      class="w-4 h-4 mr-1.5 text-slate-400"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                      /></svg
+                  <div class="flex flex-col gap-1 mt-2">
+                    <div
+                      class="flex items-center text-sm text-slate-500 font-medium bg-slate-50 px-2.5 py-1 rounded-md border border-slate-100 w-max"
                     >
-                    @{s.username}
+                      {s.username}
+                    </div>
+                    {#if s.user?.class}
+                      <div class="text-xs text-slate-500 font-medium px-1">
+                        Kelas {s.user.class}
+                      </div>
+                    {/if}
                   </div>
                 {/if}
               </div>
@@ -618,18 +604,6 @@
               <div
                 class="flex items-center text-xs text-slate-600 font-semibold bg-slate-100 px-3 py-1.5 rounded-lg border border-slate-200/60"
               >
-                <svg
-                  class="w-4 h-4 mr-1.5 text-slate-400"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  /></svg
-                >
                 {new Date(s.created_at).toLocaleDateString("id-ID", {
                   day: "numeric",
                   month: "short",
