@@ -2,7 +2,7 @@
   import { onMount } from "svelte";
   import { toast } from "$lib/stores/toast.svelte";
 
-  type User = { id: number; username: string; role: string; points?: number };
+  type User = { id: number; username: string; role: string; points?: number; class?: string };
 
   let users: User[] = $state([]);
 	let isLoading = $state(true);
@@ -153,11 +153,15 @@
             
             <div class="flex flex-col relative z-10 overflow-hidden pr-3">
               <span class="font-bold text-slate-800 text-lg sm:text-xl truncate">{u.username}</span>
-              <div class="flex items-center gap-2 mt-1.5">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-500/80 shadow-[0_0_8px_rgba(99,102,241,0.5)]"></span>
+              <div class="flex flex-col mt-1.5 gap-0.5">
                 <span class="text-[13px] sm:text-sm font-semibold text-slate-500 capitalize tracking-wide">
                   {u.role}
                 </span>
+                {#if u.class}
+                  <span class="text-[13px] sm:text-sm font-medium text-slate-500">
+                    Kelas {u.class}
+                  </span>
+                {/if}
               </div>
             </div>
             
