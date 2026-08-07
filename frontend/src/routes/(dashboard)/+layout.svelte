@@ -8,8 +8,8 @@
   let { children }: { children: Snippet } = $props();
 
   // Data dinamis dari backend
-  type User = { id?: number; username: string; role: string };
-  let user: User = $state({ username: "Loading...", role: "..." });
+  type User = { id?: number; username: string; role: string; class?: string };
+  let user: User = $state({ username: "Loading...", role: "...", class: "-" });
   let isMobileMenuOpen = $state(false);
   let isDesktopSidebarOpen = $state(true);
   let isLoading = $state(true);
@@ -114,6 +114,7 @@
   let confirmPassword = $state("");
   let passwordError = $state("");
   let passwordSuccess = $state("");
+  let showProfileModal = $state(false);
   let isSubmittingPassword = $state(false);
 
   let showOldPassword = $state(false);
@@ -850,6 +851,27 @@
             class="absolute bottom-[calc(100%-1rem)] left-4 right-4 mb-2 bg-white rounded-xl shadow-lg border border-slate-200 overflow-hidden animate-in fade-in slide-in-from-bottom-2 duration-200 z-50"
             onclick={(e) => e.stopPropagation()}
           >
+            <button
+              onclick={() => {
+                showUserDropdown = false;
+                showProfileModal = true;
+              }}
+              class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer text-left border-b border-slate-100"
+            >
+              <svg
+                class="w-4 h-4 text-slate-400"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                ></path></svg
+              >
+              Profil Saya
+            </button>
             <button
               onclick={() => {
                 showUserDropdown = false;
@@ -1594,6 +1616,28 @@
               <button
                 onclick={() => {
                   showMobileUserDropdown = false;
+                  showProfileModal = true;
+                  isMobileMenuOpen = false;
+                }}
+                class="w-full flex items-center gap-3 px-4 py-3 text-sm font-medium text-slate-700 hover:bg-slate-50 hover:text-slate-900 transition-colors cursor-pointer text-left border-b border-slate-100"
+              >
+                <svg
+                  class="w-4 h-4 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
+                  ></path></svg
+                >
+                Profil Saya
+              </button>
+              <button
+                onclick={() => {
+                  showMobileUserDropdown = false;
                   showPasswordModal = true;
                   resetPasswordForm();
                   isMobileMenuOpen = false;
@@ -1874,6 +1918,71 @@
               </button>
             </div>
           </form>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  {#if showProfileModal}
+    <!-- svelte-ignore a11y_click_events_have_key_events -->
+    <!-- svelte-ignore a11y_no_static_element_interactions -->
+    <div
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-100 flex items-center justify-center p-4 animate-in fade-in duration-200"
+      onclick={() => (showProfileModal = false)}
+    >
+      <div
+        class="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden animate-in zoom-in-95 duration-200"
+        onclick={(e) => e.stopPropagation()}
+      >
+        <div class="p-6 relative">
+          <button
+            aria-label="Tutup Profil"
+            onclick={() => (showProfileModal = false)}
+            class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 bg-white/50 rounded-full p-1 transition-colors cursor-pointer"
+          >
+            <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+          
+          <h3 class="text-xl font-bold text-slate-900 mb-6 flex items-center gap-2">
+            <svg class="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+            </svg>
+            Profil Pengguna
+          </h3>
+
+          <!-- ATM Card UI -->
+          <div class="relative bg-linear-to-br from-blue-700 via-blue-800 to-indigo-900 rounded-2xl p-4 sm:p-6 text-white shadow-xl overflow-hidden aspect-[1.586/1] flex flex-col justify-between">
+            <!-- decorative shapes -->
+            <div class="absolute top-0 right-0 -mr-8 -mt-8 w-32 h-32 rounded-full bg-white/10 blur-2xl pointer-events-none"></div>
+            <div class="absolute bottom-0 left-0 -ml-8 -mb-8 w-24 h-24 rounded-full bg-blue-400/20 blur-xl pointer-events-none"></div>
+            
+            <div class="relative z-10 flex justify-between items-start">
+              <div class="flex flex-col">
+                <span class="text-[10px] sm:text-xs text-blue-200 uppercase tracking-wider font-semibold mb-0.5 sm:mb-1">ID Number</span>
+                <span class="font-mono text-base sm:text-lg tracking-widest leading-none">{user.id ? user.id.toString().padStart(6, '0') : '000000'}</span>
+              </div>
+              <svg class="w-6 h-6 sm:w-8 sm:h-8 text-blue-200/80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z" />
+              </svg>
+            </div>
+
+            <div class="relative z-10 my-auto py-2">
+              <div class="text-[10px] sm:text-xs text-blue-200 uppercase tracking-wider font-semibold mb-0.5 sm:mb-1">Username</div>
+              <div class="text-lg sm:text-xl font-bold tracking-wide truncate leading-none">{user.username}</div>
+            </div>
+
+            <div class="relative z-10 flex justify-between items-end mt-auto pt-2">
+              <div>
+                <div class="text-sm sm:text-base font-medium capitalize leading-none text-blue-100">{user.role}</div>
+              </div>
+              <div class="text-right">
+                <span class="text-sm sm:text-base font-medium leading-none">Kelas {user.class && user.class !== "-" ? user.class : "-"}</span>
+              </div>
+            </div>
+          </div>
+          
         </div>
       </div>
     </div>
