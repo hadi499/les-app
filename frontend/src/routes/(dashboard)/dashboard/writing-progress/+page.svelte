@@ -8,6 +8,8 @@
     user_id: number;
     date: string;
     image: string;
+    created_at?: string;
+    updated_at?: string;
     user?: { username: string };
   };
   type User = { id: number; username: string; role?: string };
@@ -581,7 +583,8 @@
                   </th>
                   <th class="px-6 py-4 font-semibold">Siswa</th>
                 {/if}
-                <th class="px-6 py-4 font-semibold">Tanggal</th>
+                <th class="px-6 py-4 font-semibold">Dibuat Pada</th>
+                <th class="px-6 py-4 font-semibold">Diperbarui Pada</th>
                 <th class="px-6 py-4 font-semibold text-center w-32">Detail</th>
                 {#if isTeacher}
                   <th class="px-6 py-4 font-semibold text-center w-32">Aksi</th>
@@ -613,7 +616,14 @@
                     <div
                       class="flex items-center gap-2 text-sm text-slate-600 font-medium"
                     >
-                      {formatDate(progress.date)}
+                      {formatDate(progress.created_at || progress.date)}
+                    </div>
+                  </td>
+                  <td class="px-6 py-4">
+                    <div
+                      class="flex items-center gap-2 text-sm text-slate-600 font-medium"
+                    >
+                      {formatDate(progress.updated_at || progress.date)}
                     </div>
                   </td>
                   <td class="px-6 py-4">
@@ -714,7 +724,7 @@
                   {/if}
                   <p class="text-sm text-slate-500 flex items-center gap-1.5 mt-1">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-                    {formatDate(progress.date)}
+                    {formatDate(progress.created_at || progress.date)}
                   </p>
                 </div>
                 <div class="pt-3 border-t border-slate-100 flex justify-end">
