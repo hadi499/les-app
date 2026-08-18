@@ -116,14 +116,6 @@
           >Cetak Kode</a
         >
         <a
-          href="/quiz"
-          class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
-            '/quiz',
-          )
-            ? 'border-blue-500 text-blue-700'
-            : 'border-transparent text-slate-700 hover:text-blue-600'}">Kuis</a
-        >
-        <a
           href="/berhitung"
           class="inline-flex items-center px-1 pt-1 border-b-2 text-sm font-semibold transition-colors no-underline {currentPath.startsWith(
             '/berhitung',
@@ -324,15 +316,6 @@
             ? 'bg-blue-50 text-blue-700'
             : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
           >Cetak Kode</a
-        >
-        <a
-          href="/quiz"
-          onclick={closeMobileMenu}
-          class="block px-3 py-2 rounded-md text-base font-medium no-underline {currentPath.startsWith(
-            '/quiz',
-          )
-            ? 'bg-blue-50 text-blue-700'
-            : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}">Kuis</a
         >
         <a
           href="/berhitung"

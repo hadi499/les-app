@@ -653,11 +653,6 @@
           >Panduan</a
         >
         <a
-          href="/quiz"
-          class="hover:text-slate-800 transition-colors duration-200 no-underline"
-          >Kuis</a
-        >
-        <a
           href="/belajar-coding"
           class="hover:text-slate-800 transition-colors duration-200 no-underline"
           >Belajar Coding</a

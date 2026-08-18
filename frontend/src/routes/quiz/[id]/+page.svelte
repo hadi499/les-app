@@ -48,7 +48,7 @@
   let hasConfirmedLeave = $state(false);
   let pointsEarned = $state(0);
   let pointsAlreadyClaimed = $state(false);
-  
+
   let showErrorModal = $state(false);
   let errorMessage = $state("");
   let errorRedirectTarget = $state("/dashboard/quizzes");
@@ -74,7 +74,7 @@
   async function confirmLeave() {
     showLeaveModal = false;
     hasConfirmedLeave = true;
-    
+
     // Submit score 0 saat user memilih keluar
     try {
       await fetch(`/api/scores/quizzes`, {
@@ -89,7 +89,7 @@
     } catch (e) {
       console.error(e);
     }
-    
+
     if (targetUrl) {
       goto(targetUrl);
     }
@@ -119,7 +119,7 @@
           quiz_id: Number(quizId),
           score: 0,
         }),
-        keepalive: true
+        keepalive: true,
       }).catch(console.error);
     }
   }
@@ -243,7 +243,8 @@
       console.log("Response status:", res.status);
 
       if (res.status === 401) {
-        errorMessage = "Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.";
+        errorMessage =
+          "Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.";
         errorRedirectTarget = "/login";
         showErrorModal = true;
         return;
@@ -268,8 +269,9 @@
       }
     } catch (e) {
       console.error("Fetch error:", e);
-      errorMessage = "Error saat koneksi ke server untuk submit score: " +
-          (e instanceof Error ? e.message : String(e));
+      errorMessage =
+        "Error saat koneksi ke server untuk submit score: " +
+        (e instanceof Error ? e.message : String(e));
       showErrorModal = true;
     } finally {
       isSubmitting = false;
@@ -287,11 +289,14 @@
 
   function renderText(text: string | null) {
     if (!text) return "";
-    
+
     // Replace block math $$...$$
     let rendered = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
       try {
-        return katex.renderToString(math, { displayMode: true, throwOnError: false });
+        return katex.renderToString(math, {
+          displayMode: true,
+          throwOnError: false,
+        });
       } catch (e) {
         return match;
       }
@@ -300,12 +305,15 @@
     // Replace inline math $...$
     rendered = rendered.replace(/\$([^$]*?)\$/g, (match, math) => {
       try {
-        return katex.renderToString(math, { displayMode: false, throwOnError: false });
+        return katex.renderToString(math, {
+          displayMode: false,
+          throwOnError: false,
+        });
       } catch (e) {
         return match;
       }
     });
-    
+
     return rendered;
   }
 </script>
@@ -325,7 +333,6 @@
     <div
       class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
     ></div>
-
   </div>
 
   <div class="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-6">
@@ -337,7 +344,6 @@
       </div>
     {:else if quiz && currentQuestion}
       {#if !isFinished}
-
         <!-- Header Info: Soal ke & Timer -->
         <div
           class="sticky top-24 z-50 flex justify-between items-center py-4 bg-transparent"
@@ -349,7 +355,12 @@
             <div class="flex items-center gap-1.5 mt-1.5">
               {#each quiz.questions as _, idx}
                 <div
-                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx === currentQuestionIndex ? 'bg-blue-600 scale-125' : idx < currentQuestionIndex ? 'bg-blue-300' : 'bg-slate-200'}"
+                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx ===
+                  currentQuestionIndex
+                    ? 'bg-blue-600 scale-125'
+                    : idx < currentQuestionIndex
+                      ? 'bg-blue-300'
+                      : 'bg-slate-200'}"
                   aria-hidden="true"
                 ></div>
               {/each}
@@ -378,7 +389,9 @@
           class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-slate-200 flex flex-col gap-8"
         >
           {#if currentQuestion.image}
-            <div class="w-[85%] md:w-[50%] lg:w-[40%] mx-auto flex justify-center mb-2">
+            <div
+              class="w-[85%] md:w-[50%] lg:w-[40%] mx-auto flex justify-center mb-2"
+            >
               <img
                 src={currentQuestion.image}
                 alt="Gambar Pertanyaan"
@@ -437,29 +450,59 @@
               <p class="text-xs text-blue-500 font-medium animate-pulse mt-2">
                 Menyimpan skor...
               </p>
-            {:else}
-              {#if pointsEarned > 0}
-                <div class="mt-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-yellow-200 shadow-sm animate-in zoom-in duration-300">
-                  <svg class="w-5 h-5 text-yellow-500" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-                  </svg>
-                  Selamat! Anda mendapatkan {pointsEarned} poin tambahan!
-                </div>
-              {:else if pointsAlreadyClaimed}
-                <div class="mt-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-slate-200 shadow-sm animate-in zoom-in duration-300">
-                  <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                  </svg>
-                  Poin kuis ini sudah pernah diambil sebelumnya.
-                </div>
-              {:else if score < 80}
-                <div class="mt-2 bg-red-100 text-red-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-red-200 shadow-sm animate-in zoom-in duration-300">
-                  <svg class="w-5 h-5 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
-                  </svg>
-                  Gagal dapat poin, nilai di bawah 80.
-                </div>
-              {/if}
+            {:else if pointsEarned > 0}
+              <div
+                class="mt-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-yellow-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-yellow-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                  />
+                </svg>
+                Selamat! Anda mendapatkan {pointsEarned} poin tambahan!
+              </div>
+            {:else if pointsAlreadyClaimed}
+              <div
+                class="mt-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-slate-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                Poin kuis ini sudah pernah diambil sebelumnya.
+              </div>
+            {:else if score < 80}
+              <div
+                class="mt-2 bg-red-100 text-red-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-red-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  ></path>
+                </svg>
+                Gagal dapat poin, nilai di bawah 80.
+              </div>
             {/if}
           </div>
 
@@ -481,7 +524,11 @@
                   <div class="flex justify-between items-start gap-4">
                     <div class="flex flex-col gap-2">
                       {#if ans.image}
-                        <img src={ans.image} alt="Gambar Pertanyaan" class="w-full max-w-50 md:max-w-48 rounded-lg border border-slate-200 mb-1" />
+                        <img
+                          src={ans.image}
+                          alt="Gambar Pertanyaan"
+                          class="w-full max-w-50 md:max-w-48 rounded-lg border border-slate-200 mb-1"
+                        />
                       {/if}
                       <p class="font-semibold text-slate-800 text-sm m-0">
                         {index + 1}. {@html renderText(ans.question)}
@@ -510,7 +557,9 @@
                           ? "text-green-700 font-semibold"
                           : "text-red-600 font-semibold"}
                       >
-                        {@html renderText(ans.answer === null ? "Tidak Menjawab" : ans.answer)}
+                        {@html renderText(
+                          ans.answer === null ? "Tidak Menjawab" : ans.answer,
+                        )}
                       </span>
                     </div>
                     {#if !ans.isCorrect}
@@ -531,7 +580,7 @@
 
           <div class="flex justify-center pt-4 relative z-10 gap-4">
             <a
-              href="/quiz"
+              href="/dashboard/quizzes"
               class="inline-flex items-center justify-center px-6 py-3 text-xs tracking-[0.1em] font-bold uppercase text-slate-700 bg-white border border-slate-300 hover:border-slate-500 hover:text-slate-900 transition-all duration-300 rounded-lg shadow-sm cursor-pointer no-underline"
             >
               Kembali
@@ -570,7 +619,8 @@
       <div>
         <h3 class="text-lg font-semibold text-slate-900">Konfirmasi Keluar</h3>
         <p class="text-sm text-slate-600 mt-1">
-          Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda akan dihitung 0. Apakah Anda yakin ingin keluar?
+          Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda
+          akan dihitung 0. Apakah Anda yakin ingin keluar?
         </p>
       </div>
       <div class="flex gap-2 justify-center pt-2">
