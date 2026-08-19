@@ -6,6 +6,7 @@
     username: string;
     role: string;
     class?: string;
+    created_at?: string;
     last_active_at?: string;
     points?: number;
     is_suspended?: boolean;
@@ -482,6 +483,7 @@
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Kelas</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Terdaftar</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
@@ -506,6 +508,9 @@
                 </td>
                 <td class="py-4 px-6 text-sm text-slate-700">
                   {u.class || "-"}
+                </td>
+                <td class="py-4 px-6 text-sm text-slate-700">
+                  {u.created_at ? new Date(u.created_at).toLocaleString('id-ID', {timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "-"}
                 </td>
 
                 <td class="py-4 px-6 text-sm flex flex-col gap-1 items-start">
@@ -542,7 +547,7 @@
                   <div class="flex items-center justify-center gap-2">
                     <button
                       onclick={() => promptEdit(u)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
+                      class="inline-flex items-center p-1.5 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
                       title="Edit User"
                     >
                       <svg
@@ -557,11 +562,10 @@
                           d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                         ></path></svg
                       >
-                      Edit
                     </button>
                     <button
                       onclick={() => promptReset(u.id, u.username)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+                      class="inline-flex items-center p-1.5 text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                       title="Reset Password"
                     >
                       <svg
@@ -576,11 +580,10 @@
                           d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
                         ></path></svg
                       >
-                      Reset Pass
                     </button>
                     <button
                       onclick={() => promptSuspend(u)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium {u.is_suspended
+                      class="inline-flex items-center p-1.5 {u.is_suspended
                         ? 'text-green-700 bg-green-50 hover:bg-green-100 border-green-200 focus:ring-green-500/50'
                         : 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200 focus:ring-orange-500/50'} rounded-lg transition-colors border cursor-pointer focus:outline-none focus:ring-2"
                       title={u.is_suspended ? "Aktifkan User" : "Suspend User"}
@@ -598,7 +601,6 @@
                             d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                           ></path></svg
                         >
-                        Aktifkan
                       {:else}
                         <svg
                           class="w-4 h-4"
@@ -612,12 +614,12 @@
                             d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
                           ></path></svg
                         >
-                        Suspend
                       {/if}
                     </button>
                     <button
                       onclick={() => promptDelete(u.id, u.username)}
-                      class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                      class="inline-flex items-center p-1.5 text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
+                      title="Hapus User"
                     >
                       <svg
                         class="w-4 h-4"
@@ -631,7 +633,6 @@
                           d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                         ></path></svg
                       >
-                      Hapus
                     </button>
                   </div>
                 </td>
