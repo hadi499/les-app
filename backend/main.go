@@ -43,6 +43,10 @@ func main() {
 	// Migrasi otomatis untuk memastikan tabel ada
 	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Exam{}, &models.Subject{}, &models.Quiz{}, &models.Question{}, &models.ScoreQuiz{}, &models.Folder{}, &models.Note{}, &models.Absence{}, &models.TodoList{}, &models.TodoItem{}, &models.SystemSetting{}, &models.WritingProgress{}, &models.ChatMessage{}, &models.UserLog{}, &models.Materi{}, &models.Quote{})
 
+	// Update data created_at untuk user lama menjadi 15 Juli 2026 jika masih kosong
+	defaultDate := time.Date(2026, time.July, 15, 0, 0, 0, 0, time.Local)
+	database.DB.Exec("UPDATE users SET created_at = ? WHERE created_at IS NULL OR created_at < ?", defaultDate, time.Date(2000, 1, 1, 0, 0, 0, 0, time.UTC))
+
 	// Seeding pengaturan awal
 	var settingPaud models.SystemSetting
 	if err := database.DB.Where("key = ?", "is_class_open_paud").First(&settingPaud).Error; err != nil {
