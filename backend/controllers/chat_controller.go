@@ -209,8 +209,25 @@ func GetContacts(c *gin.Context) {
 			database.DB.Select("id, username, role, class, last_active_at").Where("id IN ?", teacherIDs).Find(&users)
 		}
 	} else if role == "teacher" {
-		// Teacher can see only their own students
-		database.DB.Select("id, username, role, class, last_active_at").Where("teacher_id = ?", userID).Find(&users)
+		// Teacher can see their own students and their students' parents
+		var students []models.User
+		database.DB.Select("id, username, role, class, last_active_at, parent_id").Where("teacher_id = ?", userID).Find(&students)
+		users = append(users, students...)
+
+		var parentIDs []uint
+		parentIDSet := make(map[uint]bool) // To avoid duplicate parent IDs if siblings have the same teacher
+		for _, s := range students {
+			if s.ParentID != nil && !parentIDSet[*s.ParentID] {
+				parentIDSet[*s.ParentID] = true
+				parentIDs = append(parentIDs, *s.ParentID)
+			}
+		}
+
+		if len(parentIDs) > 0 {
+			var parents []models.User
+			database.DB.Select("id, username, role, class, last_active_at").Where("id IN ?", parentIDs).Find(&parents)
+			users = append(users, parents...)
+		}
 	} else {
 		// Admin can see everyone except themselves
 		database.DB.Select("id, username, role, class, last_active_at").Where("id != ?", userID).Find(&users)

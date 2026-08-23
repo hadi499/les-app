@@ -21,6 +21,7 @@
   let parentsList: User[] = $state([]);
   let teachersList: User[] = $state([]);
 
+  let currentUserRole = $state("");
   let users: User[] = $state([]);
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
@@ -126,7 +127,16 @@
     }
   }
 
-  onMount(() => {
+  onMount(async () => {
+    try {
+      const res = await fetch("/me", { credentials: "include" });
+      if (res.ok) {
+        const data = await res.json();
+        currentUserRole = data.user?.role?.toLowerCase() || "";
+      }
+    } catch (e) {
+      console.error("Failed to fetch current user", e);
+    }
     fetchUsers();
     fetchParents();
     fetchTeachers();
@@ -465,14 +475,16 @@
       </p>
     </div>
     <div class="flex flex-wrap gap-2">
-      <button
-        onclick={() => promptAdd('parent')}
-        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 cursor-pointer"
-      >
-        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-          ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-        Tambah Orang Tua
-      </button>
+      {#if currentUserRole === 'admin'}
+        <button
+          onclick={() => promptAdd('parent')}
+          class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+            ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+          Tambah Orang Tua
+        </button>
+      {/if}
     </div>
   </div>
 
@@ -510,203 +522,91 @@
         {totalParents} Total Orang Tua
       </span>
     </div>
-    <div
-      class="bg-white/60 rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 overflow-hidden"
-    >
-      <div class="overflow-x-auto">
-        <table
-          class="w-full text-left border-collapse whitespace-nowrap min-w-[600px]"
-        >
-          <thead>
-            <tr class="bg-white/40 border-b border-slate-200">
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">ID</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm"
-                >Username</th
-              >
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Terdaftar</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
-              <th class="py-4 px-6 font-bold text-slate-900 text-sm text-center"
-                >Aksi</th
-              >
-            </tr>
-          </thead>
-          <tbody class="divide-y divide-slate-200">
-            {#each users as u}
-              <tr class="hover:bg-white/40 transition-colors">
-                <td class="py-4 px-6 text-sm text-slate-600">{u.id}</td>
-                <td
-                  class="py-4 px-6 text-sm font-medium text-slate-900 drop-shadow-sm"
-                  >{u.username}</td
-                >
-                <td class="py-4 px-6 text-sm">
-                  <span
-                    class={`px-2.5 py-1 rounded-md text-xs font-medium capitalize border ${u.role === "teacher" ? "bg-purple-100 text-purple-700 border-purple-300" : "bg-blue-100 text-slate-600 border-blue-300"}`}
-                  >
-                    {u.role}
-                  </span>
-                </td>
-                <td class="py-4 px-6 text-sm text-slate-700">
-                  {u.created_at ? new Date(u.created_at).toLocaleString('id-ID', {timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "-"}
-                </td>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      {#each users as u}
+        <div class="bg-white/80 backdrop-blur-sm p-6 rounded-3xl border border-slate-200 shadow-sm hover:shadow-md transition-shadow relative overflow-hidden group">
+          <div class="flex items-start justify-between mb-4">
+            <div class="flex items-center gap-3">
+              <div class="w-12 h-12 rounded-full bg-linear-to-br from-indigo-100 to-purple-100 flex items-center justify-center text-indigo-600 font-bold text-xl border border-indigo-200 shadow-inner">
+                {u.username.charAt(0).toUpperCase()}
+              </div>
+              <div>
+                <h4 class="font-bold text-slate-900 m-0 text-lg leading-tight">{u.username}</h4>
+                <div class="flex gap-2 items-center mt-1">
+                  <span class="text-xs text-slate-500 font-medium bg-slate-100 px-2 py-0.5 rounded-md">ID: {u.id}</span>
+                  <span class="w-1 h-1 rounded-full bg-slate-300"></span>
+                  <span class="text-xs text-slate-500 capitalize">{u.role}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-1 items-end">
+              {#if u.is_suspended}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 border border-red-300">
+                  Suspended
+                </span>
+              {/if}
+              {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-green-100 text-green-700 border border-green-300 mt-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span>
+                  Online
+                </span>
+              {:else}
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-slate-100 text-slate-600 border border-slate-300 mt-1">
+                  <span class="w-1.5 h-1.5 rounded-full bg-slate-400"></span>
+                  Offline
+                </span>
+              {/if}
+            </div>
+          </div>
+          
+          <div class="border-t border-slate-100 pt-4 mt-4">
+            <div class="text-xs text-slate-500 mb-5 flex items-center gap-1.5 bg-slate-50 p-2 rounded-xl border border-slate-100">
+              <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              <span>Daftar: <span class="font-medium text-slate-700">{u.created_at ? new Date(u.created_at).toLocaleString('id-ID', {timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "-"}</span></span>
+            </div>
+            
+            <div class="flex items-center justify-between gap-2">
+              <a href="/dashboard/parents/{u.id}" class="flex-1 p-2 bg-blue-50 hover:bg-blue-600 text-blue-600 hover:text-white rounded-xl transition-all cursor-pointer flex items-center justify-center gap-2 group/btn border border-transparent hover:shadow-md hover:shadow-blue-500/20" title="Detail User">
+                <span class="text-xs font-bold">Detail</span>
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+              </a>
+              
+              <div class="flex gap-1.5">
+                {#if currentUserRole === 'admin'}
+                  <button onclick={() => promptEdit(u)} class="p-2 text-slate-500 hover:text-blue-700 bg-slate-50 hover:bg-blue-50 rounded-xl transition-colors border border-slate-200 hover:border-blue-200 cursor-pointer focus:outline-none" aria-label="Edit User" title="Edit User">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                  </button>
+                  <button onclick={() => promptReset(u.id, u.username)} class="p-2 text-slate-500 hover:text-amber-700 bg-slate-50 hover:bg-amber-50 rounded-xl transition-colors border border-slate-200 hover:border-amber-200 cursor-pointer focus:outline-none" aria-label="Reset Password" title="Reset Password">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"></path></svg>
+                  </button>
+                  <button onclick={() => promptSuspend(u)} class="p-2 {u.is_suspended ? 'text-green-600 bg-green-50 hover:bg-green-100 border-green-200' : 'text-slate-500 hover:text-orange-700 bg-slate-50 hover:bg-orange-50 border-slate-200 hover:border-orange-200'} rounded-xl transition-colors border cursor-pointer focus:outline-none" aria-label={u.is_suspended ? "Aktifkan User" : "Suspend User"} title={u.is_suspended ? "Aktifkan User" : "Suspend User"}>
+                    {#if u.is_suspended}
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    {:else}
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"></path></svg>
+                    {/if}
+                  </button>
+                  <button onclick={() => promptDelete(u.id, u.username)} class="p-2 text-slate-500 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-xl transition-colors border border-slate-200 hover:border-red-200 cursor-pointer focus:outline-none" aria-label="Hapus User" title="Hapus User">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                  </button>
+                {/if}
+              </div>
+            </div>
+          </div>
+        </div>
+      {/each}
 
-                <td class="py-4 px-6 text-sm flex flex-col gap-1 items-start">
-                  {#if u.is_suspended}
-                    <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-red-100 text-red-700 border border-red-300"
-                    >
-                      Suspended
-                    </span>
-                  {/if}
-                  {#if u.last_active_at && Date.now() - new Date(u.last_active_at).getTime() < 5 * 60 * 1000}
-                    <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-green-100 text-green-700 border border-green-300 mt-1"
-                    >
-                      <span
-                        class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"
-                      ></span>
-                      Online
-                    </span>
-                  {:else}
-                    <span
-                      class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium bg-slate-100 text-slate-600 border border-slate-300 mt-1"
-                    >
-                      <span class="w-1.5 h-1.5 rounded-full bg-slate-400"
-                      ></span>
-                      Offline
-                    </span>
-                  {/if}
-                </td>
-                <td class="py-4 px-6 text-center">
-                  <div class="flex items-center justify-center gap-2">
-                    <a
-                      href="/dashboard/parents/{u.id}"
-                      class="p-2 bg-blue-50 text-blue-600 hover:bg-blue-100 rounded-xl transition-colors cursor-pointer flex items-center justify-center"
-                      title="Detail User"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        ></path><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        ></path></svg
-                      >
-                    </a>
-                    <button
-                      onclick={() => promptEdit(u)}
-                      class="inline-flex items-center p-1.5 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
-                      title="Edit User"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
-                        ></path></svg
-                      >
-                    </button>
-                    <button
-                      onclick={() => promptReset(u.id, u.username)}
-                      class="inline-flex items-center p-1.5 text-amber-700 bg-amber-50 hover:bg-amber-100 rounded-lg transition-colors border border-amber-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-amber-500/50"
-                      title="Reset Password"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"
-                        ></path></svg
-                      >
-                    </button>
-                    <button
-                      onclick={() => promptSuspend(u)}
-                      class="inline-flex items-center p-1.5 {u.is_suspended
-                        ? 'text-green-700 bg-green-50 hover:bg-green-100 border-green-200 focus:ring-green-500/50'
-                        : 'text-orange-700 bg-orange-50 hover:bg-orange-100 border-orange-200 focus:ring-orange-500/50'} rounded-lg transition-colors border cursor-pointer focus:outline-none focus:ring-2"
-                      title={u.is_suspended ? "Aktifkan User" : "Suspend User"}
-                    >
-                      {#if u.is_suspended}
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-                          ></path></svg
-                        >
-                      {:else}
-                        <svg
-                          class="w-4 h-4"
-                          fill="none"
-                          stroke="currentColor"
-                          viewBox="0 0 24 24"
-                          ><path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
-                          ></path></svg
-                        >
-                      {/if}
-                    </button>
-                    <button
-                      onclick={() => promptDelete(u.id, u.username)}
-                      class="inline-flex items-center p-1.5 text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300 cursor-pointer focus:outline-none focus:ring-2 focus:ring-red-500/50"
-                      title="Hapus User"
-                    >
-                      <svg
-                        class="w-4 h-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                        ><path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
-                          stroke-width="2"
-                          d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                        ></path></svg
-                      >
-                    </button>
-                  </div>
-                </td>
-              </tr>
-            {/each}
-            {#if users.length === 0}
-              <tr>
-                <td
-                  colspan="5"
-                  class="py-8 text-center text-slate-500 font-light"
-                  >Tidak ada user ditemukan.</td
-                >
-              </tr>
-            {/if}
-          </tbody>
-        </table>
-      </div>
+      {#if users.length === 0}
+        <div class="col-span-full py-16 px-4 bg-white/60 backdrop-blur-sm rounded-3xl border border-slate-200 border-dashed text-center flex flex-col items-center justify-center">
+          <div class="w-16 h-16 rounded-full bg-slate-100 flex items-center justify-center mb-4">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-800 mb-1">Tidak Ada Orang Tua</h3>
+          <p class="text-sm text-slate-500">Belum ada data orang tua yang ditemukan.</p>
+        </div>
+      {/if}
+    </div>
       <!-- Pagination Controls -->
       {#if totalPages > 1}
         <div class="px-4 py-4 sm:px-6 border-t border-slate-200 flex items-center justify-between bg-slate-50/50">
@@ -782,7 +682,6 @@
           </div>
         </div>
       {/if}
-    </div>
   {/if}
 
   <!-- Delete Confirmation Modal -->

@@ -30,7 +30,13 @@ func GetUsers(c *gin.Context) {
 	userID, _ := userIDInter.(uint)
 
 	if roleStr == "teacher" {
-		query = query.Where("teacher_id = ? OR id = ?", userID, userID)
+		var parentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Where("parent_id IS NOT NULL").Pluck("parent_id", &parentIDs)
+		if len(parentIDs) > 0 {
+			query = query.Where("teacher_id = ? OR id = ? OR id IN ?", userID, userID, parentIDs)
+		} else {
+			query = query.Where("teacher_id = ? OR id = ?", userID, userID)
+		}
 	} else if roleStr == "student" {
 		var currentStudent models.User
 		database.DB.First(&currentStudent, userID)
@@ -67,12 +73,18 @@ func GetUsers(c *gin.Context) {
 		return
 	}
 
-	var totalUsers, totalTeachers, totalStudents int64
+	var totalUsers, totalTeachers, totalStudents, totalParents int64
 	
 	// Create base queries for counting without Limit and Offset
 	countQuery := database.DB.Model(&models.User{})
 	if roleStr == "teacher" {
-		countQuery = countQuery.Where("teacher_id = ? OR id = ?", userID, userID)
+		var parentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Where("parent_id IS NOT NULL").Pluck("parent_id", &parentIDs)
+		if len(parentIDs) > 0 {
+			countQuery = countQuery.Where("teacher_id = ? OR id = ? OR id IN ?", userID, userID, parentIDs)
+		} else {
+			countQuery = countQuery.Where("teacher_id = ? OR id = ?", userID, userID)
+		}
 	} else if roleStr == "student" {
 		var currentStudent models.User
 		database.DB.First(&currentStudent, userID)
@@ -109,6 +121,9 @@ func GetUsers(c *gin.Context) {
 	studentCountQuery := countQuery.Session(&gorm.Session{})
 	studentCountQuery.Where("role = ?", "student").Count(&totalStudents)
 
+	parentCountQuery := countQuery.Session(&gorm.Session{})
+	parentCountQuery.Where("role = ?", "parent").Count(&totalParents)
+
 	totalPages := 1
 	if limit > 0 {
 		totalPages = int((totalUsers + int64(limit) - 1) / int64(limit))
@@ -119,6 +134,7 @@ func GetUsers(c *gin.Context) {
 		"total_users":    totalUsers,
 		"total_teachers": totalTeachers,
 		"total_students": totalStudents,
+		"total_parents":  totalParents,
 		"current_page":   page,
 		"total_pages":    totalPages,
 	})
