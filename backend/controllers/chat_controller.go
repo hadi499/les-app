@@ -187,10 +187,32 @@ func GetContacts(c *gin.Context) {
 
 	var users []models.User
 	if role == "student" {
-		// Student can see teachers
-		database.DB.Select("id, username, role, class, last_active_at").Where("role = ? OR role = ?", "teacher", "admin").Find(&users)
+		// Student can see only their assigned teacher
+		var currentUser models.User
+		database.DB.Select("teacher_id").First(&currentUser, userID)
+		if currentUser.TeacherID != nil {
+			database.DB.Select("id, username, role, class, last_active_at").Where("id = ?", *currentUser.TeacherID).Find(&users)
+		}
+	} else if role == "parent" {
+		// Parent can see only the teachers of their children
+		var children []models.User
+		database.DB.Select("teacher_id").Where("parent_id = ?", userID).Find(&children)
+		
+		var teacherIDs []uint
+		for _, child := range children {
+			if child.TeacherID != nil {
+				teacherIDs = append(teacherIDs, *child.TeacherID)
+			}
+		}
+
+		if len(teacherIDs) > 0 {
+			database.DB.Select("id, username, role, class, last_active_at").Where("id IN ?", teacherIDs).Find(&users)
+		}
+	} else if role == "teacher" {
+		// Teacher can see only their own students
+		database.DB.Select("id, username, role, class, last_active_at").Where("teacher_id = ?", userID).Find(&users)
 	} else {
-		// Tutor/Admin can see everyone except themselves
+		// Admin can see everyone except themselves
 		database.DB.Select("id, username, role, class, last_active_at").Where("id != ?", userID).Find(&users)
 	}
 
@@ -305,6 +327,11 @@ func BroadcastMessage(c *gin.Context) {
 
 	var students []models.User
 	query := database.DB.Where("role = ?", "student")
+	
+	roleVal, _ := c.Get("role")
+	if roleVal == "teacher" {
+		query = query.Where("teacher_id = ?", userID)
+	}
 	
 	// Jika req.Class tidak kosong dan bukan "Semua Murid", filter berdasarkan kelas
 	if req.Class != "" && req.Class != "Semua Murid" {

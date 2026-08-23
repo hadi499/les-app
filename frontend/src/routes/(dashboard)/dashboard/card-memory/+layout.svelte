@@ -12,7 +12,8 @@
         return;
       }
       const data = await res.json();
-      if (!data.authenticated || data.user?.role !== 'teacher') {
+      const role = data.user?.role?.toLowerCase();
+      if (!data.authenticated || (role !== 'teacher' && role !== 'admin')) {
         window.location.href = '/dashboard';
         return;
       }

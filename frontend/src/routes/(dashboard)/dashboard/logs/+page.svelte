@@ -17,7 +17,7 @@
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
-  let isTeacher = $state(false);
+  let isAdmin = $state(false);
 
   // Pagination
   let currentPage = $state(1);
@@ -34,10 +34,10 @@
     try {
       const res = await fetch(`/me`, { credentials: "include" });
       const data = await res.json();
-      if (data.authenticated && data.user && data.user.role === "teacher") {
-        isTeacher = true;
+      if (data.authenticated && data.user && data.user.role.toLowerCase() === "admin") {
+        isAdmin = true;
       } else {
-        errorMsg = "Akses ditolak. Hanya guru yang dapat melihat halaman ini.";
+        errorMsg = "Akses ditolak. Hanya admin yang dapat melihat halaman ini.";
       }
     } catch (e) {
       errorMsg = "Gagal memverifikasi akses.";
@@ -45,7 +45,7 @@
   }
 
   async function fetchLogs(page = 1) {
-    if (!isTeacher) return;
+    if (!isAdmin) return;
     isLoading = true;
     showLoadingSpinner = false;
     setTimeout(() => { showLoadingSpinner = true; }, 150);
@@ -68,7 +68,7 @@
 
   onMount(async () => {
     await checkRole();
-    if (isTeacher) {
+    if (isAdmin) {
       await fetchLogs(1);
     } else {
       isLoading = false;

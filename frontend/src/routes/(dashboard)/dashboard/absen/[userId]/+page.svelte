@@ -177,7 +177,7 @@
       {#each historyData as item}
         <div class="bg-white/90 backdrop-blur-sm border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-all flex flex-col h-full relative group">
           
-          {#if userStore?.role === "teacher"}
+          {#if userStore?.role === "teacher" || userStore?.role === "admin"}
             <div class="absolute top-3 right-3 flex items-center gap-1 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity bg-white/80 p-1 rounded-xl backdrop-blur-sm">
               <button 
                 onclick={() => openEdit(item)}

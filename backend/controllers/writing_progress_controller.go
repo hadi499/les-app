@@ -33,7 +33,26 @@ func GetWritingProgresses(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 
 	query := database.DB.Model(&models.WritingProgress{})
-	if role != "teacher" && role != "admin" {
+	if role == "teacher" || role == "Teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	} else if role == "admin" || role == "Admin" {
+		query = query.Where("creator_id = ?", userID)
+	} else if role == "parent" || role == "Parent" {
+		var childrenIDs []uint
+		database.DB.Model(&models.User{}).Where("parent_id = ?", userID).Pluck("id", &childrenIDs)
+		if len(childrenIDs) > 0 {
+			query = query.Where("user_id IN ?", childrenIDs)
+		} else {
+			query = query.Where("1 = 0") // No children, return empty
+		}
+	} else {
 		query = query.Where("user_id = ?", userID)
 	}
 
@@ -76,7 +95,16 @@ func GetWritingProgressByID(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 
 	query := database.DB.Preload("User")
-	if role != "teacher" && role != "admin" {
+	if role == "teacher" || role == "Teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	} else if role != "admin" && role != "Admin" {
 		query = query.Where("user_id = ?", userID)
 	}
 
@@ -106,10 +134,24 @@ func CreateWritingProgress(c *gin.Context) {
 		return
 	}
 
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	var creatorID *uint
+	if uID, ok := userID.(uint); ok {
+		creatorID = &uID
+	} else if uID, ok := userID.(float64); ok {
+		val := uint(uID)
+		creatorID = &val
+	}
+
 	progress := models.WritingProgress{
-		UserID: input.UserID,
-		Date:   date,
-		Image:  input.Image,
+		UserID:    input.UserID,
+		Date:      date,
+		Image:     input.Image,
+		CreatorID: creatorID,
 	}
 
 	if err := database.DB.Create(&progress).Error; err != nil {
@@ -203,9 +245,23 @@ func BackupToDrive(c *gin.Context) {
 	// Import os and services above manually if not exists (handled by goimports usually, but let's assume we need to import)
 	// We will rely on Go's LSP / our manual import fix if needed. Wait, we should just import it.
 	
-	// Cari semua writing progress yang memiliki image tetapi belum dibackup (drive_file_id kosong atau NULL)
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+
+	query := database.DB.Preload("User").Where("image != ? AND (drive_file_id = ? OR drive_file_id IS NULL)", "", "")
+	if role == "teacher" || role == "Teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	}
+
 	var progresses []models.WritingProgress
-	if err := database.DB.Preload("User").Where("image != ? AND (drive_file_id = ? OR drive_file_id IS NULL)", "", "").Find(&progresses).Error; err != nil {
+	if err := query.Find(&progresses).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data untuk backup"})
 		return
 	}
@@ -281,13 +337,40 @@ func BulkDeleteWritingProgress(c *gin.Context) {
 		return
 	}
 
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+
+	query := database.DB.Where("id IN ?", input.IDs)
+	if role == "teacher" || role == "Teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	} else if role != "admin" && role != "Admin" {
+		query = query.Where("user_id = ?", userID)
+	}
+
 	var progresses []models.WritingProgress
-	if err := database.DB.Where("id IN ?", input.IDs).Find(&progresses).Error; err != nil {
+	if err := query.Find(&progresses).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch writing progress to delete"})
 		return
 	}
 
-	if err := database.DB.Where("id IN ?", input.IDs).Delete(&models.WritingProgress{}).Error; err != nil {
+	var allowedIDs []uint
+	for _, p := range progresses {
+		allowedIDs = append(allowedIDs, p.ID)
+	}
+
+	if len(allowedIDs) == 0 {
+		c.JSON(http.StatusOK, gin.H{"message": "Writing progress deleted successfully"})
+		return
+	}
+
+	if err := database.DB.Where("id IN ?", allowedIDs).Delete(&models.WritingProgress{}).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete writing progress data"})
 		return
 	}

@@ -10,5 +10,7 @@ type Quiz struct {
 	TimeLimit   int        `json:"timeLimit"`
 	IsPublished bool       `json:"is_published" gorm:"default:true"`
 	LastResetAt *time.Time `json:"last_reset_at"`
+	UserID      *uint      `json:"user_id,omitempty"`
+	User        *User      `json:"user,omitempty" gorm:"foreignKey:UserID"`
 	Questions   []Question `json:"questions" gorm:"foreignKey:QuizID;constraint:OnDelete:CASCADE;"` // Relasi one-to-many
 }

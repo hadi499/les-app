@@ -8,4 +8,5 @@ type CardFolder struct {
 	Cards     []Card    `json:"cards" gorm:"constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"` // If folder is deleted, set CardFolderID to null
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"-"`
+	UserID    uint      `json:"user_id"` // who created this folder
 }

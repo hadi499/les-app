@@ -52,7 +52,7 @@ func GetCards(c *gin.Context) {
 	}
 
 	showAll := c.Query("all")
-
+	
 	query := database.DB.Model(&models.Card{}).Preload("CardFolder")
 
 	if showAll != "true" {
@@ -80,6 +80,9 @@ func GetCards(c *gin.Context) {
 	countBase4 := database.DB.Model(&models.Card{}).Where("(card_type = ? OR card_type = '' OR card_type IS NULL)", "regular")
 	countBase2 := database.DB.Model(&models.Card{}).Where("(card_type = ? OR card_type = '' OR card_type IS NULL)", "regular")
 	countBaseGambar := database.DB.Model(&models.Card{}).Where("card_type = ?", "image")
+	
+
+
 	if search != "" {
 		countBaseAll = countBaseAll.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
 		countBase6 = countBase6.Joins("LEFT JOIN card_folders ON card_folders.id = cards.card_folder_id").Where("(cards.title ILIKE ? OR card_folders.name ILIKE ?)", "%"+search+"%", "%"+search+"%")
@@ -95,7 +98,7 @@ func GetCards(c *gin.Context) {
 
 	var cards []models.Card
 	offset := (page - 1) * limit
-	query.Order("id desc").Offset(offset).Limit(limit).Find(&cards)
+	query.Order("cards.id desc").Offset(offset).Limit(limit).Find(&cards)
 
 	c.JSON(http.StatusOK, gin.H{
 		"data":       cards,
@@ -119,6 +122,8 @@ func CreateCard(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+
 	database.DB.Create(&card)
 	c.JSON(http.StatusCreated, card)
 }
@@ -130,6 +135,7 @@ func UpdateCard(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Card not found"})
 		return
 	}
+
 
 	var input struct {
 		CardFolderID *uint  `json:"card_folder_id"`
@@ -161,6 +167,13 @@ func UpdateCard(c *gin.Context) {
 
 func DeleteCard(c *gin.Context) {
 	id := c.Param("id")
+	var card models.Card
+	if err := database.DB.First(&card, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Card not found"})
+		return
+	}
+
+
 	if err := database.DB.Delete(&models.Card{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -170,9 +183,17 @@ func DeleteCard(c *gin.Context) {
 
 func GetTrashCards(c *gin.Context) {
 	var cards []models.Card
-	database.DB.Unscoped().Preload("CardFolder").Where("deleted_at IS NOT NULL").Order("deleted_at desc").Find(&cards)
+
+
+	query := database.DB.Unscoped().Preload("CardFolder").Where("deleted_at IS NOT NULL")
+	countQuery := database.DB.Unscoped().Model(&models.Card{}).Where("deleted_at IS NOT NULL")
+
+
+	query.Order("deleted_at desc").Find(&cards)
+	
 	var total int64
-	database.DB.Unscoped().Model(&models.Card{}).Where("deleted_at IS NOT NULL").Count(&total)
+	countQuery.Count(&total)
+
 	c.JSON(http.StatusOK, gin.H{
 		"data":  cards,
 		"total": total,
@@ -186,6 +207,8 @@ func RestoreCard(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Card not found"})
 		return
 	}
+
+
 	database.DB.Unscoped().Model(&card).Update("deleted_at", nil)
 	c.JSON(http.StatusOK, card)
 }
@@ -197,6 +220,8 @@ func ForceDeleteCard(c *gin.Context) {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Card not found"})
 		return
 	}
+
+
 	deleteCardImage(card)
 	if err := database.DB.Unscoped().Delete(&models.Card{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
@@ -207,11 +232,20 @@ func ForceDeleteCard(c *gin.Context) {
 
 func EmptyTrash(c *gin.Context) {
 	var cards []models.Card
-	database.DB.Unscoped().Where("deleted_at IS NOT NULL").Find(&cards)
+
+
+	query := database.DB.Unscoped().Where("deleted_at IS NOT NULL")
+
+
+	query.Find(&cards)
 	for _, card := range cards {
 		deleteCardImage(card)
 	}
-	database.DB.Unscoped().Where("deleted_at IS NOT NULL").Delete(&models.Card{})
+	
+	deleteQuery := database.DB.Unscoped().Where("deleted_at IS NOT NULL")
+
+	deleteQuery.Delete(&models.Card{})
+	
 	c.JSON(http.StatusOK, gin.H{"message": "Trash emptied"})
 }
 

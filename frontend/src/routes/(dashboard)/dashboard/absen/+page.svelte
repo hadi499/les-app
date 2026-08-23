@@ -77,7 +77,7 @@
       console.error(e);
     }
 
-    if (user?.role === "teacher") {
+    if (user?.role === "teacher" || user?.role === "admin") {
       await Promise.all([fetchUsers(), fetchRecap()]);
     } else {
       await fetchRecap();
@@ -161,7 +161,7 @@
       {errorMsg}
     </div>
   {:else}
-    {#if user?.role === "teacher"}
+    {#if user?.role === "teacher" || user?.role === "admin"}
       <!-- Form Input Ketidakhadiran -->
       <div
         class="max-w-4xl bg-white/60 backdrop-blur-md rounded-3xl border border-slate-200 shadow-lg shadow-slate-800/10 p-6 mb-8"

@@ -20,8 +20,10 @@
   let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
   let isTeacher = $state(false);
+  let isAdmin = $state(false);
   let activeTab: "card" | "table" = $state("card");
   let isLoadingMore = $state(false);
+
 
   function switchTab(tab: "card" | "table") {
     if (activeTab === tab) return;
@@ -148,8 +150,11 @@
       const res = await fetch(`/me`, { credentials: "include" });
       const data = await res.json();
       if (data.authenticated && data.user) {
-        if (data.user.role === "teacher") {
+        if (data.user.role === "teacher" || data.user.role === "admin") {
           isTeacher = true;
+        }
+        if (data.user.role === "admin") {
+          isAdmin = true;
         }
       }
     } catch (e) {
@@ -439,6 +444,7 @@
     </div>
     {#if isTeacher}
       <div class="flex flex-wrap items-center gap-6">
+        {#if isAdmin}
           <button
             onclick={backupToDrive}
             title="Backup ke Google Drive"
@@ -455,6 +461,7 @@
               <path d="m73.4 26.5-12.7-22c-.8-1.4-1.95-2.5-3.3-3.3l-13.75 23.8 16.15 28h27.45c0-1.55-.4-3.1-1.2-4.5z" fill="#ffba00"/>
             </svg>
           </button>
+        {/if}
         <button
           onclick={openAddModal}
           class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"

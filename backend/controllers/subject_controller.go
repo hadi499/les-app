@@ -12,7 +12,13 @@ import (
 // GetSubjects fetches all subjects
 func GetSubjects(c *gin.Context) {
 	var subjects []models.Subject
-	if err := database.DB.Order("name asc").Find(&subjects).Error; err != nil {
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	if err := database.DB.Where("user_id = ?", userID).Order("name asc").Find(&subjects).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch subjects"})
 		return
 	}
@@ -30,8 +36,23 @@ func CreateSubject(c *gin.Context) {
 		return
 	}
 
+	userID, exists := c.Get("user_id")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+
+	var uID *uint
+	if id, ok := userID.(uint); ok {
+		uID = &id
+	} else if id, ok := userID.(float64); ok {
+		val := uint(id)
+		uID = &val
+	}
+
 	subject := models.Subject{
-		Name: input.Name,
+		Name:   input.Name,
+		UserID: uID,
 	}
 
 	if err := database.DB.Create(&subject).Error; err != nil {

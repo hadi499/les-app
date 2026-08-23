@@ -46,10 +46,42 @@ func GetQuizzes(c *gin.Context) {
 
 	query := database.DB.Model(&models.Quiz{})
 
-	role, _ := c.Get("role")
-	if role != "teacher" && role != "admin" {
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
+	if roleStr == "teacher" {
+		query = query.Where("user_id = ?", userID)
+	} else if roleStr == "student" {
 		query = query.Where("is_published = ?", true)
+		
+		var currentUser models.User
+		database.DB.First(&currentUser, userID)
+		if currentUser.TeacherID != nil {
+			query = query.Where("user_id = ? OR user_id IS NULL", *currentUser.TeacherID)
+		} else {
+			query = query.Where("user_id IS NULL")
+		}
+	} else if roleStr == "parent" {
+		query = query.Where("is_published = ?", true)
+		
+		var children []models.User
+		database.DB.Where("parent_id = ?", userID).Find(&children)
+		
+		var teacherIDs []uint
+		for _, child := range children {
+			if child.TeacherID != nil {
+				teacherIDs = append(teacherIDs, *child.TeacherID)
+			}
+		}
+		if len(teacherIDs) > 0 {
+			query = query.Where("user_id IN ? OR user_id IS NULL", teacherIDs)
+		} else {
+			query = query.Where("user_id IS NULL")
+		}
 	}
+	// Admin sees all, no additional filter
 
 	if err := query.Count(&totalItems).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung data kuis"})
@@ -85,10 +117,44 @@ func GetQuizByID(c *gin.Context) {
 		return
 	}
 
-	role, _ := c.Get("role")
-	if !quiz.IsPublished && role != "teacher" && role != "admin" {
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
+	if !quiz.IsPublished && roleStr != "teacher" && roleStr != "admin" {
 		c.JSON(http.StatusForbidden, gin.H{"error": "Kuis ini belum dipublikasikan atau sudah ditutup"})
 		return
+	}
+
+	if roleStr == "teacher" {
+		if quiz.UserID != nil && *quiz.UserID != userID {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Anda tidak memiliki akses ke kuis ini"})
+			return
+		}
+	} else if roleStr == "student" {
+		var currentStudent models.User
+		database.DB.First(&currentStudent, userID)
+		if quiz.UserID != nil && (currentStudent.TeacherID == nil || *quiz.UserID != *currentStudent.TeacherID) {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Anda tidak memiliki akses ke kuis ini"})
+			return
+		}
+	} else if roleStr == "parent" {
+		if quiz.UserID != nil {
+			var children []models.User
+			database.DB.Where("parent_id = ?", userID).Find(&children)
+			hasAccess := false
+			for _, child := range children {
+				if child.TeacherID != nil && *child.TeacherID == *quiz.UserID {
+					hasAccess = true
+					break
+				}
+			}
+			if !hasAccess {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Anda tidak memiliki akses ke kuis ini"})
+				return
+			}
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"data": quiz})
@@ -114,12 +180,16 @@ func CreateQuiz(c *gin.Context) {
 		isPublished = *input.IsPublished
 	}
 
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
 	quiz := models.Quiz{
 		Title:       input.Title,
 		Category:    input.Category,
 		TimeLimit:   input.TimeLimit,
 		IsPublished: isPublished,
 		Questions:   input.Questions,
+		UserID:      &userID,
 	}
 
 	if err := database.DB.Create(&quiz).Error; err != nil {
@@ -156,12 +226,16 @@ func DuplicateQuiz(c *gin.Context) {
 		}
 	}
 
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
 	duplicatedQuiz := models.Quiz{
 		Title:       originalQuiz.Title + " (Salinan)",
 		Category:    originalQuiz.Category,
 		TimeLimit:   originalQuiz.TimeLimit,
 		IsPublished: false,
 		Questions:   newQuestions,
+		UserID:      &userID,
 	}
 
 	if err := database.DB.Create(&duplicatedQuiz).Error; err != nil {
@@ -184,6 +258,18 @@ func UpdateQuiz(c *gin.Context) {
 	if err := database.DB.Preload("Questions").First(&quiz, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
 		return
+	}
+
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+	
+	if roleStr != "admin" {
+		if quiz.UserID == nil || *quiz.UserID != userID {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Anda tidak berhak mengubah kuis ini"})
+			return
+		}
 	}
 
 	var input struct {
@@ -271,6 +357,18 @@ func DeleteQuiz(c *gin.Context) {
 	if err := database.DB.First(&quiz, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Kuis tidak ditemukan"})
 		return
+	}
+
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
+	if roleStr != "admin" {
+		if quiz.UserID == nil || *quiz.UserID != userID {
+			c.JSON(http.StatusForbidden, gin.H{"error": "Anda tidak berhak menghapus kuis ini"})
+			return
+		}
 	}
 
 	tx := database.DB.Begin()
@@ -459,9 +557,20 @@ func GetQuizScores(c *gin.Context) {
 
 	query := database.DB.Model(&models.ScoreQuiz{})
 
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
+	if strings.ToLower(strings.TrimSpace(roleStr)) == "teacher" {
+		query = query.Joins("JOIN users ON users.username = score_quizzes.username").
+			Joins("JOIN quizzes ON quizzes.id = score_quizzes.quiz_id").
+			Where("(users.teacher_id = ? OR users.id = ?) AND (quizzes.user_id = ? OR quizzes.user_id IS NULL)", userID, userID, userID)
+	}
+
 	searchUsername := c.Query("username")
 	if searchUsername != "" {
-		query = query.Where("username LIKE ?", "%"+searchUsername+"%")
+		query = query.Where("score_quizzes.username LIKE ?", "%"+searchUsername+"%")
 	}
 
 	if err := query.Count(&totalItems).Error; err != nil {
@@ -471,7 +580,7 @@ func GetQuizScores(c *gin.Context) {
 
 	totalPages := int(math.Ceil(float64(totalItems) / float64(limit)))
 
-	if err := query.Preload("Quiz").Preload("User").Order("created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
+	if err := query.Preload("Quiz").Preload("User").Order("score_quizzes.created_at desc").Limit(limit).Offset(offset).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil daftar skor"})
 		return
 	}

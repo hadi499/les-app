@@ -73,6 +73,8 @@ func GetAbsenceRecap(c *gin.Context) {
 	query := database.DB.Preload("User")
 	if role == "student" {
 		query = query.Where("user_id = ?", currentUserID)
+	} else if role == "teacher" {
+		query = query.Where("user_id IN (SELECT id FROM users WHERE teacher_id = ?)", currentUserID)
 	}
 
 	if err := query.Find(&absences).Error; err != nil {
@@ -88,6 +90,8 @@ func GetAbsenceRecap(c *gin.Context) {
 	studentQuery := database.DB.Where("role = ?", "student")
 	if role == "student" {
 		studentQuery = studentQuery.Where("id = ?", currentUserID)
+	} else if role == "teacher" {
+		studentQuery = studentQuery.Where("teacher_id = ?", currentUserID)
 	}
 
 	if err := studentQuery.Find(&students).Error; err != nil {
@@ -133,10 +137,24 @@ func GetAbsenceRecap(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"recap": results})
 }
 func ResetAbsences(c *gin.Context) {
-	if err := database.DB.Exec("DELETE FROM absences").Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset absences"})
+	role := c.GetString("role")
+	currentUserID := c.GetUint("user_id")
+
+	if role == "teacher" {
+		if err := database.DB.Exec("DELETE FROM absences WHERE user_id IN (SELECT id FROM users WHERE teacher_id = ?)", currentUserID).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset absences"})
+			return
+		}
+	} else if role == "admin" || role == "Admin" {
+		if err := database.DB.Exec("DELETE FROM absences").Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset absences"})
+			return
+		}
+	} else {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
+	
 	c.JSON(http.StatusOK, gin.H{"message": "Absences reset successfully"})
 }
 
@@ -149,6 +167,14 @@ func GetAbsenceHistory(c *gin.Context) {
 	if role == "student" && strconv.Itoa(int(currentUserID)) != userId {
 		c.JSON(http.StatusForbidden, gin.H{"error": "You can only view your own absence history"})
 		return
+	}
+	
+	if role == "teacher" {
+		var user models.User
+		if err := database.DB.First(&user, userId).Error; err != nil || user.TeacherID == nil || *user.TeacherID != currentUserID {
+			c.JSON(http.StatusForbidden, gin.H{"error": "You can only view your own students' absence history"})
+			return
+		}
 	}
 
 	var absences []models.Absence

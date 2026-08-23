@@ -10,8 +10,17 @@ import (
 
 func GetCardFolders(c *gin.Context) {
 	var folders []models.CardFolder
-	// Preload cards count if needed, but for now just list them
-	database.DB.Order("name asc").Find(&folders)
+	roleVal, _ := c.Get("role")
+	role, _ := roleVal.(string)
+	userIDVal, _ := c.Get("user_id")
+	userID, _ := userIDVal.(uint)
+
+	query := database.DB.Order("name asc")
+	if role == "teacher" {
+		query = query.Where("user_id = ?", userID)
+	}
+
+	query.Find(&folders)
 	c.JSON(http.StatusOK, gin.H{"data": folders})
 }
 
@@ -21,6 +30,10 @@ func CreateCardFolder(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	userIDVal, _ := c.Get("user_id")
+	userID, _ := userIDVal.(uint)
+	folder.UserID = userID
+
 	if err := database.DB.Create(&folder).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -33,6 +46,16 @@ func UpdateCardFolder(c *gin.Context) {
 	var folder models.CardFolder
 	if err := database.DB.First(&folder, id).Error; err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Card folder not found"})
+		return
+	}
+
+	roleVal, _ := c.Get("role")
+	role, _ := roleVal.(string)
+	userIDVal, _ := c.Get("user_id")
+	userID, _ := userIDVal.(uint)
+
+	if role == "teacher" && folder.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
 		return
 	}
 
@@ -51,6 +74,22 @@ func UpdateCardFolder(c *gin.Context) {
 
 func DeleteCardFolder(c *gin.Context) {
 	id := c.Param("id")
+	var folder models.CardFolder
+	if err := database.DB.First(&folder, id).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Card folder not found"})
+		return
+	}
+
+	roleVal, _ := c.Get("role")
+	role, _ := roleVal.(string)
+	userIDVal, _ := c.Get("user_id")
+	userID, _ := userIDVal.(uint)
+
+	if role == "teacher" && folder.UserID != userID {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden"})
+		return
+	}
+
 	if err := database.DB.Delete(&models.CardFolder{}, id).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return

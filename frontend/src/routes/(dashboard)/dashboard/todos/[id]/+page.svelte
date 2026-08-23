@@ -17,9 +17,9 @@
   type TodoList = {
     id: number;
     title: string;
-    student_username?: string;
     created_at: string;
     items: TodoItem[];
+    user_id?: number;
   };
 
   let list = $state<TodoList | null>(null);
@@ -29,6 +29,7 @@
   let errorMsg = $state("");
   let openMenuId = $state<number | null>(null);
   let userRole = $state("");
+  let myUserId = $state<number | null>(null);
 
   onMount(async () => {
     try {
@@ -36,6 +37,7 @@
       if (meRes.ok) {
         const data = await meRes.json();
         userRole = data.user?.role || "";
+        myUserId = data.user?.id || null;
       }
     } catch (e) {
       console.error(e);
@@ -199,13 +201,7 @@
             {list.title}
           </h1>
           <div class="flex items-center gap-2 shrink-0">
-            {#if list.student_username}
-              <span
-                class="px-2.5 py-1 text-xs font-semibold bg-blue-100 text-blue-700 rounded-lg"
-              >
-                @{list.student_username}
-              </span>
-            {/if}
+
             {#if list.items && list.items.length > 0 && list.items.every((i) => i.completed)}
               <span
                 class="px-2.5 py-1 text-xs font-semibold bg-emerald-100 text-emerald-700 rounded-lg border border-emerald-200 flex items-center gap-1"
@@ -250,7 +246,7 @@
         </div>
       </div>
 
-      {#if userRole === "teacher"}
+      {#if list?.user_id && list?.user_id === myUserId}
         <form onsubmit={addItem} class="flex items-center gap-3 mb-10">
           <input
             type="text"
@@ -318,19 +314,18 @@
                 : 'z-0'}"
             >
               <div
-                role={userRole === "teacher" ? "button" : "presentation"}
-                tabindex={userRole === "teacher" ? 0 : -1}
-                class="flex items-center gap-3 flex-1 outline-none {userRole ===
-                'teacher'
+                role={(list?.user_id && list?.user_id === myUserId) ? "button" : "presentation"}
+                tabindex={(list?.user_id && list?.user_id === myUserId) ? 0 : -1}
+                class="flex items-center gap-3 flex-1 outline-none {(list?.user_id && list?.user_id === myUserId)
                   ? 'cursor-pointer'
                   : 'cursor-default'}"
                 onclick={() => {
-                  if (userRole === "teacher")
+                  if ((list?.user_id && list?.user_id === myUserId))
                     toggleItem(item.id, item.completed);
                 }}
                 onkeydown={(e) => {
                   if (
-                    userRole === "teacher" &&
+                    ((list?.user_id && list?.user_id === myUserId)) &&
                     (e.key === "Enter" || e.key === " ")
                   )
                     toggleItem(item.id, item.completed);
@@ -367,7 +362,7 @@
                 </span>
               </div>
 
-              {#if userRole === "teacher"}
+              {#if list?.user_id && list?.user_id === myUserId}
                 <button
                   onclick={(e) => {
                     e.stopPropagation();

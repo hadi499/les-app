@@ -16,10 +16,19 @@ func GetFolders(c *gin.Context) {
 		return
 	}
 
+	role, _ := c.Get("role")
+
 	var folders []models.Folder
-	if err := database.DB.Where("user_id = ?", userID).Order("created_at asc").Find(&folders).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil folder"})
-		return
+	if role == "admin" {
+		if err := database.DB.Preload("User").Order("created_at asc").Find(&folders).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil folder"})
+			return
+		}
+	} else {
+		if err := database.DB.Where("user_id = ?", userID).Order("created_at asc").Find(&folders).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil folder"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, folders)
@@ -64,11 +73,19 @@ func UpdateFolder(c *gin.Context) {
 	}
 
 	folderID := c.Param("id")
+	role, _ := c.Get("role")
 
 	var folder models.Folder
-	if err := database.DB.Where("id = ? AND user_id = ?", folderID, userID).First(&folder).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Folder tidak ditemukan"})
-		return
+	if role == "admin" {
+		if err := database.DB.Where("id = ?", folderID).First(&folder).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Folder tidak ditemukan"})
+			return
+		}
+	} else {
+		if err := database.DB.Where("id = ? AND user_id = ?", folderID, userID).First(&folder).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Folder tidak ditemukan"})
+			return
+		}
 	}
 
 	var input struct {
@@ -99,10 +116,18 @@ func DeleteFolder(c *gin.Context) {
 	}
 
 	folderID := c.Param("id")
+	role, _ := c.Get("role")
 
-	if err := database.DB.Where("id = ? AND user_id = ?", folderID, userID).Delete(&models.Folder{}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus folder"})
-		return
+	if role == "admin" {
+		if err := database.DB.Where("id = ?", folderID).Delete(&models.Folder{}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus folder"})
+			return
+		}
+	} else {
+		if err := database.DB.Where("id = ? AND user_id = ?", folderID, userID).Delete(&models.Folder{}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus folder"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Folder berhasil dihapus"})

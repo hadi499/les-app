@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // GetUsers returns all users. Accessible by all authenticated users for the leaderboard.
@@ -18,16 +19,95 @@ func GetUsers(c *gin.Context) {
 	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "25"))
 	offset := (page - 1) * limit
 
+	roleFilter := c.Query("role")
+
+	query := database.DB.Model(&models.User{})
+
+	// Role-based filtering logic
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	userIDInter, _ := c.Get("user_id")
+	userID, _ := userIDInter.(uint)
+
+	if roleStr == "teacher" {
+		query = query.Where("teacher_id = ? OR id = ?", userID, userID)
+	} else if roleStr == "student" {
+		var currentStudent models.User
+		database.DB.First(&currentStudent, userID)
+		if currentStudent.TeacherID != nil {
+			query = query.Where("teacher_id = ? OR id = ?", *currentStudent.TeacherID, *currentStudent.TeacherID)
+		} else {
+			query = query.Where("id = ?", userID)
+		}
+	} else if roleStr == "parent" {
+		var children []models.User
+		database.DB.Where("parent_id = ?", userID).Find(&children)
+		
+		var teacherIDs []uint
+		for _, child := range children {
+			if child.TeacherID != nil {
+				teacherIDs = append(teacherIDs, *child.TeacherID)
+			}
+		}
+		
+		if len(teacherIDs) > 0 {
+			query = query.Where("id IN ? OR id = ? OR parent_id = ?", teacherIDs, userID, userID)
+		} else {
+			query = query.Where("id = ? OR parent_id = ?", userID, userID)
+		}
+	}
+
+	if roleFilter != "" {
+		query = query.Where("role = ?", roleFilter)
+	}
+
 	var users []models.User
-	if err := database.DB.Order("id asc").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
+	if err := query.Preload("Parent").Preload("Children").Preload("Teacher").Preload("Students").Order("id asc").Limit(limit).Offset(offset).Find(&users).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch users"})
 		return
 	}
 
 	var totalUsers, totalTeachers, totalStudents int64
-	database.DB.Model(&models.User{}).Count(&totalUsers)
-	database.DB.Model(&models.User{}).Where("role = ?", "teacher").Count(&totalTeachers)
-	database.DB.Model(&models.User{}).Where("role = ?", "student").Count(&totalStudents)
+	
+	// Create base queries for counting without Limit and Offset
+	countQuery := database.DB.Model(&models.User{})
+	if roleStr == "teacher" {
+		countQuery = countQuery.Where("teacher_id = ? OR id = ?", userID, userID)
+	} else if roleStr == "student" {
+		var currentStudent models.User
+		database.DB.First(&currentStudent, userID)
+		if currentStudent.TeacherID != nil {
+			countQuery = countQuery.Where("teacher_id = ? OR id = ?", *currentStudent.TeacherID, *currentStudent.TeacherID)
+		} else {
+			countQuery = countQuery.Where("id = ?", userID)
+		}
+	} else if roleStr == "parent" {
+		var children []models.User
+		database.DB.Where("parent_id = ?", userID).Find(&children)
+		var teacherIDs []uint
+		for _, child := range children {
+			if child.TeacherID != nil {
+				teacherIDs = append(teacherIDs, *child.TeacherID)
+			}
+		}
+		if len(teacherIDs) > 0 {
+			countQuery = countQuery.Where("id IN ? OR id = ? OR parent_id = ?", teacherIDs, userID, userID)
+		} else {
+			countQuery = countQuery.Where("id = ? OR parent_id = ?", userID, userID)
+		}
+	}
+
+	if roleFilter != "" {
+		countQuery = countQuery.Where("role = ?", roleFilter)
+	}
+	countQuery.Count(&totalUsers)
+
+	// Since Count() doesn't mutate the base Where conditions of countQuery, we can clone a new session for subsequent role counts
+	teacherCountQuery := countQuery.Session(&gorm.Session{})
+	teacherCountQuery.Where("role = ?", "teacher").Count(&totalTeachers)
+	
+	studentCountQuery := countQuery.Session(&gorm.Session{})
+	studentCountQuery.Where("role = ?", "student").Count(&totalStudents)
 
 	totalPages := 1
 	if limit > 0 {
@@ -49,8 +129,8 @@ func DeleteUser(c *gin.Context) {
 	// Dapatkan role dari context
 	roleInter, exists := c.Get("role")
 	roleStr, _ := roleInter.(string)
-	if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can perform this action."})
+	if !exists || (roleStr != "admin" && roleStr != "Admin") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only admins can perform this action."})
 		return
 	}
 
@@ -140,8 +220,8 @@ func DeleteUser(c *gin.Context) {
 func UpdateUser(c *gin.Context) {
 	roleInter, exists := c.Get("role")
 	roleStr, _ := roleInter.(string)
-	if !exists || (roleStr != "teacher" && roleStr != "admin" && roleStr != "Teacher" && roleStr != "Admin") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers/admins can perform this action."})
+	if !exists || (roleStr != "admin" && roleStr != "Admin") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only admins can perform this action."})
 		return
 	}
 
@@ -158,6 +238,10 @@ func UpdateUser(c *gin.Context) {
 		Class       string `json:"class"`
 		Password    string `json:"password"`
 		IsSuspended *bool  `json:"is_suspended"`
+		ParentID      *uint  `json:"parent_id"`
+		RemoveParent  bool   `json:"remove_parent"`
+		TeacherID     *uint  `json:"teacher_id"`
+		RemoveTeacher bool   `json:"remove_teacher"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
@@ -175,11 +259,28 @@ func UpdateUser(c *gin.Context) {
 		user.Username = req.Username
 	}
 	if req.Role != "" {
+		if req.Role != models.RoleAdmin && req.Role != models.RoleTeacher && req.Role != models.RoleStudent && req.Role != models.RoleParent {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Role tidak valid"})
+			return
+		}
 		user.Role = req.Role
 	}
 	if req.Class != "" {
 		user.Class = req.Class
 	}
+	
+	if req.RemoveParent {
+		user.ParentID = nil
+	} else if req.ParentID != nil {
+		user.ParentID = req.ParentID
+	}
+	
+	if req.RemoveTeacher {
+		user.TeacherID = nil
+	} else if req.TeacherID != nil {
+		user.TeacherID = req.TeacherID
+	}
+
 	if req.Password != "" {
 		if len(req.Password) < 6 {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Password minimal 6 karakter"})
@@ -210,6 +311,7 @@ func UpdateUser(c *gin.Context) {
 			"role":         user.Role,
 			"class":        user.Class,
 			"is_suspended": user.IsSuspended,
+			"parent_id":    user.ParentID,
 		},
 	})
 }
@@ -219,8 +321,8 @@ func ResetUserPassword(c *gin.Context) {
 	// Dapatkan role dari context
 	roleInter, exists := c.Get("role")
 	roleStr, _ := roleInter.(string)
-	if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
-		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can perform this action."})
+	if !exists || (roleStr != "admin" && roleStr != "Admin") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only admins can perform this action."})
 		return
 	}
 
@@ -256,41 +358,87 @@ func ResetUserPassword(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Password reset successfully"})
 }
 
-// ResetAllPoints resets all user points to 0 and clears quiz scores. Only accessible by teachers.
 func ResetAllPoints(c *gin.Context) {
-// Dapatkan role dari context (walaupun sudah ada middleware, sebagai double check)
-roleInter, exists := c.Get("role")
-roleStr, _ := roleInter.(string)
-if !exists || (roleStr != "teacher" && roleStr != "Teacher" && roleStr != "admin" && roleStr != "Admin") {
-c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only teachers can perform this action."})
-return
+	// Dapatkan role dari context (walaupun sudah ada middleware, sebagai double check)
+	roleInter, exists := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	if !exists || (roleStr != "admin" && roleStr != "Admin" && roleStr != "teacher" && roleStr != "Teacher") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only admins and teachers can perform this action."})
+		return
+	}
+
+	if roleStr == "admin" || roleStr == "Admin" {
+		// Reset semua poin ke 0
+		if err := database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset points"})
+			return
+		}
+
+		// Reset semua riwayat nilai kuis
+		if err := database.DB.Where("1 = 1").Delete(&models.ScoreQuiz{}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset quiz scores"})
+			return
+		}
+	} else {
+		// Teacher resets only their students
+		userIDInter, _ := c.Get("user_id")
+		userID, _ := userIDInter.(uint)
+
+		var students []models.User
+		if err := database.DB.Where("teacher_id = ?", userID).Find(&students).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch students"})
+			return
+		}
+
+		if len(students) > 0 {
+			var studentUsernames []string
+			for _, s := range students {
+				studentUsernames = append(studentUsernames, s.Username)
+			}
+
+			if err := database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Update("points", 0).Error; err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset points for students"})
+				return
+			}
+
+			if err := database.DB.Where("username IN ?", studentUsernames).Delete(&models.ScoreQuiz{}).Error; err != nil {
+				c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset quiz scores for students"})
+				return
+			}
+		}
+	}
+
+	// Update bulan terakhir reset
+	var setting models.SystemSetting
+	loc, errLoc := time.LoadLocation("Asia/Jakarta")
+	if errLoc != nil {
+		loc = time.FixedZone("WIB", 7*3600)
+	}
+	currentMonth := time.Now().In(loc).Format("2006-01")
+
+	if err := database.DB.Where("key = ?", "last_point_reset").First(&setting).Error; err != nil {
+		database.DB.Create(&models.SystemSetting{Key: "last_point_reset", Value: currentMonth})
+	} else {
+		database.DB.Model(&setting).Update("value", currentMonth)
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Points and quiz scores have been reset successfully"})
 }
 
-// Reset semua poin ke 0
-if err := database.DB.Model(&models.User{}).Where("1 = 1").Update("points", 0).Error; err != nil {
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset points"})
-return
-}
+// GetUserByID returns details of a single user by ID.
+func GetUserByID(c *gin.Context) {
+	userIdParam := c.Param("id")
+	userId, err := strconv.Atoi(userIdParam)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid user ID format"})
+		return
+	}
 
-// Reset semua riwayat nilai kuis (menghapus semua skor agar bisa dikerjakan ulang dari nol)
-if err := database.DB.Where("1 = 1").Delete(&models.ScoreQuiz{}).Error; err != nil {
-c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to reset quiz scores"})
-return
-}
+	var user models.User
+	if err := database.DB.Preload("Parent").Preload("Children").Preload("Teacher").Preload("Students").First(&user, userId).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "User not found"})
+		return
+	}
 
-// Update bulan terakhir reset
-var setting models.SystemSetting
-loc, errLoc := time.LoadLocation("Asia/Jakarta")
-if errLoc != nil {
-loc = time.FixedZone("WIB", 7*3600)
-}
-currentMonth := time.Now().In(loc).Format("2006-01")
-
-if err := database.DB.Where("key = ?", "last_point_reset").First(&setting).Error; err != nil {
-database.DB.Create(&models.SystemSetting{Key: "last_point_reset", Value: currentMonth})
-} else {
-database.DB.Model(&setting).Update("value", currentMonth)
-}
-
-c.JSON(http.StatusOK, gin.H{"message": "All points and quiz scores have been reset successfully"})
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }

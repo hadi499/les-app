@@ -116,10 +116,12 @@ func cleanupRateLimiter() {
 // Register — mendaftarkan user baru
 func Register(c *gin.Context) {
 	var input struct {
-		Username string `json:"username" binding:"required"`
-		Password string `json:"password" binding:"required"`
-		Role     string `json:"role"`
-		Class    string `json:"class"`
+		Username  string `json:"username" binding:"required"`
+		Password  string `json:"password" binding:"required"`
+		Role      string `json:"role"`
+		Class     string `json:"class"`
+		ParentID  *uint  `json:"parent_id"`
+		TeacherID *uint  `json:"teacher_id"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -141,14 +143,22 @@ func Register(c *gin.Context) {
 	// Default role jika tidak diisi
 	role := input.Role
 	if role == "" {
-		role = "student"
+		role = models.RoleStudent
+	}
+
+	// Validasi role
+	if role != models.RoleAdmin && role != models.RoleTeacher && role != models.RoleStudent && role != models.RoleParent {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Role tidak valid"})
+		return
 	}
 
 	user := models.User{
-		Username: input.Username,
-		Password: string(hashedPassword),
-		Role:     role,
-		Class:    input.Class,
+		Username:  input.Username,
+		Password:  string(hashedPassword),
+		Role:      role,
+		Class:     input.Class,
+		ParentID:  input.ParentID,
+		TeacherID: input.TeacherID,
 	}
 
 	if err := database.DB.Create(&user).Error; err != nil {
@@ -205,7 +215,7 @@ func PublicRegister(c *gin.Context) {
 	user := models.User{
 		Username: input.Username,
 		Password: string(hashedPassword),
-		Role:     "student", // Paksa role student
+		Role:     models.RoleStudent, // Paksa role student
 		Class:    input.Class,
 	}
 

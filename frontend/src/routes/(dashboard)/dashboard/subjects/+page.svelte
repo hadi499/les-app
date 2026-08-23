@@ -19,6 +19,23 @@
   // Form State
   let formName = $state("");
 
+  let isAdmin = $state(false);
+
+  async function checkRole() {
+    try {
+      const res = await fetch(`/me`, { credentials: "include" });
+      const data = await res.json();
+      if (data.authenticated && data.user && (data.user.role === "admin" || data.user.role === "teacher")) {
+        isAdmin = true;
+      } else {
+        errorMsg = "Akses ditolak. Halaman ini hanya untuk Guru dan Admin.";
+      }
+    } catch (e) {
+      console.error(e);
+      errorMsg = "Gagal memverifikasi akses.";
+    }
+  }
+
   async function fetchSubjects() {
     isLoading = true;
     showLoadingSpinner = false;
@@ -37,8 +54,14 @@
     }
   }
 
-  onMount(() => {
-    fetchSubjects();
+  onMount(async () => {
+    isLoading = true;
+    await checkRole();
+    if (isAdmin) {
+      await fetchSubjects();
+    } else {
+      isLoading = false;
+    }
   });
 
   function openAddModal() {
@@ -131,7 +154,7 @@
 </script>
 
 <svelte:head>
-  <title>Manajemen Mata Pelajaran - Portal Guru</title>
+  <title>Manajemen Mata Pelajaran - Portal Admin</title>
 </svelte:head>
 
 <div class="animate-in fade-in duration-500 max-w-5xl mx-auto space-y-6">
@@ -150,20 +173,22 @@
         Kelola daftar mata pelajaran untuk nilai ujian harian.
       </p>
     </div>
-    <button
-      onclick={openAddModal}
-      class="inline-flex items-center self-start sm:self-auto gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4v16m8-8H4"
-        ></path></svg
+    {#if isAdmin}
+      <button
+        onclick={openAddModal}
+        class="inline-flex items-center self-start sm:self-auto gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
       >
-      Pelajaran
-    </button>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 4v16m8-8H4"
+          ></path></svg
+        >
+        Pelajaran
+      </button>
+    {/if}
   </div>
 
     {#if isLoading}
@@ -205,20 +230,22 @@
             </h3>
           </div>
 
-          <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
-            <button
-              onclick={() => openEditModal(subject)}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-300"
-            >
-              Edit
-            </button>
-            <button
-              onclick={() => openDeleteModal(subject.id)}
-              class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
-            >
-              Hapus
-            </button>
-          </div>
+          {#if isAdmin}
+            <div class="flex justify-end gap-2 pt-3 border-t border-slate-200">
+              <button
+                onclick={() => openEditModal(subject)}
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-blue-600 bg-blue-100 hover:bg-blue-500/10 rounded-lg transition-colors border border-blue-300"
+              >
+                Edit
+              </button>
+              <button
+                onclick={() => openDeleteModal(subject.id)}
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium text-red-600 bg-red-100 hover:bg-red-200 rounded-lg transition-colors border border-red-300"
+              >
+                Hapus
+              </button>
+            </div>
+          {/if}
         </div>
       {/each}
       {#if subjects.length === 0}

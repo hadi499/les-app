@@ -79,18 +79,44 @@
   });
 
   $effect(() => {
-    if (!isLoading && user.role !== "teacher") {
+    if (!isLoading) {
       const path = page.url.pathname;
       const teacherOnlyRoutes = [
         "/dashboard/notes",
         "/dashboard/card-memory",
         "/dashboard/subjects",
         "/dashboard/typing-monitoring",
+      ];
+      const adminOnlyRoutes = [
         "/dashboard/users",
+        "/dashboard/teachers",
+        "/dashboard/parents",
+        "/dashboard/logs",
         "/dashboard/quotes",
       ];
-      if (teacherOnlyRoutes.some((r) => path.startsWith(r))) {
+
+      const currentRole = user?.role?.toLowerCase() || "";
+      if (currentRole !== "teacher" && currentRole !== "admin" && teacherOnlyRoutes.some((r) => path.startsWith(r))) {
         goto("/dashboard", { replaceState: true });
+      }
+
+      if (currentRole !== "admin" && adminOnlyRoutes.some((r) => path.startsWith(r))) {
+        goto("/dashboard", { replaceState: true });
+      }
+
+      if (currentRole === "admin") {
+        const adminAllowedRoutes = [
+          "/dashboard/chat",
+          "/dashboard/quotes",
+          "/dashboard/users",
+          "/dashboard/teachers",
+          "/dashboard/parents",
+          "/dashboard/logs",
+          "/dashboard/card-memory"
+        ];
+        if (path !== "/dashboard" && path !== "/dashboard/" && !adminAllowedRoutes.some((r) => path.startsWith(r))) {
+          goto("/dashboard", { replaceState: true });
+        }
       }
     }
   });
@@ -346,6 +372,39 @@
           {/if}
         </a>
 
+        {#if user?.role === "parent"}
+          <a
+            href="/dashboard/anak"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/anak',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/anak',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                ></path></svg>
+            </div>
+            Anak Saya
+          </a>
+        {/if}
+
+        {#if user?.role !== "admin"}
         <a
           href="/dashboard/materi"
           class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -377,7 +436,7 @@
           Materi Pelajaran
         </a>
 
-        {#if user?.role === "teacher"}
+        {#if user?.role === "admin" || user?.role === "teacher"}
           <a
             href="/dashboard/subjects"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -407,29 +466,6 @@
               >
             </div>
             Mata Pelajaran
-          </a>
-          <a
-            href="/dashboard/quotes"
-            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
-              '/quotes',
-            )
-              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
-              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
-          >
-            <div
-              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                '/quotes',
-              )
-                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
-            >
-              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"
-                ><path
-                  d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
-                ></path></svg
-              >
-            </div>
-            Quotes Inspirasi
           </a>
         {/if}
 
@@ -495,7 +531,7 @@
           Menulis TK/PAUD
         </a>
 
-        {#if user?.role === "teacher"}
+        {#if user?.role === "teacher" || user?.role === "admin"}
           <a
             href="/dashboard/notes"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -683,6 +719,7 @@
             Pantau Mengetik
           </a>
         {/if}
+        {#if user?.role !== "parent"}
         <a
           href="/dashboard/points"
           class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -711,9 +748,64 @@
               ></path></svg
             >
           </div>
-          Poin Users
+          Poin Murid
         </a>
-        {#if user?.role === "teacher"}
+        {/if}
+        {/if}
+        {#if user?.role === "admin"}
+          <a
+            href="/dashboard/card-memory"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/card-memory',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/card-memory',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                ></path></svg
+              >
+            </div>
+            Card Memory
+          </a>
+          <a
+            href="/dashboard/quotes"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/quotes',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/quotes',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"
+                ><path
+                  d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+                ></path></svg
+              >
+            </div>
+            Quotes Inspirasi
+          </a>
           <a
             href="/dashboard/users"
             class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
@@ -739,10 +831,67 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                ></path></svg
-              >
+                ></path></svg>
             </div>
             Manajemen Users
+          </a>
+          <a
+            href="/dashboard/teachers"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/teachers',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/teachers',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path></svg>
+            </div>
+            Manajemen Guru
+          </a>
+          <a
+            href="/dashboard/parents"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/parents',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/parents',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                ></path></svg>
+            </div>
+            Manajemen Orang Tua
           </a>
           <a
             href="/dashboard/logs"
@@ -769,8 +918,7 @@
                   stroke-linejoin="round"
                   stroke-width="2"
                   d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                ></path></svg
-              >
+                ></path></svg>
             </div>
             User Logs
           </a>
@@ -1097,6 +1245,40 @@
             {/if}
           </a>
 
+          {#if user?.role === "parent"}
+            <a
+              href="/dashboard/anak"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+                '/anak',
+              )
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/anak',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                  ></path></svg>
+              </div>
+              Anak Saya
+            </a>
+          {/if}
+
+          {#if user?.role !== "admin"}
           <a
             href="/dashboard/materi"
             onclick={() => (isMobileMenuOpen = false)}
@@ -1129,7 +1311,7 @@
             Materi Pelajaran
           </a>
 
-          {#if user?.role === "teacher"}
+          {#if user?.role === "admin" || user?.role === "teacher"}
             <a
               href="/dashboard/subjects"
               onclick={() => (isMobileMenuOpen = false)}
@@ -1160,30 +1342,6 @@
                 >
               </div>
               Mata Pelajaran
-            </a>
-            <a
-              href="/dashboard/quotes"
-              onclick={() => (isMobileMenuOpen = false)}
-              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
-                '/quotes',
-              )
-                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
-                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
-            >
-              <div
-                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
-                  '/quotes',
-                )
-                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
-                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
-              >
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
-                  ><path
-                    d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
-                  ></path></svg
-                >
-              </div>
-              Quotes Inspirasi
             </a>
           {/if}
 
@@ -1251,7 +1409,7 @@
             Menulis TK/PAUD
           </a>
 
-          {#if user?.role === "teacher"}
+          {#if user?.role === "teacher" || user?.role === "admin"}
             <a
               href="/dashboard/notes"
               onclick={() => (isMobileMenuOpen = false)}
@@ -1445,6 +1603,7 @@
               Pantau Mengetik
             </a>
           {/if}
+          {#if user?.role !== "parent"}
           <a
             href="/dashboard/points"
             onclick={() => (isMobileMenuOpen = false)}
@@ -1474,9 +1633,66 @@
                 ></path></svg
               >
             </div>
-            Poin Users
+            Poin Murid
           </a>
-          {#if user?.role === "teacher"}
+          {/if}
+          {/if}
+          {#if user?.role === "admin"}
+            <a
+              href="/dashboard/card-memory"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+                '/card-memory',
+              )
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/card-memory',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  ></path></svg
+                >
+              </div>
+              Card Memory
+            </a>
+            <a
+              href="/dashboard/quotes"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+                '/quotes',
+              )
+                ? 'bg-white/80 text-blue-700 font-medium border border-slate-300'
+                : 'text-slate-700 hover:text-slate-900 hover:bg-white/50 border border-transparent'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                  '/quotes',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"
+                  ><path
+                    d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"
+                  ></path></svg
+                >
+              </div>
+              Quotes Inspirasi
+            </a>
             <a
               href="/dashboard/users"
               onclick={() => (isMobileMenuOpen = false)}
@@ -1503,10 +1719,69 @@
                     stroke-linejoin="round"
                     stroke-width="2"
                     d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                  ></path></svg
-                >
+                  ></path></svg>
               </div>
               Manajemen Users
+            </a>
+            <a
+              href="/dashboard/teachers"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-4 py-3 rounded-2xl font-medium text-[15px] transition-all {page.url.pathname.includes(
+                '/teachers',
+              )
+                ? 'bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
+            >
+              <div
+                class="flex items-center justify-center w-10 h-10 rounded-xl shrink-0 transition-all {page.url.pathname.includes(
+                  '/teachers',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path></svg>
+              </div>
+              Manajemen Guru
+            </a>
+            <a
+              href="/dashboard/parents"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-3 px-4 py-3 rounded-2xl font-medium text-[15px] transition-all {page.url.pathname.includes(
+                '/parents',
+              )
+                ? 'bg-blue-50 text-blue-700 shadow-sm shadow-blue-500/10'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
+            >
+              <div
+                class="flex items-center justify-center w-10 h-10 rounded-xl shrink-0 transition-all {page.url.pathname.includes(
+                  '/parents',
+                )
+                  ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                  ></path></svg>
+              </div>
+              Manajemen Orang Tua
             </a>
             <a
               href="/dashboard/logs"
@@ -1534,8 +1809,7 @@
                     stroke-linejoin="round"
                     stroke-width="2"
                     d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                  ></path></svg
-                >
+                  ></path></svg>
               </div>
               User Logs
             </a>

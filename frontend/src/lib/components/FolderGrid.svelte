@@ -5,13 +5,13 @@
   let {
     groupedCards,
     onSelectCategory,
-    isTeacher = false,
+    isAdmin = false,
     onEditFolder = () => {},
     onDeleteFolder = () => {},
   }: {
     groupedCards: Record<string, Card[]>;
     onSelectCategory: (category: string) => void;
-    isTeacher?: boolean;
+    isAdmin?: boolean;
     onEditFolder?: (category: string) => void;
     onDeleteFolder?: (category: string) => void;
   } = $props();
@@ -94,7 +94,7 @@
             {category}
           </h3>
         </div>
-        {#if isTeacher && category !== 'Tidak Berkategori'}
+        {#if isAdmin && category !== 'Tidak Berkategori'}
           <div class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10">
             <button
               onclick={(e) => {
@@ -163,7 +163,7 @@
           <span class="text-xs md:text-sm font-medium text-slate-500 bg-slate-100 px-2 py-1 rounded-lg">
             {categoryCards.length} Kartu
           </span>
-          {#if isTeacher && category !== 'Tidak Berkategori'}
+          {#if isAdmin && category !== 'Tidak Berkategori'}
             <div class="relative flex items-center transition-all z-10">
               <button
                 onclick={(e) => {

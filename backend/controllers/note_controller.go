@@ -16,10 +16,19 @@ func GetNotes(c *gin.Context) {
 		return
 	}
 
+	role, _ := c.Get("role")
+
 	var notes []models.Note
-	if err := database.DB.Preload("Folder").Where("user_id = ?", userID).Order("created_at desc").Find(&notes).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil catatan"})
-		return
+	if role == "admin" {
+		if err := database.DB.Preload("Folder").Preload("User").Order("created_at desc").Find(&notes).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil catatan"})
+			return
+		}
+	} else {
+		if err := database.DB.Preload("Folder").Where("user_id = ?", userID).Order("created_at desc").Find(&notes).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil catatan"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, notes)
@@ -44,12 +53,21 @@ func CreateNote(c *gin.Context) {
 		return
 	}
 
+	role, _ := c.Get("role")
+
 	// Verify if the folder belongs to the user if folder_id is provided
 	if input.FolderID != nil {
 		var folder models.Folder
-		if err := database.DB.Where("id = ? AND user_id = ?", *input.FolderID, userID).First(&folder).Error; err != nil {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
-			return
+		if role == "admin" {
+			if err := database.DB.Where("id = ?", *input.FolderID).First(&folder).Error; err != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
+				return
+			}
+		} else {
+			if err := database.DB.Where("id = ? AND user_id = ?", *input.FolderID, userID).First(&folder).Error; err != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
+				return
+			}
 		}
 	}
 
@@ -80,11 +98,19 @@ func UpdateNote(c *gin.Context) {
 	}
 
 	noteID := c.Param("id")
+	role, _ := c.Get("role")
 
 	var note models.Note
-	if err := database.DB.Where("id = ? AND user_id = ?", noteID, userID).First(&note).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Catatan tidak ditemukan"})
-		return
+	if role == "admin" {
+		if err := database.DB.Where("id = ?", noteID).First(&note).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Catatan tidak ditemukan"})
+			return
+		}
+	} else {
+		if err := database.DB.Where("id = ? AND user_id = ?", noteID, userID).First(&note).Error; err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Catatan tidak ditemukan"})
+			return
+		}
 	}
 
 	var input struct {
@@ -101,9 +127,16 @@ func UpdateNote(c *gin.Context) {
 	// Verify if the folder belongs to the user if folder_id is provided
 	if input.FolderID != nil {
 		var folder models.Folder
-		if err := database.DB.Where("id = ? AND user_id = ?", *input.FolderID, userID).First(&folder).Error; err != nil {
-			c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
-			return
+		if role == "admin" {
+			if err := database.DB.Where("id = ?", *input.FolderID).First(&folder).Error; err != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
+				return
+			}
+		} else {
+			if err := database.DB.Where("id = ? AND user_id = ?", *input.FolderID, userID).First(&folder).Error; err != nil {
+				c.JSON(http.StatusForbidden, gin.H{"error": "Folder tidak ditemukan atau Anda tidak memiliki akses ke folder ini"})
+				return
+			}
 		}
 	}
 
@@ -130,10 +163,18 @@ func DeleteNote(c *gin.Context) {
 	}
 
 	noteID := c.Param("id")
+	role, _ := c.Get("role")
 
-	if err := database.DB.Where("id = ? AND user_id = ?", noteID, userID).Delete(&models.Note{}).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus catatan"})
-		return
+	if role == "admin" {
+		if err := database.DB.Where("id = ?", noteID).Delete(&models.Note{}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus catatan"})
+			return
+		}
+	} else {
+		if err := database.DB.Where("id = ? AND user_id = ?", noteID, userID).Delete(&models.Note{}).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghapus catatan"})
+			return
+		}
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Catatan berhasil dihapus"})

@@ -13,8 +13,7 @@ import (
 // GetTodoLists - Get all todo lists for the logged-in user
 func GetTodoLists(c *gin.Context) {
 	userID := c.GetUint("user_id")
-	role := c.GetString("role")
-	username := c.GetString("username")
+	// Unused role and username variables removed
 
 	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
 	if page < 1 {
@@ -29,13 +28,7 @@ func GetTodoLists(c *gin.Context) {
 	var lists []models.TodoList
 	var totalItems int64
 
-	query := database.DB.Model(&models.TodoList{})
-	if role == "teacher" {
-		query = query.Where("user_id = ?", userID)
-	} else {
-		// Student sees todolists assigned to them via student_username
-		query = query.Where("student_username = ?", username)
-	}
+	query := database.DB.Model(&models.TodoList{}).Where("user_id = ?", userID)
 
 	if err := query.Count(&totalItems).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to count todo lists"})
@@ -60,21 +53,12 @@ func GetTodoLists(c *gin.Context) {
 // GetTodoList - Get a single todo list by id
 func GetTodoList(c *gin.Context) {
 	userID := c.GetUint("user_id")
-	role := c.GetString("role")
-	username := c.GetString("username")
 	id := c.Param("id")
 
 	var list models.TodoList
-	if role == "teacher" {
-		if err := database.DB.Preload("Items").Where("id = ? AND user_id = ?", id, userID).First(&list).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
-			return
-		}
-	} else {
-		if err := database.DB.Preload("Items").Where("id = ? AND student_username = ?", id, username).First(&list).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
-			return
-		}
+	if err := database.DB.Preload("Items").Where("id = ? AND user_id = ?", id, userID).First(&list).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
+		return
 	}
 
 	c.JSON(http.StatusOK, list)
@@ -85,8 +69,7 @@ func CreateTodoList(c *gin.Context) {
 	userID := c.GetUint("user_id")
 
 	var input struct {
-		Title           string `json:"title" binding:"required"`
-		StudentUsername string `json:"student_username"`
+		Title string `json:"title" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -94,9 +77,8 @@ func CreateTodoList(c *gin.Context) {
 	}
 
 	list := models.TodoList{
-		UserID:          userID,
-		Title:           input.Title,
-		StudentUsername: input.StudentUsername,
+		UserID: userID,
+		Title:  input.Title,
 	}
 
 	if err := database.DB.Create(&list).Error; err != nil {
@@ -119,8 +101,7 @@ func UpdateTodoList(c *gin.Context) {
 	}
 
 	var input struct {
-		Title           string `json:"title" binding:"required"`
-		StudentUsername string `json:"student_username"`
+		Title string `json:"title" binding:"required"`
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -128,7 +109,6 @@ func UpdateTodoList(c *gin.Context) {
 	}
 
 	list.Title = input.Title
-	list.StudentUsername = input.StudentUsername
 	if err := database.DB.Save(&list).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update todo list"})
 		return
@@ -193,23 +173,14 @@ func CreateTodoItem(c *gin.Context) {
 // ToggleTodoItem - Toggle completion status
 func ToggleTodoItem(c *gin.Context) {
 	userID := c.GetUint("user_id")
-	role := c.GetString("role")
-	username := c.GetString("username")
 	listID := c.Param("id")
 	itemID := c.Param("item_id")
 
 	// Verify list ownership or access
 	var list models.TodoList
-	if role == "teacher" {
-		if err := database.DB.Where("id = ? AND user_id = ?", listID, userID).First(&list).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
-			return
-		}
-	} else {
-		if err := database.DB.Where("id = ? AND student_username = ?", listID, username).First(&list).Error; err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
-			return
-		}
+	if err := database.DB.Where("id = ? AND user_id = ?", listID, userID).First(&list).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo list not found"})
+		return
 	}
 
 	var item models.TodoItem

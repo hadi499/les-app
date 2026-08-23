@@ -20,7 +20,7 @@ export async function fetchCards(query: CardQuery = {}): Promise<PaginatedCards>
   if (!res.ok) throw new Error('Failed to fetch cards');
   const json = await res.json();
   return {
-    data: json.data.map((c: any) => ({ ...c, id: String(c.ID), size: String(c.size ?? '') })),
+    data: (json.data || []).map((c: any) => ({ ...c, id: String(c.ID), size: String(c.size ?? '') })),
     total: json.total,
     page: json.page,
     limit: json.limit,
@@ -63,7 +63,7 @@ export async function fetchTrashCards(): Promise<{ data: Card[]; total: number }
   if (!res.ok) throw new Error('Failed to fetch trash');
   const json = await res.json();
   return {
-    data: json.data.map((c: any) => ({ ...c, id: String(c.ID), size: String(c.size ?? '') })),
+    data: (json.data || []).map((c: any) => ({ ...c, id: String(c.ID), size: String(c.size ?? '') })),
     total: json.total,
   };
 }

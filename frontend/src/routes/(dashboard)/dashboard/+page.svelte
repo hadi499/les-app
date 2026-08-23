@@ -15,10 +15,8 @@
 
   let isClassOpenPaud = $state(true);
   let isClassOpenSd = $state(true);
-  let isRegistrationOpen = $state(false);
   let isLoadingTogglePaud = $state(false);
   let isLoadingToggleSd = $state(false);
-  let isLoadingToggleRegistration = $state(false);
   let userRole = $state("");
   let userData = $state<any>(null);
   let isSettingsLoaded = $state(false);
@@ -31,7 +29,6 @@
         const json = await res.json();
         isClassOpenPaud = json.is_class_open_paud === "true";
         isClassOpenSd = json.is_class_open_sd === "true";
-        isRegistrationOpen = json.is_registration_open === "true";
       }
     } catch (e) {
       console.error("Gagal memuat pengaturan", e);
@@ -86,28 +83,7 @@
     }
   }
 
-  async function toggleRegistrationOpen() {
-    isLoadingToggleRegistration = true;
-    const newValue = !isRegistrationOpen;
-    try {
-      const res = await fetch("/api/settings/is_registration_open", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ value: newValue ? "true" : "false" }),
-      });
-      if (res.ok) {
-        isRegistrationOpen = newValue;
-      } else {
-        alert("Gagal memperbarui status pendaftaran.");
-      }
-    } catch (e) {
-      console.error(e);
-      alert("Terjadi kesalahan koneksi.");
-    } finally {
-      isLoadingToggleRegistration = false;
-    }
-  }
+
 
   async function fetchSystemInfo() {
     isRefreshing = true;
@@ -118,7 +94,7 @@
         if (meData.authenticated) {
           userData = meData.user;
           userRole = meData.user.role;
-          if (userRole === "teacher") {
+          if (userRole === "admin") {
             const res = await fetch("/api/system/info", {
               credentials: "include",
             });
@@ -322,78 +298,7 @@
           </div>
         </div>
 
-        <!-- Pendaftaran Publik -->
-        {#if !isRoleLoaded || userRole === "teacher"}
-        <div
-          class="pt-4 border-t border-slate-200 flex flex-col md:flex-row md:items-center justify-between gap-4"
-        >
-          <h4 class="font-bold text-slate-800 m-0">Pengaturan Publik</h4>
 
-          <div
-            class="flex items-center gap-3 bg-slate-50 px-4 py-2 rounded-2xl border border-slate-100"
-          >
-            <span class="text-sm font-semibold text-slate-700">Pendaftaran:</span>
-            {#if !isSettingsLoaded || !isRoleLoaded}
-              <div
-                class="w-24 h-8 bg-slate-200/70 rounded-full animate-pulse"
-              ></div>
-            {:else if userRole === "teacher"}
-              <span
-                class="text-sm font-bold {isRegistrationOpen
-                  ? 'text-emerald-600'
-                  : 'text-rose-600'}">{isRegistrationOpen ? "BUKA" : "TUTUP"}</span
-              >
-              <button
-                onclick={toggleRegistrationOpen}
-                disabled={isLoadingToggleRegistration}
-                class="relative inline-flex h-8 w-14 items-center rounded-full transition-colors focus:outline-none disabled:opacity-50 {isRegistrationOpen
-                  ? 'bg-emerald-500'
-                  : 'bg-rose-500'} border-none cursor-pointer"
-              >
-                <span class="sr-only">Toggle Pendaftaran</span>
-                <span
-                  class="inline-block h-6 w-6 transform rounded-full bg-white transition-transform shadow-sm {isRegistrationOpen
-                    ? 'translate-x-7'
-                    : 'translate-x-1'}"
-                ></span>
-              </button>
-            {:else}
-              <div
-                class="px-3 py-1 rounded-full font-bold text-xs flex items-center gap-1.5 shadow-sm {isRegistrationOpen
-                  ? 'bg-emerald-100 text-emerald-700 border border-emerald-200'
-                  : 'bg-rose-100 text-rose-700 border border-rose-200'}"
-              >
-                {#if isRegistrationOpen}
-                  <span class="relative flex h-2 w-2">
-                    <span
-                      class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"
-                    ></span>
-                    <span
-                      class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"
-                    ></span>
-                  </span>
-                  BUKA
-                {:else}
-                  <svg
-                    class="w-3 h-3"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  TUTUP
-                {/if}
-              </div>
-            {/if}
-          </div>
-        </div>
-        {/if}
 
         {#if userData}
           <div

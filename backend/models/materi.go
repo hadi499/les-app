@@ -8,7 +8,9 @@ type Materi struct {
 	SubjectID uint      `json:"subject_id"`
 	Subject   *Subject  `json:"subject,omitempty" gorm:"foreignKey:SubjectID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
 	Users     []User    `json:"users,omitempty" gorm:"many2many:materi_users;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
-	Content   string    `json:"content" gorm:"type:text"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
+	Content     string    `json:"content" gorm:"type:text"`
+	CreatedByID *uint     `json:"created_by_id"`
+	CreatedBy   *User     `json:"created_by,omitempty" gorm:"foreignKey:CreatedByID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

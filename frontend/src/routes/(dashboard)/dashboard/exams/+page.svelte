@@ -23,6 +23,8 @@
   let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
   let isTeacher = $state(false);
+  let isAdmin = $state(false);
+  let canManage = $derived(isTeacher || isAdmin);
   let activeTab: "card" | "table" = $state("card");
   let isLoadingMore = $state(false);
 
@@ -177,6 +179,8 @@
       if (data.authenticated && data.user) {
         if (data.user.role === "teacher") {
           isTeacher = true;
+        } else if (data.user.role === "admin") {
+          isAdmin = true;
         }
       }
     } catch (e) {
@@ -191,7 +195,7 @@
     errorMsg = "";
     await checkRole();
     const promises: Promise<any>[] = [fetchExams(), fetchSubjects()];
-    if (isTeacher) {
+    if (canManage) {
       promises.push(fetchUsers());
     }
     await Promise.all(promises);
@@ -382,7 +386,7 @@
 </script>
 
 <svelte:head>
-  <title>Nilai Harian Ujian - Portal {isTeacher ? "Guru" : "Siswa"}</title>
+  <title>Nilai Harian Ujian - Portal {isAdmin ? "Admin" : isTeacher ? "Guru" : "Siswa"}</title>
 </svelte:head>
 
 <div
@@ -401,7 +405,7 @@
         Kelola nilai ujian harian siswa.
       </p>
     </div>
-    {#if isTeacher}
+    {#if canManage}
       <button
         onclick={openAddModal}
         class="inline-flex items-center gap-2 px-4 py-2.5 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm cursor-pointer"
@@ -469,14 +473,14 @@
           >
         </div>
         <p class="text-slate-500 font-medium text-lg">Belum ada data ujian.</p>
-        {#if isTeacher}
+        {#if canManage}
           <p class="text-slate-400 text-sm mt-1">
             Silakan tambahkan data baru melalui tombol di atas.
           </p>
         {/if}
       </div>
     {:else}
-      {#if isTeacher}
+      {#if canManage}
         <div class="flex items-center gap-2 mb-6">
           <button
             onclick={() => switchTab("card")}
@@ -499,7 +503,7 @@
         </div>
       {/if}
 
-      {#if activeTab === "table" && isTeacher}
+      {#if activeTab === "table" && canManage}
         {#if selectedExams.size > 0}
           <div class="mb-4 p-4 bg-indigo-50 border border-indigo-100 rounded-xl flex items-center justify-between">
             <span class="text-sm font-semibold text-indigo-800">{selectedExams.size} data terpilih</span>
@@ -521,7 +525,7 @@
                 <tr
                   class="bg-slate-50/50 border-b border-slate-200 text-slate-500 text-sm"
                 >
-                  {#if isTeacher}
+                  {#if canManage}
                     <th class="px-6 py-4 w-12 text-center">
                       <input
                         type="checkbox"
@@ -540,7 +544,7 @@
                   <th class="px-6 py-4 font-semibold text-center w-32"
                     >Detail</th
                   >
-                  {#if isTeacher}
+                  {#if canManage}
                     <th class="px-6 py-4 font-semibold text-center w-32"
                       >Aksi</th
                     >
@@ -550,7 +554,7 @@
               <tbody class="divide-y divide-slate-100">
                 {#each exams as exam}
                   <tr class="hover:bg-slate-50/50 transition-colors group">
-                    {#if isTeacher}
+                    {#if canManage}
                       <td class="px-6 py-4 text-center">
                         <input
                           type="checkbox"
@@ -609,7 +613,7 @@
                         >
                       </a>
                     </td>
-                    {#if isTeacher}
+                    {#if canManage}
                       <td class="px-6 py-4">
                         <div class="flex items-center justify-center gap-2">
                           <button
@@ -704,7 +708,7 @@
                   >
                     {exam.exam_name}
                   </h3>
-                  {#if isTeacher}
+                  {#if canManage}
                     <p class="text-sm font-medium text-slate-600 mt-1">
                       {exam.user?.username || "Unknown"}
                     </p>
@@ -714,9 +718,29 @@
                     <span>{formatDate(exam.exam_date)}</span>
                   </p>
                 </div>
-                <div class="pt-3 border-t border-slate-100 flex justify-end">
+                <div class="pt-3 border-t border-slate-100 flex justify-between items-center gap-2">
+                  {#if canManage}
+                    <div class="flex items-center gap-2">
+                      <button
+                        onclick={(e) => { e.preventDefault(); e.stopPropagation(); openEditModal(exam); }}
+                        title="Edit"
+                        class="inline-flex items-center justify-center p-1.5 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-100 cursor-pointer"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                      </button>
+                      <button
+                        onclick={(e) => { e.preventDefault(); e.stopPropagation(); openDeleteModal(exam.id); }}
+                        title="Hapus"
+                        class="inline-flex items-center justify-center p-1.5 text-red-700 bg-red-50 hover:bg-red-100 rounded-lg transition-colors border border-red-100 cursor-pointer"
+                      >
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                      </button>
+                    </div>
+                  {:else}
+                    <div></div>
+                  {/if}
                   <span
-                    class="text-xs font-semibold text-indigo-600 group-hover:text-indigo-700 bg-indigo-50 px-2.5 py-1 rounded-lg transition-colors"
+                    class="text-xs font-semibold text-indigo-600 group-hover:text-indigo-700 bg-indigo-50 px-2.5 py-1.5 rounded-lg transition-colors"
                     >Lihat Detail &rarr;</span
                   >
                 </div>

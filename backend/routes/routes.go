@@ -23,6 +23,7 @@ func SetupRoutes(r *gin.Engine) {
 	users.Use(middleware.AuthMiddleware())
 	{
 		users.GET("", controllers.GetUsers)
+		users.GET("/:id", controllers.GetUserByID)
 		users.PUT("/:id", controllers.UpdateUser)
 		users.DELETE("/:id", controllers.DeleteUser)
 		users.POST("/:id/reset-password", controllers.ResetUserPassword)
@@ -60,7 +61,7 @@ func SetupRoutes(r *gin.Engine) {
 
 		// Teacher only for modifications
 		teacherOnly := cards.Group("")
-		teacherOnly.Use(middleware.RoleMiddleware("teacher"))
+		teacherOnly.Use(middleware.RoleMiddleware("admin"))
 		{
 			teacherOnly.POST("", controllers.CreateCard)
 			teacherOnly.PUT("/:id", controllers.UpdateCard)
@@ -110,12 +111,12 @@ func SetupRoutes(r *gin.Engine) {
 	{
 		subjects.GET("", controllers.GetSubjects)
 
-		teacherSubjects := subjects.Group("")
-		teacherSubjects.Use(middleware.RoleMiddleware("teacher"))
+		manageSubjects := subjects.Group("")
+		manageSubjects.Use(middleware.RoleMiddleware("teacher"))
 		{
-			teacherSubjects.POST("", controllers.CreateSubject)
-			teacherSubjects.PUT("/:id", controllers.UpdateSubject)
-			teacherSubjects.DELETE("/:id", controllers.DeleteSubject)
+			manageSubjects.POST("", controllers.CreateSubject)
+			manageSubjects.PUT("/:id", controllers.UpdateSubject)
+			manageSubjects.DELETE("/:id", controllers.DeleteSubject)
 		}
 	}
 
@@ -159,21 +160,31 @@ func SetupRoutes(r *gin.Engine) {
 		teacherWritingProgress.Use(middleware.RoleMiddleware("teacher"))
 		{
 			teacherWritingProgress.POST("", controllers.CreateWritingProgress)
-			teacherWritingProgress.POST("/backup", controllers.BackupToDrive)
 			teacherWritingProgress.POST("/bulk-delete", controllers.BulkDeleteWritingProgress)
 			teacherWritingProgress.PUT("/:id", controllers.UpdateWritingProgress)
 			teacherWritingProgress.DELETE("/:id", controllers.DeleteWritingProgress)
+		}
+
+		adminWritingProgress := writingProgress.Group("")
+		adminWritingProgress.Use(middleware.RoleMiddleware("admin"))
+		{
+			adminWritingProgress.POST("/backup", controllers.BackupToDrive)
 		}
 	}
 
 	// Card Folders API routes (Teacher only)
 	cardFolders := r.Group("/api/card-folders")
-	cardFolders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	cardFolders.Use(middleware.AuthMiddleware())
 	{
 		cardFolders.GET("", controllers.GetCardFolders)
-		cardFolders.POST("", controllers.CreateCardFolder)
-		cardFolders.PUT("/:id", controllers.UpdateCardFolder)
-		cardFolders.DELETE("/:id", controllers.DeleteCardFolder)
+
+		adminFolders := cardFolders.Group("")
+		adminFolders.Use(middleware.RoleMiddleware("admin"))
+		{
+			adminFolders.POST("", controllers.CreateCardFolder)
+			adminFolders.PUT("/:id", controllers.UpdateCardFolder)
+			adminFolders.DELETE("/:id", controllers.DeleteCardFolder)
+		}
 	}
 
 	// Notes API routes (Teacher only)
@@ -221,16 +232,12 @@ func SetupRoutes(r *gin.Engine) {
 		todolists.GET("", controllers.GetTodoLists)
 		todolists.GET("/:id", controllers.GetTodoList)
 
-		teacherTodos := todolists.Group("")
-		teacherTodos.Use(middleware.RoleMiddleware("teacher"))
-		{
-			teacherTodos.POST("", controllers.CreateTodoList)
-			teacherTodos.PUT("/:id", controllers.UpdateTodoList)
-			teacherTodos.DELETE("/:id", controllers.DeleteTodoList)
-			teacherTodos.POST("/:id/items", controllers.CreateTodoItem)
-			teacherTodos.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
-			teacherTodos.DELETE("/:id/items/:item_id", controllers.DeleteTodoItem)
-		}
+		todolists.POST("", controllers.CreateTodoList)
+		todolists.PUT("/:id", controllers.UpdateTodoList)
+		todolists.DELETE("/:id", controllers.DeleteTodoList)
+		todolists.POST("/:id/items", controllers.CreateTodoItem)
+		todolists.PUT("/:id/items/:item_id", controllers.ToggleTodoItem)
+		todolists.DELETE("/:id/items/:item_id", controllers.DeleteTodoItem)
 	}
 
 	// Scores API routes (User submission)
@@ -243,14 +250,14 @@ func SetupRoutes(r *gin.Engine) {
 
 	// System API routes (Teacher only)
 	system := r.Group("/api/system")
-	system.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	system.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("admin"))
 	{
 		system.GET("/info", controllers.GetSystemInfo)
 	}
 
 	// Logs API routes (Teacher only)
 	logsAPI := r.Group("/api/logs")
-	logsAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	logsAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("admin"))
 	{
 		logsAPI.GET("", controllers.GetLogs)
 	}
@@ -261,7 +268,7 @@ func SetupRoutes(r *gin.Engine) {
 		quotes.GET("", controllers.GetPublicQuotes) // public
 		
 		adminQuotes := quotes.Group("")
-		adminQuotes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+		adminQuotes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("admin"))
 		{
 			adminQuotes.GET("/all", controllers.GetAllQuotes)
 			adminQuotes.POST("", controllers.CreateQuote)
@@ -277,6 +284,13 @@ func SetupRoutes(r *gin.Engine) {
 	settingsAdmin.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
 	{
 		settingsAdmin.PUT("/:key", controllers.UpdateSetting)
+	}
+
+	// Parents API routes
+	parents := r.Group("/api/parents")
+	parents.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("parent"))
+	{
+		parents.GET("/my-children", controllers.GetMyChildren)
 	}
 
 	// Chat API routes

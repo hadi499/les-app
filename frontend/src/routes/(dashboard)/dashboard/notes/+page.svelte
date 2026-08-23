@@ -15,6 +15,7 @@
   type Folder = {
     id: number;
     name: string;
+    user?: { username: string };
   };
 
   type Note = {
@@ -24,7 +25,11 @@
     folder: Folder | null;
     content: string;
     created_at: string;
+    user?: { username: string };
   };
+
+  let userRole = $state("");
+  let currentUsername = $state("");
 
   let folders = $state<Folder[]>([]);
   let notes = $state<Note[]>([]);
@@ -41,6 +46,13 @@
       }
     }
     try {
+      const meRes = await fetch("/me");
+      if (meRes.ok) {
+        const data = await meRes.json();
+        userRole = data.user?.role || "";
+        currentUsername = data.user?.username || "";
+      }
+
       // Fetch Folders
       const resFolders = await fetch("/api/folders", {
         credentials: "include",
@@ -50,13 +62,17 @@
         return;
       }
       if (resFolders.ok) {
-        folders = await resFolders.json();
+        const allFolders = await resFolders.json();
+        // Filter folders so admin only sees their own
+        folders = allFolders.filter((f: Folder) => !f.user || f.user.username === currentUsername);
       }
 
       // Fetch Notes
       const resNotes = await fetch("/api/notes", { credentials: "include" });
       if (resNotes.ok) {
-        notes = await resNotes.json();
+        const allNotes = await resNotes.json();
+        // Filter notes so admin only sees their own
+        notes = allNotes.filter((n: Note) => !n.user || n.user.username === currentUsername);
       }
     } catch (e) {
       console.error(e);
@@ -813,6 +829,9 @@
                 <h3 class="font-semibold text-slate-700 text-xs md:text-sm wrap-break-word leading-tight w-full px-1">
                   {folder.name}
                 </h3>
+                {#if userRole === 'admin' && folder.user}
+                  <p class="text-[10px] text-slate-400 mt-1">@{folder.user.username}</p>
+                {/if}
               </div>
               <div
                 class="absolute top-2 right-2 flex items-center gap-1 transition-all z-10"
@@ -914,7 +933,12 @@
                     ></path></svg
                   >
                 </div>
-                <h3 class="font-bold text-slate-800 text-sm md:text-base truncate">{folder.name}</h3>
+                <div class="flex flex-col min-w-0">
+                  <h3 class="font-bold text-slate-800 text-sm md:text-base truncate">{folder.name}</h3>
+                  {#if userRole === 'admin' && folder.user}
+                    <p class="text-xs text-slate-500 truncate">@{folder.user.username}</p>
+                  {/if}
+                </div>
               </div>
               <div class="flex items-center gap-3 md:gap-4">
                 <span class="text-xs md:text-sm text-slate-500 bg-slate-50 px-2 py-1 rounded-md border border-slate-100 whitespace-nowrap">
@@ -1051,7 +1075,10 @@
                 {/if}
               </div>
               <div class="grow">
-                <h3 class="text-[17px] font-bold text-slate-900 leading-snug line-clamp-3 mb-3" title={note.title}>{note.title}</h3>
+                <h3 class="text-[17px] font-bold text-slate-900 leading-snug line-clamp-3 mb-2" title={note.title}>{note.title}</h3>
+                {#if userRole === 'admin' && note.user}
+                  <span class="inline-block mb-3 px-2 py-0.5 bg-slate-100 text-slate-600 text-[11px] font-medium rounded">@{note.user.username}</span>
+                {/if}
               </div>
               
               <div class="flex items-center text-xs font-medium text-slate-500 mb-4 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">

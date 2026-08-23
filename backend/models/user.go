@@ -2,6 +2,13 @@ package models
 
 import "time"
 
+const (
+	RoleAdmin   = "admin"
+	RoleTeacher = "teacher"
+	RoleStudent = "student"
+	RoleParent  = "parent"
+)
+
 type User struct {
 	ID               uint             `json:"id" gorm:"primaryKey"`
 	CreatedAt        time.Time        `json:"created_at"`
@@ -9,6 +16,12 @@ type User struct {
 	Password         string           `json:"-" gorm:"not null"` // Don't expose password in JSON
 	Role             string           `json:"role" gorm:"type:varchar(20);default:'student'"`
 	Class            string           `json:"class" gorm:"type:varchar(50);default:''"`
+	ParentID         *uint            `json:"parent_id,omitempty"`
+	Parent           *User            `json:"parent,omitempty" gorm:"foreignKey:ParentID"`
+	Children         []User           `json:"children,omitempty" gorm:"foreignKey:ParentID"`
+	TeacherID        *uint            `json:"teacher_id,omitempty"`
+	Teacher          *User            `json:"teacher,omitempty" gorm:"foreignKey:TeacherID"`
+	Students         []User           `json:"students,omitempty" gorm:"foreignKey:TeacherID"`
 	LessonProgresses []LessonProgress `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	GameHighScores   []GameHighScore  `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 	GameHistories    []GameHistory    `json:"-" gorm:"constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`

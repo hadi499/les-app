@@ -224,9 +224,24 @@ func GetAllLessonProgress(c *gin.Context) {
 	var progress []models.LessonProgress
 	var total int64
 
-	database.DB.Model(&models.LessonProgress{}).Count(&total)
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+	query := database.DB.Model(&models.LessonProgress{})
+	
+	if role == "teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	}
 
-	if err := database.DB.Preload("User").Order("lesson_id asc").Offset(offset).Limit(limit).Find(&progress).Error; err != nil {
+	query.Count(&total)
+
+	if err := query.Preload("User").Order("lesson_id asc").Offset(offset).Limit(limit).Find(&progress).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch progress"})
 		return
 	}
@@ -252,9 +267,24 @@ func GetAllGameScores(c *gin.Context) {
 	var scores []models.GameHighScore
 	var total int64
 
-	database.DB.Model(&models.GameHighScore{}).Count(&total)
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+	query := database.DB.Model(&models.GameHighScore{})
+	
+	if role == "teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	}
 
-	if err := database.DB.Preload("User").Order("score desc").Offset(offset).Limit(limit).Find(&scores).Error; err != nil {
+	query.Count(&total)
+
+	if err := query.Preload("User").Order("score desc").Offset(offset).Limit(limit).Find(&scores).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch scores"})
 		return
 	}
@@ -280,9 +310,24 @@ func GetAllGameHistory(c *gin.Context) {
 	var history []models.GameHistory
 	var total int64
 
-	database.DB.Model(&models.GameHistory{}).Count(&total)
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+	query := database.DB.Model(&models.GameHistory{})
+	
+	if role == "teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	}
 
-	if err := database.DB.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
+	query.Count(&total)
+
+	if err := query.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
 		return
 	}
@@ -308,9 +353,24 @@ func GetAllLessonHistory(c *gin.Context) {
 	var history []models.LessonHistory
 	var total int64
 
-	database.DB.Model(&models.LessonHistory{}).Count(&total)
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
+	query := database.DB.Model(&models.LessonHistory{})
+	
+	if role == "teacher" {
+		var studentIDs []uint
+		database.DB.Model(&models.User{}).Where("teacher_id = ?", userID).Pluck("id", &studentIDs)
+		if uID, ok := userID.(uint); ok {
+			studentIDs = append(studentIDs, uID)
+		} else if uID, ok := userID.(float64); ok {
+			studentIDs = append(studentIDs, uint(uID))
+		}
+		query = query.Where("user_id IN ?", studentIDs)
+	}
 
-	if err := database.DB.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
+	query.Count(&total)
+
+	if err := query.Preload("User").Order("created_at desc").Offset(offset).Limit(limit).Find(&history).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch history"})
 		return
 	}

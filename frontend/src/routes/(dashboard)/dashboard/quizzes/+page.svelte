@@ -55,7 +55,7 @@
         credentials: "include",
       });
       const data = await res.json();
-      if (data.authenticated && data.user && data.user.role === "teacher") {
+      if (data.authenticated && data.user && (data.user.role === "teacher" || data.user.role === "admin")) {
         isTeacher = true;
       } else {
         if (!localStorage.getItem("quizzesActiveTab")) {

@@ -31,7 +31,11 @@ func GetExams(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 
 	query := database.DB.Model(&models.Exam{})
-	if role != "teacher" && role != "admin" {
+	if role == "teacher" {
+		query = query.Where("user_id IN (SELECT id FROM users WHERE teacher_id = ?) OR user_id = ?", userID, userID)
+	} else if role == "parent" {
+		query = query.Where("user_id IN (SELECT id FROM users WHERE parent_id = ?) OR user_id = ?", userID, userID)
+	} else if role != "admin" {
 		query = query.Where("user_id = ?", userID)
 	}
 
@@ -75,7 +79,11 @@ func GetExamByID(c *gin.Context) {
 	userID, _ := c.Get("user_id")
 
 	query := database.DB.Preload("User").Preload("Subject")
-	if role != "teacher" && role != "admin" {
+	if role == "teacher" {
+		query = query.Where("user_id IN (SELECT id FROM users WHERE teacher_id = ?) OR user_id = ?", userID, userID)
+	} else if role == "parent" {
+		query = query.Where("user_id IN (SELECT id FROM users WHERE parent_id = ?) OR user_id = ?", userID, userID)
+	} else if role != "admin" {
 		query = query.Where("user_id = ?", userID)
 	}
 

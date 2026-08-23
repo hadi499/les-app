@@ -6,6 +6,8 @@ type WritingProgress struct {
 	ID          uint      `json:"id" gorm:"primaryKey"`
 	UserID      uint      `json:"user_id" gorm:"index;not null"`
 	User        User      `json:"user" gorm:"foreignKey:UserID"`
+	CreatorID   *uint     `json:"creator_id" gorm:"index"`
+	Creator     *User     `json:"creator,omitempty" gorm:"foreignKey:CreatorID"`
 	Date        time.Time `json:"date" gorm:"type:date;not null"`
 	Image       string    `json:"image"`
 	DriveFileID string    `json:"drive_file_id"`

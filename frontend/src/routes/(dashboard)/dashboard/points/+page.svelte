@@ -8,7 +8,7 @@
 	let isLoading = $state(true);
 	let showLoadingSpinner = $state(false);
 	let errorMsg = $state("");
-	let isTeacher = $state(false);
+	let isAdmin = $state(false);
 	let isResetting = $state(false);
 	let showConfirmModal = $state(false);
 
@@ -17,8 +17,8 @@
 			const res = await fetch("/me", { credentials: "include" });
 			if (res.ok) {
 				const data = await res.json();
-				if (data.authenticated && data.user && data.user.role === "teacher") {
-					isTeacher = true;
+				if (data.authenticated && data.user && (data.user.role === "admin" || data.user.role === "teacher")) {
+					isAdmin = true;
 				}
 			}
 		} catch (e) {
@@ -71,7 +71,7 @@
       const data = (await res.json()) as { users: User[] };
       // Filter out teachers and sort users by points descending
       users = (data.users || [])
-        .filter((u) => u.role !== "teacher")
+        .filter((u) => u.role === "student")
         .sort((a, b) => (b.points || 0) - (a.points || 0));
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : String(e);
@@ -87,7 +87,7 @@
 </script>
 
 <svelte:head>
-  <title>Poin Users - Portal Guru</title>
+  <title>Poin Murid - Portal Guru</title>
 </svelte:head>
 
 <div class="animate-in fade-in duration-500 relative">
@@ -95,7 +95,7 @@
     <h1
       class="text-2xl font-bold text-slate-900 sm:text-3xl tracking-tight drop-shadow-sm"
     >
-      Poin Users
+      Poin Murid
     </h1>
     <p
       class="text-slate-600 text-sm sm:text-base font-light tracking-wide"
@@ -104,7 +104,7 @@
     </p>
   </div>
 
-  {#if isTeacher}
+  {#if isAdmin}
     <div class="mb-10 flex justify-end">
       <button
         onclick={resetPoints}

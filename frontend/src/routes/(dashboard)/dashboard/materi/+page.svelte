@@ -24,6 +24,7 @@
     subject_id: number;
     subject: Subject;
     users: User[];
+    created_by?: User;
     content: string;
     created_at: string;
   };
@@ -221,13 +222,14 @@
 {#if viewingMateri}
   <!-- VIEW: DETAIL MATERI -->
   <div class="w-full mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:max-w-[210mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]">
+
     <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-4 print:hidden mb-8 border-b border-slate-100 pb-5">
       <button onclick={() => closeMateri()} class="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors cursor-pointer w-full justify-center sm:justify-start sm:w-auto">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         Kembali
       </button>
       <div class="flex flex-wrap items-center justify-center sm:justify-end gap-4 sm:gap-6 w-full sm:w-auto mt-2 sm:mt-0">
-        {#if currentUser?.role === "teacher"}
+        {#if currentUser?.role === "teacher" || currentUser?.role === "admin"}
           <button onclick={() => deleteMateri(viewingMateri!)} class="p-2.5 text-red-600 bg-red-50 hover:bg-red-100 border border-red-200 rounded-xl transition-colors cursor-pointer flex items-center justify-center shrink-0" title="Hapus">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
           </button>
@@ -256,7 +258,7 @@
           <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
           {viewingMateri.subject?.name || "Mata Pelajaran"}
         </span>
-        {#if currentUser?.role === "teacher"}
+        {#if currentUser?.role === "teacher" || currentUser?.role === "admin"}
           <span class="flex items-center gap-1.5 text-slate-700 font-medium max-w-[200px] sm:max-w-[300px] truncate" title={viewingMateri.users?.map(u => `${u.username}${u.role === 'teacher' ? ' (Guru)' : ''}`).join(', ') || "Tidak ada penerima"}>
             <svg class="w-4 h-4 text-slate-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
             <span class="truncate">Penerima: {viewingMateri.users?.map(u => `${u.username}${u.role === 'teacher' ? ' (Guru)' : ''}`).join(', ') || "Tidak ada penerima"}</span>
@@ -266,6 +268,7 @@
           <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
           {new Date(viewingMateri.created_at).toLocaleDateString("id-ID", { year: "numeric", month: "short", day: "numeric" })}
         </span>
+
       </div>
       <div class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap sm:text-justify wrap-break-word text-lg sm:text-(length:--base-size) print:text-(length:--base-size)" style="--base-size: {printFontSize}px; tab-size: 4;">
         {@html renderMathContent(viewingMateri.content)}
@@ -283,7 +286,7 @@
       </div>
 
       <div class="flex items-center gap-3">
-        {#if currentUser?.role === "teacher"}
+        {#if currentUser?.role === "teacher" || currentUser?.role === "admin"}
           <button onclick={() => openEdit()} class="inline-flex items-center gap-2 px-5 py-2.5 text-sm font-bold rounded-full bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-colors shadow-sm cursor-pointer">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
             Materi Baru
@@ -329,10 +332,14 @@
         <div
           class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full {openMenuId === materi.id ? 'z-50' : 'z-0'}"
         >
-          <div class="flex justify-between items-center mb-2.5 gap-2">
+          <div class="grow mb-3">
+            <h3 class="text-[17px] font-bold text-slate-900 leading-snug line-clamp-3" title={materi.title}>{materi.title}</h3>
+          </div>
+
+          <div class="flex justify-between items-center mb-4 gap-2 border-t border-slate-100 pt-3 mt-1">
             <div class="flex items-center gap-2 flex-wrap">
               <span class="text-xs font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md border border-slate-100">#{materi.id}</span>
-              {#if currentUser?.role === "teacher"}
+              {#if currentUser?.role === "teacher" || currentUser?.role === "admin"}
                 {@const hasTeacher = materi.users?.some(u => u.role === 'teacher')}
                 {@const hasStudent = materi.users?.some(u => u.role === 'student')}
                 {@const badgeColor = (hasTeacher && !hasStudent) ? "bg-emerald-50 text-emerald-700 border-emerald-100" : (hasTeacher && hasStudent) ? "bg-amber-50 text-amber-700 border-amber-200" : "bg-blue-50 text-blue-700 border-blue-100"}
@@ -347,13 +354,12 @@
             </span>
           </div>
           
-          <div class="grow">
-            <h3 class="text-[17px] font-bold text-slate-900 leading-snug line-clamp-3 mb-3" title={materi.title}>{materi.title}</h3>
-          </div>
-          
-          <div class="flex items-center text-xs font-medium text-slate-500 mb-4 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
-            <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
-            {new Date(materi.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+            <div class="flex items-center text-xs font-medium text-slate-500 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100">
+              <svg class="w-4 h-4 mr-1.5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+              {new Date(materi.created_at).toLocaleDateString('id-ID', { day: 'numeric', month: 'short', year: 'numeric' })}
+            </div>
+
           </div>
 
           <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
@@ -366,7 +372,7 @@
               Buka
             </button>
             
-            {#if currentUser?.role === "teacher"}
+            {#if currentUser?.role === "teacher" || currentUser?.role === "admin"}
               <div class="relative shrink-0">
                 <button
                   onclick={(e) => {

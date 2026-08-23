@@ -43,9 +43,11 @@ func GetMateris(c *gin.Context) {
 	role, _ := c.Get("role")
 
 	var materis []models.Materi
-	query := database.DB.Model(&models.Materi{}).Preload("Subject").Preload("Users")
+	query := database.DB.Model(&models.Materi{}).Preload("Subject").Preload("Users").Preload("CreatedBy")
 
-	if role != "teacher" {
+	if role == "admin" || role == "Admin" || role == "teacher" || role == "Teacher" {
+		query = query.Where("materis.created_by_id = ?", userID)
+	} else {
 		query = query.Joins("JOIN materi_users ON materi_users.materi_id = materis.id").Where("materi_users.user_id = ?", userID)
 	}
 
@@ -98,9 +100,11 @@ func GetMateriByID(c *gin.Context) {
 	materiID := c.Param("id")
 
 	var materi models.Materi
-	query := database.DB.Preload("Subject").Preload("Users").Where("materis.id = ?", materiID)
+	query := database.DB.Preload("Subject").Preload("Users").Preload("CreatedBy").Where("materis.id = ?", materiID)
 
-	if role != "teacher" {
+	if role == "admin" || role == "Admin" || role == "teacher" || role == "Teacher" {
+		query = query.Where("materis.created_by_id = ?", userID)
+	} else {
 		query = query.Joins("JOIN materi_users ON materi_users.materi_id = materis.id").Where("materi_users.user_id = ?", userID)
 	}
 
@@ -126,10 +130,20 @@ func CreateMateri(c *gin.Context) {
 		return
 	}
 
+	userID, _ := c.Get("user_id")
+	var uID *uint
+	if id, ok := userID.(uint); ok {
+		uID = &id
+	} else if id, ok := userID.(float64); ok {
+		val := uint(id)
+		uID = &val
+	}
+
 	materi := models.Materi{
-		Title:     input.Title,
-		SubjectID: input.SubjectID,
-		Content:   input.Content,
+		Title:       input.Title,
+		SubjectID:   input.SubjectID,
+		Content:     input.Content,
+		CreatedByID: uID,
 	}
 
 	if err := database.DB.Create(&materi).Error; err != nil {
@@ -144,17 +158,25 @@ func CreateMateri(c *gin.Context) {
 		database.DB.Model(&materi).Association("Users").Append(users)
 	}
 
-	database.DB.Preload("Subject").Preload("Users").First(&materi, materi.ID)
+	database.DB.Preload("Subject").Preload("Users").Preload("CreatedBy").First(&materi, materi.ID)
 	c.JSON(http.StatusCreated, materi)
 }
 
 // UpdateMateri
 func UpdateMateri(c *gin.Context) {
 	materiID := c.Param("id")
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
 
 	var materi models.Materi
-	if err := database.DB.Where("id = ?", materiID).First(&materi).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Materi tidak ditemukan"})
+	query := database.DB.Where("id = ?", materiID)
+
+	if role == "admin" || role == "Admin" || role == "teacher" || role == "Teacher" {
+		query = query.Where("materis.created_by_id = ?", userID)
+	}
+
+	if err := query.First(&materi).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Materi tidak ditemukan atau Anda tidak memiliki akses"})
 		return
 	}
 
@@ -203,17 +225,25 @@ func UpdateMateri(c *gin.Context) {
 	}
 	database.DB.Model(&materi).Association("Users").Replace(users)
 
-	database.DB.Preload("Subject").Preload("Users").First(&materi, materi.ID)
+	database.DB.Preload("Subject").Preload("Users").Preload("CreatedBy").First(&materi, materi.ID)
 	c.JSON(http.StatusOK, materi)
 }
 
 // DeleteMateri
 func DeleteMateri(c *gin.Context) {
 	materiID := c.Param("id")
+	role, _ := c.Get("role")
+	userID, _ := c.Get("user_id")
 
 	var materi models.Materi
-	if err := database.DB.Where("id = ?", materiID).First(&materi).Error; err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Materi tidak ditemukan"})
+	query := database.DB.Where("id = ?", materiID)
+
+	if role == "admin" || role == "Admin" || role == "teacher" || role == "Teacher" {
+		query = query.Where("materis.created_by_id = ?", userID)
+	}
+
+	if err := query.First(&materi).Error; err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Materi tidak ditemukan atau Anda tidak memiliki akses"})
 		return
 	}
 

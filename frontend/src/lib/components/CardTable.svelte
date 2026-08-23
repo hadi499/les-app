@@ -5,7 +5,7 @@
   let {
     cards,
     activeCategory,
-    isTeacher,
+    isAdmin,
     selectedIds,
     onToggleSelect,
     onEdit,
@@ -14,7 +14,7 @@
   }: {
     cards: Card[];
     activeCategory: string | null;
-    isTeacher: boolean;
+    isAdmin: boolean;
     selectedIds: Set<string>;
     onToggleSelect: (card: Card) => void;
     onEdit: (card: Card) => void;
@@ -35,7 +35,7 @@
         <tr
           class="bg-transparent border-b border-slate-200 text-left text-xs text-slate-800 uppercase tracking-wider"
         >
-          {#if isTeacher}<th class="px-4 py-3 w-8"></th>{/if}
+          {#if isAdmin}<th class="px-4 py-3 w-8"></th>{/if}
           <th class="px-4 py-3">Title</th>
           {#if activeCategory === null}
             <th class="px-4 py-3">Folder</th>
@@ -49,7 +49,7 @@
           <tr
             class="border-b border-slate-200 hover:bg-slate-50/50 text-slate-900 transition-colors"
           >
-            {#if isTeacher}
+            {#if isAdmin}
               <td class="px-4 py-3">
                 <button
                   onclick={() => onToggleSelect(card)}
@@ -146,7 +146,7 @@
                     />
                   </svg>
                 </button>
-                {#if isTeacher}
+                {#if isAdmin}
                   <button
                     onclick={() => onEdit(card)}
                     class="p-1.5 rounded-lg text-amber-500 hover:text-amber-700 hover:bg-amber-50 cursor-pointer"

@@ -11,4 +11,5 @@ type Card struct {
 	Content      string      `json:"content"`
 	Size         string      `json:"size" gorm:"default:6"`
 	CardType     string      `json:"cardType" gorm:"default:regular"`
+
 }

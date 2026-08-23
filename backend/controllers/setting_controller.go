@@ -37,6 +37,13 @@ func UpdateSetting(c *gin.Context) {
 		return
 	}
 
+	roleInter, _ := c.Get("role")
+	roleStr, _ := roleInter.(string)
+	if key == "is_registration_open" && (roleStr != "admin" && roleStr != "Admin") {
+		c.JSON(http.StatusForbidden, gin.H{"error": "Forbidden. Only admins can modify registration settings."})
+		return
+	}
+
 	var setting models.SystemSetting
 	if err := database.DB.Where("key = ?", key).First(&setting).Error; err != nil {
 		// Jika belum ada, kita bisa membuat baru (upsert)

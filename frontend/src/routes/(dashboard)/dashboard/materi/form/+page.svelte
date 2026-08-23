@@ -41,7 +41,7 @@
         return;
       }
       const dataMe = await resMe.json();
-      if (dataMe.user?.role !== "teacher") {
+      if (dataMe.user?.role !== "teacher" && dataMe.user?.role !== "admin") {
         goto("/dashboard/materi");
         return;
       }
@@ -49,7 +49,7 @@
       const resSubj = await fetch("/api/subjects", { credentials: "include" });
       if (resSubj.ok) subjects = await resSubj.json();
 
-      const resUsers = await fetch("/api/users", { credentials: "include" });
+      const resUsers = await fetch("/api/users?limit=10000", { credentials: "include" });
       if (resUsers.ok) {
         const data = await resUsers.json();
         users = data.users || [];

@@ -12,14 +12,13 @@
   type TodoList = {
     id: number;
     title: string;
-    student_username?: string;
     created_at: string;
     items?: TodoItem[];
+    user_id?: number;
   };
 
   let lists = $state<TodoList[]>([]);
   let newListTitle = $state("");
-  let newListStudentUsername = $state("");
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
   let errorMsg = $state("");
@@ -30,10 +29,10 @@
   let showEditListModal = $state(false);
   let listToEdit = $state<TodoList | null>(null);
   let editListTitle = $state("");
-  let editListStudentUsername = $state("");
   let openMenuId = $state<number | null>(null);
   let userRole = $state("");
-  let students = $state<{ id: number; username: string; role: string }[]>([]);
+  let myUserId = $state<number | null>(null);
+
 
   // Paginasi state
   let currentPage = $state(1);
@@ -55,15 +54,10 @@
       if (meRes.ok) {
         const data = await meRes.json();
         userRole = data.user?.role || "";
+        myUserId = data.user?.id || null;
       }
 
-      if (userRole === "teacher") {
-        const usersRes = await fetch("/api/users", { credentials: "include" });
-        if (usersRes.ok) {
-          const data = await usersRes.json();
-          students = data.users?.filter((u: any) => u.role === "student") || [];
-        }
-      }
+
     } catch (e) {
       console.error(e);
     }
@@ -81,9 +75,7 @@
         { credentials: "include" },
       );
       if (!res.ok) {
-        if (res.status === 403) {
-          throw new Error("Akses ditolak. Anda bukan Guru.");
-        }
+
         throw new Error("Gagal mengambil data todolist");
       }
       const data = await res.json();
@@ -116,12 +108,10 @@
         credentials: "include",
         body: JSON.stringify({
           title: newListTitle.trim(),
-          student_username: newListStudentUsername.trim(),
         }),
       });
       if (res.ok) {
         newListTitle = "";
-        newListStudentUsername = "";
         showCreateListModal = false;
         // Pindah ke halaman pertama dan fetch ulang untuk melihat list baru
         if (currentPage === 1) {
@@ -178,7 +168,6 @@
     e.stopPropagation();
     listToEdit = list;
     editListTitle = list.title;
-    editListStudentUsername = list.student_username || "";
     showEditListModal = true;
   }
 
@@ -192,7 +181,6 @@
         credentials: "include",
         body: JSON.stringify({
           title: editListTitle.trim(),
-          student_username: editListStudentUsername.trim(),
         }),
       });
       if (res.ok) {
@@ -235,7 +223,7 @@
         Kelola dan kategorikan daftar tugas Anda.
       </p>
     </div>
-    {#if userRole === "teacher"}
+
       <button
         onclick={() => (showCreateListModal = true)}
         class="text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 font-bold px-4 md:px-5 py-2.5 rounded-xl transition-all shadow-sm flex items-center gap-2 cursor-pointer w-max justify-center"
@@ -254,7 +242,7 @@
         >
         <span>Buat Todolist</span>
       </button>
-    {/if}
+
   </div>
 
     {#if isLoading}
@@ -315,7 +303,7 @@
             </h3>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 mb-4">
+          <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
             {#if list.items && list.items.length > 0 && list.items.every((i) => i.completed)}
               <span
                 class="px-2 py-1 text-[10px] font-bold bg-emerald-50 text-emerald-600 rounded-md border border-emerald-100 flex items-center gap-1 w-max uppercase tracking-wide shrink-0"
@@ -381,26 +369,6 @@
                 year: "numeric",
               })}
             </div>
-
-            {#if list.student_username}
-              <span
-                class="px-2 py-1 bg-blue-50 text-blue-600 rounded-md text-[10px] font-bold border border-blue-100 w-max uppercase tracking-wide shrink-0 flex items-center"
-              >
-                <svg
-                  class="w-3 h-3 mr-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                  ></path></svg
-                >
-                {list.student_username}
-              </span>
-            {/if}
           </div>
 
           <div class="mt-auto flex gap-2 pt-4 border-t border-slate-100">
@@ -424,7 +392,7 @@
               Buka
             </a>
 
-            {#if userRole === "teacher"}
+            {#if list.user_id && list.user_id === myUserId}
               <div class="relative shrink-0">
                 <button
                   onclick={(e) => {
@@ -677,16 +645,7 @@
         class="w-full px-4 py-2 mb-3 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm"
         onkeydown={(e) => e.key === "Enter" && confirmEditList()}
       />
-      <select
-        bind:value={editListStudentUsername}
-        class="w-full px-4 pr-10 py-2 mb-6 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7rem_auto] bg-[right_1rem_center] bg-no-repeat"
-      >
-        <option value="">Pilih Murid (opsional)</option>
-        {#each students as student}
-          <option value={student.username}>@{student.username}</option>
-        {/each}
-      </select>
-      <div class="flex justify-end gap-3">
+      <div class="flex justify-end gap-3 mt-4">
         <button
           onclick={() => {
             showEditListModal = false;
@@ -734,29 +693,11 @@
         />
       </div>
 
-      <div class="mb-6">
-        <label
-          class="block text-sm font-medium text-slate-700 mb-1"
-          for="new_student">Pilih Murid (Opsional)</label
-        >
-        <select
-          id="new_student"
-          bind:value={newListStudentUsername}
-          class="w-full px-4 pr-10 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all bg-white text-slate-900 shadow-sm appearance-none bg-[url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%2364748b%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E')] bg-[length:0.7rem_auto] bg-[right_1rem_center] bg-no-repeat"
-        >
-          <option value="">- Tidak ada (Semua Murid) -</option>
-          {#each students as student}
-            <option value={student.username}>@{student.username}</option>
-          {/each}
-        </select>
-      </div>
-
       <div class="flex justify-end gap-3">
         <button
           onclick={() => {
             showCreateListModal = false;
             newListTitle = "";
-            newListStudentUsername = "";
           }}
           class="px-5 py-2.5 text-sm font-medium text-slate-600 bg-white shadow-sm border border-slate-200 hover:bg-slate-50 hover:text-slate-900 rounded-xl transition-all cursor-pointer"
         >

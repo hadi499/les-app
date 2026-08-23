@@ -21,7 +21,7 @@
   import { cardFolders, updateCardFolder, deleteCardFolder, fetchCardFolders, createCardFolder, type CardFolder } from "$lib/stores/cardFolders";
 
   let showForm = $state(false);
-  let isTeacher = $state(true);
+  let isAdmin = $state(false);
   let showImageForm = $state(false);
   let editingCard = $state<Card | null>(null);
   let deleteCardId = $state<string | null>(null);
@@ -220,8 +220,8 @@
         credentials: "include",
       });
       const data = await res.json();
-      if (data.authenticated && data.user && data.user.role === "teacher") {
-        isTeacher = true;
+      if (data.authenticated && data.user && data.user.role === "admin") {
+        isAdmin = true;
       }
     } catch (e) {
       console.error(e);
@@ -376,7 +376,7 @@
               >
             {/if}
           </a>
-          {#if isTeacher}
+          {#if isAdmin}
             <a
               href="/dashboard/card-memory/trash"
               class="px-4 py-1.5 text-sm rounded-lg text-slate-600 hover:text-slate-900 hover:bg-white/80/60 font-base flex items-center gap-1.5 transition-all"
@@ -418,7 +418,7 @@
             </button>
           {/if}
         </div>
-        {#if isTeacher && activeCategory !== null}
+        {#if isAdmin && activeCategory !== null}
           <div class="flex flex-row items-center gap-2 w-full md:w-auto mt-1 md:mt-0">
             <button
               onclick={() => {
@@ -472,7 +472,7 @@
 
   <main class="max-w-5xl mx-auto p-2 sm:p-4 {activeCategory !== null ? 'pt-44' : 'pt-32'} md:pt-20">
     <!-- Bulk selection bar -->
-    {#if cards.length > 0 && isTeacher && (activeCategory !== null || searchQuery.trim())}
+    {#if cards.length > 0 && isAdmin && (activeCategory !== null || searchQuery.trim())}
       <BulkActionBar
         allSelected={allSelected}
         selectedCount={selectedCount}
@@ -526,7 +526,7 @@
 
     <div>
       <div class="flex items-center justify-end mb-6 min-h-[40px]">
-        {#if isTeacher && activeCategory === null && !searchQuery.trim()}
+        {#if isAdmin && activeCategory === null && !searchQuery.trim()}
           <button
             onclick={openNewFolder}
             class="inline-flex items-center gap-1.5 px-3 md:px-4 py-2 text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all shadow-sm cursor-pointer"
@@ -557,7 +557,7 @@
           <FolderGrid
             groupedCards={groupedCards}
             onSelectCategory={selectCategory}
-            isTeacher={isTeacher}
+            isAdmin={isAdmin}
             onEditFolder={handleEditFolder}
             onDeleteFolder={handleDeleteFolderClick}
           />
@@ -607,7 +607,7 @@
             <CardTable
               cards={activeCategoryCards}
               activeCategory={activeCategory}
-              isTeacher={isTeacher}
+              isAdmin={isAdmin}
               selectedIds={selectedIds}
               onToggleSelect={toggleSelect}
               onEdit={handleEdit}
@@ -838,7 +838,7 @@
             </svg>
           </button>
 
-          {#if isTeacher}
+          {#if isAdmin}
             <button
               onclick={() => {
                 const card = detailCard;

@@ -10,7 +10,16 @@
     last_active_at?: string;
     points?: number;
     is_suspended?: boolean;
+    parent_id?: number | null;
+    parent?: User;
+    children?: User[];
+    teacher_id?: number | null;
+    teacher?: User;
+    students?: User[];
   };
+
+  let parentsList: User[] = $state([]);
+  let teachersList: User[] = $state([]);
 
   let users: User[] = $state([]);
   let isLoading = $state(true);
@@ -36,13 +45,15 @@
     password: "",
     role: "student",
     class: "",
+    parent_id: null as number | null,
+    teacher_id: null as number | null,
   });
   let addErrorMsg = $state("");
   let showPassword = $state(false);
 
   let showEditModal = $state(false);
   let isEditing = $state(false);
-  let editUser = $state({ id: 0, username: "", role: "student", class: "" });
+  let editUser = $state({ id: 0, username: "", role: "student", class: "", parent_id: null as number | null, remove_parent: false, teacher_id: null as number | null, remove_teacher: false });
   let editErrorMsg = $state("");
 
   let showResetModal = $state(false);
@@ -59,6 +70,9 @@
     is_suspended: boolean;
   } | null = $state(null);
   let isSuspending = $state(false);
+
+  let showDetailModal = $state(false);
+  let userToView: User | null = $state(null);
 
   let flashMessage = $state("");
   let flashType = $state("success"); // "success" | "error"
@@ -83,7 +97,7 @@
         credentials: "include",
       });
       if (res.status === 403) {
-        errorMsg = "Akses ditolak. Anda bukan Guru.";
+        errorMsg = "Akses ditolak. Anda bukan Admin.";
         isLoading = false;
         return;
       }
@@ -117,7 +131,37 @@
 
   onMount(() => {
     fetchUsers();
+    fetchParents();
+    fetchTeachers();
   });
+
+  async function fetchParents() {
+    try {
+      const res = await fetch(`/api/users?role=parent&limit=1000`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        parentsList = data.users || [];
+      }
+    } catch (e) {
+      console.error("Gagal mengambil daftar parent:", e);
+    }
+  }
+
+  async function fetchTeachers() {
+    try {
+      const res = await fetch(`/api/users?role=teacher&limit=1000`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const data = await res.json();
+        teachersList = data.users || [];
+      }
+    } catch (e) {
+      console.error("Gagal mengambil daftar guru:", e);
+    }
+  }
 
   function promptDelete(userId: number, username: string) {
     userToDelete = { id: userId, username };
@@ -145,6 +189,7 @@
       showDeleteModal = false;
       userToDelete = null;
       fetchUsers();
+      fetchParents();
     } catch (e) {
       showFlash(
         "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e)),
@@ -160,8 +205,8 @@
     userToDelete = null;
   }
 
-  function promptAdd() {
-    newUser = { username: "", password: "", role: "student", class: "" };
+  function promptAdd(role: string) {
+    newUser = { username: "", password: "", role: role, class: "", parent_id: null, teacher_id: null };
     addErrorMsg = "";
     showPassword = false;
     showAddModal = true;
@@ -195,6 +240,7 @@
       }
       showAddModal = false;
       fetchUsers();
+      fetchParents();
     } catch (e) {
       addErrorMsg =
         "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
@@ -209,6 +255,10 @@
       username: u.username,
       role: u.role,
       class: u.class || "",
+      parent_id: u.parent_id || null,
+      remove_parent: false,
+      teacher_id: u.teacher_id || null,
+      remove_teacher: false,
     };
     editErrorMsg = "";
     showEditModal = true;
@@ -233,7 +283,11 @@
         body: JSON.stringify({
           username: editUser.username,
           role: editUser.role,
-          class: editUser.class,
+          class: editUser.role === 'student' ? editUser.class : undefined,
+          parent_id: editUser.role === 'student' ? (editUser.parent_id || undefined) : undefined,
+          remove_parent: editUser.role === 'student' && editUser.parent_id === null,
+          teacher_id: editUser.role === 'student' ? (editUser.teacher_id || undefined) : undefined,
+          remove_teacher: editUser.role === 'student' && editUser.teacher_id === null,
         }),
       });
       const data = await res.json();
@@ -244,6 +298,7 @@
       showFlash("User berhasil diubah", "success");
       showEditModal = false;
       fetchUsers();
+      fetchParents();
     } catch (e) {
       editErrorMsg =
         "Terjadi kesalahan: " + (e instanceof Error ? e.message : String(e));
@@ -351,6 +406,16 @@
       isSuspending = false;
     }
   }
+
+  function promptView(u: User) {
+    userToView = u;
+    showDetailModal = true;
+  }
+
+  function cancelView() {
+    showDetailModal = false;
+    userToView = null;
+  }
 </script>
 
 <svelte:head>
@@ -412,20 +477,32 @@
         Lihat dan kelola seluruh pengguna di sistem ini.
       </p>
     </div>
-    <button
-      onclick={promptAdd}
-      class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-blue-700 bg-blue-50 hover:bg-blue-100 border border-blue-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/50 cursor-pointer"
-    >
-      <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
-        ><path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 4v16m8-8H4"
-        ></path></svg
+    <div class="flex flex-wrap gap-2">
+      <button
+        onclick={() => promptAdd('student')}
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/50 cursor-pointer"
       >
-      Tambah User
-    </button>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Tambah Murid
+      </button>
+      <button
+        onclick={() => promptAdd('teacher')}
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-purple-700 bg-purple-50 hover:bg-purple-100 border border-purple-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500/50 cursor-pointer"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Tambah Guru
+      </button>
+      <button
+        onclick={() => promptAdd('parent')}
+        class="inline-flex items-center gap-2 px-4 py-2 text-sm font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 cursor-pointer"
+      >
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          ><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+        Tambah Orang Tua
+      </button>
+    </div>
   </div>
 
   {#if isLoading}
@@ -483,6 +560,7 @@
               >
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Role</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Kelas</th>
+              <th class="py-4 px-6 font-bold text-slate-900 text-sm">Guru</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Terdaftar</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Status</th>
               <th class="py-4 px-6 font-bold text-slate-900 text-sm">Poin</th>
@@ -508,6 +586,9 @@
                 </td>
                 <td class="py-4 px-6 text-sm text-slate-700">
                   {u.class || "-"}
+                </td>
+                <td class="py-4 px-6 text-sm text-slate-700">
+                  {u.teacher ? u.teacher.username : "-"}
                 </td>
                 <td class="py-4 px-6 text-sm text-slate-700">
                   {u.created_at ? new Date(u.created_at).toLocaleString('id-ID', {timeZone: 'Asia/Jakarta', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) : "-"}
@@ -545,6 +626,21 @@
                 </td>
                 <td class="py-4 px-6 text-center">
                   <div class="flex items-center justify-center gap-2">
+                    <button
+                      onclick={() => promptView(u)}
+                      class="inline-flex items-center p-1.5 text-indigo-700 bg-indigo-50 hover:bg-indigo-100 rounded-lg transition-colors border border-indigo-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-indigo-500/50"
+                      title="Detail User"
+                    >
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.543 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    </button>
                     <button
                       onclick={() => promptEdit(u)}
                       class="inline-flex items-center p-1.5 text-blue-700 bg-blue-50 hover:bg-blue-100 rounded-lg transition-colors border border-blue-200 cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500/50"
@@ -780,7 +876,9 @@
       <div
         class="bg-slate-50 rounded-3xl p-6 w-full max-w-md shadow-2xl border border-slate-200"
       >
-        <h3 class="text-xl font-bold text-slate-900 mb-4">Tambah User Baru</h3>
+        <h3 class="text-xl font-bold text-slate-900 mb-4">
+          Tambah {newUser.role === 'student' ? 'Murid' : newUser.role === 'teacher' ? 'Guru' : newUser.role === 'parent' ? 'Orang Tua' : 'User'} Baru
+        </h3>
 
         {#if addErrorMsg}
           <div
@@ -870,16 +968,47 @@
               class="block text-sm font-medium text-slate-700 mb-1"
               for="role">Role</label
             >
-            <select
+            <input
               id="role"
-              bind:value={newUser.role}
-              class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
-            >
-              <option value="student">Student</option>
-              <option value="teacher">Teacher</option>
-            </select>
+              type="text"
+              value={newUser.role === 'student' ? 'Murid' : newUser.role === 'teacher' ? 'Guru' : newUser.role === 'parent' ? 'Orang Tua' : newUser.role}
+              disabled
+              class="w-full px-4 py-2 border border-slate-300 rounded-xl bg-slate-100 text-slate-500 cursor-not-allowed"
+            />
           </div>
           {#if newUser.role === "student"}
+            <div>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="addParentId">Pilih Orang Tua (Opsional)</label
+              >
+              <select
+                id="addParentId"
+                bind:value={newUser.parent_id}
+                class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+              >
+                <option value={null}>-- Tidak Ada --</option>
+                {#each parentsList as p}
+                  <option value={p.id}>{p.username}</option>
+                {/each}
+              </select>
+            </div>
+            <div>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="addTeacherId">Pilih Guru (Opsional)</label
+              >
+              <select
+                id="addTeacherId"
+                bind:value={newUser.teacher_id}
+                class="w-full px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900"
+              >
+                <option value={null}>-- Tidak Ada --</option>
+                {#each teachersList as t}
+                  <option value={t.id}>{t.username}</option>
+                {/each}
+              </select>
+            </div>
             <div>
               <label
                 class="block text-sm font-medium text-slate-700 mb-1"
@@ -964,9 +1093,57 @@
             >
               <option value="student">Student</option>
               <option value="teacher">Teacher</option>
+              <option value="admin">Admin</option>
+              <option value="parent">Orang Tua</option>
             </select>
           </div>
           {#if editUser.role === "student"}
+            <div>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="editParentId">Tautkan ke Orang Tua (Opsional)</label
+              >
+              <div class="flex items-center gap-2">
+                <select
+                  id="editParentId"
+                  bind:value={editUser.parent_id}
+                  disabled={editUser.remove_parent}
+                  class="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900 disabled:opacity-50"
+                >
+                  <option value={null}>-- Pilih Orang Tua --</option>
+                  {#each parentsList as p}
+                    <option value={p.id}>{p.username}</option>
+                  {/each}
+                </select>
+                <label class="flex items-center gap-2 text-sm text-slate-700">
+                  <input type="checkbox" bind:checked={editUser.remove_parent} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  Hapus Tautan
+                </label>
+              </div>
+            </div>
+            <div>
+              <label
+                class="block text-sm font-medium text-slate-700 mb-1"
+                for="editTeacherId">Tautkan ke Guru (Opsional)</label
+              >
+              <div class="flex items-center gap-2">
+                <select
+                  id="editTeacherId"
+                  bind:value={editUser.teacher_id}
+                  disabled={editUser.remove_teacher}
+                  class="flex-1 px-4 py-2 border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-shadow bg-white text-slate-900 disabled:opacity-50"
+                >
+                  <option value={null}>-- Pilih Guru --</option>
+                  {#each teachersList as t}
+                    <option value={t.id}>{t.username}</option>
+                  {/each}
+                </select>
+                <label class="flex items-center gap-2 text-sm text-slate-700">
+                  <input type="checkbox" bind:checked={editUser.remove_teacher} class="rounded border-slate-300 text-blue-600 focus:ring-blue-500" />
+                  Hapus Tautan
+                </label>
+              </div>
+            </div>
             <div>
               <label
                 class="block text-sm font-medium text-slate-700 mb-1"
@@ -1166,6 +1343,144 @@
             {/if}
             Ya, {userToSuspend.is_suspended ? "Aktifkan" : "Suspend"}
           </button>
+        </div>
+      </div>
+    </div>
+  {/if}
+
+  <!-- Detail User Modal -->
+  {#if showDetailModal && userToView}
+    <div
+      class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+    >
+      <div
+        class="bg-slate-50 rounded-3xl p-6 w-full max-w-lg shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]"
+      >
+        <div class="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
+          <h3 class="text-xl font-bold text-slate-900">Detail User</h3>
+          <button
+            onclick={cancelView}
+            class="p-1.5 rounded-full hover:bg-slate-200 text-slate-500 hover:text-slate-700 transition-colors cursor-pointer"
+          >
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+          </button>
+        </div>
+
+        <div class="overflow-y-auto pr-2 space-y-4">
+          <div class="flex items-center gap-4 bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+            <div class="w-16 h-16 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center font-bold text-2xl shrink-0">
+              {userToView.username.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h4 class="text-lg font-bold text-slate-900 leading-tight">{userToView.username}</h4>
+              <p class="text-sm font-medium text-slate-500 capitalize">{userToView.role}</p>
+            </div>
+          </div>
+
+          <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm grid grid-cols-2 gap-y-3 gap-x-4">
+            <div>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">ID</p>
+              <p class="font-medium text-slate-800">{userToView.id}</p>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Kelas</p>
+              <p class="font-medium text-slate-800">{userToView.class || '-'}</p>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Poin</p>
+              <p class="font-medium text-indigo-600">{userToView.points || 0}</p>
+            </div>
+            <div>
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</p>
+              <p class="font-medium text-slate-800">
+                {#if userToView.is_suspended}
+                  <span class="text-red-600">Suspended</span>
+                {:else if userToView.last_active_at && Date.now() - new Date(userToView.last_active_at).getTime() < 5 * 60 * 1000}
+                  <span class="text-green-600">Online</span>
+                {:else}
+                  <span class="text-slate-500">Offline</span>
+                {/if}
+              </p>
+            </div>
+          </div>
+
+          <!-- Relasi -->
+          {#if userToView.role === 'student'}
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Ditautkan ke Orang Tua</p>
+              {#if userToView.parent}
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold text-xs shrink-0">
+                    {userToView.parent.username.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p class="font-bold text-sm text-slate-900">{userToView.parent.username}</p>
+                    <p class="text-xs text-slate-500">ID: {userToView.parent.id}</p>
+                  </div>
+                </div>
+              {:else}
+                <p class="text-sm font-medium text-slate-500 italic">Belum ditautkan ke akun orang tua mana pun.</p>
+              {/if}
+            </div>
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mt-3">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Ditautkan ke Guru</p>
+              {#if userToView.teacher}
+                <div class="flex items-center gap-3">
+                  <div class="w-8 h-8 rounded-full bg-purple-100 text-purple-600 flex items-center justify-center font-bold text-xs shrink-0">
+                    {userToView.teacher.username.charAt(0).toUpperCase()}
+                  </div>
+                  <div>
+                    <p class="font-bold text-sm text-slate-900">{userToView.teacher.username}</p>
+                    <p class="text-xs text-slate-500">ID: {userToView.teacher.id}</p>
+                  </div>
+                </div>
+              {:else}
+                <p class="text-sm font-medium text-slate-500 italic">Belum ditautkan ke akun guru mana pun.</p>
+              {/if}
+            </div>
+          {:else if userToView.role === 'parent'}
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Daftar Anak</p>
+              {#if userToView.children && userToView.children.length > 0}
+                <ul class="divide-y divide-slate-100">
+                  {#each userToView.children as child}
+                    <li class="py-2 flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+                        {child.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-slate-900 truncate">{child.username}</p>
+                        <p class="text-xs text-slate-500">{child.class ? `Kelas ${child.class}` : 'Tidak ada kelas'} • Poin: {child.points}</p>
+                      </div>
+                    </li>
+                  {/each}
+                </ul>
+              {:else}
+                <p class="text-sm font-medium text-slate-500 italic">Belum ada anak yang ditautkan ke akun ini.</p>
+              {/if}
+            </div>
+          {:else if userToView.role === 'teacher'}
+            <div class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm mt-3">
+              <p class="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Daftar Murid</p>
+              {#if userToView.students && userToView.students.length > 0}
+                <ul class="divide-y divide-slate-100">
+                  {#each userToView.students as student}
+                    <li class="py-2 flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold text-xs shrink-0">
+                        {student.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div class="flex-1 min-w-0">
+                        <p class="font-bold text-sm text-slate-900 truncate">{student.username}</p>
+                        <p class="text-xs text-slate-500 truncate">ID: {student.id}</p>
+                      </div>
+                    </li>
+                  {/each}
+                </ul>
+              {:else}
+                <p class="text-sm font-medium text-slate-500 italic">Belum ada murid yang diajar.</p>
+              {/if}
+            </div>
+          {/if}
         </div>
       </div>
     </div>
