@@ -104,6 +104,14 @@ func GetWritingProgressByID(c *gin.Context) {
 			studentIDs = append(studentIDs, uint(uID))
 		}
 		query = query.Where("user_id IN ?", studentIDs)
+	} else if role == "parent" || role == "Parent" {
+		var childrenIDs []uint
+		database.DB.Model(&models.User{}).Where("parent_id = ?", userID).Pluck("id", &childrenIDs)
+		if len(childrenIDs) > 0 {
+			query = query.Where("user_id IN ?", childrenIDs)
+		} else {
+			query = query.Where("1 = 0")
+		}
 	} else if role != "admin" && role != "Admin" {
 		query = query.Where("user_id = ?", userID)
 	}
