@@ -8,8 +8,6 @@
   let isAuthenticated = $derived(authState.isAuthenticated);
   let authChecked = $derived(authState.authChecked);
 
-
-
   type Quote = {
     id: number;
     quote: string;
@@ -33,7 +31,6 @@
     } finally {
       quotesLoaded = true;
     }
-
   });
 </script>
 
@@ -210,7 +207,6 @@
         <div class="flex flex-row items-center justify-center gap-5 flex-wrap">
           {#if authChecked}
             {#if !isAuthenticated}
-
               <!-- Secondary: Masuk Portal -->
               <a
                 href="/login"
@@ -280,6 +276,27 @@
                 stroke-linejoin="round"
                 stroke-width="2"
                 d="M17 8l4 4m0 0l-4 4m4-4H3"
+              />
+            </svg>
+          </a>
+
+          <!-- Kuis App -->
+          <a
+            href="/quiz-app"
+            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-transparent text-white text-xs font-bold tracking-[0.15em] uppercase shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
+          >
+            Kuis App
+            <svg
+              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-white"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M13 10V3L4 14h7v7l9-11h-7z"
               />
             </svg>
           </a>

@@ -14,6 +14,60 @@ func SetupRoutes(r *gin.Engine) {
 	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
 	r.PUT("/api/auth/change-password", middleware.AuthMiddleware(), controllers.ChangePassword)
 
+	// Kuis App Auth Routes
+	r.POST("/api/kuisapp/register", controllers.RegisterKuisApp)
+	r.POST("/api/kuisapp/login", controllers.LoginKuisApp)
+	r.POST("/api/kuisapp/logout", middleware.KuisAppAuthMiddleware(), controllers.LogoutKuisApp)
+	r.GET("/api/kuisapp/me", controllers.GetKuisAppMe)
+
+	// Kuis App API Routes
+	kuisappApi := r.Group("/api/kuisapp")
+	kuisappApi.Use(middleware.KuisAppAuthMiddleware())
+	{
+		// Categories
+		kuisappApi.GET("/categories", controllers.GetKuisAppCategories)
+		// Quizzes
+		kuisappApi.GET("/quizzes", controllers.GetKuisAppQuizzes)
+		kuisappApi.GET("/quizzes/:id", controllers.GetKuisAppQuiz)
+		// Results (User)
+		kuisappApi.POST("/quizzes/:id/submit", controllers.SubmitKuisAppQuiz)
+		kuisappApi.GET("/my-results", controllers.GetKuisAppMyResults)
+
+		// Admin only routes
+		adminApi := kuisappApi.Group("")
+		adminApi.Use(middleware.KuisAppRoleMiddleware("admin"))
+		{
+			adminApi.POST("/categories", controllers.CreateKuisAppCategory)
+			adminApi.PUT("/categories/:id", controllers.UpdateKuisAppCategory)
+			adminApi.DELETE("/categories/:id", controllers.DeleteKuisAppCategory)
+			
+			adminApi.POST("/upload", controllers.UploadKuisAppImage)
+			
+			adminApi.POST("/quizzes", controllers.CreateKuisAppQuiz)
+			adminApi.PUT("/quizzes/:id", controllers.UpdateKuisAppQuiz)
+			adminApi.DELETE("/quizzes/:id", controllers.DeleteKuisAppQuiz)
+			adminApi.POST("/quizzes/:id/duplicate", controllers.DuplicateKuisAppQuiz)
+			
+			adminApi.PUT("/quizzes/:id/questions/bulk", controllers.BulkSaveKuisAppQuestions)
+			
+			adminApi.POST("/quizzes/:id/questions", controllers.CreateKuisAppQuestion)
+			adminApi.PUT("/questions/:question_id", controllers.UpdateKuisAppQuestion)
+			adminApi.DELETE("/questions/:question_id", controllers.DeleteKuisAppQuestion)
+			
+			adminApi.GET("/all-results", controllers.GetKuisAppAllResults)
+			
+			// User Management
+			adminApi.GET("/users", controllers.GetKuisAppUsers)
+			adminApi.POST("/users", controllers.CreateKuisAppUser)
+			adminApi.PUT("/users/:id", controllers.UpdateKuisAppUser)
+			adminApi.DELETE("/users/:id", controllers.DeleteKuisAppUser)
+			adminApi.POST("/users/:id/reset-password", controllers.ResetKuisAppUserPassword)
+			adminApi.POST("/users/:id/reset-points", controllers.ResetKuisAppUserPoints)
+			adminApi.POST("/reset-all-points-and-history", controllers.ResetAllKuisAppPointsAndHistory)
+			adminApi.PUT("/users/:id/suspend", controllers.ToggleKuisAppUserSuspend)
+		}
+	}
+
 	// Route /me tidak menggunakan AuthMiddleware agar bisa mereturn 200 dengan status authenticated = false
 	// alih-alih mereturn 401 Unauthorized yang akan memicu log merah di browser.
 	r.GET("/me", controllers.Me)

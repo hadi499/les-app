@@ -41,7 +41,8 @@
       path.startsWith("/login") ||
       path.startsWith("/register") ||
       path.includes("select-user") ||
-      path.startsWith("/belajar-coding")
+      path.startsWith("/belajar-coding") ||
+      path.startsWith("/quiz-app")
     ) {
       return false;
     }
