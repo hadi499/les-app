@@ -74,29 +74,48 @@
   <title>Hasil {quizTitle} | KuisApp</title>
 </svelte:head>
 
-<div class="w-full flex flex-col items-center py-6 sm:py-12 relative overflow-visible">
-
+<div
+  class="w-full flex flex-col items-center py-6 sm:py-12 relative overflow-visible"
+>
   <div class="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-6">
     {#if isLoaded}
-      <div in:fade={{ duration: 300 }} class="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 flex flex-col gap-8 relative overflow-hidden">
-        <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500"></div>
+      <div
+        in:fade={{ duration: 300 }}
+        class="bg-white rounded-3xl p-8 shadow-xl border border-slate-200 flex flex-col gap-8 relative overflow-hidden"
+      >
+        <div
+          class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-emerald-400 to-teal-500"
+        ></div>
         <!-- Score Section -->
-        <div class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8">
-          <div class="text-sm font-bold tracking-[0.2em] uppercase text-slate-600 mb-2">
+        <div
+          class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8"
+        >
+          <div
+            class="text-sm font-bold tracking-[0.2em] uppercase text-slate-600 mb-2"
+          >
             Skor Akhir
           </div>
-          <div class="text-[5rem] leading-none font-black text-blue-600 drop-shadow-sm">
+          <div
+            class="text-[5rem] leading-none font-black text-blue-600 drop-shadow-sm"
+          >
             {Math.round(finalScore)}
           </div>
           <p class="text-slate-600 font-medium text-sm">
-            Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quizQuestionsLength} Soal
+            Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quizQuestionsLength}
+            Soal
           </p>
           {#if pointsEarned > 0}
-            <div class="mt-4 px-6 py-3 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex flex-col items-center justify-center gap-1">
-              <span class="text-sm font-bold text-emerald-700">{pointsEarned} poin berhasil didapatkan</span>
+            <div
+              class="mt-4 px-6 py-3 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex flex-col items-center justify-center gap-1"
+            >
+              <span class="text-sm font-bold text-emerald-700"
+                >{pointsEarned} poin berhasil didapatkan</span
+              >
             </div>
           {:else if pointsAlreadyClaimed}
-            <div class="mt-4 px-4 py-2 bg-slate-100 rounded-xl text-xs font-semibold text-slate-500">
+            <div
+              class="mt-4 px-4 py-2 bg-slate-100 rounded-xl text-xs font-semibold text-slate-500"
+            >
               Poin sudah diklaim pada percobaan sebelumnya.
             </div>
           {/if}
@@ -104,13 +123,19 @@
 
         <!-- Review Section -->
         <div class="flex flex-col gap-6 relative z-10">
-          <h3 class="text-lg font-bold tracking-[0.1em] text-slate-800 uppercase border-l-4 border-blue-400 pl-3">
+          <h3
+            class="text-lg font-bold tracking-[0.1em] text-slate-800 uppercase border-l-4 border-blue-400 pl-3"
+          >
             Ulasan Jawaban
           </h3>
 
-          <div class="flex flex-col gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar">
+          <div
+            class="flex flex-col gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"
+          >
             {#each userAnswers as ans, index}
-              <div class="p-4 rounded-xl border border-slate-200 bg-white/50 space-y-2">
+              <div
+                class="p-4 rounded-xl border border-slate-200 bg-white/50 space-y-2"
+              >
                 <div class="flex justify-between items-start gap-4">
                   <div class="flex flex-col gap-2">
                     {#if ans.image}
@@ -125,23 +150,40 @@
                     </p>
                   </div>
                   {#if ans.isCorrect}
-                    <span class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700">Benar</span>
+                    <span
+                      class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700"
+                      >Benar</span
+                    >
                   {:else}
-                    <span class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700">Salah</span>
+                    <span
+                      class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700"
+                      >Salah</span
+                    >
                   {/if}
                 </div>
 
                 <div class="text-sm flex flex-col gap-1 mt-2">
                   <div class="flex gap-2 items-center">
-                    <span class="text-slate-500 font-medium">Jawaban Anda:</span>
-                    <span class={ans.isCorrect ? "text-green-700 font-semibold" : "text-red-600 font-semibold"}>
-                      {@html renderText(ans.answer === null ? "Tidak Menjawab" : ans.answer)}
+                    <span class="text-slate-500 font-medium">Jawaban Anda:</span
+                    >
+                    <span
+                      class={ans.isCorrect
+                        ? "text-green-700 font-semibold"
+                        : "text-red-600 font-semibold"}
+                    >
+                      {@html renderText(
+                        ans.answer === null ? "Tidak Menjawab" : ans.answer,
+                      )}
                     </span>
                   </div>
                   {#if !ans.isCorrect}
                     <div class="flex gap-2 items-center">
-                      <span class="text-slate-500 font-medium">Jawaban Benar:</span>
-                      <span class="text-green-700 font-semibold">{@html renderText(ans.correct)}</span>
+                      <span class="text-slate-500 font-medium"
+                        >Jawaban Benar:</span
+                      >
+                      <span class="text-green-700 font-semibold"
+                        >{@html renderText(ans.correct)}</span
+                      >
                     </div>
                   {/if}
                 </div>
@@ -161,7 +203,7 @@
             href="/quiz-app/dashboard/quizzes/{quizId}"
             class="inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white bg-blue-600 border border-transparent hover:bg-blue-700 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-lg"
           >
-            Ulangi Kuis
+            Ulangi
           </a>
         </div>
       </div>
