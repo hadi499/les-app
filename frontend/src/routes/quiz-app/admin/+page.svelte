@@ -1,6 +1,7 @@
 <script lang="ts">
   import { onMount } from "svelte";
   import { fade } from "svelte/transition";
+  import { toast } from "$lib/stores/toast.svelte";
 
   let stats = $state({
     totalQuizzes: 0,
@@ -20,13 +21,15 @@
   let totalResults = $state(0);
   let isFetchingResults = $state(false);
 
-
   // Forms states
   let showCategoryForm = $state(false);
   let newCategory = $state({ name: "" });
 
   let showDeleteQuizModal = $state(false);
   let quizToDeleteId = $state<number | null>(null);
+  let showResetPointsModal = $state(false);
+  let showDeleteCategoryModal = $state(false);
+  let categoryToDeleteId = $state<number | null>(null);
 
   let showQuizForm = $state(false);
   let editingQuizId = $state<number | null>(null);
@@ -40,7 +43,9 @@
   // Users states
   let allUsers = $state<any[]>([]);
   let uniqueParticipants = $derived(
-    allUsers.filter((u) => u.points > 0).sort((a: any, b: any) => b.points - a.points)
+    allUsers
+      .filter((u) => u.points > 0)
+      .sort((a: any, b: any) => b.points - a.points),
   );
   let userSearchQuery = $state("");
   let searchTimeout: any;
@@ -103,7 +108,10 @@
     if (isFetchingResults) return;
     isFetchingResults = true;
     try {
-      const res = await fetch(`/api/kuisapp/all-results?page=${page}&limit=${resultsPerPage}`, { credentials: "include" });
+      const res = await fetch(
+        `/api/kuisapp/all-results?page=${page}&limit=${resultsPerPage}`,
+        { credentials: "include" },
+      );
       if (res.ok) {
         const d = await res.json();
         const results = d.data || [];
@@ -170,18 +178,25 @@
     }
   }
 
-  async function handleDeleteCategory(id: number) {
-    if (
-      !confirm(
-        "Yakin ingin menghapus kategori ini? Kuis yang terhubung mungkin kehilangan kategorinya.",
-      )
-    )
-      return;
-    await fetch(`/api/kuisapp/categories/${id}`, {
-      method: "DELETE",
-      credentials: "include",
-    });
-    await fetchData();
+  async function handleDeleteCategory() {
+    if (!categoryToDeleteId) return;
+    try {
+      const res = await fetch(`/api/kuisapp/categories/${categoryToDeleteId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.ok) {
+        toast.success("Kategori berhasil dihapus");
+        await fetchData();
+      } else {
+        toast.error("Gagal menghapus kategori");
+      }
+    } catch (err) {
+      toast.error("Terjadi kesalahan saat menghapus kategori");
+    } finally {
+      showDeleteCategoryModal = false;
+      categoryToDeleteId = null;
+    }
   }
 
   let isDuplicating: Record<number, boolean> = $state({});
@@ -384,12 +399,6 @@
   }
 
   async function handleResetAllPointsAndHistory() {
-    if (
-      !confirm(
-        `PERINGATAN: Apakah Anda yakin ingin mereset seluruh poin peserta dan riwayat jawaban kuis? Tindakan ini tidak dapat dibatalkan!`,
-      )
-    )
-      return;
     try {
       const res = await fetch(`/api/kuisapp/reset-all-points-and-history`, {
         method: "POST",
@@ -397,13 +406,16 @@
       });
       if (res.ok) {
         await fetchData();
-        alert(`Seluruh poin dan riwayat kuis berhasil direset!`);
+        toast.success(`Seluruh poin berhasil direset!`);
+        showResetPointsModal = false;
       } else {
-        alert("Gagal mereset poin dan riwayat");
+        toast.error("Gagal mereset poin");
+        showResetPointsModal = false;
       }
     } catch (err) {
       console.error(err);
-      alert("Terjadi kesalahan saat mereset");
+      toast.error("Terjadi kesalahan saat mereset");
+      showResetPointsModal = false;
     }
   }
 </script>
@@ -651,7 +663,10 @@
                   {/if}
                 </button>
                 <button
-                  onclick={() => { quizToDeleteId = quiz.id; showDeleteQuizModal = true; }}
+                  onclick={() => {
+                    quizToDeleteId = quiz.id;
+                    showDeleteQuizModal = true;
+                  }}
                   class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-xl transition-colors flex items-center justify-center"
                   title="Hapus Kuis"
                 >
@@ -752,10 +767,10 @@
               class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative group"
             >
               <div
-                class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2"
+                class="absolute top-4 right-4 flex gap-2"
               >
                 <button
-                  onclick={() => handleDeleteCategory(cat.id)}
+                  onclick={() => { categoryToDeleteId = cat.id; showDeleteCategoryModal = true; }}
                   class="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"
                   title="Hapus"
                   ><svg
@@ -844,12 +859,23 @@
                       {formatDate(result.finished_at)}
                     </div>
                     {#if result.duration > 0}
-                    <div
-                      class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
-                    >
-                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                      {formatDuration(result.duration)}
-                    </div>
+                      <div
+                        class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
+                      >
+                        <svg
+                          class="w-4 h-4"
+                          fill="none"
+                          stroke="currentColor"
+                          viewBox="0 0 24 24"
+                          ><path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                          ></path></svg
+                        >
+                        {formatDuration(result.duration)}
+                      </div>
                     {/if}
                   </div>
                   <div>
@@ -878,9 +904,20 @@
                 disabled={isFetchingResults}
                 class="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
               >
-                {isFetchingResults ? 'Memuat...' : 'Lihat lebih banyak'}
+                {isFetchingResults ? "Memuat..." : "Lihat lebih banyak"}
                 {#if !isFetchingResults}
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M19 9l-7 7-7-7"
+                    /></svg
+                  >
                 {/if}
               </button>
             </div>
@@ -894,7 +931,7 @@
         >
           <h2 class="text-xl font-bold text-slate-800">Daftar Poin Peserta</h2>
           <button
-            onclick={handleResetAllPointsAndHistory}
+            onclick={() => (showResetPointsModal = true)}
             class="py-2 px-4 bg-red-100 hover:bg-red-200 text-red-700 rounded-lg text-sm font-bold flex items-center justify-center gap-2 transition-colors border border-red-200"
             title="Reset Seluruh Poin & Riwayat"
           >
@@ -910,7 +947,7 @@
                 d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
               /></svg
             >
-            <span>Reset Poin & Riwayat</span>
+            <span>Reset Poin</span>
           </button>
         </div>
 
@@ -956,8 +993,6 @@
                     Total Poin
                   </div>
                 </div>
-
-
               </div>
             {/each}
           </div>
@@ -1368,8 +1403,10 @@
       </div>
       <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus User?</h3>
       <p class="text-slate-500 mb-6">
-        User <strong class="text-slate-800">{allUsers.find(u => u.id === userToDeleteId)?.username || ''}</strong> dan semua riwayat pengerjaan kuisnya akan dihapus permanen.
-        Lanjutkan?
+        User <strong class="text-slate-800"
+          >{allUsers.find((u) => u.id === userToDeleteId)?.username ||
+            ""}</strong
+        > dan semua riwayat pengerjaan kuisnya akan dihapus permanen. Lanjutkan?
       </p>
       <div class="flex gap-3">
         <button
@@ -1413,11 +1450,16 @@
       </div>
       <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus Kuis?</h3>
       <p class="text-slate-500 mb-6">
-        Kuis <strong class="text-slate-800">{quizzes.find(q => q.id === quizToDeleteId)?.title || ''}</strong> beserta seluruh soalnya akan dihapus permanen. Lanjutkan?
+        Kuis <strong class="text-slate-800"
+          >{quizzes.find((q) => q.id === quizToDeleteId)?.title || ""}</strong
+        > beserta seluruh soalnya akan dihapus permanen. Lanjutkan?
       </p>
       <div class="flex gap-3">
         <button
-          onclick={() => { showDeleteQuizModal = false; quizToDeleteId = null; }}
+          onclick={() => {
+            showDeleteQuizModal = false;
+            quizToDeleteId = null;
+          }}
           class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
           >Batal</button
         >
@@ -1441,7 +1483,10 @@
     >
       <h3 class="text-xl font-bold text-slate-800 mb-2">Reset Password</h3>
       <p class="text-slate-500 mb-4 text-sm">
-        Masukkan password baru untuk <strong class="text-slate-800">{allUsers.find(u => u.id === userToResetId)?.username || 'user ini'}</strong>.
+        Masukkan password baru untuk <strong class="text-slate-800"
+          >{allUsers.find((u) => u.id === userToResetId)?.username ||
+            "user ini"}</strong
+        >.
       </p>
       <form onsubmit={handleResetPassword} class="space-y-4">
         <label for="reset-password" class="sr-only">Password Baru</label>
@@ -1513,6 +1558,72 @@
           >
         </div>
       </form>
+    </div>
+  </div>
+{/if}
+
+<!-- Modal Reset All Points and History -->
+{#if showResetPointsModal}
+  <div
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden p-6 text-center"
+    >
+      <div
+        class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600"
+      >
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          /></svg
+        >
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">
+        Reset Semua Poin & Riwayat?
+      </h3>
+      <p class="text-slate-500 mb-6 text-sm">
+        PERINGATAN: Seluruh poin peserta dan riwayat jawaban kuis akan dihapus.
+        Tindakan ini tidak dapat dibatalkan!
+      </p>
+      <div class="flex gap-3">
+        <button
+          onclick={() => (showResetPointsModal = false)}
+          class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+          >Batal</button
+        >
+        <button
+          onclick={handleResetAllPointsAndHistory}
+          class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
+          >Ya, Reset</button
+        >
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Modal Hapus Kategori -->
+{#if showDeleteCategoryModal}
+  <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+    <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden p-6 text-center">
+      <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
+        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus Kategori?</h3>
+      <p class="text-slate-500 mb-6 text-sm">
+        Kategori <strong class="text-slate-800">{categories.find(c => c.id === categoryToDeleteId)?.name || ''}</strong> akan dihapus permanen. Kuis yang ada di dalamnya mungkin akan kehilangan label kategori.
+      </p>
+      <div class="flex gap-3">
+        <button onclick={() => { showDeleteCategoryModal = false; categoryToDeleteId = null; }} class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Batal</button>
+        <button onclick={handleDeleteCategory} class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors">Ya, Hapus</button>
+      </div>
     </div>
   </div>
 {/if}
