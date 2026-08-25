@@ -2,6 +2,7 @@
   import { goto } from "$app/navigation";
   import { compressImageFile } from "$lib/utils";
   import { onMount, onDestroy } from "svelte";
+  import { toast } from "$lib/stores/toast.svelte";
 
   let title = $state("");
   let category_id = $state<number | null>(null);
@@ -114,6 +115,7 @@
       });
 
       if (res.ok) {
+        toast.success("Kuis berhasil dibuat");
         isSuccess = true;
         goto("/quiz-app/admin");
       } else {

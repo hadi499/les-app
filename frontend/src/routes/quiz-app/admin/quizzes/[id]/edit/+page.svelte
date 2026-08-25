@@ -3,6 +3,7 @@
   import { page } from "$app/state";
   import { onMount, onDestroy } from "svelte";
   import { compressImageFile } from "$lib/utils";
+  import { toast } from "$lib/stores/toast.svelte";
 
   let quizId = $derived(page.params.id);
 
@@ -183,6 +184,7 @@
       });
 
       if (res.ok) {
+        toast.success("Kuis berhasil diupdate");
         isSuccess = true;
         goto("/quiz-app/admin");
       } else {

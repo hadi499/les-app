@@ -25,6 +25,9 @@
   let showCategoryForm = $state(false);
   let newCategory = $state({ name: "" });
 
+  let showDeleteQuizModal = $state(false);
+  let quizToDeleteId = $state<number | null>(null);
+
   let showQuizForm = $state(false);
   let editingQuizId = $state<number | null>(null);
   let newQuiz = $state({
@@ -203,14 +206,15 @@
     }
   }
 
-  async function handleDeleteQuiz(id: number) {
-    if (!confirm("Yakin ingin menghapus kuis ini beserta seluruh soalnya?"))
-      return;
-    await fetch(`/api/kuisapp/quizzes/${id}`, {
+  async function handleDeleteQuiz() {
+    if (quizToDeleteId === null) return;
+    await fetch(`/api/kuisapp/quizzes/${quizToDeleteId}`, {
       method: "DELETE",
       credentials: "include",
     });
     await fetchData();
+    showDeleteQuizModal = false;
+    quizToDeleteId = null;
   }
 
   function formatDate(dateString: string) {
@@ -642,7 +646,7 @@
                   {/if}
                 </button>
                 <button
-                  onclick={() => handleDeleteQuiz(quiz.id)}
+                  onclick={() => { quizToDeleteId = quiz.id; showDeleteQuizModal = true; }}
                   class="flex-1 bg-red-50 hover:bg-red-100 text-red-600 p-2 rounded-xl transition-colors flex items-center justify-center"
                   title="Hapus Kuis"
                 >
@@ -1360,6 +1364,50 @@
         >
         <button
           onclick={handleDeleteUser}
+          class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
+          >Ya, Hapus</button
+        >
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Modal Delete Quiz -->
+{#if showDeleteQuizModal}
+  <div
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden p-6 text-center"
+    >
+      <div
+        class="w-16 h-16 rounded-full bg-red-100 text-red-600 flex items-center justify-center mx-auto mb-4"
+      >
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          /></svg
+        >
+      </div>
+      <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus Kuis?</h3>
+      <p class="text-slate-500 mb-6">
+        Kuis <strong class="text-slate-800">{quizzes.find(q => q.id === quizToDeleteId)?.title || ''}</strong> beserta seluruh soalnya akan dihapus permanen. Lanjutkan?
+      </p>
+      <div class="flex gap-3">
+        <button
+          onclick={() => { showDeleteQuizModal = false; quizToDeleteId = null; }}
+          class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+          >Batal</button
+        >
+        <button
+          onclick={handleDeleteQuiz}
           class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
           >Ya, Hapus</button
         >

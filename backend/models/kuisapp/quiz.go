@@ -8,7 +8,7 @@ type Quiz struct {
 	Title       string     `json:"title" gorm:"not null"`
 	CategoryID  *uint      `json:"category_id"` // Reference to KuisApp Category/Folder
 	TimeLimit   int        `json:"timeLimit"`
-	IsPublished bool       `json:"is_published" gorm:"default:true"`
+	IsPublished bool       `json:"is_published"`
 	LastResetAt *time.Time `json:"last_reset_at"`
 	UserID      *uint      `json:"user_id,omitempty"` // Formerly CreatedByID
 	User        *User      `json:"user,omitempty" gorm:"foreignKey:UserID"`
