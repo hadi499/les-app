@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from "$app/state";
   import { goto } from "$app/navigation";
-  import { onMount } from "svelte";
+  import { onMount, setContext } from "svelte";
 
   import type { Snippet } from "svelte";
   let { children }: { children: Snippet } = $props();
@@ -9,6 +9,11 @@
   let user: any = $state(null);
   let isLoading = $state(true);
   let isMobileMenuOpen = $state(false);
+
+  setContext("quizUser", {
+    get current() { return user; },
+    get loading() { return isLoading; }
+  });
 
   const isLandingPage = $derived(
     page.url.pathname === "/quiz-app" || page.url.pathname === "/quiz-app/",
@@ -25,7 +30,11 @@
       console.error("Auth check error:", e);
     } finally {
       isLoading = false;
+    }
+  });
 
+  $effect(() => {
+    if (!isLoading) {
       const path = page.url.pathname as string;
       const isAuthPage =
         path === "/quiz-app/login" || path === "/quiz-app/register";

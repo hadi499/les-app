@@ -1,12 +1,7 @@
 <script lang="ts">
-  import { fade, fly } from "svelte/transition";
-  import { onMount } from "svelte";
+  import { getContext } from "svelte";
 
-  let isLoaded = $state(false);
-
-  onMount(() => {
-    isLoaded = true;
-  });
+  const auth = getContext<{current: any, loading: boolean}>("quizUser");
 </script>
 
 <svelte:head>
@@ -31,11 +26,7 @@
   <div
     class="relative z-10 container mx-auto px-6 py-12 min-h-screen flex flex-col justify-center items-center"
   >
-    {#if isLoaded}
-      <div
-        in:fly={{ y: 50, duration: 1000, delay: 200 }}
-        class="text-center max-w-4xl mx-auto mb-16"
-      >
+      <div class="text-center max-w-4xl mx-auto mb-16">
         <div
           class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/50 backdrop-blur-md border border-white/60 shadow-sm mb-6 text-sm font-semibold text-indigo-700 uppercase tracking-widest"
         >
@@ -68,10 +59,7 @@
         class="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl mx-auto perspective-1000"
       >
         <!-- Les App Card -->
-        <div
-          in:fly={{ x: -50, duration: 800, delay: 600 }}
-          class="group relative"
-        >
+        <div class="group relative">
           <div
             class="absolute inset-0 bg-linear-to-br from-blue-400 to-cyan-300 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-500"
           ></div>
@@ -126,10 +114,7 @@
         </div>
 
         <!-- Quiz App Card -->
-        <div
-          in:fly={{ x: 50, duration: 800, delay: 800 }}
-          class="group relative"
-        >
+        <div class="group relative">
           <div
             class="absolute inset-0 bg-linear-to-br from-indigo-500 to-purple-500 rounded-3xl blur opacity-25 group-hover:opacity-50 transition duration-500"
           ></div>
@@ -160,13 +145,13 @@
               nilai Anda secara real-time.
             </p>
             <a
-              href="/quiz-app/login"
+              href={auth?.current ? (auth.current.role === 'admin' ? '/quiz-app/admin' : '/quiz-app/dashboard') : "/quiz-app/login"}
               class="w-full py-4 rounded-xl font-bold text-white bg-linear-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-md hover:shadow-indigo-500/30 transition-all duration-300 flex items-center justify-center gap-2 relative overflow-hidden group/btn"
             >
               <span
                 class="absolute inset-0 bg-white/20 translate-x-[-100%] group-hover/btn:translate-x-[100%] transition-transform duration-500"
               ></span>
-              Masuk
+              {auth?.current ? 'Dashboard' : 'Masuk'}
               <svg
                 class="w-5 h-5 group-hover/btn:translate-x-1 transition-transform"
                 fill="none"
@@ -183,7 +168,6 @@
           </div>
         </div>
       </div>
-    {/if}
   </div>
 </div>
 

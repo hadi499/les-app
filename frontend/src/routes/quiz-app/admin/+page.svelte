@@ -437,9 +437,9 @@
         bind:value={activeTab}
         class="block w-full appearance-none rounded-xl border border-slate-200 py-3 pl-4 pr-12 text-base focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 bg-white shadow-sm font-bold text-slate-800"
       >
-        <option value="quizzes">Kelola Kuis</option>
-        <option value="categories">Kelola Kategori</option>
-        <option value="results">Riwayat Peserta</option>
+        <option value="quizzes">Kuis</option>
+        <option value="categories">Kategori</option>
+        <option value="results">Score Peserta</option>
         <option value="leaderboard">Poin Peserta</option>
         <option value="users">Manajemen User</option>
       </select>
@@ -470,7 +470,7 @@
           ? 'border-indigo-600 text-indigo-600'
           : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
       >
-        Kelola Kuis
+        Kuis
       </button>
       <button
         onclick={() => (activeTab = "categories")}
@@ -479,7 +479,7 @@
           ? 'border-indigo-600 text-indigo-600'
           : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
       >
-        Kelola Kategori
+        Kategori
       </button>
       <button
         onclick={() => (activeTab = "results")}
@@ -488,7 +488,7 @@
           ? 'border-indigo-600 text-indigo-600'
           : 'border-transparent text-slate-500 hover:text-slate-700 hover:border-slate-300'}"
       >
-        Riwayat Peserta
+        Score Peserta
       </button>
       <button
         onclick={() => (activeTab = "leaderboard")}
@@ -905,28 +905,7 @@
                   </div>
                 </div>
 
-                {#if index === 0}
-                  <div
-                    class="absolute top-4 right-4 text-2xl"
-                    title="Peringkat 1"
-                  >
-                    🏆
-                  </div>
-                {:else if index === 1}
-                  <div
-                    class="absolute top-4 right-4 text-2xl"
-                    title="Peringkat 2"
-                  >
-                    🥈
-                  </div>
-                {:else if index === 2}
-                  <div
-                    class="absolute top-4 right-4 text-2xl"
-                    title="Peringkat 3"
-                  >
-                    🥉
-                  </div>
-                {/if}
+
               </div>
             {/each}
           </div>
@@ -1337,7 +1316,7 @@
       </div>
       <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus User?</h3>
       <p class="text-slate-500 mb-6">
-        User dan semua riwayat pengerjaan kuisnya akan dihapus permanen.
+        User <strong class="text-slate-800">{allUsers.find(u => u.id === userToDeleteId)?.username || ''}</strong> dan semua riwayat pengerjaan kuisnya akan dihapus permanen.
         Lanjutkan?
       </p>
       <div class="flex gap-3">
@@ -1366,7 +1345,7 @@
     >
       <h3 class="text-xl font-bold text-slate-800 mb-2">Reset Password</h3>
       <p class="text-slate-500 mb-4 text-sm">
-        Masukkan password baru untuk user ini.
+        Masukkan password baru untuk <strong class="text-slate-800">{allUsers.find(u => u.id === userToResetId)?.username || 'user ini'}</strong>.
       </p>
       <form onsubmit={handleResetPassword} class="space-y-4">
         <label for="reset-password" class="sr-only">Password Baru</label>
