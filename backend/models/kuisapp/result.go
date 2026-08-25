@@ -10,6 +10,7 @@ type Result struct {
 	Score        float64   `json:"score"`
 	PointsEarned int       `json:"points_earned" gorm:"default:0"`
 	FinishedAt   time.Time `json:"finished_at"`
+	Duration     int       `json:"duration" gorm:"default:0"` // in seconds
 
 	// Relationships
 	Quiz Quiz `json:"quiz" gorm:"foreignKey:QuizID"`

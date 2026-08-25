@@ -48,6 +48,7 @@
   let showLeaveModal = $state(false);
   let targetUrl = $state<string | null>(null);
   let hasConfirmedLeave = $state(false);
+  let quizStartTime = $state(0);
 
   let finalScore = $state(0); // Score returned by KuisApp backend
 
@@ -86,7 +87,8 @@
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          answers: {}
+          answers: {},
+          duration: Math.floor((Date.now() - quizStartTime) / 1000)
         }),
       });
     } catch (e) {
@@ -118,7 +120,8 @@
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          answers: {}
+          answers: {},
+          duration: Math.floor((Date.now() - quizStartTime) / 1000)
         }),
         keepalive: true,
       }).catch(console.error);
@@ -155,6 +158,7 @@
         if (quiz && quiz.questions && quiz.questions.length > 0) {
           // The user requested: waktu kuis berdasarkan detik per soal
           timeLeft = quiz.timeLimit;
+          quizStartTime = Date.now();
           startTimer();
         } else {
           errorMessage = "Kuis tidak memiliki pertanyaan.";
@@ -236,6 +240,7 @@
 
   async function submitScore() {
     isSubmitting = true;
+    const duration = Math.floor((Date.now() - quizStartTime) / 1000);
     
     // Build answers map for KuisApp backend
     const answersPayload: Record<string, number> = {};
@@ -251,7 +256,8 @@
         headers: { "Content-Type": "application/json" },
         credentials: "include",
         body: JSON.stringify({
-          answers: answersPayload
+          answers: answersPayload,
+          duration: duration
         }),
       });
 
@@ -283,7 +289,8 @@
           pointsAlreadyClaimed,
           userAnswers,
           quizTitle: quiz?.title,
-          quizQuestionsLength: quiz?.questions.length
+          quizQuestionsLength: quiz?.questions.length,
+          duration
         }));
         
         // Redirect ke halaman result terpisah

@@ -475,7 +475,8 @@ func SubmitKuisAppQuiz(c *gin.Context) {
 	quizID := c.Param("id")
 	
 	var input struct {
-		Answers map[string]int `json:"answers"` // "questionID" -> answer index
+		Answers  map[string]int `json:"answers"` // "questionID" -> answer index
+		Duration int            `json:"duration"` // in seconds
 	}
 	if err := c.ShouldBindJSON(&input); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
@@ -532,6 +533,7 @@ func SubmitKuisAppQuiz(c *gin.Context) {
 		Score:        score,
 		PointsEarned: pointsToAdd,
 		FinishedAt:   time.Now(),
+		Duration:     input.Duration,
 	}
 
 	if err := database.DB.Create(&result).Error; err != nil {

@@ -234,6 +234,11 @@
     return `${datePart}, ${timePart}`;
   }
 
+  function formatDuration(seconds: number) {
+    if (!seconds || seconds < 0) return "0 Detik";
+    return `${seconds} Detik`;
+  }
+
   function getScoreColor(score: number) {
     if (score >= 80) return "text-emerald-600 bg-emerald-50 border-emerald-100";
     if (score >= 60) return "text-yellow-600 bg-yellow-50 border-yellow-100";
@@ -820,22 +825,32 @@
                 <div
                   class="flex items-center justify-between mt-4 pt-4 border-t border-slate-100"
                 >
-                  <div
-                    class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
-                  >
-                    <svg
-                      class="w-4 h-4"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                      ><path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                      /></svg
+                  <div class="flex flex-col gap-1">
+                    <div
+                      class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
                     >
-                    {formatDate(result.finished_at)}
+                      <svg
+                        class="w-4 h-4"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                        ><path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-width="2"
+                          d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        /></svg
+                      >
+                      {formatDate(result.finished_at)}
+                    </div>
+                    {#if result.duration > 0}
+                    <div
+                      class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
+                    >
+                      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                      {formatDuration(result.duration)}
+                    </div>
+                    {/if}
                   </div>
                   <div>
                     {#if result.points_earned > 0}

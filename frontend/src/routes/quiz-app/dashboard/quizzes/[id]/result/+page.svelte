@@ -15,6 +15,7 @@
   let pointsEarned = $state(0);
   let pointsAlreadyClaimed = $state(false);
   let isLoaded = $state(false);
+  let duration = $state(0);
 
   onMount(() => {
     // Ambil data hasil kuis dari sessionStorage
@@ -28,6 +29,7 @@
         quizQuestionsLength = parsed.quizQuestionsLength || 0;
         pointsEarned = parsed.pointsEarned || 0;
         pointsAlreadyClaimed = parsed.pointsAlreadyClaimed || false;
+        duration = parsed.duration || 0;
         isLoaded = true;
       } catch (e) {
         console.error("Gagal membaca hasil kuis", e);
@@ -68,6 +70,11 @@
 
     return rendered;
   }
+
+  function formatTime(seconds: number) {
+    if (!seconds || seconds < 0) return "0 Detik";
+    return `${seconds} Detik`;
+  }
 </script>
 
 <svelte:head>
@@ -104,6 +111,12 @@
             Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quizQuestionsLength}
             Soal
           </p>
+          {#if duration > 0}
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold mt-2">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+              {formatTime(duration)}
+            </div>
+          {/if}
           {#if pointsEarned > 0}
             <div
               class="mt-4 px-6 py-3 bg-emerald-50 border-2 border-emerald-200 rounded-2xl flex flex-col items-center justify-center gap-1"
