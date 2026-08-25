@@ -14,13 +14,12 @@
   let activeTab = $state("quizzes");
   let isLoading = $state(true);
 
-  let uniqueParticipants = $derived(
-    Array.from(
-      new Map(
-        allResults.filter((r) => r.user).map((r) => [r.user_id, r.user]),
-      ).values(),
-    ).sort((a: any, b: any) => b.points - a.points),
-  );
+  // Pagination for Results
+  let resultsPage = $state(1);
+  const resultsPerPage = 30;
+  let totalResults = $state(0);
+  let isFetchingResults = $state(false);
+
 
   // Forms states
   let showCategoryForm = $state(false);
@@ -37,6 +36,9 @@
 
   // Users states
   let allUsers = $state<any[]>([]);
+  let uniqueParticipants = $derived(
+    allUsers.filter((u) => u.points > 0).sort((a: any, b: any) => b.points - a.points)
+  );
   let userSearchQuery = $state("");
   let searchTimeout: any;
 
@@ -94,15 +96,39 @@
     localStorage.setItem("kuisappAdminTab", activeTab);
   });
 
+  async function fetchResults(page = 1, append = false) {
+    if (isFetchingResults) return;
+    isFetchingResults = true;
+    try {
+      const res = await fetch(`/api/kuisapp/all-results?page=${page}&limit=${resultsPerPage}`, { credentials: "include" });
+      if (res.ok) {
+        const d = await res.json();
+        const results = d.data || [];
+        if (append) {
+          allResults = [...allResults, ...results];
+        } else {
+          allResults = results;
+        }
+        totalResults = d.total || 0;
+        resultsPage = page;
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isFetchingResults = false;
+    }
+  }
+
   async function fetchData() {
     isLoading = true;
     try {
-      const [catRes, quizRes, resRes, userRes] = await Promise.all([
+      const [catRes, quizRes, userRes] = await Promise.all([
         fetch("/api/kuisapp/categories", { credentials: "include" }),
         fetch("/api/kuisapp/quizzes", { credentials: "include" }),
-        fetch("/api/kuisapp/all-results", { credentials: "include" }),
         fetch("/api/kuisapp/users", { credentials: "include" }),
       ]);
+
+      await fetchResults(1, false);
 
       if (catRes.ok) {
         const d = await catRes.json();
@@ -113,15 +139,6 @@
         const d = await quizRes.json();
         quizzes = d.data || [];
         stats.totalQuizzes = quizzes.length;
-      }
-      if (resRes.ok) {
-        const d = await resRes.json();
-        const results = d.data || [];
-        allResults = results.sort(
-          (a: any, b: any) =>
-            new Date(b.finished_at).getTime() -
-            new Date(a.finished_at).getTime(),
-        );
       }
       if (userRes.ok) {
         const d = await userRes.json();
@@ -833,6 +850,22 @@
               </div>
             {/each}
           </div>
+
+          <!-- Load More Control -->
+          {#if allResults.length < totalResults}
+            <div class="flex justify-center mt-8">
+              <button
+                onclick={() => fetchResults(resultsPage + 1, true)}
+                disabled={isFetchingResults}
+                class="px-6 py-2.5 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold hover:bg-slate-50 hover:border-slate-300 shadow-sm transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {isFetchingResults ? 'Memuat...' : 'Lihat lebih banyak'}
+                {#if !isFetchingResults}
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" /></svg>
+                {/if}
+              </button>
+            </div>
+          {/if}
         {/if}
       </section>
     {:else if activeTab === "leaderboard"}

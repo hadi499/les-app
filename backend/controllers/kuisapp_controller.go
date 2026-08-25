@@ -567,11 +567,30 @@ func GetKuisAppMyResults(c *gin.Context) {
 
 func GetKuisAppAllResults(c *gin.Context) {
 	var results []kuisapp.Result
-	if err := database.DB.Preload("User").Preload("Quiz").Find(&results).Error; err != nil {
+	var total int64
+
+	if err := database.DB.Model(&kuisapp.Result{}).Count(&total).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung data peserta"})
+		return
+	}
+
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "30"))
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 30
+	}
+	offset := (page - 1) * limit
+
+	if err := database.DB.Preload("User").Preload("Quiz").Order("finished_at desc").Limit(limit).Offset(offset).Find(&results).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil data peserta"})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{"data": results})
+
+	c.JSON(http.StatusOK, gin.H{"data": results, "total": total})
 }
 
 // ======== USERS ========
