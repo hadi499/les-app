@@ -198,10 +198,12 @@
   }
 
   function formatTime(seconds: number) {
-    if (seconds < 0) return "00:00";
+    if (seconds < 0) return "0 dtk";
+    if (seconds < 60) return `${seconds} dtk`;
     const m = Math.floor(seconds / 60);
     const s = seconds % 60;
-    return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    if (s === 0) return `${m} mnt`;
+    return `${m}m ${s}dtk`;
   }
 
   function handleTimeout() {
@@ -359,23 +361,20 @@
 
       {#if !isFinished}
         <!-- Header Info: Soal ke & Timer -->
-        <div class="sticky top-24 z-50 flex justify-between items-center py-4 bg-transparent">
+        <div class="sticky top-0 sm:top-16 z-50 flex justify-between items-center py-4 px-2 sm:px-0 mb-6 sm:mb-8 bg-slate-50">
           <div class="text-sm font-bold tracking-[0.1em] text-slate-800 uppercase flex flex-col">
             <span>{quiz.title}</span>
             <div class="flex items-center gap-1.5 mt-1.5 flex-wrap max-w-[200px] sm:max-w-xs">
               {#each quiz.questions as _, idx}
                 <div
-                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx === currentQuestionIndex ? 'bg-blue-600 scale-125' : idx < currentQuestionIndex ? 'bg-blue-300' : 'bg-slate-200'}"
+                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx === currentQuestionIndex ? 'bg-indigo-600 scale-125 shadow-sm shadow-indigo-200' : idx < currentQuestionIndex ? 'bg-indigo-300' : 'bg-slate-200'}"
                   aria-hidden="true"
                 ></div>
               {/each}
             </div>
           </div>
           <div class="flex items-center gap-2">
-            <div class="text-xs font-semibold uppercase tracking-wider text-slate-600">
-              Waktu:
-            </div>
-            <div class="px-3 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm {timeLeft <= 60 ? 'text-red-600 bg-red-50 border-red-200 animate-pulse' : ''}">
+            <div class="px-3 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm {timeLeft <= 60 ? 'text-red-600 bg-red-50 border-red-200' : ''}">
               {formatTime(timeLeft)}
             </div>
           </div>

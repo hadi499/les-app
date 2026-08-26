@@ -18,6 +18,10 @@
   const isLandingPage = $derived(
     page.url.pathname === "/quiz-app" || page.url.pathname === "/quiz-app/",
   );
+  
+  const isQuizAreaPage = $derived(
+    page.url.pathname.startsWith("/quiz-app/dashboard/quizzes/")
+  );
 
   onMount(async () => {
     try {
@@ -82,9 +86,9 @@
 {:else}
   <div class="min-h-screen bg-slate-50 flex flex-col font-sans">
     <!-- Navbar -->
-    {#if user}
+    {#if user && !isLandingPage}
       <nav
-        class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm"
+        class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm {user.role !== 'admin' ? 'hidden sm:block' : ''}"
       >
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16">
@@ -130,7 +134,7 @@
             <div class="flex items-center gap-2">
               <button
                 onclick={handleLogout}
-                class="hidden sm:inline-flex items-center justify-center gap-2 px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 font-bold rounded-xl transition-colors text-sm"
+                class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 font-bold rounded-xl transition-colors text-sm"
                 title="Logout"
               >
                 <svg
@@ -148,85 +152,12 @@
                 Keluar
               </button>
 
-              <!-- Mobile menu button -->
-              <button
-                onclick={() => (isMobileMenuOpen = !isMobileMenuOpen)}
-                class="sm:hidden inline-flex items-center justify-center p-2 rounded-md text-slate-400 hover:text-slate-500 hover:bg-slate-100 transition-colors"
-              >
-                <svg
-                  class="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  {#if isMobileMenuOpen}
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  {:else}
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M4 6h16M4 12h16M4 18h16"
-                    />
-                  {/if}
-                </svg>
-              </button>
+
             </div>
           </div>
         </div>
 
-        <!-- Mobile Menu Panel -->
-        {#if isMobileMenuOpen}
-          <div class="sm:hidden border-t border-slate-200 bg-white">
-            <div class="pt-2 pb-3 space-y-1">
-              {#if user.role !== "admin"}
-                <a
-                  href="/quiz-app/dashboard"
-                  onclick={() => (isMobileMenuOpen = false)}
-                  class="{page.url.pathname === '/quiz-app/dashboard'
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                    : 'border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800'} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  Dashboard
-                </a>
-                <a
-                  href="/quiz-app/dashboard/history"
-                  onclick={() => (isMobileMenuOpen = false)}
-                  class="{page.url.pathname === '/quiz-app/dashboard/history'
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                    : 'border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800'} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  Riwayat Kuis
-                </a>
-              {/if}
-              {#if user.role === "admin"}
-                <a
-                  href="/quiz-app/admin"
-                  onclick={() => (isMobileMenuOpen = false)}
-                  class="{page.url.pathname.startsWith('/quiz-app/admin')
-                    ? 'bg-indigo-50 border-indigo-500 text-indigo-700'
-                    : 'border-transparent text-slate-600 hover:bg-slate-50 hover:border-slate-300 hover:text-slate-800'} block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-                >
-                  Admin Panel
-                </a>
-              {/if}
-              <button
-                onclick={() => {
-                  isMobileMenuOpen = false;
-                  handleLogout();
-                }}
-                class="w-full text-left border-transparent text-red-600 hover:bg-red-50 hover:border-red-300 block pl-3 pr-4 py-2 border-l-4 text-base font-medium"
-              >
-                Keluar
-              </button>
-            </div>
-          </div>
-        {/if}
+
       </nav>
     {/if}
 
@@ -234,9 +165,38 @@
     <main
       class="flex-1 w-full {isLandingPage
         ? ''
-        : 'max-w-7xl mx-auto p-4 sm:p-6 lg:p-8'}"
+        : 'max-w-7xl mx-auto p-4 sm:p-6 lg:p-8'} {user && user.role !== 'admin' ? 'pb-24 sm:pb-8' : ''}"
     >
       {@render children()}
     </main>
+
+    <!-- Bottom Navigation Bar for Mobile (User Only) -->
+    {#if user && user.role !== "admin" && !isLandingPage && !isQuizAreaPage}
+      <nav class="sm:hidden fixed bottom-0 w-full bg-white border-t border-slate-200 z-50 pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+        <div class="flex justify-around items-center h-16">
+          <a
+            href="/quiz-app/dashboard"
+            class="flex flex-col items-center justify-center w-full h-full {page.url.pathname === '/quiz-app/dashboard' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'} transition-colors"
+          >
+            <svg class="w-6 h-6 mb-1 {page.url.pathname === '/quiz-app/dashboard' ? 'fill-indigo-100/50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+            <span class="text-[10px] font-bold tracking-wide">Beranda</span>
+          </a>
+          <a
+            href="/quiz-app/dashboard/history"
+            class="flex flex-col items-center justify-center w-full h-full {page.url.pathname === '/quiz-app/dashboard/history' ? 'text-indigo-600' : 'text-slate-500 hover:text-slate-800 hover:bg-slate-50'} transition-colors"
+          >
+            <svg class="w-6 h-6 mb-1 {page.url.pathname === '/quiz-app/dashboard/history' ? 'fill-indigo-100/50' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <span class="text-[10px] font-bold tracking-wide">Riwayat</span>
+          </a>
+          <button
+            onclick={handleLogout}
+            class="flex flex-col items-center justify-center w-full h-full text-slate-500 hover:text-red-600 hover:bg-red-50 transition-colors"
+          >
+            <svg class="w-6 h-6 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <span class="text-[10px] font-bold tracking-wide">Keluar</span>
+          </button>
+        </div>
+      </nav>
+    {/if}
   </div>
 {/if}

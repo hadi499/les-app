@@ -4,9 +4,14 @@
 
   let myResults: any[] = $state([]);
   let isLoading = $state(true);
+  let showLoading = $state(false);
   let errorMsg = $state("");
 
   onMount(async () => {
+    const loadingTimer = setTimeout(() => {
+      showLoading = true;
+    }, 250);
+
     try {
       const res = await fetch("/api/kuisapp/my-results", {
         credentials: "include",
@@ -24,6 +29,7 @@
     } catch (e) {
       errorMsg = e instanceof Error ? e.message : String(e);
     } finally {
+      clearTimeout(loadingTimer);
       isLoading = false;
     }
   });
@@ -90,11 +96,13 @@
   <!-- Content -->
   <section>
     {#if isLoading}
-      <div class="flex justify-center py-20">
-        <div
-          class="w-10 h-10 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"
-        ></div>
-      </div>
+      {#if showLoading}
+        <div in:fade={{ duration: 300 }} class="flex justify-center py-20">
+          <div
+            class="w-10 h-10 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin"
+          ></div>
+        </div>
+      {/if}
     {:else if errorMsg}
       <div
         class="bg-red-50 text-red-700 p-6 rounded-2xl border border-red-100 font-medium flex items-center gap-3 shadow-sm"
