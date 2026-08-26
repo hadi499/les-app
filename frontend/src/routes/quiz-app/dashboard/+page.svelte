@@ -49,7 +49,7 @@
         setTimeout(() => {
           showChangePasswordModal = false;
           passwordSuccessMsg = "";
-        }, 2000);
+        }, 800);
       } else {
         passwordErrorMsg = data.error || "Gagal mengganti password";
       }
