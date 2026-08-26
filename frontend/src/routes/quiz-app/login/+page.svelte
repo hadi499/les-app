@@ -22,6 +22,8 @@
       const data = await res.json();
       
       if (res.ok) {
+        // Fix for iOS Safari race condition where Set-Cookie is dropped if we navigate too fast
+        await new Promise(resolve => setTimeout(resolve, 300));
         // Reload to let the layout fetch the user and redirect properly
         window.location.href = "/quiz-app/dashboard";
       } else {

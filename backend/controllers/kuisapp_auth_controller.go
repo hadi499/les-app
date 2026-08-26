@@ -110,6 +110,7 @@ func LoginKuisApp(c *gin.Context) {
 		return
 	}
 
+	c.SetSameSite(http.SameSiteLaxMode)
 	c.SetCookie(
 		"kuisapp_token",
 		tokenString,
