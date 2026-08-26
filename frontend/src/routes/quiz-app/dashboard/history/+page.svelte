@@ -70,7 +70,7 @@
 <div class="space-y-8 pb-12 animate-in fade-in duration-500">
   <!-- Header Banner -->
   <div
-    class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-800 to-slate-900 p-8 sm:p-10 text-white shadow-xl"
+    class="relative overflow-hidden rounded-3xl bg-gradient-to-r from-slate-800 to-slate-900 px-6 py-4 sm:py-6 text-white shadow-xl"
   >
     <div class="absolute top-0 right-0 -mt-16 -mr-16 text-white/5">
       <svg
@@ -83,8 +83,13 @@
       class="relative z-10 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6"
     >
       <div>
-        <h1 class="text-2xl sm:text-3xl font-black mb-2 tracking-tight">
-          Riwayat Kuis 📜
+        <div class="flex items-center mb-3">
+          <span class="font-black tracking-wider uppercase text-md sm:text-lg"
+            >LB Quiz</span
+          >
+        </div>
+        <h1 class="text-xl sm:text-2xl font-black mb-2 tracking-tight">
+          Riwayat Kuis
         </h1>
         <p class="text-slate-300 max-w-xl text-md">
           Lihat rekam jejak nilai dari semua kuis yang telah Anda kerjakan.
@@ -186,12 +191,23 @@
                   {formatDate(result.finished_at)}
                 </div>
                 {#if result.duration > 0}
-                <div
-                  class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
-                >
-                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                  {formatDuration(result.duration)}
-                </div>
+                  <div
+                    class="text-xs font-medium text-slate-500 flex items-center gap-1.5"
+                  >
+                    <svg
+                      class="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      ><path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      ></path></svg
+                    >
+                    {formatDuration(result.duration)}
+                  </div>
                 {/if}
               </div>
               <div>
