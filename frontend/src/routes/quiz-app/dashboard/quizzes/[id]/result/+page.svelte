@@ -98,6 +98,11 @@
           class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8"
         >
           <div
+            class="text-2xl font-bold tracking-[0.2em] text-blue-600 mb-4 border border-blue-300 shadow-md px-3 py-1 rounded-md"
+          >
+            LB Quiz
+          </div>
+          <div
             class="text-sm font-bold tracking-[0.2em] uppercase text-slate-600 mb-2"
           >
             Skor Akhir
@@ -112,8 +117,21 @@
             Soal
           </p>
           {#if duration > 0}
-            <div class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold mt-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            <div
+              class="inline-flex items-center gap-1.5 px-3 py-1 bg-slate-100 text-slate-600 rounded-full text-xs font-bold mt-2"
+            >
+              <svg
+                class="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                ></path></svg
+              >
               {formatTime(duration)}
             </div>
           {/if}
