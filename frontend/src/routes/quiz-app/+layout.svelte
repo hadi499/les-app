@@ -124,16 +124,6 @@
                       Riwayat Kuis
                     </a>
                   {/if}
-                  {#if user.role === "admin"}
-                    <a
-                      href="/quiz-app/admin"
-                      class="{page.url.pathname.startsWith('/quiz-app/admin')
-                        ? 'border-indigo-500 text-slate-900'
-                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
-                    >
-                      Admin Panel
-                    </a>
-                  {/if}
                 </div>
               {/if}
             </div>

@@ -427,9 +427,18 @@
 <div class="space-y-8 pb-12">
   <!-- Admin Header -->
   <div
-    class="bg-white rounded-3xl p-6 sm:p-8 border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6"
+    class="bg-white rounded-3xl p-4 sm:p-6 border border-slate-100 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-6"
   >
     <div>
+      <div class="relative z-10 flex items-center justify-between mb-2">
+        <div class="flex items-center">
+          <span
+            class="font-black tracking-wider uppercase text-md sm:text-lg drop-shadow-sm text-blue-600"
+            >LB Quiz</span
+          >
+        </div>
+      </div>
+
       <h1 class="text-2xl sm:text-3xl font-black text-slate-800 mb-2">
         Panel Administrator
       </h1>
@@ -766,11 +775,12 @@
             <div
               class="bg-white rounded-2xl p-6 border border-slate-100 shadow-sm relative group"
             >
-              <div
-                class="absolute top-4 right-4 flex gap-2"
-              >
+              <div class="absolute top-4 right-4 flex gap-2">
                 <button
-                  onclick={() => { categoryToDeleteId = cat.id; showDeleteCategoryModal = true; }}
+                  onclick={() => {
+                    categoryToDeleteId = cat.id;
+                    showDeleteCategoryModal = true;
+                  }}
                   class="p-1.5 text-slate-400 hover:text-red-600 bg-slate-50 hover:bg-red-50 rounded-lg transition-colors"
                   title="Hapus"
                   ><svg
@@ -1611,18 +1621,50 @@
 
 <!-- Modal Hapus Kategori -->
 {#if showDeleteCategoryModal}
-  <div class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-    <div class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden p-6 text-center">
-      <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600">
-        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" /></svg>
+  <div
+    class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+  >
+    <div
+      class="bg-white rounded-3xl w-full max-w-sm shadow-2xl overflow-hidden p-6 text-center"
+    >
+      <div
+        class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4 text-red-600"
+      >
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          ><path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+          /></svg
+        >
       </div>
       <h3 class="text-xl font-bold text-slate-800 mb-2">Hapus Kategori?</h3>
       <p class="text-slate-500 mb-6 text-sm">
-        Kategori <strong class="text-slate-800">{categories.find(c => c.id === categoryToDeleteId)?.name || ''}</strong> akan dihapus permanen. Kuis yang ada di dalamnya mungkin akan kehilangan label kategori.
+        Kategori <strong class="text-slate-800"
+          >{categories.find((c) => c.id === categoryToDeleteId)?.name ||
+            ""}</strong
+        > akan dihapus permanen. Kuis yang ada di dalamnya mungkin akan kehilangan
+        label kategori.
       </p>
       <div class="flex gap-3">
-        <button onclick={() => { showDeleteCategoryModal = false; categoryToDeleteId = null; }} class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors">Batal</button>
-        <button onclick={handleDeleteCategory} class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors">Ya, Hapus</button>
+        <button
+          onclick={() => {
+            showDeleteCategoryModal = false;
+            categoryToDeleteId = null;
+          }}
+          class="flex-1 px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-colors"
+          >Batal</button
+        >
+        <button
+          onclick={handleDeleteCategory}
+          class="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-colors"
+          >Ya, Hapus</button
+        >
       </div>
     </div>
   </div>
