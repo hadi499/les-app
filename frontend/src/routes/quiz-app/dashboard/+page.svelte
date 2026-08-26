@@ -34,7 +34,7 @@
         fetch("/api/kuisapp/categories", { credentials: "include" }),
         fetch("/api/kuisapp/quizzes", { credentials: "include" }),
         fetch("/api/kuisapp/my-results", { credentials: "include" }),
-        fetch("/api/kuisapp/me", { credentials: "include" }),
+        fetch(`/api/kuisapp/me?t=${Date.now()}`, { credentials: "include", cache: "no-store" }),
       ]);
 
       if (catRes.ok) {

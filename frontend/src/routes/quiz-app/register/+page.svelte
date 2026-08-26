@@ -37,6 +37,8 @@
           body: JSON.stringify({ username, password }),
         });
         if (loginRes.ok) {
+          // Fix for iOS Safari race condition where Set-Cookie is dropped if we navigate too fast
+          await new Promise(resolve => setTimeout(resolve, 300));
           window.location.href = "/quiz-app/dashboard";
         } else {
           goto("/quiz-app/login");

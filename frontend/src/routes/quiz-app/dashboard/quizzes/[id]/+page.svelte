@@ -141,7 +141,7 @@
     
     try {
       // Fetch KuisApp user profile
-      const authRes = await fetch(`/api/kuisapp/me`, { credentials: "include" });
+      const authRes = await fetch(`/api/kuisapp/me?t=${Date.now()}`, { credentials: "include", cache: "no-store" });
       const authData = await authRes.json();
       if (!authRes.ok) {
         goto("/quiz-app/login");

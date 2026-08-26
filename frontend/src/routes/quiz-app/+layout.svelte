@@ -25,7 +25,7 @@
 
   onMount(async () => {
     try {
-      const res = await fetch(`/api/kuisapp/me`, { credentials: "include" });
+      const res = await fetch(`/api/kuisapp/me?t=${Date.now()}`, { credentials: "include", cache: "no-store" });
       if (res.ok) {
         const data = await res.json();
         user = data.user;
