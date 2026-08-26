@@ -100,59 +100,62 @@
                   LB Quiz
                 </span>
               </div>
-              <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
-                {#if user.role !== "admin"}
-                  <a
-                    href="/quiz-app/dashboard"
-                    class="{page.url.pathname === '/quiz-app/dashboard'
-                      ? 'border-indigo-500 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
-                  >
-                    Dashboard
-                  </a>
-                  <a
-                    href="/quiz-app/dashboard/history"
-                    class="{page.url.pathname === '/quiz-app/dashboard/history'
-                      ? 'border-indigo-500 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
-                  >
-                    Riwayat Kuis
-                  </a>
-                {/if}
-                {#if user.role === "admin"}
-                  <a
-                    href="/quiz-app/admin"
-                    class="{page.url.pathname.startsWith('/quiz-app/admin')
-                      ? 'border-indigo-500 text-slate-900'
-                      : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
-                  >
-                    Admin Panel
-                  </a>
-                {/if}
-              </div>
+              {#if !isQuizAreaPage}
+                <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                  {#if user.role !== "admin"}
+                    <a
+                      href="/quiz-app/dashboard"
+                      class="{page.url.pathname === '/quiz-app/dashboard'
+                        ? 'border-indigo-500 text-slate-900'
+                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+                    >
+                      Dashboard
+                    </a>
+                    <a
+                      href="/quiz-app/dashboard/history"
+                      class="{page.url.pathname === '/quiz-app/dashboard/history'
+                        ? 'border-indigo-500 text-slate-900'
+                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+                    >
+                      Riwayat Kuis
+                    </a>
+                  {/if}
+                  {#if user.role === "admin"}
+                    <a
+                      href="/quiz-app/admin"
+                      class="{page.url.pathname.startsWith('/quiz-app/admin')
+                        ? 'border-indigo-500 text-slate-900'
+                        : 'border-transparent text-slate-500 hover:border-slate-300 hover:text-slate-700'} inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors"
+                    >
+                      Admin Panel
+                    </a>
+                  {/if}
+                </div>
+              {/if}
             </div>
+            
             <div class="flex items-center gap-2">
-              <button
-                onclick={handleLogout}
-                class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 font-bold rounded-xl transition-colors text-sm"
-                title="Logout"
-              >
-                <svg
-                  class="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-                  ></path></svg
+              {#if !isQuizAreaPage}
+                <button
+                  onclick={handleLogout}
+                  class="inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-red-50 text-red-600 hover:bg-red-100 hover:text-red-700 font-bold rounded-xl transition-colors text-sm"
+                  title="Logout"
                 >
-                Keluar
-              </button>
-
-
+                  <svg
+                    class="w-4 h-4"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      stroke-width="2"
+                      d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                    ></path></svg
+                  >
+                  Keluar
+                </button>
+              {/if}
             </div>
           </div>
         </div>

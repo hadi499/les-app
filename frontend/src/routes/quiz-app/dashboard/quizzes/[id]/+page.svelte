@@ -401,9 +401,9 @@
             {#each currentQuestion.options as option, optIndex}
               <button
                 onclick={() => handleAnswer(option, optIndex)}
-                class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-slate-200 bg-slate-50 hover:bg-indigo-50 hover:border-indigo-300 text-slate-800 font-semibold transition-all duration-200 cursor-pointer shadow-sm group"
+                class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-slate-200 bg-slate-50 text-slate-800 font-semibold transition-all duration-200 cursor-pointer shadow-sm group"
               >
-                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-300 text-slate-600 font-bold flex-shrink-0 group-hover:bg-indigo-600 group-hover:border-indigo-600 group-hover:text-white transition-colors">
+                <span class="flex items-center justify-center w-8 h-8 rounded-lg bg-white border border-slate-300 text-slate-600 font-bold flex-shrink-0 transition-colors">
                   {String.fromCharCode(65 + optIndex)}
                 </span>
                 <span>{@html renderText(option)}</span>
