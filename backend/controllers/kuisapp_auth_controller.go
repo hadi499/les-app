@@ -162,3 +162,43 @@ func GetKuisAppMe(c *gin.Context) {
 		"user": user,
 	})
 }
+
+func ChangePasswordKuisApp(c *gin.Context) {
+	var input struct {
+		OldPassword string `json:"old_password" binding:"required"`
+		NewPassword string `json:"new_password" binding:"required"`
+	}
+
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Input tidak valid"})
+		return
+	}
+
+	userObj, exists := c.Get("kuisapp_user")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Tidak terautentikasi"})
+		return
+	}
+	currentUser := userObj.(kuisapp.User)
+
+	// Verifikasi password lama
+	if err := bcrypt.CompareHashAndPassword([]byte(currentUser.Password), []byte(input.OldPassword)); err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Password lama salah"})
+		return
+	}
+
+	// Enkripsi password baru
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(input.NewPassword), bcrypt.DefaultCost)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengenkripsi password baru"})
+		return
+	}
+
+	// Update password di database
+	if err := database.DB.Model(&currentUser).Update("password", string(hashedPassword)).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menyimpan password baru"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password berhasil diubah"})
+}

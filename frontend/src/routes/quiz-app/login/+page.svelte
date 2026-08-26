@@ -78,7 +78,7 @@
       </div>
 
       <div>
-        <button type="submit" disabled={isLoading} class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-70">
+        <button type="submit" disabled={isLoading} class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-bold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all disabled:opacity-70 cursor-pointer disabled:cursor-not-allowed">
           {#if isLoading}
             <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
           {:else}

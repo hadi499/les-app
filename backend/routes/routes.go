@@ -24,6 +24,7 @@ func SetupRoutes(r *gin.Engine) {
 	kuisappApi := r.Group("/api/kuisapp")
 	kuisappApi.Use(middleware.KuisAppAuthMiddleware())
 	{
+		kuisappApi.POST("/change-password", controllers.ChangePasswordKuisApp)
 		// Categories
 		kuisappApi.GET("/categories", controllers.GetKuisAppCategories)
 		// Quizzes
