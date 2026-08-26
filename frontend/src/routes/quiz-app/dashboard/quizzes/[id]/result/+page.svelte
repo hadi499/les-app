@@ -98,7 +98,7 @@
           class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8"
         >
           <div
-            class="text-2xl font-bold tracking-[0.2em] text-blue-600 mb-4 border border-blue-300 shadow-md px-3 py-1 rounded-md"
+            class="text-2xl font-bold text-blue-600 mb-4 border border-blue-300 shadow-md px-3 py-1 rounded-md"
           >
             LB Quiz
           </div>
