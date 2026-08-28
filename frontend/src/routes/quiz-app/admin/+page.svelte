@@ -1,7 +1,9 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { onMount, getContext } from "svelte";
   import { fade } from "svelte/transition";
   import { toast } from "$lib/stores/toast.svelte";
+
+  const quizUser: any = getContext("quizUser");
 
   let stats = $state({
     totalQuizzes: 0,
@@ -442,8 +444,8 @@
       <h1 class="text-2xl sm:text-3xl font-black text-slate-800 mb-2">
         Panel Administrator
       </h1>
-      <p class="text-slate-500">
-        Kelola kategori, kuis, dan pantau aktivitas peserta.
+      <p class="text-slate-500 text-md font-semibold">
+        {quizUser?.current?.username || "Admin"}
       </p>
     </div>
     <div class="flex gap-4">
@@ -1145,8 +1147,21 @@
                         {user.is_suspended ? "Disuspend" : user.role} &bull; {user.status}
                       </span>
                       {#if user.created_at}
-                        <span class="text-[11px] text-slate-500 font-medium flex items-center gap-1">
-                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        <span
+                          class="text-[11px] text-slate-500 font-medium flex items-center gap-1"
+                        >
+                          <svg
+                            class="w-3 h-3"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                            ><path
+                              stroke-linecap="round"
+                              stroke-linejoin="round"
+                              stroke-width="2"
+                              d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                            ></path></svg
+                          >
                           {formatDate(user.created_at)}
                         </span>
                       {/if}
