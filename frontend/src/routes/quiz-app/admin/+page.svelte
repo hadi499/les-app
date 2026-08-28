@@ -441,10 +441,12 @@
         </div>
       </div>
 
-      <h1 class="text-2xl sm:text-3xl font-black text-slate-800 mb-2">
+      <h1 class="text-2xl sm:text-3xl font-black text-slate-800 mb-3">
         Panel Administrator
       </h1>
-      <p class="text-slate-500 text-md font-semibold">
+      <p
+        class="text-slate-500 text-sm font-semibold px-2 rounded-md border border-slate-100 shadow-sm shadow-amber-600 w-fit"
+      >
         {quizUser?.current?.username || "Admin"}
       </p>
     </div>
