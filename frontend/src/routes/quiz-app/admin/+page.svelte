@@ -246,7 +246,7 @@
       d.getSeconds().toString().padStart(2, "0"),
     ].join(":");
 
-    return `${datePart}, ${timePart}`;
+    return `${datePart}, ${timePart} WIB`;
   }
 
   function formatDuration(seconds: number) {
@@ -1134,15 +1134,23 @@
                     >
                       {user.username}
                     </h4>
-                    <span
-                      class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold uppercase {user.is_suspended
-                        ? 'bg-red-100 text-red-700'
-                        : user.role === 'admin'
-                          ? 'bg-amber-100 text-amber-800'
-                          : 'bg-slate-100 text-slate-700'}"
-                    >
-                      {user.is_suspended ? "Disuspend" : user.role} &bull; {user.status}
-                    </span>
+                    <div class="flex flex-col gap-1 items-start mt-1">
+                      <span
+                        class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold uppercase {user.is_suspended
+                          ? 'bg-red-100 text-red-700'
+                          : user.role === 'admin'
+                            ? 'bg-amber-100 text-amber-800'
+                            : 'bg-slate-100 text-slate-700'}"
+                      >
+                        {user.is_suspended ? "Disuspend" : user.role} &bull; {user.status}
+                      </span>
+                      {#if user.created_at}
+                        <span class="text-[11px] text-slate-500 font-medium flex items-center gap-1">
+                          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                          {formatDate(user.created_at)}
+                        </span>
+                      {/if}
+                    </div>
                   </div>
                 </div>
                 <div class="flex gap-2">
