@@ -210,7 +210,7 @@
               <!-- Secondary: Masuk Portal -->
               <a
                 href="/login"
-                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
+                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
               >
                 <svg
                   class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -222,16 +222,16 @@
                     stroke-linecap="round"
                     stroke-linejoin="round"
                     stroke-width="2"
-                    d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"
+                    d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25"
                   />
                 </svg>
-                Masuk Portal
+                Les App
               </a>
             {:else}
               <!-- Primary: Dashboard -->
               <a
                 href="/dashboard"
-                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md hover:scale-105 transition-all duration-300 no-underline"
+                class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
               >
                 <svg
                   class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
@@ -252,42 +252,21 @@
           {:else}
             <!-- Placeholder to prevent layout shift while checking auth -->
             <div
-              class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-sm animate-pulse"
+              class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-md animate-pulse"
             >
               <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
               <div class="h-3 w-20 bg-indigo-200 rounded"></div>
             </div>
           {/if}
 
-          <!-- Secondary: Panduan -->
-          <a
-            href="/panduan"
-            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-slate-400 hover:border-slate-500 text-slate-700 hover:text-slate-900 text-xs font-semibold tracking-[0.15em] uppercase backdrop-blur-sm shadow-sm hover:shadow-md transition-all duration-300 no-underline"
-          >
-            Panduan
-            <svg
-              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-slate-500"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M17 8l4 4m0 0l-4 4m4-4H3"
-              />
-            </svg>
-          </a>
-
           <!-- Kuis App -->
           <a
             href="/quiz-app"
-            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-gradient-to-r from-violet-600 to-indigo-600 hover:from-violet-500 hover:to-indigo-500 border border-transparent text-white text-xs font-bold tracking-[0.15em] uppercase shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
+            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
           >
             Kuis App
             <svg
-              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5 text-white"
+              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
