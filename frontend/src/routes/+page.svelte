@@ -249,36 +249,43 @@
                 Dashboard
               </a>
             {/if}
+
+            <!-- Kuis App -->
+            <a
+              href="/quiz-app"
+              class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
+            >
+              Kuis App
+              <svg
+                class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M13 10V3L4 14h7v7l9-11h-7z"
+                />
+              </svg>
+            </a>
           {:else}
-            <!-- Placeholder to prevent layout shift while checking auth -->
+            <!-- Placeholders to prevent layout shift while checking auth -->
             <div
               class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-md animate-pulse"
             >
               <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
               <div class="h-3 w-20 bg-indigo-200 rounded"></div>
             </div>
-          {/if}
-
-          <!-- Kuis App -->
-          <a
-            href="/quiz-app"
-            class="group inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/70 hover:bg-white border border-indigo-400 hover:border-indigo-500 text-indigo-600 hover:text-indigo-700 text-xs font-bold tracking-[0.15em] uppercase backdrop-blur-sm shadow-md hover:shadow-lg hover:scale-105 transition-all duration-300 no-underline"
-          >
-            Kuis App
-            <svg
-              class="w-3.5 h-3.5 transition-transform duration-300 group-hover:translate-x-0.5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+            
+            <div
+              class="inline-flex items-center justify-center w-48 gap-2.5 px-6 py-3 rounded-full bg-white/50 border border-indigo-200 backdrop-blur-sm shadow-md animate-pulse"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M13 10V3L4 14h7v7l9-11h-7z"
-              />
-            </svg>
-          </a>
+              <div class="h-3 w-16 bg-indigo-200 rounded"></div>
+              <div class="w-3.5 h-3.5 bg-indigo-200 rounded-full"></div>
+            </div>
+          {/if}
         </div>
 
         <!-- Featured New Feature: Belajar Coding & Berhitung -->
