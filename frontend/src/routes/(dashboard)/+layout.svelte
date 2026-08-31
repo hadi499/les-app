@@ -127,10 +127,10 @@
         method: "POST",
         credentials: "include",
       });
-      goto("/login");
+      window.location.href = "/login";
     } catch (e) {
       console.error(e);
-      goto("/login");
+      window.location.href = "/login";
     }
   }
 
