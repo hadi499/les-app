@@ -8,7 +8,7 @@ import (
 )
 
 func SetupRoutes(r *gin.Engine) {
-	r.POST("/api/auth/register", controllers.Register)
+	r.POST("/api/auth/register", middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"), controllers.Register)
 	r.POST("/api/auth/login", controllers.Login)
 	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
 	r.PUT("/api/auth/change-password", middleware.AuthMiddleware(), controllers.ChangePassword)
@@ -140,8 +140,6 @@ func SetupRoutes(r *gin.Engine) {
 		folders.DELETE("/:id", controllers.DeleteFolder)
 	}
 
-
-
 	// Card Folders API routes (Teacher only)
 	cardFolders := r.Group("/api/card-folders")
 	cardFolders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
@@ -151,8 +149,6 @@ func SetupRoutes(r *gin.Engine) {
 		cardFolders.PUT("/:id", controllers.UpdateCardFolder)
 		cardFolders.DELETE("/:id", controllers.DeleteCardFolder)
 	}
-
-
 
 	// Materi API routes
 	materis := r.Group("/api/materis")
@@ -181,7 +177,6 @@ func SetupRoutes(r *gin.Engine) {
 		absences.PUT("/:id", middleware.RoleMiddleware("teacher"), controllers.UpdateAbsence)
 		absences.DELETE("/:id", middleware.RoleMiddleware("teacher"), controllers.DeleteAbsence)
 	}
-
 
 	// Scores API routes (User submission)
 	scores := r.Group("/api/scores")
