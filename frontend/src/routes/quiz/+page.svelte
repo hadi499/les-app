@@ -1,0 +1,180 @@
+<script lang="ts">
+  import { onMount } from "svelte";
+
+  type Quiz = {
+    id: number;
+    title: string;
+    category: string;
+    timeLimit: number;
+    is_published?: boolean;
+  };
+
+  let quizzes: Quiz[] = $state([]);
+  let isLoading = $state(true);
+
+  import { goto } from "$app/navigation";
+
+  onMount(async () => {
+    try {
+      // Cek apakah user sudah login
+      const authRes = await fetch(`/me`, { credentials: "include" });
+      const authData = await authRes.json();
+      if (!authData.authenticated) {
+        goto("/login");
+        return;
+      }
+
+      const res = await fetch(`/api/quizzes`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        const allQuizzes = json.data || [];
+        // Saring kuis, hanya tampilkan yang sudah di-publish
+        quizzes = allQuizzes.filter((q: Quiz) => q.is_published);
+      } else {
+        console.error("Gagal memuat kuis:", res.status);
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      isLoading = false;
+    }
+  });
+</script>
+
+<svelte:head>
+  <title>Kuis Tersedia | Les Balongarut</title>
+  <meta
+    name="description"
+    content="Uji kemampuanmu lewat kuis interaktif Les Balongarut — Matematika, Komputer, Bahasa Inggris, dan TKA. Pilih kuis dan mulai belajar sekarang!"
+  />
+  <link rel="canonical" href="https://lesbalonggarut.my.id/quiz" />
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://lesbalonggarut.my.id/quiz" />
+  <meta property="og:title" content="Kuis Tersedia | Les Balongarut" />
+  <meta
+    property="og:description"
+    content="Uji kemampuanmu lewat kuis interaktif — Matematika, Komputer, Bahasa Inggris, dan TKA."
+  />
+  <meta property="og:site_name" content="Les Balongarut" />
+  <meta property="og:locale" content="id_ID" />
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Kuis Tersedia | Les Balongarut" />
+  <meta
+    name="twitter:description"
+    content="Uji kemampuanmu lewat kuis interaktif di Les Balongarut."
+  />
+</svelte:head>
+
+<div
+  class="min-h-screen bg-slate-50 font-sans flex flex-col relative overflow-x-hidden pt-24 px-4"
+>
+  <!-- Background Ambient -->
+  <div class="absolute inset-0 z-0 pointer-events-none fixed">
+    <div
+      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
+    ></div>
+    <div
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
+    ></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-4xl mx-auto pb-12">
+    <div class="text-center mb-12">
+      <h1
+        class="text-4xl sm:text-5xl font-bold tracking-[0.1em] text-slate-900 uppercase mb-4"
+      >
+        Daftar Kuis
+      </h1>
+      <p
+        class="text-slate-600 tracking-[0.1em] text-sm font-medium max-w-lg mx-auto"
+      >
+        Uji kemampuanmu dengan memilih salah satu kuis yang tersedia di bawah
+        ini.
+      </p>
+    </div>
+
+    {#if isLoading}
+      <div class="flex justify-center p-12">
+        <div
+          class="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"
+        ></div>
+      </div>
+    {:else if quizzes.length === 0}
+      <div
+        class="text-center bg-white/60 backdrop-blur-md p-8 rounded-2xl border border-slate-200 shadow-sm"
+      >
+        <p class="text-slate-800 font-medium">
+          Belum ada kuis yang tersedia saat ini.
+        </p>
+      </div>
+    {:else}
+      <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        {#each quizzes as quiz}
+          <div
+            class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all group flex flex-col"
+          >
+            <div class="mb-4">
+              <span
+                class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider rounded-lg mb-3"
+              >
+                {quiz.category}
+              </span>
+              <h2
+                class="text-xl font-bold text-slate-900 line-clamp-2 leading-tight py-2"
+              >
+                {quiz.title}
+              </h2>
+            </div>
+            <div
+              class="mt-auto pt-4 flex items-center justify-between border-t border-slate-100"
+            >
+              <div
+                class="flex items-center gap-1.5 text-xs font-semibold text-slate-600"
+              >
+                <svg
+                  class="w-4 h-4"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                </svg>
+                {quiz.timeLimit} detik/soal
+              </div>
+              <a
+                href="/quiz/{quiz.id}"
+                class="text-sm font-bold text-blue-600 group-hover:text-blue-700 uppercase tracking-wider transition-colors no-underline flex items-center gap-1"
+              >
+                Mulai
+                <svg
+                  class="w-4 h-4 transform group-hover:translate-x-1 transition-transform"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </a>
+            </div>
+          </div>
+        {/each}
+      </div>
+    {/if}
+  </div>
+</div>

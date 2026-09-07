@@ -1,0 +1,243 @@
+package routes
+
+import (
+	"backend/controllers"
+	"backend/middleware"
+
+	"github.com/gin-gonic/gin"
+)
+
+func SetupRoutes(r *gin.Engine) {
+	r.POST("/api/auth/register", controllers.Register)
+	r.POST("/api/auth/login", controllers.Login)
+	r.POST("/api/auth/logout", middleware.AuthMiddleware(), controllers.Logout)
+	r.PUT("/api/auth/change-password", middleware.AuthMiddleware(), controllers.ChangePassword)
+
+	// Route /me tidak menggunakan AuthMiddleware agar bisa mereturn 200 dengan status authenticated = false
+	// alih-alih mereturn 401 Unauthorized yang akan memicu log merah di browser.
+	r.GET("/me", controllers.Me)
+
+	// Users API routes (Teacher only)
+	users := r.Group("/api/users")
+	users.Use(middleware.AuthMiddleware())
+	{
+		users.GET("", controllers.GetUsers)
+		users.PUT("/:id", controllers.UpdateUser)
+		users.DELETE("/:id", controllers.DeleteUser)
+		users.POST("/:id/reset-password", controllers.ResetUserPassword)
+		users.POST("/reset-points", middleware.RoleMiddleware("teacher"), controllers.ResetAllPoints)
+	}
+
+	// Typing API routes
+	typing := r.Group("/api/typing")
+	typing.Use(middleware.AuthMiddleware())
+	{
+		typing.GET("/progress", controllers.GetProgress)
+		typing.POST("/progress", controllers.SaveProgress)
+		typing.GET("/game-scores", controllers.GetGameScores)
+		typing.POST("/game-scores", controllers.SaveGameScore)
+		typing.GET("/history/game", controllers.GetGameHistory)
+		typing.GET("/history/lesson", controllers.GetLessonHistory)
+
+		// Admin/Teacher routes
+		admin := typing.Group("/admin")
+		admin.Use(middleware.RoleMiddleware("teacher"))
+		{
+			admin.GET("/progress", controllers.GetAllLessonProgress)
+			admin.GET("/game-scores", controllers.GetAllGameScores)
+			admin.GET("/history/game", controllers.GetAllGameHistory)
+			admin.GET("/history/lesson", controllers.GetAllLessonHistory)
+		}
+	}
+
+	// Cards API routes
+	cards := r.Group("/api/cards")
+	cards.Use(middleware.AuthMiddleware())
+	{
+		// Read can be done by any authenticated user (e.g. students or teachers viewing cards)
+		cards.GET("", controllers.GetCards)
+
+		// Teacher only for modifications
+		teacherOnly := cards.Group("")
+		teacherOnly.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherOnly.POST("", controllers.CreateCard)
+			teacherOnly.PUT("/:id", controllers.UpdateCard)
+			teacherOnly.DELETE("/:id", controllers.DeleteCard)
+
+			teacherOnly.GET("/trash", controllers.GetTrashCards)
+			teacherOnly.POST("/trash/:id/restore", controllers.RestoreCard)
+			teacherOnly.DELETE("/trash/:id/force", controllers.ForceDeleteCard)
+			teacherOnly.DELETE("/trash/empty", controllers.EmptyTrash)
+		}
+	}
+
+	// Upload API routes (Teacher only)
+	uploads := r.Group("/api/upload")
+	uploads.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		uploads.POST("", controllers.UploadImage)
+		uploads.DELETE("", controllers.DeleteUploadedImage)
+	}
+
+	imagesAPI := r.Group("/api/images")
+	imagesAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		imagesAPI.GET("", controllers.ListImages)
+	}
+
+	// Notes API routes
+	notes := r.Group("/api/notes")
+	notes.Use(middleware.AuthMiddleware())
+	{
+		notes.GET("", controllers.GetNotes)
+		notes.POST("", controllers.CreateNote)
+		notes.PUT("/:id", controllers.UpdateNote)
+		notes.DELETE("/:id", controllers.DeleteNote)
+	}
+
+	// Subjects API routes
+	subjects := r.Group("/api/subjects")
+	subjects.Use(middleware.AuthMiddleware())
+	{
+		subjects.GET("", controllers.GetSubjects)
+
+		teacherSubjects := subjects.Group("")
+		teacherSubjects.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherSubjects.POST("", controllers.CreateSubject)
+			teacherSubjects.PUT("/:id", controllers.UpdateSubject)
+			teacherSubjects.DELETE("/:id", controllers.DeleteSubject)
+		}
+	}
+
+	// Quizzes API routes
+	quizzes := r.Group("/api/quizzes")
+	quizzes.Use(middleware.AuthMiddleware())
+	{
+		quizzes.GET("", controllers.GetQuizzes)
+		quizzes.GET("/:id", controllers.GetQuizByID)
+
+		teacherQuizzes := quizzes.Group("")
+		teacherQuizzes.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherQuizzes.POST("", controllers.CreateQuiz)
+			teacherQuizzes.PUT("/:id", controllers.UpdateQuiz)
+			teacherQuizzes.DELETE("/:id", controllers.DeleteQuiz)
+			teacherQuizzes.GET("/scores", controllers.GetQuizScores)
+			teacherQuizzes.DELETE("/:id/scores", controllers.ResetQuizScores)
+			teacherQuizzes.POST("/:id/duplicate", controllers.DuplicateQuiz)
+		}
+	}
+
+	// Folders API routes (Teacher only)
+	folders := r.Group("/api/folders")
+	folders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		folders.GET("", controllers.GetFolders)
+		folders.POST("", controllers.CreateFolder)
+		folders.PUT("/:id", controllers.UpdateFolder)
+		folders.DELETE("/:id", controllers.DeleteFolder)
+	}
+
+
+
+	// Card Folders API routes (Teacher only)
+	cardFolders := r.Group("/api/card-folders")
+	cardFolders.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		cardFolders.GET("", controllers.GetCardFolders)
+		cardFolders.POST("", controllers.CreateCardFolder)
+		cardFolders.PUT("/:id", controllers.UpdateCardFolder)
+		cardFolders.DELETE("/:id", controllers.DeleteCardFolder)
+	}
+
+
+
+	// Materi API routes
+	materis := r.Group("/api/materis")
+	materis.Use(middleware.AuthMiddleware())
+	{
+		materis.GET("", controllers.GetMateris)
+		materis.GET("/:id", controllers.GetMateriByID)
+
+		teacherMateris := materis.Group("")
+		teacherMateris.Use(middleware.RoleMiddleware("teacher"))
+		{
+			teacherMateris.POST("", controllers.CreateMateri)
+			teacherMateris.PUT("/:id", controllers.UpdateMateri)
+			teacherMateris.DELETE("/:id", controllers.DeleteMateri)
+		}
+	}
+
+	// Absences API routes
+	absences := r.Group("/api/absences")
+	absences.Use(middleware.AuthMiddleware())
+	{
+		absences.POST("", middleware.RoleMiddleware("teacher"), controllers.CreateAbsence)
+		absences.GET("/recap", controllers.GetAbsenceRecap)
+		absences.GET("/user/:id", controllers.GetAbsenceHistory)
+		absences.POST("/reset", middleware.RoleMiddleware("teacher"), controllers.ResetAbsences)
+		absences.PUT("/:id", middleware.RoleMiddleware("teacher"), controllers.UpdateAbsence)
+		absences.DELETE("/:id", middleware.RoleMiddleware("teacher"), controllers.DeleteAbsence)
+	}
+
+
+	// Scores API routes (User submission)
+	scores := r.Group("/api/scores")
+	scores.Use(middleware.AuthMiddleware())
+	{
+		scores.POST("/quizzes", controllers.SubmitQuizScore)
+		scores.GET("/quizzes", controllers.GetMyQuizScores)
+	}
+
+	// System API routes (Teacher only)
+	system := r.Group("/api/system")
+	system.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		system.GET("/info", controllers.GetSystemInfo)
+	}
+
+	// Logs API routes (Teacher only)
+	logsAPI := r.Group("/api/logs")
+	logsAPI.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		logsAPI.GET("", controllers.GetLogs)
+	}
+
+	// Quotes API routes
+	quotes := r.Group("/api/quotes")
+	{
+		quotes.GET("", controllers.GetPublicQuotes) // public
+
+		adminQuotes := quotes.Group("")
+		adminQuotes.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+		{
+			adminQuotes.GET("/all", controllers.GetAllQuotes)
+			adminQuotes.POST("", controllers.CreateQuote)
+			adminQuotes.PUT("/:id", controllers.UpdateQuote)
+			adminQuotes.DELETE("/:id", controllers.DeleteQuote)
+		}
+	}
+
+	// Settings API routes
+	r.GET("/api/settings", controllers.GetSettings) // Publik
+
+	settingsAdmin := r.Group("/api/settings")
+	settingsAdmin.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+	{
+		settingsAdmin.PUT("/:key", controllers.UpdateSetting)
+	}
+
+	// Chat API routes
+	chat := r.Group("/api/chat")
+	chat.Use(middleware.AuthMiddleware())
+	{
+		chat.GET("/contacts", controllers.GetContacts)
+		chat.GET("/history/:userId", controllers.GetChatHistory)
+		chat.GET("/unread-count", controllers.GetUnreadCount)
+		chat.DELETE("/messages/:id", controllers.DeleteMessage)
+		chat.POST("/broadcast", middleware.RoleMiddleware("teacher"), controllers.BroadcastMessage)
+	}
+	r.GET("/ws/chat", middleware.AuthMiddleware(), controllers.HandleChatWebSocket)
+}

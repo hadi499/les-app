@@ -1,0 +1,695 @@
+<script lang="ts">
+  import { onMount, onDestroy } from "svelte";
+  import { slide, fade } from "svelte/transition";
+  import { page } from "$app/state";
+  import { goto, beforeNavigate } from "$app/navigation";
+  import Modal from "$lib/components/Modal.svelte";
+  import katex from "katex";
+  import "katex/dist/katex.min.css";
+
+  let quizId = $derived(page.params.id);
+
+  type Question = {
+    id: number;
+    question: string;
+    image?: string;
+    options: string[];
+    answer: number;
+  };
+
+  type Quiz = {
+    id: number;
+    title: string;
+    category: string;
+    timeLimit: number;
+    questions: Question[];
+  };
+
+  let quiz = $state<Quiz | null>(null);
+  let isLoading = $state(true);
+
+  // State
+  let currentQuestionIndex = $state(0);
+  let userAnswers = $state<
+    {
+      question: string;
+      image?: string;
+      answer: string | null;
+      correct: string;
+      isCorrect: boolean;
+    }[]
+  >([]);
+  let isFinished = $state(false);
+  let timeLeft = $state(15);
+  let timerInterval: ReturnType<typeof setInterval>;
+  let isSubmitting = $state(false);
+  let showLeaveModal = $state(false);
+  let targetUrl = $state<string | null>(null);
+  let hasConfirmedLeave = $state(false);
+  let pointsEarned = $state(0);
+  let pointsAlreadyClaimed = $state(false);
+
+  let showErrorModal = $state(false);
+  let errorMessage = $state("");
+  let errorRedirectTarget = $state("/dashboard/quizzes");
+
+  function closeErrorModal() {
+    showErrorModal = false;
+    goto(errorRedirectTarget);
+  }
+
+  const currentQuestion = $derived(
+    quiz && quiz.questions ? quiz.questions[currentQuestionIndex] : null,
+  );
+  const score = $derived(userAnswers.filter((a) => a.isCorrect).length * 10); // 10 points per correct answer
+
+  beforeNavigate((navigation) => {
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
+      navigation.cancel();
+      targetUrl = navigation.to?.url.pathname || "/quiz";
+      showLeaveModal = true;
+    }
+  });
+
+  async function confirmLeave() {
+    showLeaveModal = false;
+    hasConfirmedLeave = true;
+
+    // Submit score 0 saat user memilih keluar
+    try {
+      await fetch(`/api/scores/quizzes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: Number(quizId),
+          score: 0,
+        }),
+      });
+    } catch (e) {
+      console.error(e);
+    }
+
+    if (targetUrl) {
+      goto(targetUrl);
+    }
+  }
+
+  function cancelLeave() {
+    showLeaveModal = false;
+    targetUrl = null;
+  }
+
+  function handleBeforeUnload(e: BeforeUnloadEvent) {
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
+      e.preventDefault();
+      e.returnValue = "";
+    }
+  }
+
+  function handlePageHide() {
+    // This event fires reliably when the page is actually unloading (after user confirms they want to leave)
+    if (quiz && currentQuestion && !isFinished && !hasConfirmedLeave) {
+      hasConfirmedLeave = true;
+      fetch(`/api/scores/quizzes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: Number(quizId),
+          score: 0,
+        }),
+        keepalive: true,
+      }).catch(console.error);
+    }
+  }
+
+  function handleVisibilityChange() {
+    if (document.visibilityState === "hidden") {
+      handlePageHide();
+    }
+  }
+
+  onMount(async () => {
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("pagehide", handlePageHide);
+    document.addEventListener("visibilitychange", handleVisibilityChange);
+    try {
+      // Cek apakah user sudah login
+      const authRes = await fetch(`/me`, { credentials: "include" });
+      const authData = await authRes.json();
+      if (!authData.authenticated) {
+        goto("/login");
+        return;
+      }
+
+      const res = await fetch(`/api/quizzes/${quizId}`, {
+        credentials: "include",
+      });
+      if (res.ok) {
+        const json = await res.json();
+        quiz = json.data;
+        if (quiz && quiz.questions && quiz.questions.length > 0) {
+          timeLeft = quiz.timeLimit;
+          startTimer();
+        } else {
+          errorMessage = "Kuis tidak memiliki pertanyaan.";
+          showErrorModal = true;
+        }
+      } else {
+        const errorData = await res.json().catch(() => ({}));
+        errorMessage = errorData.error || "Kuis tidak ditemukan.";
+        showErrorModal = true;
+      }
+    } catch (e) {
+      console.error(e);
+      errorMessage = "Gagal memuat kuis.";
+      showErrorModal = true;
+    } finally {
+      isLoading = false;
+    }
+  });
+
+  onDestroy(() => {
+    clearInterval(timerInterval);
+    if (typeof window !== "undefined") {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+      window.removeEventListener("pagehide", handlePageHide);
+      document.removeEventListener("visibilitychange", handleVisibilityChange);
+    }
+  });
+
+  function startTimer() {
+    clearInterval(timerInterval);
+    if (quiz) {
+      timeLeft = quiz.timeLimit;
+    }
+    timerInterval = setInterval(() => {
+      timeLeft--;
+      if (timeLeft <= 0) {
+        handleTimeout();
+      }
+    }, 1000);
+  }
+
+  function handleTimeout() {
+    recordAnswer(null, -1);
+  }
+
+  function handleAnswer(optionText: string, optionIndex: number) {
+    recordAnswer(optionText, optionIndex);
+  }
+
+  function recordAnswer(answerText: string | null, answerIndex: number) {
+    clearInterval(timerInterval);
+    if (!currentQuestion) return;
+
+    userAnswers = [
+      ...userAnswers,
+      {
+        question: currentQuestion.question,
+        image: currentQuestion.image,
+        answer: answerText,
+        correct: currentQuestion.options[currentQuestion.answer],
+        isCorrect: answerIndex === currentQuestion.answer,
+      },
+    ];
+
+    if (quiz && currentQuestionIndex < quiz.questions.length - 1) {
+      currentQuestionIndex++;
+      startTimer();
+    } else {
+      isFinished = true;
+      submitScore();
+    }
+  }
+
+  async function submitScore() {
+    isSubmitting = true;
+    console.log("Mencoba submit score:", {
+      quiz_id: Number(quizId),
+      score: score,
+    });
+    try {
+      const res = await fetch(`/api/scores/quizzes`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          quiz_id: Number(quizId),
+          score: score,
+        }),
+      });
+      console.log("Response status:", res.status);
+
+      if (res.status === 401) {
+        errorMessage =
+          "Sesi Anda telah berakhir atau akun tidak ditemukan. Silakan login kembali.";
+        errorRedirectTarget = "/login";
+        showErrorModal = true;
+        return;
+      }
+
+      if (!res.ok) {
+        let errorMsg = `Gagal submit score: ${res.status}`;
+        try {
+          const errorJson = await res.json();
+          errorMsg = errorJson.error || errorMsg;
+        } catch (err) {
+          console.error("Could not parse error JSON");
+        }
+        console.error("Gagal submit score, status:", res.status, errorMsg);
+        errorMessage = errorMsg;
+        showErrorModal = true;
+      } else {
+        const json = await res.json();
+        pointsEarned = json.points_earned || 0;
+        pointsAlreadyClaimed = json.points_already_claimed || false;
+        console.log("Berhasil submit score!");
+      }
+    } catch (e) {
+      console.error("Fetch error:", e);
+      errorMessage =
+        "Error saat koneksi ke server untuk submit score: " +
+        (e instanceof Error ? e.message : String(e));
+      showErrorModal = true;
+    } finally {
+      isSubmitting = false;
+    }
+  }
+
+  function restartQuiz() {
+    currentQuestionIndex = 0;
+    userAnswers = [];
+    isFinished = false;
+    pointsEarned = 0;
+    pointsAlreadyClaimed = false;
+    startTimer();
+  }
+
+  function renderText(text: string | null) {
+    if (!text) return "";
+
+    // Replace block math $$...$$
+    let rendered = text.replace(/\$\$([\s\S]*?)\$\$/g, (match, math) => {
+      try {
+        return katex.renderToString(math, {
+          displayMode: true,
+          throwOnError: false,
+        });
+      } catch (e) {
+        return match;
+      }
+    });
+
+    // Replace inline math $...$
+    rendered = rendered.replace(/\$([^$]*?)\$/g, (match, math) => {
+      try {
+        return katex.renderToString(math, {
+          displayMode: false,
+          throwOnError: false,
+        });
+      } catch (e) {
+        return match;
+      }
+    });
+
+    return rendered;
+  }
+</script>
+
+<svelte:head>
+  <title>Kuis | Les Balongarut</title>
+</svelte:head>
+
+<div
+  class="min-h-screen bg-slate-50 font-sans selection:bg-blue-200 selection:text-blue-900 flex flex-col items-center py-12 px-4 relative overflow-clip pt-24"
+>
+  <!-- Background Ambient -->
+  <div class="absolute inset-0 z-0 pointer-events-none fixed">
+    <div
+      class="absolute top-1/4 left-1/4 w-[600px] h-[600px] bg-white/40 rounded-full blur-[120px]"
+    ></div>
+    <div
+      class="absolute bottom-1/4 right-1/4 w-[500px] h-[500px] bg-blue-100/50 rounded-full blur-[120px]"
+    ></div>
+  </div>
+
+  <div class="relative z-10 w-full max-w-2xl mx-auto flex flex-col gap-6">
+    {#if isLoading}
+      <div class="flex justify-center p-12">
+        <div
+          class="w-10 h-10 border-4 border-slate-200 border-t-blue-600 rounded-full animate-spin"
+        ></div>
+      </div>
+    {:else if quiz && currentQuestion}
+      {#if !isFinished}
+        <!-- Header Info: Soal ke & Timer -->
+        <div
+          class="sticky top-24 z-50 flex justify-between items-center py-4 bg-transparent"
+        >
+          <div
+            class="text-sm font-bold tracking-[0.1em] text-slate-800 uppercase flex flex-col"
+          >
+            <span>{quiz.title}</span>
+            <div class="flex items-center gap-1.5 mt-1.5">
+              {#each quiz.questions as _, idx}
+                <div
+                  class="w-2 h-2 rounded-full transition-colors duration-300 {idx ===
+                  currentQuestionIndex
+                    ? 'bg-blue-600 scale-125'
+                    : idx < currentQuestionIndex
+                      ? 'bg-blue-300'
+                      : 'bg-slate-200'}"
+                  aria-hidden="true"
+                ></div>
+              {/each}
+            </div>
+          </div>
+          <div class="flex items-center gap-2">
+            <div
+              class="text-xs font-semibold uppercase tracking-wider text-slate-600"
+            >
+              Waktu:
+            </div>
+            <div
+              class="w-10 h-10 rounded-full bg-slate-100 border border-slate-300 flex items-center justify-center font-bold text-slate-800 shadow-sm {timeLeft <=
+              5
+                ? 'text-red-600 bg-red-50 border-red-200 animate-pulse'
+                : ''}"
+            >
+              {timeLeft}
+            </div>
+          </div>
+        </div>
+
+        <!-- Question Card -->
+        <div
+          in:fade={{ duration: 300 }}
+          class="bg-white/80 backdrop-blur-xl rounded-3xl p-8 shadow-md border border-slate-200 flex flex-col gap-8"
+        >
+          {#if currentQuestion.image}
+            <div
+              class="w-[85%] md:w-[50%] lg:w-[40%] mx-auto flex justify-center mb-2"
+            >
+              <img
+                src={currentQuestion.image}
+                alt="Gambar Pertanyaan"
+                class="max-w-full h-auto rounded-xl shadow-sm object-contain max-h-[300px] md:max-h-[250px]"
+              />
+            </div>
+          {/if}
+
+          <h2
+            class="text-xl sm:text-2xl font-bold text-slate-900 leading-tight"
+          >
+            {@html renderText(currentQuestion.question)}
+          </h2>
+
+          <div class="flex flex-col gap-3">
+            {#each currentQuestion.options as option, optIndex}
+              <button
+                onclick={() => handleAnswer(option, optIndex)}
+                class="w-full flex items-center gap-4 text-left px-6 py-4 rounded-xl border-2 border-slate-200 hover:border-slate-300 bg-white hover:bg-slate-50 text-slate-800 font-semibold transition-colors duration-200 cursor-pointer shadow-sm"
+              >
+                <span
+                  class="flex items-center justify-center w-8 h-8 rounded-lg bg-slate-200 text-slate-700 font-bold flex-shrink-0"
+                >
+                  {String.fromCharCode(65 + optIndex)}
+                </span>
+                <span>{@html renderText(option)}</span>
+              </button>
+            {/each}
+          </div>
+        </div>
+      {:else}
+        <!-- Result Modal / Card -->
+        <div
+          in:slide
+          class="bg-white/90 backdrop-blur-xl rounded-3xl p-8 shadow-xl border border-slate-300 flex flex-col gap-8 relative overflow-hidden"
+        >
+          <!-- Score Section -->
+          <div
+            class="flex flex-col items-center gap-2 text-center relative z-10 border-b border-slate-200 pb-8"
+          >
+            <div
+              class="text-sm font-bold tracking-[0.2em] uppercase text-slate-600 mb-2"
+            >
+              Skor Akhir
+            </div>
+            <div
+              class="text-[5rem] leading-none font-black text-blue-600 drop-shadow-sm"
+            >
+              {score}
+            </div>
+            <p class="text-slate-600 font-medium text-sm">
+              Total Benar: {userAnswers.filter((a) => a.isCorrect).length} dari {quiz
+                .questions.length} Soal
+            </p>
+            {#if isSubmitting}
+              <p class="text-xs text-blue-500 font-medium animate-pulse mt-2">
+                Menyimpan skor...
+              </p>
+            {:else if pointsEarned > 0}
+              <div
+                class="mt-2 bg-yellow-100 text-yellow-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-yellow-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-yellow-500"
+                  fill="currentColor"
+                  viewBox="0 0 20 20"
+                >
+                  <path
+                    d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"
+                  />
+                </svg>
+                Selamat! Anda mendapatkan {pointsEarned} poin tambahan!
+              </div>
+            {:else if pointsAlreadyClaimed}
+              <div
+                class="mt-2 bg-slate-100 text-slate-700 px-4 py-2 rounded-lg font-medium text-sm flex items-center gap-2 border border-slate-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-slate-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  ></path>
+                </svg>
+                Poin kuis ini sudah pernah diambil sebelumnya.
+              </div>
+            {:else if score < 80}
+              <div
+                class="mt-2 bg-red-100 text-red-800 px-4 py-2 rounded-lg font-bold text-sm flex items-center gap-2 border border-red-200 shadow-sm animate-in zoom-in duration-300"
+              >
+                <svg
+                  class="w-5 h-5 text-red-500"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  ></path>
+                </svg>
+                Gagal dapat poin, nilai di bawah 80.
+              </div>
+            {/if}
+          </div>
+
+          <!-- Review Section -->
+          <div class="flex flex-col gap-6 relative z-10">
+            <h3
+              class="text-lg font-bold tracking-[0.1em] text-slate-800 uppercase border-l-4 border-blue-400 pl-3"
+            >
+              Ulasan Jawaban
+            </h3>
+
+            <div
+              class="flex flex-col gap-4 max-h-[50vh] overflow-y-auto pr-2 custom-scrollbar"
+            >
+              {#each userAnswers as ans, index}
+                <div
+                  class="p-4 rounded-xl border border-slate-200 bg-white/50 space-y-2"
+                >
+                  <div class="flex justify-between items-start gap-4">
+                    <div class="flex flex-col gap-2">
+                      {#if ans.image}
+                        <img
+                          src={ans.image}
+                          alt="Gambar Pertanyaan"
+                          class="w-full max-w-50 md:max-w-48 rounded-lg border border-slate-200 mb-1"
+                        />
+                      {/if}
+                      <p class="font-semibold text-slate-800 text-sm m-0">
+                        {index + 1}. {@html renderText(ans.question)}
+                      </p>
+                    </div>
+                    {#if ans.isCorrect}
+                      <span
+                        class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-green-100 text-green-700"
+                        >Benar</span
+                      >
+                    {:else}
+                      <span
+                        class="inline-flex items-center justify-center px-2 py-1 rounded text-xs font-bold bg-red-100 text-red-700"
+                        >Salah</span
+                      >
+                    {/if}
+                  </div>
+
+                  <div class="text-sm flex flex-col gap-1 mt-2">
+                    <div class="flex gap-2 items-center">
+                      <span class="text-slate-500 font-medium"
+                        >Jawaban Anda:</span
+                      >
+                      <span
+                        class={ans.isCorrect
+                          ? "text-green-700 font-semibold"
+                          : "text-red-600 font-semibold"}
+                      >
+                        {@html renderText(
+                          ans.answer === null ? "Tidak Menjawab" : ans.answer,
+                        )}
+                      </span>
+                    </div>
+                    {#if !ans.isCorrect}
+                      <div class="flex gap-2 items-center">
+                        <span class="text-slate-500 font-medium"
+                          >Jawaban Benar:</span
+                        >
+                        <span class="text-green-700 font-semibold"
+                          >{@html renderText(ans.correct)}</span
+                        >
+                      </div>
+                    {/if}
+                  </div>
+                </div>
+              {/each}
+            </div>
+          </div>
+
+          <div class="flex justify-center pt-4 relative z-10 gap-4">
+            <a
+              href="/dashboard/quizzes"
+              class="inline-flex items-center justify-center px-6 py-3 text-xs tracking-[0.1em] font-bold uppercase text-slate-700 bg-white border border-slate-300 hover:border-slate-500 hover:text-slate-900 transition-all duration-300 rounded-lg shadow-sm cursor-pointer no-underline"
+            >
+              Kembali
+            </a>
+            <button
+              onclick={restartQuiz}
+              class="inline-flex items-center justify-center px-8 py-3 text-xs tracking-[0.2em] font-bold uppercase text-white bg-blue-600 border border-transparent hover:bg-blue-700 transition-all duration-300 rounded-lg overflow-hidden cursor-pointer shadow-md hover:shadow-lg"
+            >
+              Ulangi Kuis
+            </button>
+          </div>
+        </div>
+      {/if}
+    {/if}
+  </div>
+  <!-- Leave Confirmation Modal -->
+  <Modal show={showLeaveModal} onclose={cancelLeave}>
+    <div class="space-y-4 text-center">
+      <div
+        class="w-12 h-12 mx-auto rounded-full bg-red-100 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Konfirmasi Keluar</h3>
+        <p class="text-sm text-slate-600 mt-1">
+          Anda sedang mengerjakan kuis. Jika Anda keluar sekarang, skor Anda
+          akan dihitung 0. Apakah Anda yakin ingin keluar?
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-2">
+        <button
+          onclick={cancelLeave}
+          class="px-4 py-2 text-sm rounded-lg border border-slate-300 hover:bg-slate-50 text-slate-900 cursor-pointer font-medium"
+        >
+          Batal
+        </button>
+        <button
+          onclick={confirmLeave}
+          class="px-4 py-2 text-sm rounded-lg bg-red-500 text-white hover:bg-red-600 cursor-pointer font-medium shadow-sm"
+        >
+          Ya, Keluar
+        </button>
+      </div>
+    </div>
+  </Modal>
+
+  <Modal show={showErrorModal} onclose={closeErrorModal}>
+    <div class="text-center">
+      <div
+        class="w-12 h-12 rounded-full bg-red-100 mx-auto mb-4 flex items-center justify-center"
+      >
+        <svg
+          class="w-6 h-6 text-red-600"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+          />
+        </svg>
+      </div>
+      <div>
+        <h3 class="text-lg font-semibold text-slate-900">Akses Ditolak</h3>
+        <p class="text-sm text-slate-600 mt-2">
+          {errorMessage}
+        </p>
+      </div>
+      <div class="flex gap-2 justify-center pt-5">
+        <button
+          onclick={closeErrorModal}
+          class="px-5 py-2.5 text-sm rounded-xl bg-blue-600 text-white hover:bg-blue-700 cursor-pointer font-bold shadow-sm transition-colors"
+        >
+          Kembali ke Daftar Kuis
+        </button>
+      </div>
+    </div>
+  </Modal>
+</div>
+
+<style>
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: rgba(241, 245, 249, 0.5); /* slate-100 */
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(148, 163, 184, 0.5); /* slate-400 */
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(71, 85, 105, 0.8); /* slate-600 */
+  }
+</style>
