@@ -245,7 +245,7 @@
       />
     </div>
 
-    <div class="flex items-center justify-end gap-3 pt-6 border-t border-slate-100">
+    <div class="sticky bottom-0 z-40 flex items-center justify-end gap-3 p-4 sm:p-6 bg-white/90 backdrop-blur-md border-t border-slate-200 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.05)] rounded-b-2xl -mx-6 sm:-mx-8 -mb-6 sm:-mb-8 mt-6">
       <button type="button" onclick={() => goto("/dashboard/materi")} class="px-6 py-3 text-sm font-bold rounded-xl border border-slate-300 text-slate-700 hover:bg-slate-50 transition-colors cursor-pointer">Batal</button>
       <button type="submit" class="px-6 py-3 text-sm font-bold rounded-xl bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-500/20 transition-all cursor-pointer">Simpan Materi</button>
     </div>

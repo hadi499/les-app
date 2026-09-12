@@ -220,8 +220,11 @@
 
 {#if viewingMateri}
   <!-- VIEW: DETAIL MATERI -->
-  <div class="w-full mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:max-w-[210mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]">
-    <div class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-4 print:hidden mb-8 border-b border-slate-100 pb-5">
+  <div class="w-full flex flex-col gap-4 sm:gap-8 animate-in fade-in zoom-in-95 duration-200 print:block">
+    <!-- Toolbar -->
+    <div
+      class="sticky top-0 z-40 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-4 print:hidden py-3 px-4 sm:px-0 bg-slate-50 w-full max-w-4xl mx-auto"
+    >
       <button onclick={() => closeMateri()} class="flex items-center gap-2 text-slate-500 hover:text-slate-900 font-medium transition-colors cursor-pointer w-full justify-center sm:justify-start sm:w-auto">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
         Kembali
@@ -246,8 +249,11 @@
       </div>
     </div>
 
-    <!-- Print Area -->
-    <div class="print:block">
+    <!-- Paper Content -->
+    <div
+      class="w-full mx-auto md:max-w-[210mm] bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 relative min-h-[50vh] md:min-h-[297mm]"
+    >
+      <div class="print:block">
       <h1 class="text-xl sm:text-2xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight text-center sm:text-left">
         {viewingMateri.title}
       </h1>
@@ -269,6 +275,7 @@
       </div>
       <div class="prose prose-slate max-w-none text-slate-800 leading-loose whitespace-pre-wrap sm:text-justify wrap-break-word text-lg sm:text-(length:--base-size) print:text-(length:--base-size)" style="--base-size: {printFontSize}px; tab-size: 4;">
         {@html renderMathContent(viewingMateri.content)}
+      </div>
       </div>
     </div>
   </div>

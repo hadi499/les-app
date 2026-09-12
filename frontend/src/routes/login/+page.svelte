@@ -1,7 +1,6 @@
 <script lang="ts">
   import { goto } from "$app/navigation";
   import { onMount, getContext } from "svelte";
-  import { page } from "$app/state";
 
   let authState = getContext<{
     isAuthenticated: boolean;
@@ -16,7 +15,6 @@
   let showPassword = $state(false);
 
   onMount(async () => {
-
     try {
       const res = await fetch(`/me`, {
         credentials: "include",

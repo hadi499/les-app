@@ -453,11 +453,10 @@
 
 <!-- VIEW: DETAIL CATATAN -->
 {#if viewingNote}
-  <div
-    class="w-full mx-auto bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:max-w-[210mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 animate-in fade-in zoom-in-95 duration-200 relative min-h-[50vh] md:min-h-[297mm]"
-  >
+  <div class="w-full flex flex-col gap-4 sm:gap-8 animate-in fade-in zoom-in-95 duration-200 print:block">
+    <!-- Toolbar -->
     <div
-      class="flex flex-col sm:flex-row justify-between items-center gap-5 sm:gap-4 print:hidden mb-8 border-b border-slate-100 pb-5"
+      class="sticky top-0 z-40 flex flex-col sm:flex-row justify-between items-center gap-4 sm:gap-4 print:hidden py-3 px-4 sm:px-0 bg-slate-50 w-full max-w-4xl mx-auto"
     >
       <button
         onclick={() => closeNote()}
@@ -554,8 +553,11 @@
       </div>
     </div>
 
-    <!-- Print Area -->
-    <div class="print:block">
+    <!-- Paper Content -->
+    <div
+      class="w-full mx-auto md:max-w-[210mm] bg-transparent md:bg-white p-4 sm:p-6 md:p-[20mm] md:rounded-sm md:shadow-xl md:border border-slate-200 print:max-w-none print:border-none print:shadow-none print:p-0 print:m-0 print:min-h-0 relative min-h-[50vh] md:min-h-[297mm]"
+    >
+      <div class="print:block">
       <h1
         class="text-xl sm:text-2xl font-semibold text-slate-900 mb-4 tracking-tight leading-tight text-center sm:text-left print:hidden"
       >
@@ -606,6 +608,7 @@
         style="--base-size: {printFontSize}px; tab-size: 4;"
       >
         {@html renderMathContent(viewingNote.content)}
+      </div>
       </div>
     </div>
   </div>
@@ -1303,7 +1306,7 @@
       />
     </div>
 
-    <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
+    <div class="sticky bottom-0 -mx-4 -mb-4 p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 z-60">
       <button
         type="button"
         onclick={() => {
@@ -1348,7 +1351,7 @@
       />
     </div>
 
-    <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
+    <div class="sticky bottom-0 -mx-4 -mb-4 p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 z-60">
       <button
         type="button"
         onclick={() => (showFolderForm = false)}
@@ -1379,7 +1382,7 @@
         >"{noteToDelete?.title}"</strong
       >? Tindakan ini tidak dapat dibatalkan.
     </p>
-    <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
+    <div class="sticky bottom-0 -mx-4 -mb-4 p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 z-60">
       <button
         type="button"
         onclick={() => (showDeleteModal = false)}
@@ -1438,7 +1441,7 @@
         </div>
       </div>
     </div>
-    <div class="flex justify-end gap-3 pt-5 border-t border-slate-100">
+    <div class="sticky bottom-0 -mx-4 -mb-4 p-4 bg-slate-50 border-t border-slate-200 flex justify-end gap-3 z-60">
       <button
         type="button"
         onclick={() => (showMoveModal = false)}
