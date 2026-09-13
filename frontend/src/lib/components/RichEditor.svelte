@@ -90,6 +90,31 @@
         attributes: {
           class: `prose ${textSize} max-w-none focus:outline-none ${minHeight}`,
         },
+        handlePaste: (view, event, slice) => {
+          const items = event.clipboardData?.items;
+          if (items) {
+            for (const item of Array.from(items)) {
+              if (item.type.indexOf("image") === 0) {
+                const file = item.getAsFile();
+                if (file) {
+                  uploadFileAndInsert(file);
+                  return true;
+                }
+              }
+            }
+          }
+          return false;
+        },
+        handleDrop: (view, event, slice, moved) => {
+          if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
+            const file = event.dataTransfer.files[0];
+            if (file.type.indexOf("image") === 0) {
+              uploadFileAndInsert(file);
+              return true;
+            }
+          }
+          return false;
+        },
       },
     });
 
@@ -170,10 +195,7 @@
 
   let fileInput = $state<HTMLInputElement>();
 
-  async function handleImageUpload(e: Event) {
-    const file = (e.target as HTMLInputElement).files?.[0];
-    if (!file) return;
-
+  async function uploadFileAndInsert(file: File) {
     const formData = new FormData();
     formData.append("image", file);
 
@@ -194,7 +216,12 @@
     } catch (err) {
       console.error(err);
     }
-    
+  }
+
+  async function handleImageUpload(e: Event) {
+    const file = (e.target as HTMLInputElement).files?.[0];
+    if (!file) return;
+    await uploadFileAndInsert(file);
     if (fileInput) {
       fileInput.value = "";
     }
