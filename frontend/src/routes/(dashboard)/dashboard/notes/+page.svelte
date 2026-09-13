@@ -785,7 +785,7 @@
         {#each folders as folder}
           {#if foldersLayoutMode === 'grid'}
             <div
-              class="bg-white/80 border border-slate-200 rounded-2xl p-3 md:p-5 flex flex-col items-center justify-center gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openFolderMenuId ===
+              class="bg-white/80 border border-slate-200 rounded-2xl p-3 md:p-5 flex flex-col items-center justify-start h-full gap-3 hover:bg-slate-50 hover:border-blue-200 hover:shadow-md transition-all cursor-pointer group relative {openFolderMenuId ===
               folder.id
                 ? 'z-50'
                 : 'z-0'}"
