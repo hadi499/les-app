@@ -371,8 +371,9 @@ func SubmitQuizScore(c *gin.Context) {
 	usernameStr := username.(string)
 
 	var input struct {
-		QuizID uint `json:"quiz_id" binding:"required"`
-		Score  int  `json:"score"`
+		QuizID    uint `json:"quiz_id" binding:"required"`
+		Score     int  `json:"score"`
+		TimeSpent int  `json:"time_spent"`
 	}
 
 	if err := c.ShouldBindJSON(&input); err != nil {
@@ -419,6 +420,7 @@ func SubmitQuizScore(c *gin.Context) {
 		Username:     usernameStr,
 		QuizID:       input.QuizID,
 		Score:        input.Score,
+		TimeSpent:    input.TimeSpent,
 		PointsEarned: pointsToAdd,
 		CreatedAt:    time.Now(),
 	}

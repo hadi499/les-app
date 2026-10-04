@@ -17,6 +17,7 @@
     quiz_id: number;
     quiz?: Quiz;
     score: number;
+    time_spent?: number;
     points_earned?: number;
     created_at: string;
     user?: {
@@ -29,6 +30,7 @@
 
   let quizzes: Quiz[] = $state([]);
   let scores: ScoreQuiz[] = $state([]);
+  let playedQuizIds = $derived(new Set(scores.map(s => s.quiz_id)));
   let isLoading = $state(true);
   let showLoadingSpinner = $state(false);
   let isLoadingScores = $state(false);
@@ -284,12 +286,12 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
       {#each quizzes as quiz}
         <div
-          class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full"
+          class="bg-white border {isTeacher ? 'border-slate-200' : (playedQuizIds.has(quiz.id) ? 'border-slate-400' : 'border-blue-600')} rounded-2xl p-5 shadow-sm hover:shadow-md transition-shadow relative flex flex-col h-full"
         >
           <div class="flex justify-between items-start mb-2">
             <div>
               <div class="flex items-center gap-2 mb-1">
-                <span class="text-xs font-bold text-slate-400">#{quiz.id}</span>
+                <span class="text-xs font-bold {isTeacher ? 'text-slate-400' : (playedQuizIds.has(quiz.id) ? 'text-slate-400' : 'text-blue-700')}">#{quiz.id}</span>
                 {#if isTeacher}
                   {#if quiz.is_published}
                     <span
@@ -324,19 +326,19 @@
                   {/if}
                 {/if}
               </div>
-              <h3 class="text-lg font-bold text-slate-900 leading-tight">
+              <h3 class="text-lg font-bold {isTeacher ? 'text-slate-900' : (playedQuizIds.has(quiz.id) ? 'text-slate-500' : 'text-blue-700')} leading-tight">
                 {quiz.title}
               </h3>
             </div>
             <span
-              class="px-2 py-1 bg-slate-100 text-slate-600 rounded-md text-[10px] font-bold border border-slate-200 whitespace-nowrap uppercase tracking-wide"
+              class="px-2 py-1 {isTeacher ? 'bg-slate-100 text-slate-600 border-slate-200' : (playedQuizIds.has(quiz.id) ? 'bg-slate-100 text-slate-500 border-slate-200' : 'bg-blue-100 text-blue-700 border-blue-200')} rounded-md text-[10px] font-bold border whitespace-nowrap uppercase tracking-wide"
             >
               {quiz.category}
             </span>
           </div>
 
           <div
-            class="flex items-center text-xs font-medium text-slate-500 mb-6 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100"
+            class="flex items-center text-xs font-medium {isTeacher ? 'text-slate-500' : (playedQuizIds.has(quiz.id) ? 'text-slate-500' : 'text-blue-700')} mb-6 bg-slate-50 w-max px-2.5 py-1.5 rounded-md border border-slate-100"
           >
             {quiz.timeLimit} detik / soal
           </div>
@@ -410,7 +412,7 @@
             {:else}
               <a
                 href="/quiz/{quiz.id}"
-                class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold text-blue-700 bg-blue-50 rounded-xl border border-blue-100 hover:bg-blue-100 transition-colors no-underline"
+                class="w-full inline-flex items-center justify-center px-4 py-2.5 text-sm font-bold {playedQuizIds.has(quiz.id) ? 'text-slate-600 bg-slate-100 border-slate-200 hover:bg-slate-200' : 'text-blue-700 bg-blue-100 border-blue-200 hover:bg-blue-200'} rounded-xl border transition-colors no-underline"
               >
                 Kerjakan Kuis
               </a>
@@ -588,6 +590,14 @@
                 >
                   SKOR {s.score}
                 </span>
+                {#if s.time_spent !== undefined && s.time_spent > 0}
+                  <span
+                    class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shadow-sm uppercase tracking-wider"
+                    title="Waktu Pengerjaan"
+                  >
+                    {s.time_spent} detik
+                  </span>
+                {/if}
                 {#if s.points_earned}
                   <span
                     class="inline-block px-2 py-1 rounded-md text-[10px] font-bold bg-amber-50 text-amber-600 border border-amber-200 shadow-sm uppercase tracking-wider"

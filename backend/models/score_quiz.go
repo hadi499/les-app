@@ -9,6 +9,7 @@ type ScoreQuiz struct {
 	QuizID       uint      `json:"quiz_id"`
 	Quiz         *Quiz     `json:"quiz" gorm:"foreignKey:QuizID"`
 	Score        int       `json:"score"`
+	TimeSpent    int       `json:"time_spent"`
 	PointsEarned int       `json:"points_earned"`
 	CreatedAt    time.Time `json:"created_at"`
 }

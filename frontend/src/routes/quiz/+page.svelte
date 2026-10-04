@@ -10,6 +10,7 @@
   };
 
   let quizzes: Quiz[] = $state([]);
+  let playedQuizIds: Set<number> = $state(new Set());
   let isLoading = $state(true);
 
   import { goto } from "$app/navigation";
@@ -24,16 +25,26 @@
         return;
       }
 
-      const res = await fetch(`/api/quizzes`, {
-        credentials: "include",
-      });
-      if (res.ok) {
-        const json = await res.json();
+      const [quizzesRes, scoresRes] = await Promise.all([
+        fetch(`/api/quizzes`, { credentials: "include" }),
+        fetch(`/api/scores/quizzes`, { credentials: "include" })
+      ]);
+
+      if (quizzesRes.ok) {
+        const json = await quizzesRes.json();
         const allQuizzes = json.data || [];
         // Saring kuis, hanya tampilkan yang sudah di-publish
         quizzes = allQuizzes.filter((q: Quiz) => q.is_published);
       } else {
-        console.error("Gagal memuat kuis:", res.status);
+        console.error("Gagal memuat kuis:", quizzesRes.status);
+      }
+
+      if (scoresRes.ok) {
+        const json = await scoresRes.json();
+        const scores = json.data || [];
+        playedQuizIds = new Set(scores.map((s: any) => s.quiz_id));
+      } else {
+        console.error("Gagal memuat skor kuis:", scoresRes.status);
       }
     } catch (e) {
       console.error(e);
@@ -117,16 +128,16 @@
       <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {#each quizzes as quiz}
           <div
-            class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-400 transition-all group flex flex-col"
+            class="bg-white/80 backdrop-blur-md rounded-2xl p-6 border {playedQuizIds.has(quiz.id) ? 'border-slate-400' : 'border-blue-600'} shadow-sm hover:shadow-md hover:border-blue-500 transition-all group flex flex-col"
           >
             <div class="mb-4">
               <span
-                class="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-bold uppercase tracking-wider rounded-lg mb-3"
+                class="inline-block px-3 py-1 {playedQuizIds.has(quiz.id) ? 'bg-slate-100 text-slate-500' : 'bg-blue-100 text-blue-700'} text-xs font-bold uppercase tracking-wider rounded-lg mb-3"
               >
                 {quiz.category}
               </span>
               <h2
-                class="text-xl font-bold text-slate-900 line-clamp-2 leading-tight py-2"
+                class="text-xl font-bold {playedQuizIds.has(quiz.id) ? 'text-slate-500' : 'text-blue-700'} line-clamp-2 leading-tight py-2"
               >
                 {quiz.title}
               </h2>
@@ -135,7 +146,7 @@
               class="mt-auto pt-4 flex items-center justify-between border-t border-slate-100"
             >
               <div
-                class="flex items-center gap-1.5 text-xs font-semibold text-slate-600"
+                class="flex items-center gap-1.5 text-xs font-semibold {playedQuizIds.has(quiz.id) ? 'text-slate-500' : 'text-blue-700'}"
               >
                 <svg
                   class="w-4 h-4"
@@ -154,7 +165,7 @@
               </div>
               <a
                 href="/quiz/{quiz.id}"
-                class="text-sm font-bold text-blue-600 group-hover:text-blue-700 uppercase tracking-wider transition-colors no-underline flex items-center gap-1"
+                class="text-sm font-bold {playedQuizIds.has(quiz.id) ? 'text-slate-500 group-hover:text-slate-600' : 'text-blue-700 group-hover:text-blue-800'} uppercase tracking-wider transition-colors no-underline flex items-center gap-1"
               >
                 Mulai
                 <svg

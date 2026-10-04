@@ -44,6 +44,8 @@
   let timerInterval: ReturnType<typeof setInterval>;
   let isSubmitting = $state(false);
   let showLeaveModal = $state(false);
+  let totalTimeSpent = $state(0);
+  let questionStartTime = 0;
   let targetUrl = $state<string | null>(null);
   let hasConfirmedLeave = $state(false);
   let pointsEarned = $state(0);
@@ -84,6 +86,7 @@
         body: JSON.stringify({
           quiz_id: Number(quizId),
           score: 0,
+          time_spent: totalTimeSpent,
         }),
       });
     } catch (e) {
@@ -118,6 +121,7 @@
         body: JSON.stringify({
           quiz_id: Number(quizId),
           score: 0,
+          time_spent: totalTimeSpent,
         }),
         keepalive: true,
       }).catch(console.error);
@@ -181,6 +185,7 @@
 
   function startTimer() {
     clearInterval(timerInterval);
+    questionStartTime = Date.now();
     if (quiz) {
       timeLeft = quiz.timeLimit;
     }
@@ -203,6 +208,8 @@
   function recordAnswer(answerText: string | null, answerIndex: number) {
     clearInterval(timerInterval);
     if (!currentQuestion) return;
+
+    totalTimeSpent += Math.floor((Date.now() - questionStartTime) / 1000);
 
     userAnswers = [
       ...userAnswers,
@@ -238,6 +245,7 @@
         body: JSON.stringify({
           quiz_id: Number(quizId),
           score: score,
+          time_spent: totalTimeSpent,
         }),
       });
       console.log("Response status:", res.status);
@@ -284,6 +292,7 @@
     isFinished = false;
     pointsEarned = 0;
     pointsAlreadyClaimed = false;
+    totalTimeSpent = 0;
     startTimer();
   }
 
