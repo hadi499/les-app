@@ -592,10 +592,10 @@
                 </span>
                 {#if s.time_spent !== undefined && s.time_spent > 0}
                   <span
-                    class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shadow-sm uppercase tracking-wider"
+                    class="inline-flex items-center gap-1 px-2 py-1 rounded-md text-xs font-bold bg-slate-100 text-slate-600 border border-slate-200 shadow-sm  tracking-wider"
                     title="Waktu Pengerjaan"
                   >
-                    {s.time_spent} detik
+                    {s.time_spent} dtk
                   </span>
                 {/if}
                 {#if s.points_earned}
