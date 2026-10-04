@@ -273,6 +273,58 @@
           <div
             class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-3xl text-left"
           >
+            <!-- Card Game Edukasi -->
+            <a
+              href="/game-edukasi"
+              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-yellow-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-yellow-500/10 transition-all duration-300 no-underline overflow-hidden"
+            >
+              <div
+                class="absolute -right-6 -top-6 w-32 h-32 bg-yellow-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
+              ></div>
+
+              <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
+                <div
+                  class="w-12 h-12 shrink-0 rounded-2xl bg-yellow-100 text-yellow-600 flex items-center justify-center shadow-sm border border-yellow-200/50"
+                >
+                  <svg
+                    class="w-6 h-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    ><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 12h4"/><path d="M8 10v4"/><path d="M15 13h.01"/><path d="M18 11h.01"/></svg
+                  >
+                </div>
+                <h3
+                  class="text-lg font-bold text-slate-800 group-hover:text-yellow-600 transition-colors"
+                >
+                  Game Edukasi
+                </h3>
+              </div>
+              <p
+                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
+              >
+                Kumpulan permainan interaktif untuk melatih daya ingat, logika, dan kecepatan berhitung anak.
+              </p>
+
+              <div
+                class="mt-6 flex items-center text-sm font-bold text-yellow-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
+              >
+                Lihat Koleksi
+                <svg
+                  class="w-4 h-4 ml-1"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M14 5l7 7m0 0l-7 7m7-7H3"
+                  ></path></svg
+                >
+              </div>
+            </a>
+
             <!-- Card Belajar Coding -->
             <a
               href="/belajar-coding"
@@ -331,63 +383,6 @@
               </div>
             </a>
 
-            <!-- Card Berhitung -->
-            <a
-              href="/berhitung"
-              class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-pink-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 no-underline overflow-hidden"
-            >
-              <div
-                class="absolute -right-6 -top-6 w-32 h-32 bg-pink-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"
-              ></div>
-
-              <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
-                <div
-                  class="w-12 h-12 shrink-0 rounded-2xl bg-pink-100 text-pink-600 flex items-center justify-center shadow-sm border border-pink-200/50"
-                >
-                  <svg
-                    class="w-6 h-6"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                    ><path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M9 7h6m0 10v-3m-3 3h.01M9 17h.01M9 14h.01M12 14h.01M15 11h.01M12 11h.01M9 11h.01M7 21h10a2 2 0 002-2V5a2 2 0 00-2-2H7a2 2 0 00-2 2v14a2 2 0 002 2z"
-                    /></svg
-                  >
-                </div>
-                <h3
-                  class="text-lg font-bold text-slate-800 group-hover:text-pink-600 transition-colors"
-                >
-                  Latihan Berhitung
-                </h3>
-              </div>
-              <p
-                class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1"
-              >
-                Tingkatkan kecepatan dan ketepatan menghitung dengan modul
-                aritmetika yang terstruktur untuk semua level.
-              </p>
-
-              <div
-                class="mt-6 flex items-center text-sm font-bold text-pink-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10"
-              >
-                Mulai Berlatih
-                <svg
-                  class="w-4 h-4 ml-1"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  ><path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M14 5l7 7m0 0l-7 7m7-7H3"
-                  ></path></svg
-                >
-              </div>
-            </a>
 
             <!-- Card Ketik 10 Jari -->
             <a
@@ -504,6 +499,7 @@
                 >
               </div>
             </a>
+
           </div>
         </div>
       </div>

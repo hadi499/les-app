@@ -44,7 +44,7 @@
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
       <!-- Mudah -->
       <a
-        href="/berhitung/mudah"
+        href="/game-edukasi/berhitung/mudah"
         class="group flex flex-col items-center bg-white rounded-[2.5rem] p-8 shadow-[0_12px_0_0_rgba(251,207,232,1)] hover:shadow-[0_4px_0_0_rgba(251,207,232,1)] hover:translate-y-2 transition-all border-4 border-pink-200 no-underline cursor-pointer"
       >
         <div
@@ -67,7 +67,7 @@
 
       <!-- Sedang -->
       <a
-        href="/berhitung/sedang"
+        href="/game-edukasi/berhitung/sedang"
         class="group flex flex-col items-center bg-white rounded-[2.5rem] p-8 shadow-[0_12px_0_0_rgba(167,243,208,1)] hover:shadow-[0_4px_0_0_rgba(167,243,208,1)] hover:translate-y-2 transition-all border-4 border-emerald-200 no-underline cursor-pointer"
       >
         <div
@@ -90,7 +90,7 @@
 
       <!-- Sulit -->
       <a
-        href="/berhitung/sulit"
+        href="/game-edukasi/berhitung/sulit"
         class="group flex flex-col items-center bg-white rounded-[2.5rem] p-8 shadow-[0_12px_0_0_rgba(199,210,254,1)] hover:shadow-[0_4px_0_0_rgba(199,210,254,1)] hover:translate-y-2 transition-all border-4 border-indigo-200 no-underline cursor-pointer"
       >
         <div
@@ -114,7 +114,7 @@
 
     <div class="mt-16 text-center">
       <a
-        href="/"
+        href="/game-edukasi"
         class="inline-flex items-center gap-2 px-6 py-3 bg-white text-pink-600 font-bold rounded-2xl shadow-sm border border-pink-200 hover:bg-pink-50 hover:shadow-md transition-all no-underline"
       >
         <svg
@@ -129,7 +129,7 @@
             clip-rule="evenodd"
           />
         </svg>
-        Kembali ke Beranda
+        Kembali
       </a>
     </div>
   </div>

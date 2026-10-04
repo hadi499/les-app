@@ -10,12 +10,13 @@
     "🐱",
     "🍓",
     "🦋",
-    "🐮",
+    "🌭",
     "⚽",
   ];
 
-  let audioSuccess: HTMLAudioElement | undefined = $state();
-  let audioError: HTMLAudioElement | undefined = $state();
+  let audioCorrect: HTMLAudioElement | undefined = $state();
+  let audioWrong: HTMLAudioElement | undefined = $state();
+  let audioApplause: HTMLAudioElement | undefined = $state();
 
   let currentCount: number = $state(0);
   let currentEmoji: string = $state("");
@@ -33,6 +34,7 @@
     return array;
   }
   let showSuccess: boolean = $state(false);
+  let showError: boolean = $state(false);
   let errorShake: boolean = $state(false);
 
   function playSound(audioElement: HTMLAudioElement | undefined) {
@@ -49,10 +51,15 @@
   }
 
   function startGame() {
+    if (audioApplause) {
+      audioApplause.pause();
+      audioApplause.currentTime = 0;
+    }
+
     score = 0;
     questionNumber = 1;
     isGameOver = false;
-    availableCounts = shuffleArray(Array.from({length: 10}, (_, i) => i + 1));
+    availableCounts = shuffleArray(Array.from({length: 10}, (_, i) => i + 11));
     nextQuestion();
   }
 
@@ -61,37 +68,47 @@
       isGameOver = true;
       return;
     }
+
     currentCount = availableCounts[questionNumber - 1];
     currentEmoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
 
     let ops = new Set<number>([currentCount]);
     while (ops.size < 3) {
-      let wrongAns = Math.floor(Math.random() * 10) + 1;
+      let wrongAns = Math.floor(Math.random() * 10) + 11;
       ops.add(wrongAns);
     }
     options = Array.from(ops).sort(() => Math.random() - 0.5);
   }
 
   function handleAnswer(selected: number) {
-    if (showSuccess) return;
+    if (showSuccess || showError) return;
+
+    const isLastQuestion = questionNumber >= 10;
 
     if (selected === currentCount) {
-      playSound(audioSuccess);
       score++;
       showSuccess = true;
+      if (isLastQuestion) playSound(audioApplause);
+      else playSound(audioCorrect);
+    } else {
+      showError = true;
+      errorShake = true;
+      if (isLastQuestion) playSound(audioApplause);
+      else playSound(audioWrong);
+    }
 
-      setTimeout(() => {
-        showSuccess = false;
+    setTimeout(() => {
+      showSuccess = false;
+      showError = false;
+      errorShake = false;
+
+      if (isLastQuestion) {
+        isGameOver = true;
+      } else {
         questionNumber++;
         nextQuestion();
-      }, 1000);
-    } else {
-      playSound(audioError);
-      errorShake = true;
-      setTimeout(() => {
-        errorShake = false;
-      }, 400);
-    }
+      }
+    }, 1000);
   }
 
   onMount(() => {
@@ -100,25 +117,25 @@
 </script>
 
 <svelte:head>
-  <title>Level Mudah - Game Berhitung</title>
+  <title>Level Sulit - Game Berhitung</title>
 </svelte:head>
 
 <div
   class="min-h-screen bg-slate-50 flex flex-col items-center pt-24 pb-10 px-4 font-sans relative overflow-hidden"
 >
   <div
-    class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-yellow-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"
+    class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-200 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob"
   ></div>
   <div
-    class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"
+    class="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-60 animate-blob animation-delay-2000"
   ></div>
 
   <div class="w-full max-w-md z-10">
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <a
-        href="/berhitung"
-        class="p-2 bg-white rounded-full shadow-sm text-pink-500 hover:text-pink-600 hover:shadow transition-all border border-pink-100"
+        href="/game-edukasi/berhitung"
+        class="p-2 bg-white rounded-full shadow-sm text-indigo-500 hover:text-indigo-600 hover:shadow transition-all border border-indigo-100"
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -136,8 +153,8 @@
         {#each Array(10) as _, i}
           <div
             class="w-3 h-3 rounded-full {i < questionNumber - 1
-              ? 'bg-pink-500'
-              : 'bg-pink-200'}"
+              ? 'bg-indigo-500'
+              : 'bg-indigo-200'}"
           ></div>
         {/each}
       </div>
@@ -145,20 +162,22 @@
 
     <!-- Instruksi Visual -->
     <div
-      class="bg-white rounded-3xl p-6 shadow-xl border-4 border-pink-100 text-center mb-8 relative"
+      class="bg-white rounded-3xl p-6 shadow-xl border-4 border-indigo-100 text-center mb-8 relative"
     >
       <h2
-        class="text-2xl font-black text-pink-500 mb-6 tracking-wide select-none"
+        class="text-2xl font-black text-indigo-500 mb-6 tracking-wide select-none"
       >
         Berapa jumlahnya?
       </h2>
 
       <!-- Area Gambar -->
       <div
-        class="flex flex-wrap justify-center gap-2 mb-6 min-h-[120px] items-center"
+        class="flex flex-wrap justify-center gap-1.5 mb-6 min-h-40 items-center"
       >
         {#if showSuccess}
           <div class="text-7xl animate-bounce select-none">🌟</div>
+        {:else if showError}
+          <div class="text-7xl animate-shake select-none">😢</div>
         {:else}
           {#each Array(currentCount) as _}
             <div
@@ -176,7 +195,10 @@
       {#each options as opt}
         <button
           onclick={() => handleAnswer(opt)}
-          class="select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] aspect-square bg-white hover:bg-pink-50 border-4 border-pink-200 rounded-3xl shadow-[0_8px_0_0_rgba(251,207,232,1)] active:shadow-[0_0px_0_0_rgba(251,207,232,1)] active:translate-y-2 flex items-center justify-center text-5xl font-black text-pink-500 transition-all {errorShake
+          class="select-none [-webkit-tap-highlight-color:transparent] [-webkit-touch-callout:none] aspect-square bg-white border-4 border-indigo-200 rounded-3xl flex items-center justify-center text-5xl font-black text-indigo-500 transition-all {showSuccess ||
+          showError
+            ? 'cursor-not-allowed opacity-80'
+            : 'hover:bg-indigo-50 shadow-[0_8px_0_0_rgba(199,210,254,1)] active:shadow-[0_0px_0_0_rgba(199,210,254,1)] active:translate-y-2'} {errorShake
             ? 'animate-shake'
             : ''}"
         >
@@ -188,28 +210,50 @@
     <!-- Layar Hasil Akhir -->
     {#if isGameOver}
       <div
-        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-pink-900/40 backdrop-blur-md animate-fade-in"
+        class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-indigo-900/40 backdrop-blur-md animate-fade-in"
       >
         <div
-          class="bg-white p-8 rounded-[2rem] shadow-2xl max-w-sm w-full text-center border-4 border-pink-200 transform transition-all scale-100 animate-pop"
+          class="bg-white p-8 rounded-4xl shadow-2xl max-w-sm w-full text-center border-4 border-indigo-200 transform transition-all scale-100 animate-pop"
+          style="border-radius: 2rem;"
         >
-          <div class="text-7xl mb-4 animate-bounce">🏆</div>
-          <h2 class="text-4xl font-black text-pink-500 mb-2">HOREEE!</h2>
-          <p class="text-slate-600 font-bold text-lg mb-8">
-            Adik sangat pintar! Betul <span class="text-pink-600 text-2xl"
-              >{score}</span
-            > dari 10.
-          </p>
+          {#if score === 10}
+            <div class="text-7xl mb-2 animate-bounce">🏆</div>
+            <h2 class="text-4xl font-black text-indigo-500 mb-4 tracking-wider">
+              HOREEE!
+            </h2>
+            <p class="text-slate-600 font-bold mb-6">
+              Level 3 Lulus! <br /> Kamu super teliti!
+            </p>
+          {:else}
+            <div class="text-7xl mb-2 animate-bounce">✨</div>
+            <h2 class="text-3xl font-black text-yellow-500 mb-4">Bagus!</h2>
+            <p class="text-slate-600 font-bold mb-6">
+              Ayo coba lagi, <br /> sedikit lagi dapat nilai sempurna!
+            </p>
+          {/if}
+
+          <div
+            class="bg-indigo-50 rounded-2xl py-6 mb-8 border-2 border-indigo-100"
+          >
+            <p class="text-slate-500 font-bold text-lg mb-1">
+              Skor Akhir Kamu:
+            </p>
+            <div
+              class="text-indigo-600 text-[100px] font-black drop-shadow-md flex items-baseline justify-center gap-1 leading-none py-2"
+            >
+              {score}<span class="text-4xl text-indigo-300 font-bold">/10</span>
+            </div>
+          </div>
 
           <div class="flex flex-col gap-4">
             <button
               onclick={startGame}
-              class="w-full py-4 bg-pink-500 hover:bg-pink-600 text-white text-xl font-black rounded-2xl shadow-[0_6px_0_0_rgba(219,39,119,1)] active:shadow-none active:translate-y-[6px] transition-all"
+              class="w-full py-4 bg-indigo-500 hover:bg-indigo-600 text-white text-xl font-black rounded-2xl shadow-[0_6px_0_0_rgba(99,102,241,1)] active:shadow-none active:translate-y-[6px] transition-all"
             >
               Main Lagi
             </button>
             <a
-              href="/berhitung"
+              href="/game-edukasi/berhitung"
               class="w-full py-4 bg-yellow-400 hover:bg-yellow-500 text-yellow-900 text-xl font-black rounded-2xl shadow-[0_6px_0_0_rgba(202,138,4,1)] active:shadow-none active:translate-y-[6px] transition-all no-underline block"
             >
               Pulang
@@ -221,8 +265,10 @@
   </div>
 </div>
 
-<audio bind:this={audioSuccess} src="/sounds/benar.mp3" preload="auto"></audio>
-<audio bind:this={audioError} src="/sounds/wrong.mp3" preload="auto"></audio>
+<audio bind:this={audioCorrect} src="/sounds/benar.mp3" preload="auto"></audio>
+<audio bind:this={audioWrong} src="/sounds/wrong.mp3" preload="auto"></audio>
+<audio bind:this={audioApplause} src="/sounds/tepuk-tangan.mp3" preload="auto"
+></audio>
 
 <style>
   @keyframes popIn {

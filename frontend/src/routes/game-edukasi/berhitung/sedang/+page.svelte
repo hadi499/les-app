@@ -129,7 +129,7 @@
     <!-- Header -->
     <div class="flex items-center justify-between mb-8">
       <a
-        href="/berhitung"
+        href="/game-edukasi/berhitung"
         class="p-2 bg-white rounded-full shadow-sm text-emerald-500 hover:text-emerald-600 hover:shadow transition-all border border-emerald-100"
       >
         <svg
@@ -250,7 +250,7 @@
               Main Lagi
             </button>
             <a
-              href="/berhitung"
+              href="/game-edukasi/berhitung"
               class="w-full py-4 bg-orange-400 hover:bg-orange-500 text-orange-900 text-xl font-black rounded-2xl shadow-[0_6px_0_0_rgba(194,65,12,1)] active:shadow-none active:translate-y-[6px] transition-all no-underline block"
             >
               Pulang
