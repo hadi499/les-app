@@ -84,6 +84,7 @@
       const teacherOnlyRoutes = [
 
         "/dashboard/card-memory",
+        "/dashboard/english-flashcard",
         "/dashboard/subjects",
         "/dashboard/typing-monitoring",
         "/dashboard/users",
@@ -504,6 +505,35 @@
               >
             </div>
             Card Memory
+          </a>
+          <a
+            href="/dashboard/english-flashcard"
+            class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-[15px] transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+              '/english-flashcard',
+            )
+              ? 'bg-white/80 text-blue-700 font-medium shadow-sm shadow-slate-800/5 border border-slate-300'
+              : 'text-slate-700 hover:bg-white/50 hover:text-slate-900 border border-transparent'}"
+          >
+            <div
+              class="flex items-center justify-center w-8 h-8 rounded-lg shrink-0 transition-all {page.url.pathname.includes(
+                '/english-flashcard',
+              )
+                ? 'bg-blue-600 text-white shadow-md shadow-blue-500/20'
+                : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+            >
+              <svg
+                class="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+                ><path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                ></path></svg>
+            </div>
+            Flashcard B.Inggris
           </a>
         {/if}
 
@@ -1173,6 +1203,36 @@
                 >
               </div>
               Card Memory
+            </a>
+            <a
+              href="/dashboard/english-flashcard"
+              onclick={() => (isMobileMenuOpen = false)}
+              class="group flex items-center gap-2 px-3 py-2 rounded-xl font-normal text-base transition-colors no-underline whitespace-nowrap {page.url.pathname.includes(
+                '/english-flashcard',
+              )
+                ? 'bg-blue-50 text-blue-700'
+                : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'}"
+            >
+              <div
+                class="flex items-center justify-center w-8 h-8 rounded-lg transition-colors {page.url.pathname.includes(
+                  '/english-flashcard',
+                )
+                  ? 'bg-blue-100 text-blue-600'
+                  : 'bg-slate-100 text-slate-500 group-hover:bg-slate-200 group-hover:text-slate-700'}"
+              >
+                <svg
+                  class="w-5 h-5"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                  ><path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    stroke-width="2"
+                    d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
+                  ></path></svg>
+              </div>
+              Flashcard B.Inggris
             </a>
           {/if}
 

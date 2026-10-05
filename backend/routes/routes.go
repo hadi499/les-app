@@ -225,6 +225,34 @@ func SetupRoutes(r *gin.Engine) {
 		settingsAdmin.PUT("/:key", controllers.UpdateSetting)
 	}
 
+	// English Flashcards API routes
+	ef := r.Group("/api/english-flashcards")
+	{
+		ef.GET("", controllers.GetEnglishFlashcards)
+		ef.GET("/:id", controllers.GetEnglishFlashcardByID)
+		
+		efAdmin := ef.Group("")
+		efAdmin.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+		{
+			efAdmin.POST("", controllers.CreateEnglishFlashcard)
+			efAdmin.PUT("/:id", controllers.UpdateEnglishFlashcard)
+			efAdmin.DELETE("/:id", controllers.DeleteEnglishFlashcard)
+		}
+	}
+
+	efc := r.Group("/api/english-flashcard-categories")
+	{
+		efc.GET("", controllers.GetEnglishFlashcardCategories)
+		
+		efcAdmin := efc.Group("")
+		efcAdmin.Use(middleware.AuthMiddleware(), middleware.RoleMiddleware("teacher"))
+		{
+			efcAdmin.POST("", controllers.CreateEnglishFlashcardCategory)
+			efcAdmin.PUT("/:id", controllers.UpdateEnglishFlashcardCategory)
+			efcAdmin.DELETE("/:id", controllers.DeleteEnglishFlashcardCategory)
+		}
+	}
+
 	// Chat API routes
 	chat := r.Group("/api/chat")
 	chat.Use(middleware.AuthMiddleware())

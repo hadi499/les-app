@@ -9,6 +9,7 @@
     ["⚽", "🏀"], ["🍉", "🍓"], ["🦋", "🐝"], ["🌻", "🌼"]
   ];
 
+  /** @type {string[]} */
   let grid = $state([]);
   let oddIndex = $state(-1);
   let score = $state(0);
@@ -47,11 +48,13 @@
     grid = newGrid;
   }
 
+  /** @param {number} index */
   function handleAnswer(index) {
     if (showSuccess) return;
 
     if (index === oddIndex) {
       // Benar
+      new Audio('/sounds/benar.mp3').play().catch(e => console.error("Audio play failed:", e));
       score++;
       showSuccess = true;
       

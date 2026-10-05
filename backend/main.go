@@ -31,7 +31,7 @@ func main() {
 
 
 	// Migrasi otomatis untuk memastikan tabel ada
-	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Subject{},&models.ScoreQuiz{}, &models.Quiz{}, &models.Question{},  &models.Folder{}, &models.Absence{}, &models.SystemSetting{}, &models.ChatMessage{}, &models.UserLog{}, &models.Materi{}, &models.Quote{}, &models.Note{})
+	database.DB.AutoMigrate(&models.User{}, &models.BlacklistedToken{}, &models.LessonProgress{}, &models.GameHighScore{}, &models.GameHistory{}, &models.LessonHistory{}, &models.CardFolder{}, &models.Card{}, &models.Subject{},&models.ScoreQuiz{}, &models.Quiz{}, &models.Question{},  &models.Folder{}, &models.Absence{}, &models.SystemSetting{}, &models.ChatMessage{}, &models.UserLog{}, &models.Materi{}, &models.Quote{}, &models.Note{}, &models.EnglishFlashcardCategory{}, &models.EnglishFlashcard{})
 
 	// Update data created_at untuk user lama menjadi 15 Juli 2026 jika masih kosong
 	defaultDate := time.Date(2026, time.July, 15, 0, 0, 0, 0, time.Local)

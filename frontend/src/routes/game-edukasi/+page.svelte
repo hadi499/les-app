@@ -164,6 +164,44 @@
           <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </div>
       </a>
+
+      <!-- Card English Quiz -->
+      <a
+        href="/game-edukasi/english-quiz"
+        class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-blue-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 no-underline overflow-hidden"
+      >
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-blue-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+        <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
+          <div class="w-12 h-12 shrink-0 rounded-2xl bg-blue-100 text-blue-600 flex items-center justify-center shadow-sm border border-blue-200/50">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-800 group-hover:text-blue-600 transition-colors">Kuis Bahasa Inggris</h3>
+        </div>
+        <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Bermain tebak kata bahasa Inggris dengan kartu flash bergambar.</p>
+        <div class="mt-6 flex items-center text-sm font-bold text-blue-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+          Mulai Bermain
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </div>
+      </a>
+
+      <!-- Card English Flashcard (SD & SMP) -->
+      <a
+        href="/game-edukasi/english-flashcard"
+        class="group relative flex flex-col items-start p-6 bg-white/70 backdrop-blur-sm border border-slate-300 hover:border-teal-400 hover:bg-white rounded-3xl hover:shadow-xl hover:shadow-teal-500/10 transition-all duration-300 no-underline overflow-hidden"
+      >
+        <div class="absolute -right-6 -top-6 w-32 h-32 bg-teal-100 rounded-full blur-2xl opacity-40 group-hover:opacity-70 transition-opacity duration-500"></div>
+        <div class="flex items-center gap-4 mb-4 relative z-10 w-full">
+          <div class="w-12 h-12 shrink-0 rounded-2xl bg-teal-100 text-teal-600 flex items-center justify-center shadow-sm border border-teal-200/50">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+          </div>
+          <h3 class="text-lg font-bold text-slate-800 group-hover:text-teal-600 transition-colors">Flashcard Bahasa Inggris</h3>
+        </div>
+        <p class="text-sm text-slate-500 leading-relaxed relative z-10 flex-1">Latihan grammar & vocab SD - SMP. Tebak jawaban dengan 2x kesempatan.</p>
+        <div class="mt-6 flex items-center text-sm font-bold text-teal-600 opacity-100 md:opacity-0 group-hover:opacity-100 transform translate-x-0 md:-translate-x-2.5 group-hover:translate-x-0 transition-all duration-300 relative z-10">
+          Mulai Bermain
+          <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+        </div>
+      </a>
     </div>
   </div>
 </div>
