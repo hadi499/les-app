@@ -79,7 +79,9 @@
   
   function openEditCategoryModal(cat: EnglishFlashcardCategory) {
     isEditingCategory = true;
-    currentCategory = { ...cat };
+    currentCategory.id = cat.id;
+    currentCategory.name = cat.name;
+    currentCategory.description = cat.description;
     showCategoryModal = true;
   }
   
@@ -134,7 +136,12 @@
 
   function openEditCardModal(card: EnglishFlashcard) {
     isEditingCard = true;
-    currentCard = { ...card, options: [...card.options] };
+    currentCard.id = card.id;
+    currentCard.category_id = card.category_id;
+    currentCard.question = card.question;
+    currentCard.options = [...card.options];
+    currentCard.answer = card.answer;
+    currentCard.explanation = card.explanation;
     showCardModal = true;
   }
 

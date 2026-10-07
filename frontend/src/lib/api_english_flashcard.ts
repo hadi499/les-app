@@ -24,7 +24,7 @@ const defaultFetchOpts = {
 // --- CATEGORIES ---
 
 export async function fetchFlashcardCategories(): Promise<EnglishFlashcardCategory[]> {
-  const res = await fetch(API_CAT_BASE, defaultFetchOpts);
+  const res = await fetch(API_CAT_BASE, { ...defaultFetchOpts, cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch categories');
   return res.json();
 }
@@ -63,7 +63,7 @@ export async function deleteFlashcardCategory(id: number): Promise<void> {
 
 export async function fetchFlashcards(categoryId?: number): Promise<EnglishFlashcard[]> {
   const url = categoryId ? `${API_BASE}?category_id=${categoryId}` : API_BASE;
-  const res = await fetch(url, defaultFetchOpts);
+  const res = await fetch(url, { ...defaultFetchOpts, cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch flashcards');
   return res.json();
 }
