@@ -72,8 +72,12 @@
     isLoading = true;
     try {
       currentPage = 1;
-      categories = await fetchFlashcardCategories();
-      flashcards = await fetchFlashcards(selectedCategoryId ? (selectedCategoryId as number) : undefined, searchQuery);
+      const [cats, cards] = await Promise.all([
+        fetchFlashcardCategories(),
+        fetchFlashcards(selectedCategoryId ? (selectedCategoryId as number) : undefined, searchQuery)
+      ]);
+      categories = cats;
+      flashcards = cards;
     } catch (e) {
       console.error(e);
       alert("Gagal memuat data");
