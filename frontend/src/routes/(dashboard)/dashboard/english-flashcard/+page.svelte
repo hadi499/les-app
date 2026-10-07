@@ -21,7 +21,7 @@
   let selectedCategoryId = $state<number | "">("");
   
   let currentPage = $state(1);
-  const itemsPerPage = 10;
+  const itemsPerPage = 30;
   let paginatedFlashcards = $derived(flashcards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
   let totalPages = $derived(Math.ceil(flashcards.length / itemsPerPage) || 1);
   
