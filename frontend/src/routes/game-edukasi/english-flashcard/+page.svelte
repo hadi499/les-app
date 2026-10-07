@@ -243,9 +243,9 @@
             <h2 class="text-2xl font-black text-slate-800 mb-2">{selectedCategory?.name}</h2>
           </div>
 
-          <!-- Area Flashcard (Berbentuk persegi panjang mirip kartu kredit) -->
+          <!-- Area Flashcard (Berbentuk persegi panjang mirip kartu kredit di desktop, lebih tinggi di mobile) -->
           <div
-            class="flip-card-container mb-8 w-full max-w-125 mx-auto aspect-[1.586/1]"
+            class="flip-card-container mb-8 w-full max-w-125 mx-auto h-[380px] sm:h-auto sm:aspect-[1.586/1]"
           >
             <div class="flip-card {isFlipped ? 'flipped' : ''}">
               <!-- Bagian Depan (Pertanyaan) -->
@@ -261,30 +261,32 @@
 
               <!-- Bagian Belakang (Jawaban & Penjelasan) -->
               <div
-                class="flip-card-back border-4 rounded-3xl p-6 flex flex-col items-center justify-center shadow-xl {isSuccess
+                class="flip-card-back border-4 rounded-3xl p-4 sm:p-6 flex flex-col items-center justify-center shadow-xl {isSuccess
                   ? 'bg-green-50 border-green-300'
                   : 'bg-red-50 border-red-300'}"
               >
-                <div class="text-5xl mb-2 animate-pop-in">
+                <div class="text-4xl sm:text-5xl mb-2 animate-pop-in shrink-0">
                   {isSuccess ? "🎉" : "💡"}
                 </div>
                 <h3
-                  class="text-xl font-black mb-2 {isSuccess
+                  class="text-lg sm:text-xl font-black mb-2 shrink-0 {isSuccess
                     ? 'text-green-600'
                     : 'text-red-600'}"
                 >
                   {isSuccess ? "Hebat! Jawaban Benar" : "Jawaban Benar:"}
                 </h3>
                 <div
-                  class="text-2xl font-black text-slate-800 mb-3 bg-white px-5 py-1.5 rounded-2xl shadow-sm text-center"
+                  class="text-xl sm:text-2xl font-black text-slate-800 mb-2 sm:mb-3 bg-white px-5 py-1.5 rounded-2xl shadow-sm text-center shrink-0"
                 >
                   {questions[currentQuestionIndex].answer}
                 </div>
-                <p
-                  class="text-slate-600 font-bold text-center text-xs sm:text-sm bg-white/60 p-3 rounded-xl line-clamp-3"
-                >
-                  {questions[currentQuestionIndex].explanation}
-                </p>
+                <div class="w-full flex-1 min-h-0 overflow-y-auto mt-1 sm:mt-2">
+                  <p
+                    class="text-slate-600 font-bold text-center text-xs sm:text-sm bg-white/60 px-3 py-1.5 sm:p-3 rounded-xl m-0"
+                  >
+                    {questions[currentQuestionIndex].explanation}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
