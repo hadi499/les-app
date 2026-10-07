@@ -177,7 +177,7 @@
       return alert("Silakan buat kategori terlebih dahulu!");
     }
     jsonCategoryId = (selectedCategoryId as number) || categories[0].id || "";
-    jsonInput = '[\n  {\n    "question": "Apa bahasa inggrisnya Kucing?",\n    "options": ["Dog", "Cat", "Bird", "Fish"],\n    "answer": "Cat",\n    "explanation": "Cat adalah kucing."\n  }\n]';
+    jsonInput = ""; // Dikosongkan agar user bisa langsung paste
     showJsonModal = true;
   }
 
@@ -329,9 +329,9 @@
           <thead>
             <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm">
               <th class="py-4 px-6 w-16">ID</th>
-              <th class="py-4 px-6">Kategori</th>
+              <th class="py-4 px-6 w-48 min-w-[150px]">Kategori</th>
               <th class="py-4 px-6">Pertanyaan</th>
-              <th class="py-4 px-6">Jawaban Benar</th>
+              <th class="py-4 px-6 w-40 min-w-[150px]">Jawaban Benar</th>
               <th class="py-4 px-6 w-32 text-center">Aksi</th>
             </tr>
           </thead>
@@ -345,7 +345,7 @@
                 <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                   <td class="py-4 px-6 text-slate-500 text-sm font-mono">{card.id}</td>
                   <td class="py-4 px-6">
-                    <span class="bg-teal-50 text-teal-800 px-3 py-1.5 rounded-lg border border-teal-100 text-xs font-bold">
+                    <span class="bg-teal-50 text-teal-800 px-3 py-1.5 rounded-lg border border-teal-100 text-xs font-bold inline-block max-w-full truncate align-middle">
                       {card.category?.name || 'Unknown'}
                     </span>
                   </td>
