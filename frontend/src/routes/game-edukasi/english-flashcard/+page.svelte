@@ -17,6 +17,7 @@
   
   let isGameOver = $state(false);
   let isFlipped = $state(false); 
+  let isFlippingBack = $state(false);
   let isSuccess = $state(false); // Untuk warna kartu saat di-flip
   
   let errorShake = $state(-1);
@@ -85,6 +86,7 @@
     attempts = 0;
     wrongSelections = [];
     isFlipped = false;
+    isFlippingBack = false;
     isSuccess = false;
   }
 
@@ -123,8 +125,13 @@
 
   function nextQuestion() {
     if (currentQuestionIndex < questions.length - 1) {
-      currentQuestionIndex++;
-      resetCard();
+      isFlippingBack = true;
+      isFlipped = false;
+      
+      setTimeout(() => {
+        currentQuestionIndex++;
+        resetCard();
+      }, 300);
     } else {
       isGameOver = true;
     }
@@ -177,7 +184,12 @@
                   {cat.description || "Mulai belajar kosakata di kategori ini"}
                 </p>
                 <div class="mt-6 flex justify-end">
-                  <span class="bg-teal-100 text-teal-700 font-bold px-4 py-1.5 rounded-full text-sm group-hover:bg-teal-500 group-hover:text-white transition-colors">Mainkan &rarr;</span>
+                  <span class="bg-teal-100 text-teal-700 font-bold px-4 py-1.5 rounded-full text-sm group-hover:bg-teal-500 group-hover:text-white transition-colors flex items-center gap-1">
+                    Mainkan
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </span>
                 </div>
               </button>
             {/each}
@@ -187,9 +199,13 @@
         <div class="mt-12">
           <a
             href="/game-edukasi"
-            class="text-teal-700 hover:text-teal-900 font-black text-lg bg-white/50 px-6 py-3 rounded-full shadow-sm hover:bg-white transition-all backdrop-blur-sm"
-            >&larr; Kembali ke Menu Utama</a
+            class="inline-flex items-center gap-2 text-teal-700 hover:text-teal-900 font-black text-lg bg-white/50 px-6 py-3 rounded-full shadow-sm hover:bg-white transition-all backdrop-blur-sm"
           >
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            Kembali ke Menu Utama
+          </a>
         </div>
       </div>
     {:else}
@@ -274,7 +290,7 @@
           </div>
 
           <!-- Pilihan Jawaban / Tombol Lanjut -->
-          {#if !isFlipped}
+          {#if !isFlipped && !isFlippingBack}
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               {#each questions[currentQuestionIndex].options as option, index}
                 {@const isWrong = wrongSelections.includes(index)}
@@ -297,7 +313,7 @@
                 </button>
               {/each}
             </div>
-          {:else}
+          {:else if isFlipped}
             <div class="animate-fade-in mt-2 flex justify-center">
               <button
                 onclick={nextQuestion}

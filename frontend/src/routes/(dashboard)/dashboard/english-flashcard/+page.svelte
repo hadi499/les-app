@@ -29,6 +29,11 @@
   let showCategoryModal = $state(false);
   let isEditingCategory = $state(false);
 
+  let showJsonModal = $state(false);
+  let jsonInput = $state("");
+  let isImporting = $state(false);
+  let jsonCategoryId = $state<number | "">("");
+
   // Forms
   let currentCard = $state<EnglishFlashcard>({
     category_id: 0,
@@ -165,6 +170,57 @@
       }
     }
   }
+
+  function openJsonModal() {
+    if (!categories.length) {
+      switchTab("categories");
+      return alert("Silakan buat kategori terlebih dahulu!");
+    }
+    jsonCategoryId = (selectedCategoryId as number) || categories[0].id || "";
+    jsonInput = '[\n  {\n    "question": "Apa bahasa inggrisnya Kucing?",\n    "options": ["Dog", "Cat", "Bird", "Fish"],\n    "answer": "Cat",\n    "explanation": "Cat adalah kucing."\n  }\n]';
+    showJsonModal = true;
+  }
+
+  async function handleJsonImport() {
+    if (!jsonCategoryId) {
+      alert("Pilih kategori terlebih dahulu!");
+      return;
+    }
+    try {
+      const parsedData = JSON.parse(jsonInput);
+      if (!Array.isArray(parsedData)) {
+        alert("Format JSON harus berupa array of objects!");
+        return;
+      }
+      
+      isImporting = true;
+      for (const item of parsedData) {
+        if (!item.question || !item.answer || !item.options || item.options.length === 0) {
+          console.warn("Skipping invalid item:", item);
+          continue;
+        }
+        
+        const newCard: EnglishFlashcard = {
+          category_id: jsonCategoryId as number,
+          question: item.question,
+          options: item.options,
+          answer: item.answer,
+          explanation: item.explanation || ""
+        };
+        
+        await createFlashcard(newCard);
+      }
+      
+      alert(`Berhasil import flashcards!`);
+      showJsonModal = false;
+      loadData();
+    } catch (e) {
+      console.error(e);
+      alert("Format JSON tidak valid atau terjadi kesalahan saat import!");
+    } finally {
+      isImporting = false;
+    }
+  }
 </script>
 
 <div class="p-6 max-w-6xl mx-auto">
@@ -255,10 +311,16 @@
           </select>
         </div>
         
-        <button onclick={openCreateCardModal} class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
-          Tambah Kartu
-        </button>
+        <div class="flex gap-2 w-full sm:w-auto flex-col sm:flex-row mt-4 sm:mt-0">
+          <button onclick={openJsonModal} class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+            Import JSON
+          </button>
+          <button onclick={openCreateCardModal} class="bg-teal-600 hover:bg-teal-700 text-white px-5 py-2.5 rounded-xl font-bold shadow-sm transition-all active:scale-95 flex items-center gap-2 whitespace-nowrap justify-center">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+            Tambah Kartu
+          </button>
+        </div>
       </div>
 
       <!-- Table Flashcards -->
@@ -396,6 +458,65 @@
       <div class="p-5 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
         <button onclick={() => showCardModal = false} class="px-6 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-colors">Batal</button>
         <button onclick={saveCard} class="px-6 py-2.5 rounded-xl font-bold text-white bg-teal-600 hover:bg-teal-700 transition-colors shadow-md active:scale-95">Simpan Kartu</button>
+      </div>
+    </div>
+  </div>
+{/if}
+
+<!-- Modal Import JSON -->
+{#if showJsonModal}
+  <div class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+    <div class="bg-white rounded-3xl shadow-2xl w-full max-w-3xl max-h-[90vh] flex flex-col overflow-hidden animate-pop">
+      <div class="p-6 border-b border-slate-200 flex justify-between items-center bg-slate-50">
+        <h2 class="text-xl font-bold text-slate-800">Import Flashcard via JSON</h2>
+        <button onclick={() => showJsonModal = false} class="text-slate-400 hover:text-slate-600 bg-slate-200 hover:bg-slate-300 p-1.5 rounded-full transition-colors">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+      </div>
+      
+      <div class="p-6 overflow-y-auto flex-1 space-y-5">
+        <div class="bg-blue-50 text-blue-800 p-4 rounded-xl text-sm font-medium border border-blue-200">
+          <p class="mb-2">Format JSON harus berupa <strong>array of objects</strong>. Contoh format:</p>
+          <pre class="bg-white/60 p-2 rounded-lg text-xs overflow-x-auto text-blue-900 border border-blue-100">
+[
+  &#123;
+    "question": "Pertanyaan 1",
+    "options": ["Opsi A", "Opsi B", "Opsi C", "Opsi D"],
+    "answer": "Opsi A",
+    "explanation": "Penjelasan jawaban A"
+  &#125;
+]
+          </pre>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2" for="jsonCategory">Pilih Kategori Tujuan</label>
+          <select id="jsonCategory" bind:value={jsonCategoryId} class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 bg-white font-semibold focus:border-indigo-500 outline-none transition-colors">
+            {#each categories as cat}
+              <option value={cat.id}>{cat.name}</option>
+            {/each}
+          </select>
+        </div>
+        
+        <div>
+          <label class="block text-sm font-bold text-slate-700 mb-2" for="jsonInput">Data JSON (seperti raw body Postman)</label>
+          <textarea id="jsonInput" bind:value={jsonInput} rows="10" class="w-full border-2 border-slate-200 rounded-xl px-4 py-3 font-mono text-sm focus:border-indigo-500 outline-none transition-colors" placeholder="Paste JSON array di sini..."></textarea>
+        </div>
+      </div>
+      
+      <div class="p-5 border-t border-slate-200 bg-slate-50 flex justify-end gap-3">
+        <button onclick={() => showJsonModal = false} class="px-6 py-2.5 rounded-xl font-bold text-slate-600 hover:bg-slate-200 transition-colors">Batal</button>
+        <button onclick={handleJsonImport} disabled={isImporting || !jsonCategoryId} class="px-6 py-2.5 rounded-xl font-bold text-white bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md active:scale-95 flex items-center gap-2">
+          {#if isImporting}
+            <svg class="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            Mengimpor...
+          {:else}
+            Mulai Import
+          {/if}
+        </button>
       </div>
     </div>
   </div>
