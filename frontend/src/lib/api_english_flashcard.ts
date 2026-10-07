@@ -61,9 +61,12 @@ export async function deleteFlashcardCategory(id: number): Promise<void> {
 
 // --- FLASHCARDS ---
 
-export async function fetchFlashcards(categoryId?: number): Promise<EnglishFlashcard[]> {
-  const url = categoryId ? `${API_BASE}?category_id=${categoryId}` : API_BASE;
-  const res = await fetch(url, { ...defaultFetchOpts, cache: 'no-store' });
+export async function fetchFlashcards(categoryId?: number, search?: string): Promise<EnglishFlashcard[]> {
+  const url = new URL(API_BASE, window.location.origin);
+  if (categoryId) url.searchParams.append('category_id', categoryId.toString());
+  if (search) url.searchParams.append('search', search);
+  
+  const res = await fetch(url.toString(), { ...defaultFetchOpts, cache: 'no-store' });
   if (!res.ok) throw new Error('Failed to fetch flashcards');
   return res.json();
 }

@@ -20,6 +20,26 @@
   let categories = $state<EnglishFlashcardCategory[]>([]);
   let selectedCategoryId = $state<number | "">("");
   
+  let currentPage = $state(1);
+  const itemsPerPage = 10;
+  let paginatedFlashcards = $derived(flashcards.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage));
+  let totalPages = $derived(Math.ceil(flashcards.length / itemsPerPage) || 1);
+  
+  let searchQuery = $state("");
+  let searchTimeout: any;
+
+  function handleSearchInput() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      loadData();
+    }, 400);
+  }
+
+  function clearSearch() {
+    searchQuery = "";
+    loadData();
+  }
+  
   let isLoading = $state(true);
   
   // Modals state
@@ -51,12 +71,9 @@
   async function loadData() {
     isLoading = true;
     try {
+      currentPage = 1;
       categories = await fetchFlashcardCategories();
-      if (selectedCategoryId) {
-        flashcards = await fetchFlashcards(selectedCategoryId as number);
-      } else {
-        flashcards = await fetchFlashcards();
-      }
+      flashcards = await fetchFlashcards(selectedCategoryId ? (selectedCategoryId as number) : undefined, searchQuery);
     } catch (e) {
       console.error(e);
       alert("Gagal memuat data");
@@ -262,41 +279,43 @@
       </div>
 
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm">
-              <th class="py-4 px-6 w-16">ID</th>
-              <th class="py-4 px-6">Nama Kategori</th>
-              <th class="py-4 px-6">Deskripsi</th>
-              <th class="py-4 px-6 w-32 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#if isLoading}
-              <tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">Memuat data kategori...</td></tr>
-            {:else if categories.length === 0}
-              <tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">Belum ada kategori. Silakan buat kategori pertama Anda.</td></tr>
-            {:else}
-              {#each categories as cat}
-                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td class="py-4 px-6 text-slate-500 text-sm font-mono">{cat.id}</td>
-                  <td class="py-4 px-6 font-bold text-slate-800">{cat.name}</td>
-                  <td class="py-4 px-6 text-slate-600 text-sm">{cat.description || '-'}</td>
-                  <td class="py-4 px-6">
-                    <div class="flex justify-center gap-2">
-                      <button onclick={() => openEditCategoryModal(cat)} class="text-blue-600 hover:bg-blue-100 bg-blue-50 p-2 rounded-lg transition-colors" title="Edit">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                      </button>
-                      <button onclick={() => handleDeleteCategory(cat.id)} class="text-red-600 hover:bg-red-100 bg-red-50 p-2 rounded-lg transition-colors" title="Hapus">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            {/if}
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[600px]">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm whitespace-nowrap">
+                <th class="py-4 px-6 w-16">ID</th>
+                <th class="py-4 px-6">Nama Kategori</th>
+                <th class="py-4 px-6">Deskripsi</th>
+                <th class="py-4 px-6 w-32 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#if isLoading}
+                <tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">Memuat data kategori...</td></tr>
+              {:else if categories.length === 0}
+                <tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">Belum ada kategori. Silakan buat kategori pertama Anda.</td></tr>
+              {:else}
+                {#each categories as cat}
+                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{cat.id}</td>
+                    <td class="py-4 px-6 font-bold text-slate-800">{cat.name}</td>
+                    <td class="py-4 px-6 text-slate-600 text-sm">{cat.description || '-'}</td>
+                    <td class="py-4 px-6">
+                      <div class="flex justify-center gap-2">
+                        <button onclick={() => openEditCategoryModal(cat)} class="text-blue-600 hover:bg-blue-100 bg-blue-50 p-2 rounded-lg transition-colors" title="Edit">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </button>
+                        <button onclick={() => handleDeleteCategory(cat.id)} class="text-red-600 hover:bg-red-100 bg-red-50 p-2 rounded-lg transition-colors" title="Hapus">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              {/if}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   {:else}
@@ -304,18 +323,39 @@
     <div class="animate-fade-in">
       <div class="bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6 flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
         <div class="flex items-center gap-3 w-full sm:w-auto">
-          <label for="category-filter" class="font-bold text-slate-700 whitespace-nowrap">Filter Kategori:</label>
+          <label for="category-filter" class="font-bold text-slate-700 whitespace-nowrap hidden sm:block">Kategori:</label>
           <select 
             id="category-filter" 
             bind:value={selectedCategoryId} 
             onchange={loadData}
-            class="border-2 border-slate-200 rounded-xl px-4 py-2 bg-slate-50 min-w-[220px] font-semibold text-slate-700 focus:border-teal-500 outline-none transition-colors"
+            class="border-2 border-slate-200 rounded-xl px-3 py-2 bg-slate-50 w-full sm:w-48 font-semibold text-slate-700 focus:border-teal-500 outline-none transition-colors"
           >
             <option value="">Semua Kategori</option>
             {#each categories as cat}
               <option value={cat.id}>{cat.name}</option>
             {/each}
           </select>
+          <div class="relative w-full sm:w-64">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+            </div>
+            <input 
+              type="text" 
+              bind:value={searchQuery}
+              oninput={handleSearchInput}
+              placeholder="Cari kartu..." 
+              class="w-full border-2 border-slate-200 rounded-xl pl-10 pr-10 py-2 bg-slate-50 font-semibold text-slate-700 focus:border-teal-500 outline-none transition-colors"
+            />
+            {#if searchQuery}
+              <button 
+                onclick={clearSearch}
+                class="absolute inset-y-0 right-0 pr-3 flex items-center text-slate-400 hover:text-slate-600 transition-colors"
+                title="Hapus pencarian"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+              </button>
+            {/if}
+          </div>
         </div>
         
         <div class="flex gap-2 w-full sm:w-auto flex-col sm:flex-row mt-4 sm:mt-0">
@@ -332,47 +372,78 @@
 
       <!-- Table Flashcards -->
       <div class="bg-white rounded-2xl shadow-sm overflow-hidden border border-slate-200">
-        <table class="w-full text-left border-collapse">
-          <thead>
-            <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm">
-              <th class="py-4 px-6 w-16">ID</th>
-              <th class="py-4 px-6 w-48 min-w-[150px]">Kategori</th>
-              <th class="py-4 px-6">Pertanyaan</th>
-              <th class="py-4 px-6 w-40 min-w-[150px]">Jawaban Benar</th>
-              <th class="py-4 px-6 w-32 text-center">Aksi</th>
-            </tr>
-          </thead>
-          <tbody>
-            {#if isLoading}
-              <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Memuat flashcard...</td></tr>
-            {:else if flashcards.length === 0}
-              <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Belum ada kartu di kategori ini.</td></tr>
-            {:else}
-              {#each flashcards as card}
-                <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                  <td class="py-4 px-6 text-slate-500 text-sm font-mono">{card.id}</td>
-                  <td class="py-4 px-6">
-                    <span class="bg-teal-50 text-teal-800 px-3 py-1.5 rounded-lg border border-teal-100 text-xs font-bold inline-block max-w-full truncate align-middle">
-                      {card.category?.name || 'Unknown'}
-                    </span>
-                  </td>
-                  <td class="py-4 px-6 text-slate-800 font-bold">{card.question}</td>
-                  <td class="py-4 px-6 text-green-600 font-bold">{card.answer}</td>
-                  <td class="py-4 px-6">
-                    <div class="flex justify-center gap-2">
-                      <button onclick={() => openEditCardModal(card)} class="text-blue-600 hover:bg-blue-100 bg-blue-50 p-2 rounded-lg transition-colors" title="Edit">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
-                      </button>
-                      <button onclick={() => handleDeleteCard(card.id)} class="text-red-600 hover:bg-red-100 bg-red-50 p-2 rounded-lg transition-colors" title="Hapus">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              {/each}
-            {/if}
-          </tbody>
-        </table>
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse min-w-[900px]">
+            <thead>
+              <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm whitespace-nowrap">
+                <th class="py-4 px-6 w-16">ID</th>
+                <th class="py-4 px-6 w-48 min-w-[150px]">Kategori</th>
+                <th class="py-4 px-6">Pertanyaan</th>
+                <th class="py-4 px-6 w-40 min-w-[150px]">Jawaban Benar</th>
+                <th class="py-4 px-6 w-32 text-center">Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {#if isLoading}
+                <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Memuat flashcard...</td></tr>
+              {:else if flashcards.length === 0 && searchQuery}
+                <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Tidak ada kartu yang cocok dengan pencarian Anda.</td></tr>
+              {:else if flashcards.length === 0}
+                <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Belum ada kartu di kategori ini.</td></tr>
+              {:else}
+                {#each paginatedFlashcards as card}
+                  <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
+                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{card.id}</td>
+                    <td class="py-4 px-6">
+                      <span class="bg-teal-50 text-teal-800 px-3 py-1.5 rounded-lg border border-teal-100 text-xs font-bold inline-block max-w-full truncate align-middle">
+                        {card.category?.name || 'Unknown'}
+                      </span>
+                    </td>
+                    <td class="py-4 px-6 text-slate-800 font-bold">{card.question}</td>
+                    <td class="py-4 px-6 text-green-600 font-bold">{card.answer}</td>
+                    <td class="py-4 px-6">
+                      <div class="flex justify-center gap-2">
+                        <button onclick={() => openEditCardModal(card)} class="text-blue-600 hover:bg-blue-100 bg-blue-50 p-2 rounded-lg transition-colors" title="Edit">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path></svg>
+                        </button>
+                        <button onclick={() => handleDeleteCard(card.id)} class="text-red-600 hover:bg-red-100 bg-red-50 p-2 rounded-lg transition-colors" title="Hapus">
+                          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                {/each}
+              {/if}
+            </tbody>
+          </table>
+        </div>
+        
+        {#if flashcards.length > itemsPerPage}
+          <div class="p-4 border-t border-slate-200 bg-slate-50 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <span class="text-sm text-slate-500 font-medium text-center sm:text-left">
+              Menampilkan {(currentPage - 1) * itemsPerPage + 1} - {Math.min(currentPage * itemsPerPage, flashcards.length)} dari {flashcards.length} kartu
+            </span>
+            <div class="flex gap-2 w-full sm:w-auto">
+              <button 
+                onclick={() => currentPage > 1 && currentPage--} 
+                disabled={currentPage === 1}
+                class="flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-600 font-semibold text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-100 active:scale-95 transition-all shadow-sm text-center"
+              >
+                Prev
+              </button>
+              <div class="flex items-center justify-center px-3 sm:px-4 font-bold text-slate-700 bg-white border border-slate-200 rounded-lg shadow-sm text-sm sm:text-base">
+                {currentPage} / {totalPages}
+              </div>
+              <button 
+                onclick={() => currentPage < totalPages && currentPage++} 
+                disabled={currentPage === totalPages}
+                class="flex-1 sm:flex-none px-2 sm:px-4 py-2 rounded-lg border border-slate-300 bg-white text-slate-600 font-semibold text-sm sm:text-base disabled:opacity-50 disabled:cursor-not-allowed hover:bg-slate-100 active:scale-95 transition-all shadow-sm text-center"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        {/if}
       </div>
     </div>
   {/if}

@@ -12,7 +12,7 @@ import (
 
 func GetEnglishFlashcardCategories(c *gin.Context) {
 	var categories []models.EnglishFlashcardCategory
-	if err := database.DB.Find(&categories).Error; err != nil {
+	if err := database.DB.Order("id DESC").Find(&categories).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal mengambil kategori"})
 		return
 	}
@@ -71,11 +71,19 @@ func DeleteEnglishFlashcardCategory(c *gin.Context) {
 
 func GetEnglishFlashcards(c *gin.Context) {
 	categoryID := c.Query("category_id")
+	search := c.Query("search")
 	var flashcards []models.EnglishFlashcard
 	
-	query := database.DB.Preload("Category").Model(&models.EnglishFlashcard{})
+	query := database.DB.Preload("Category").Order("english_flashcards.id DESC").Model(&models.EnglishFlashcard{})
+	
 	if categoryID != "" {
 		query = query.Where("category_id = ?", categoryID)
+	}
+
+	if search != "" {
+		searchTerm := "%" + search + "%"
+		query = query.Joins("LEFT JOIN english_flashcard_categories ON english_flashcard_categories.id = english_flashcards.category_id").
+			Where("english_flashcards.question ILIKE ? OR english_flashcards.answer ILIKE ? OR english_flashcard_categories.name ILIKE ?", searchTerm, searchTerm, searchTerm)
 	}
 
 	if err := query.Find(&flashcards).Error; err != nil {
