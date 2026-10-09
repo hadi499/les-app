@@ -287,7 +287,7 @@
           <table class="w-full text-left border-collapse min-w-[600px]">
             <thead>
               <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm whitespace-nowrap">
-                <th class="py-4 px-6 w-16">ID</th>
+                <th class="py-4 px-6 w-16">No</th>
                 <th class="py-4 px-6">Nama Kategori</th>
                 <th class="py-4 px-6">Deskripsi</th>
                 <th class="py-4 px-6 w-32 text-center">Aksi</th>
@@ -299,9 +299,9 @@
               {:else if categories.length === 0}
                 <tr><td colspan="4" class="py-12 text-center text-slate-500 font-medium">Belum ada kategori. Silakan buat kategori pertama Anda.</td></tr>
               {:else}
-                {#each categories as cat}
+                {#each categories as cat, i}
                   <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{cat.id}</td>
+                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{i + 1}</td>
                     <td class="py-4 px-6 font-bold text-slate-800">{cat.name}</td>
                     <td class="py-4 px-6 text-slate-600 text-sm">{cat.description || '-'}</td>
                     <td class="py-4 px-6">
@@ -380,7 +380,7 @@
           <table class="w-full text-left border-collapse min-w-[900px]">
             <thead>
               <tr class="bg-slate-50 border-b border-slate-200 text-slate-600 text-sm whitespace-nowrap">
-                <th class="py-4 px-6 w-16">ID</th>
+                <th class="py-4 px-6 w-16">No</th>
                 <th class="py-4 px-6 w-48 min-w-[150px]">Kategori</th>
                 <th class="py-4 px-6">Pertanyaan</th>
                 <th class="py-4 px-6 w-40 min-w-[150px]">Jawaban Benar</th>
@@ -395,9 +395,9 @@
               {:else if flashcards.length === 0}
                 <tr><td colspan="5" class="py-12 text-center text-slate-500 font-medium">Belum ada kartu di kategori ini.</td></tr>
               {:else}
-                {#each paginatedFlashcards as card}
+                {#each paginatedFlashcards as card, i}
                   <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{card.id}</td>
+                    <td class="py-4 px-6 text-slate-500 text-sm font-mono">{(currentPage - 1) * itemsPerPage + i + 1}</td>
                     <td class="py-4 px-6">
                       <span class="bg-teal-50 text-teal-800 px-3 py-1.5 rounded-lg border border-teal-100 text-xs font-bold inline-block max-w-full truncate align-middle">
                         {card.category?.name || 'Unknown'}
