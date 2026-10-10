@@ -24,12 +24,14 @@
     containerMinHeight = "min-h-[100px]",
     textSize = "prose-sm",
     uploadType = "materi",
+    allowImageUpload = true,
   }: {
     value?: string;
     minHeight?: string;
     containerMinHeight?: string;
     textSize?: string;
     uploadType?: string;
+    allowImageUpload?: boolean;
   } = $props();
 
   let editorEl = $state<HTMLDivElement>();
@@ -91,6 +93,7 @@
           class: `prose ${textSize} max-w-none focus:outline-none ${minHeight}`,
         },
         handlePaste: (view, event, slice) => {
+          if (!allowImageUpload) return false;
           const items = event.clipboardData?.items;
           if (items) {
             for (const item of Array.from(items)) {
@@ -106,6 +109,7 @@
           return false;
         },
         handleDrop: (view, event, slice, moved) => {
+          if (!allowImageUpload) return false;
           if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files.length > 0) {
             const file = event.dataTransfer.files[0];
             if (file.type.indexOf("image") === 0) {
@@ -385,25 +389,27 @@
         /><path d="M4 12l16 0" /><path d="M4 18l16 0" /></svg
       >
     </button>
-    <span class="w-px bg-gray-300 mx-0.5"></span>
-    <button
-      type="button"
-      onclick={() => fileInput?.click()}
-      class="px-1.5 py-1 text-xs rounded cursor-pointer text-gray-600 hover:bg-gray-100"
-      title="Insert Image"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/></svg>
-    </button>
-    {#if active.isImageSelected}
+    {#if allowImageUpload}
       <span class="w-px bg-gray-300 mx-0.5"></span>
       <button
         type="button"
-        onclick={() => editor?.chain().focus().deleteSelection().run()}
-        class="px-1.5 py-1 text-xs rounded cursor-pointer text-red-600 hover:bg-red-100 bg-red-50"
-        title="Hapus Gambar"
+        onclick={() => fileInput?.click()}
+        class="px-1.5 py-1 text-xs rounded cursor-pointer text-gray-600 hover:bg-gray-100"
+        title="Insert Image"
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M15 8h.01"/><path d="M3 6a3 3 0 0 1 3 -3h12a3 3 0 0 1 3 3v12a3 3 0 0 1 -3 3h-12a3 3 0 0 1 -3 -3v-12z"/><path d="M3 16l5 -5c.928 -.893 2.072 -.893 3 0l5 5"/><path d="M14 14l1 -1c.928 -.893 2.072 -.893 3 0l3 3"/></svg>
       </button>
+      {#if active.isImageSelected}
+        <span class="w-px bg-gray-300 mx-0.5"></span>
+        <button
+          type="button"
+          onclick={() => editor?.chain().focus().deleteSelection().run()}
+          class="px-1.5 py-1 text-xs rounded cursor-pointer text-red-600 hover:bg-red-100 bg-red-50"
+          title="Hapus Gambar"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M4 7l16 0"/><path d="M10 11l0 6"/><path d="M14 11l0 6"/><path d="M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2 -2l1 -12"/><path d="M9 7v-3a1 1 0 0 1 1 -1h4a1 1 0 0 1 1 1v3"/></svg>
+        </button>
+      {/if}
     {/if}
     <span class="w-px bg-gray-300 mx-0.5"></span>
     <button
@@ -487,4 +493,6 @@
   </div>
 {/if}
 
-<input type="file" bind:this={fileInput} onchange={handleImageUpload} accept="image/*" class="hidden" />
+{#if allowImageUpload}
+  <input type="file" bind:this={fileInput} onchange={handleImageUpload} accept="image/*" class="hidden" />
+{/if}
