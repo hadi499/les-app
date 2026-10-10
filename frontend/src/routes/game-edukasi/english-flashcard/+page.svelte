@@ -174,7 +174,7 @@
             {#each categories as cat}
               <button
                 onclick={() => selectCategoryAndStart(cat)}
-                class="group text-left bg-white p-6 rounded-3xl shadow-lg border-b-8 border-r-4 border-teal-200 hover:border-teal-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300"
+                class="group text-left bg-white p-6 rounded-3xl shadow-lg border-b-8 border-r-4 border-teal-200 hover:border-teal-400 hover:shadow-xl hover:-translate-y-2 transition-all duration-300 flex flex-col h-full"
               >
                 <div class="text-4xl mb-4 group-hover:scale-110 transition-transform origin-left">📚</div>
                 <h3 class="text-2xl font-black text-slate-800 mb-2 group-hover:text-teal-700 transition-colors">
@@ -183,7 +183,7 @@
                 <p class="text-slate-500 font-medium text-sm line-clamp-2">
                   {cat.description || "Mulai belajar kosakata di kategori ini"}
                 </p>
-                <div class="mt-6 flex justify-end">
+                <div class="mt-auto pt-6 flex justify-end w-full">
                   <span class="bg-teal-100 text-teal-700 font-bold px-4 py-1.5 rounded-full text-sm group-hover:bg-teal-500 group-hover:text-white transition-colors flex items-center gap-1">
                     Mainkan
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">
@@ -239,8 +239,11 @@
 
       {#if questions.length > 0 && !isGameOver}
         <div class="max-w-xl mx-auto">
-          <div class="text-center mb-4">
+          <div class="text-center mb-6">
             <h2 class="text-2xl font-black text-slate-800 mb-2">{selectedCategory?.name}</h2>
+            {#if selectedCategory?.description}
+              <p class="text-slate-600 font-medium">{selectedCategory.description}</p>
+            {/if}
           </div>
 
           <!-- Area Flashcard (Berbentuk persegi panjang mirip kartu kredit di desktop, lebih tinggi di mobile) -->
