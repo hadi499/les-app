@@ -13,6 +13,7 @@
 
   let isSubmitting = $state(false);
   let isSuccess = false;
+  let isShaking = $state(false);
 
   let newlyUploadedImages: string[] = [];
 
@@ -36,6 +37,16 @@
 
   function addQuestion() {
     questions = [...questions, { question: "", image: "", options: ["", "", "", ""], answer: 0 }];
+    
+    isShaking = true;
+    setTimeout(() => {
+      isShaking = false;
+    }, 400);
+
+    // Scroll ke bawah agar soal yang baru ditambahkan langsung terlihat
+    setTimeout(() => {
+      window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+    }, 100);
   }
 
   function removeQuestion(index: number) {
@@ -144,7 +155,7 @@
     <button
       type="button"
       onclick={addQuestion}
-      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap"
+      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap {isShaking ? 'animate-shake' : ''}"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -319,3 +330,16 @@
 
     <!-- Tombol aksi telah dipindah ke sticky header di atas -->
 </form>
+
+<style>
+  @keyframes shake {
+    0%, 100% { transform: translateX(0) rotate(0deg); }
+    25% { transform: translateX(-2px) rotate(-1deg); }
+    50% { transform: translateX(2px) rotate(1deg); }
+    75% { transform: translateX(-2px) rotate(-1deg); }
+  }
+  
+  :global(.animate-shake) {
+    animation: shake 0.4s ease-in-out both;
+  }
+</style>
