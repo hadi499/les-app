@@ -151,11 +151,20 @@
     </div>
   </div>
 
-  <div class="flex items-center gap-3 w-full sm:w-auto">
+  <div class="flex items-center gap-2 sm:gap-3 w-full sm:w-auto">
+    <div
+      class="inline-flex items-center gap-1.5 px-3 py-2 bg-blue-50 text-blue-700 border border-blue-200 rounded-xl font-bold text-xs sm:text-sm shadow-sm whitespace-nowrap shrink-0"
+      title="Banyak soal yang telah ditambahkan"
+    >
+      <svg class="w-4 h-4 text-blue-600 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+      </svg>
+      <span>{questions.length} Soal</span>
+    </div>
     <button
       type="button"
       onclick={addQuestion}
-      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap {isShaking ? 'animate-shake' : ''}"
+      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-white text-blue-600 border border-blue-200 rounded-xl font-bold hover:bg-blue-50 transition-colors shadow-sm cursor-pointer whitespace-nowrap text-xs sm:text-sm {isShaking ? 'animate-shake' : ''}"
     >
       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
@@ -166,7 +175,7 @@
       type="button"
       onclick={handleSubmit}
       disabled={isSubmitting}
-      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer whitespace-nowrap"
+      class="flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-6 py-2 bg-blue-600 text-white font-bold rounded-xl shadow-md hover:bg-blue-700 hover:shadow-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed border-none cursor-pointer whitespace-nowrap text-xs sm:text-sm"
     >
       {isSubmitting ? 'Menyimpan...' : 'Simpan Kuis'}
     </button>
