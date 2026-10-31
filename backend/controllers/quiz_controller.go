@@ -461,9 +461,17 @@ func GetQuizScores(c *gin.Context) {
 
 	query := database.DB.Model(&models.ScoreQuiz{})
 
-	searchUsername := c.Query("username")
-	if searchUsername != "" {
-		query = query.Where("username LIKE ?", "%"+searchUsername+"%")
+	search := strings.TrimSpace(c.Query("search"))
+	if search == "" {
+		search = strings.TrimSpace(c.Query("username"))
+	}
+	if search != "" {
+		searchPattern := "%" + search + "%"
+		query = query.Where(
+			"username ILIKE ? OR quiz_id IN (?)",
+			searchPattern,
+			database.DB.Model(&models.Quiz{}).Select("id").Where("title ILIKE ?", searchPattern),
+		)
 	}
 
 	if err := query.Count(&totalItems).Error; err != nil {
@@ -479,10 +487,11 @@ func GetQuizScores(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data":         scores,
-		"total_pages":  totalPages,
-		"current_page": page,
-		"total_items":  totalItems,
+		"data":           scores,
+		"total_pages":    totalPages,
+		"current_page":   page,
+		"total_items":    totalItems,
+		"search_applied": true,
 	})
 }
 
@@ -510,6 +519,18 @@ func GetMyQuizScores(c *gin.Context) {
 
 	query := database.DB.Model(&models.ScoreQuiz{}).Where("username = ?", usernameStr)
 
+	search := strings.TrimSpace(c.Query("search"))
+	if search == "" {
+		search = strings.TrimSpace(c.Query("username"))
+	}
+	if search != "" {
+		searchPattern := "%" + search + "%"
+		query = query.Where(
+			"quiz_id IN (?)",
+			database.DB.Model(&models.Quiz{}).Select("id").Where("title ILIKE ?", searchPattern),
+		)
+	}
+
 	if err := query.Count(&totalItems).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Gagal menghitung skor"})
 		return
@@ -523,9 +544,10 @@ func GetMyQuizScores(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"data":         scores,
-		"total_pages":  totalPages,
-		"current_page": page,
-		"total_items":  totalItems,
+		"data":           scores,
+		"total_pages":    totalPages,
+		"current_page":   page,
+		"total_items":    totalItems,
+		"search_applied": true,
 	})
 }

@@ -35,6 +35,7 @@
   let showLoadingSpinner = $state(false);
   let isLoadingScores = $state(false);
   let searchUsername = $state("");
+  let searchTimeout: ReturnType<typeof setTimeout> | undefined;
 
   // Modal State
   let showDeleteModal = $state(false);
@@ -49,7 +50,6 @@
   let totalScorePages = $state(1);
 
   let itemsPerPage = 24;
-  let isInitialLoad = true;
 
   async function checkRole() {
     try {
@@ -90,13 +90,40 @@
   async function fetchScores() {
     isLoadingScores = true;
     try {
-      const url = isTeacher
-        ? `/api/quizzes/scores?page=${currentScorePage}&limit=${itemsPerPage}&username=${encodeURIComponent(searchUsername)}`
-        : `/api/scores/quizzes?page=${currentScorePage}&limit=${itemsPerPage}`;
+      const q = searchUsername.trim();
+      const basePath = isTeacher ? "/api/quizzes/scores" : "/api/scores/quizzes";
+      const url = q
+        ? `${basePath}?page=${currentScorePage}&limit=${itemsPerPage}&search=${encodeURIComponent(q)}`
+        : `${basePath}?page=${currentScorePage}&limit=${itemsPerPage}`;
 
       const res = await fetch(url, { credentials: "include" });
       if (res.ok) {
         const json = await res.json();
+        if (q && !json.search_applied) {
+          // Fallback jika backend Go belum di-restart: ambil data dan filter di sisi klien (title quiz & username)
+          const allRes = await fetch(`${basePath}?page=1&limit=1000`, {
+            credentials: "include",
+          });
+          if (allRes.ok) {
+            const allJson = await allRes.json();
+            const allData: ScoreQuiz[] = allJson.data || [];
+            const lowerQ = q.toLowerCase();
+            const filtered = allData.filter((s) => {
+              const matchUser = (s.username || "").toLowerCase().includes(lowerQ);
+              const matchTitle = (s.quiz?.title || `Kuis #${s.quiz_id}`)
+                .toLowerCase()
+                .includes(lowerQ);
+              return matchUser || matchTitle;
+            });
+            totalScorePages = Math.max(
+              1,
+              Math.ceil(filtered.length / itemsPerPage),
+            );
+            const start = (currentScorePage - 1) * itemsPerPage;
+            scores = filtered.slice(start, start + itemsPerPage);
+            return;
+          }
+        }
         scores = json.data || [];
         totalScorePages = json.total_pages || 1;
       }
@@ -105,6 +132,14 @@
     } finally {
       isLoadingScores = false;
     }
+  }
+
+  function handleSearchScoreInput() {
+    clearTimeout(searchTimeout);
+    searchTimeout = setTimeout(() => {
+      currentScorePage = 1;
+      fetchScores();
+    }, 300);
   }
 
   function promptDelete(id: number) {
@@ -165,17 +200,19 @@
     }
   }
 
-  $effect(() => {
-    if (!isInitialLoad) {
-      fetchQuizzes();
-    }
-  });
+  function goToQuizPage(page: number) {
+    const next = Math.min(Math.max(1, page), totalQuizPages);
+    if (next === currentQuizPage) return;
+    currentQuizPage = next;
+    fetchQuizzes();
+  }
 
-  $effect(() => {
-    if (!isInitialLoad) {
-      fetchScores();
-    }
-  });
+  function goToScorePage(page: number) {
+    const next = Math.min(Math.max(1, page), totalScorePages);
+    if (next === currentScorePage) return;
+    currentScorePage = next;
+    fetchScores();
+  }
 
   onMount(async () => {
     const savedTab = localStorage.getItem("quizzesActiveTab");
@@ -186,7 +223,6 @@
     await checkRole();
     await fetchQuizzes();
     await fetchScores();
-    isInitialLoad = false;
     isLoading = false;
   });
 
@@ -441,7 +477,7 @@
         <div class="flex items-center gap-2">
           <button
             class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            onclick={() => (currentQuizPage = Math.max(1, currentQuizPage - 1))}
+            onclick={() => goToQuizPage(currentQuizPage - 1)}
             disabled={currentQuizPage === 1}
           >
             <svg
@@ -460,8 +496,7 @@
 
           <button
             class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-            onclick={() =>
-              (currentQuizPage = Math.min(totalQuizPages, currentQuizPage + 1))}
+            onclick={() => goToQuizPage(currentQuizPage + 1)}
             disabled={currentQuizPage === totalQuizPages}
           >
             <svg
@@ -504,10 +539,12 @@
           >
           <input
             type="text"
-            placeholder="Cari username murid..."
+            placeholder="Cari username murid atau judul kuis..."
             bind:value={searchUsername}
+            oninput={handleSearchScoreInput}
             onkeydown={(e) => {
               if (e.key === "Enter") {
+                clearTimeout(searchTimeout);
                 currentScorePage = 1;
                 fetchScores();
               }
@@ -517,6 +554,7 @@
           {#if searchUsername}
             <button
               onclick={() => {
+                clearTimeout(searchTimeout);
                 searchUsername = "";
                 currentScorePage = 1;
                 fetchScores();
@@ -538,15 +576,6 @@
             </button>
           {/if}
         </div>
-        <button
-          onclick={() => {
-            currentScorePage = 1;
-            fetchScores();
-          }}
-          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-bold text-sm rounded-xl shadow-sm transition-colors cursor-pointer w-full sm:w-auto"
-        >
-          Cari
-        </button>
       </div>
     {/if}
 
@@ -653,8 +682,7 @@
           <div class="flex items-center gap-2">
             <button
               class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              onclick={() =>
-                (currentScorePage = Math.max(1, currentScorePage - 1))}
+              onclick={() => goToScorePage(currentScorePage - 1)}
               disabled={currentScorePage === 1}
             >
               <svg
@@ -673,11 +701,7 @@
 
             <button
               class="p-2 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-100 disabled:opacity-50 disabled:cursor-not-allowed transition-colors cursor-pointer"
-              onclick={() =>
-                (currentScorePage = Math.min(
-                  totalScorePages,
-                  currentScorePage + 1,
-                ))}
+              onclick={() => goToScorePage(currentScorePage + 1)}
               disabled={currentScorePage === totalScorePages}
             >
               <svg
