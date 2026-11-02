@@ -36,12 +36,16 @@ type AttemptInfo struct {
 	BlockedUntil time.Time
 }
 
-func checkRateLimit(ip string) (bool, time.Duration) {
+func rateLimitKey(ip, username string) string {
+	return ip + ":" + strings.ToLower(strings.TrimSpace(username))
+}
+
+func checkRateLimit(key string) (bool, time.Duration) {
 	attemptsMu.Lock()
 	defer attemptsMu.Unlock()
 
 	now := time.Now()
-	info, exists := loginAttempts[ip]
+	info, exists := loginAttempts[key]
 
 	if !exists {
 		return true, 0
@@ -60,15 +64,15 @@ func checkRateLimit(ip string) (bool, time.Duration) {
 	return true, 0
 }
 
-func recordFailedAttempt(ip string) {
+func recordFailedAttempt(key string) {
 	attemptsMu.Lock()
 	defer attemptsMu.Unlock()
 
 	now := time.Now()
-	info, exists := loginAttempts[ip]
+	info, exists := loginAttempts[key]
 
 	if !exists || now.Sub(info.FirstAttempt) > time.Minute {
-		loginAttempts[ip] = &AttemptInfo{
+		loginAttempts[key] = &AttemptInfo{
 			Count:        1,
 			FirstAttempt: now,
 		}
@@ -81,10 +85,10 @@ func recordFailedAttempt(ip string) {
 	}
 }
 
-func resetAttempts(ip string) {
+func resetAttempts(key string) {
 	attemptsMu.Lock()
 	defer attemptsMu.Unlock()
-	delete(loginAttempts, ip)
+	delete(loginAttempts, key)
 }
 
 func init() {
@@ -185,7 +189,8 @@ func Login(c *gin.Context) {
 	}
 
 	clientIP := c.ClientIP()
-	allowed, waitTime := checkRateLimit(clientIP)
+	attemptKey := rateLimitKey(clientIP, input.Username)
+	allowed, waitTime := checkRateLimit(attemptKey)
 	if !allowed {
 		minutes := int(waitTime.Minutes())
 		if minutes == 0 {
@@ -197,13 +202,13 @@ func Login(c *gin.Context) {
 
 	var user models.User
 	if err := database.DB.Where("username = ? ", input.Username).First(&user).Error; err != nil {
-		recordFailedAttempt(clientIP)
+		recordFailedAttempt(attemptKey)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username atau password salah"})
 		return
 	}
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
-		recordFailedAttempt(clientIP)
+		recordFailedAttempt(attemptKey)
 		c.JSON(http.StatusUnauthorized, gin.H{"error": "Username/email atau password salah"})
 		return
 	}
@@ -213,7 +218,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	resetAttempts(clientIP)
+	resetAttempts(attemptKey)
 
 	claims := &Claims{
 		UserID:   user.ID,
